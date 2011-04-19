@@ -180,11 +180,11 @@ class HX:
   self.leg_pairs = int(self.A / self.TEM.Ate) # Number of TEM leg pairs per node
   # Heat exchanger stuff
   if self.exh.C < self.cool.C:
-   self.exh.C = self.C_min
-   self.cool.C = self.C_max
+   self.C_min = self.exh.C
+   self.C_max = self.cool.C
   else:
-   self.cool.C = self.C_min
-   self.exh.C = self.C_max
+   self.C_min = self.cool.C
+   self.C_max = self.exh.C
 
   self.R_C = self.cool.C/self.exh.C
 
