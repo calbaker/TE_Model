@@ -108,9 +108,9 @@ class TEModule():
     self.T0 = self.Ti
     self.q0 = self.qi
    
-   self.qc = self.qc * (1 + (self.Th - self.Ti) / self.Th)
+   self.qc = self.qc * (1. + (self.Th - self.Ti) / self.Th)
   
-  self.Rte = -1/(self.qi / (self.Th - self.Tc)) # Effective TE Resistance in m2K/W
+  self.Rte = -1. / (self.qi / (self.Th - self.Tc)) * 1.e3 # Effective TE Resistance in m^2-K/kW
 
   # variables that Chad will use
   self.h = 1. / self.Rte
