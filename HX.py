@@ -41,6 +41,13 @@ class plate_wall():
  def set_h(self):
   self.h = self.k/self.t
 
+class TEdummy():
+ def solve_TEM(self):
+  I = 1
+  V_Seebeck = 1
+  self.h = 0.6 # guessed effective coefficient of convection (kW/m^2-K) for
+         # TE device         
+
 class exhaust(prop.ideal_gas):
  porous = 'no' # is there porous media?
  enhancement = 'none' # is there any means of enhancement? (i.e. fins,
@@ -155,7 +162,7 @@ class HX:
  # initilization of class instances
  cool = coolant()
  exh = exhaust()
- TEM = TEM.TEModule()
+ TEM = TEdummy()
  plate = plate_wall()
  Cummins = engine.engine()
 
