@@ -42,9 +42,12 @@ class plate_wall():
   self.h = self.k/self.t
 
 class TEdummy():
+ I = 1
+ V_Seebeck = 1
+ Ate = 1
+ qh = 1
+ qc = 1
  def solve_TEM(self):
-  I = 1
-  V_Seebeck = 1
   self.h = 0.6 # guessed effective coefficient of convection (kW/m^2-K) for
          # TE device         
 
@@ -255,8 +258,8 @@ class HX:
     #print self.TEM.Th # troubleshooting convergence
     self.solve_node()
     print "TEM hot side temp = ",self.TEM.Th,"K"
-    self.TEM.Th = ( -self.Qdot * (1 / (self.plate.h * self.A) + 1 /
-   (self.exh.h * self.A)) + self.exh.T) # redefining TEM hot side
+    self.TEM.Th = ( -self.Qdot / (((self.exh.h**-1 +
+   self.plate.h**-1)**-1) * self.A)  + self.exh.T ) # redefining TEM hot side 
      # temperature (K) based on
      # known heat flux
     self.TEM.Tc = ( self.Qdot * (1 / (self.plate.h * self.A) + 1 /
@@ -317,13 +320,15 @@ print "Program finished."
 
 print "Plotting..."
 
-mpl.plot(sp.arange(HX1.nodes) * HX1.node_length * 100, HX1.exh.T_nodes,
+x = sp.arange(HX1.nodes) * HX1.node_length * 100
+
+mpl.plot(x, HX1.exh.T_nodes,
          label='Exhaust')
-mpl.plot(sp.arange(HX1.nodes) * HX1.node_length * 100, HX1.cool.T_nodes,
+mpl.plot(x, HX1.cool.T_nodes,
          label='Coolant')
-mpl.plot(sp.arange(HX1.nodes) * HX1.node_length * 100, HX1.TEM.T_hot,
+mpl.plot(x, HX1.TEM.T_hot,
          label='TEM Hot Side')
-mpl.plot(sp.arange(HX1.nodes) * HX1.node_length * 100, HX1.TEM.T_cool,
+mpl.plot(x, HX1.TEM.T_cool,
          label='TEM Cold Side')
 mpl.xlabel('Distance Along HX (m)')
 mpl.ylabel('Temperature (K)')
