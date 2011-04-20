@@ -62,7 +62,9 @@ class exhaust(prop.ideal_gas):
 
  def set_flow(self):
   self.set_flow_geometry()
-  self.T = 0.5*(self.T_in + self.T_out)
+  self.T = self.T_in # Temperature (K) used to calculate fluid
+                     # properties.  This is no good if T_out is much
+                     # different from T_in
   self.set_TempPres_dependents()
   self.c_p = self.c_p_air
   self.C = self.mdot * self.c_p # heat capacity of
@@ -135,7 +137,9 @@ class coolant(prop.flow):
  set_Re_dependents = set_Re_dependents
 
  def set_flow(self):
-  self.T = 0.5 * (self.T_in + self.T_out)
+  self.T = self.T_in # Temperature (K) used to calculate fluid
+                     # properties.  This is no good if T_out is much
+                     # different from T_in
   self.set_flow_geometry()
   self.C = self.mdot * self.c_p # heat capacity of flow (kW/K)
   self.Vdot = self.mdot / self.rho # volume flow rate (m^3/s) of exhaust
@@ -169,6 +173,7 @@ class HX:
  # x coordinate (m)
 
  def solve_node(self):
+  print "solving node"
   # Exhaust stuff
   self.exh.set_flow()
   # Coolant stuff
@@ -179,11 +184,25 @@ class HX:
   self.TEM.solve_TEM()
   self.leg_pairs = int(self.A / self.TEM.Ate) # Number of TEM leg pairs per node
   # Heat exchanger stuff
+  if self.exh.C < self.cool.C:
+   self.C_min = self.exh.C
+   self.C_max = self.cool.C
+  else:
+   self.C_min = self.cool.C
+   self.C_max = self.exh.C
+
+  self.R_C = self.cool.C/self.exh.C
+
   self.U = ( (self.exh.h**-1 + self.plate.h**-1 + self.TEM.h**-1 +
   self.plate.h**-1 + self.cool.h**-1)**-1 ) # overall heat transfer
-                                        # coefficient (kW/m^2-K)  
-
-  self.Qdot = ( self.U * self.A * (self.exh.T - self.cool.T) ) # heat transfer (kW)
+                                        # coefficient (kW/m^2-K)
+  self.NTU = self.U * self.A * self.cool.ducts / self.C_min # number
+                                        # of transfer units   
+  self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) / (1
+  + self.R_C) )  # NTU method for parallel flow from Mills Heat
+                 # Transfer Table 8.3a  
+  self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
+  self.cool.T)  ) # heat transfer (kW)   
 
   self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
   # temperature (K) at exhaust outlet   
@@ -204,6 +223,8 @@ class HX:
   # initializing arrays for tracking variables at nodes
   self.Qdot_nodes = sp.zeros(self.nodes) # initialize array for storing
                                     # heat transfer (kW) in each node 
+  self.effectiveness_nodes = sp.zeros(self.nodes) # initialize array for storing
+                                    # heat transfer (kW) in each node 
   self.exh.T_nodes = sp.zeros(self.nodes) # initializing array for storing
                                      # temperature (K) in each node 
   self.exh.h_nodes = sp.zeros(self.nodes)
@@ -219,14 +240,14 @@ class HX:
   self.TEM.power_nodes = sp.zeros(self.nodes)
 
   for i in sp.arange(self.nodes):
-   self.exh.T_out = self.exh.T_in - 1. # guess at temperature (K) drop in each node
-   self.cool.T_out = self.cool.T_in + 1. # guess at temperature (K) increase in each node
+   print "iterating nodes"
    self.TEM.Tc = self.cool.T_in # guess at cold side TEM temperature (K)
    self.TEM.Th = self.exh.T_in # guess at hot side TEM temperature (K)
 
    for j in range(4):
     #print self.TEM.Th # troubleshooting convergence
     self.solve_node()
+    print "TEM hot side temp = ",self.TEM.Th,"K"
     self.TEM.Th = ( -self.Qdot * (1 / (self.plate.h * self.A) + 1 /
    (self.exh.h * self.A)) + self.exh.T) # redefining TEM hot side
      # temperature (K) based on
@@ -235,19 +256,20 @@ class HX:
    (self.cool.h * self.A)) + self.cool.T) # redefining TEM cold side
      # temperature (K) based on
      # known heat flux
-
-   #print '\n' # troubleshooting
+    print "TEM hot side temp = ",self.TEM.Th,"K"
    
    self.Qdot_nodes[i] = self.Qdot # storing node heat transfer in array
+   self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
    self.exh.T_nodes[i] = (self.exh.T_in + self.exh.T_out)/2.
    self.exh.h_nodes[i] = self.exh.h
-   self.cool.T_nodes[-i-1] = (self.cool.T_in + self.cool.T_out)/2. # nodes are reversed to reflect counterflow
-   self.cool.h_nodes[-i-1] = self.cool.h
+   self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
+   # nodes are reversed to reflect counterflow  
+   self.cool.h_nodes[i] = self.cool.h
 
    self.TEM.T_hot[i] = self.TEM.Th # hot side
                                         # temperature (K) of TEM at
                                         # each node
-   self.TEM.T_cool[-i-1] = self.TEM.Tc # hot side temperature (K) of
+   self.TEM.T_cool[i] = self.TEM.Tc # hot side temperature (K) of
                                        # TEM at each node.  Use
                                        # negative index because this
                                        # is counterflow.    
@@ -264,7 +286,6 @@ class HX:
 
   self.Qdot = sp.sum(self.Qdot_nodes)
   self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
-  self.effectiveness = self.Qdot / (self.exh.C * (self.exh.T_inlet - self.cool.T_inlet))
 #  self.TEM.power = self.TEM.I * sp.sum(self.TEM.V_nodes) * 1e-3 # total TE
                                         # power output (kW)
   self.TEM.power = sp.sum(self.TEM.power_nodes)
@@ -277,100 +298,30 @@ class HX:
   self.eta_2nd = self.power_net / self.available
   
 ##############################################
-# # Instantiation
-# HX1 = HX()
-# HX1.exh.porous = 'no' 
-# HX1.exh.T_inlet = 600.
-# HX1.exh.P = 100.
-# HX1.cool.T_inlet = 300.
-# HX1.solve_HX()
+# Instantiation
+HX1 = HX()
+HX1.exh.porous = 'no' 
+HX1.exh.T_inlet = 600.
+HX1.exh.P = 100.
+HX1.cool.T_inlet = 300.
+HX1.solve_HX()
 
-# # Plotting
-# # Plot configuration
-# FONTSIZE = 16
-# mpl.rcParams['axes.labelsize'] = FONTSIZE
-# mpl.rcParams['axes.titlesize'] = FONTSIZE
-# mpl.rcParams['legend.fontsize'] = FONTSIZE
-# mpl.rcParams['xtick.labelsize'] = FONTSIZE
-# mpl.rcParams['ytick.labelsize'] = FONTSIZE
-# mpl.rcParams['lines.linewidth'] = 1.5
+print "Program finished."
 
-# fig3 = mpl.figure()
+print "Plotting..."
 
-# mpl.plot(HX1.x_dim*100, HX1.exh.T_nodes, label='Exhaust (K)')
-# mpl.plot(HX1.x_dim*100, HX1.cool.T_nodes, label='Coolant (K)')
-# mpl.plot(HX1.x_dim*100, HX1.TEM.T_hot, label='TE Hot (K)')
-# mpl.plot(HX1.x_dim*100, HX1.TEM.T_cool, label='TE Cold (K)')
+mpl.plot(sp.arange(HX1.nodes) * HX1.node_length * 100, HX1.exh.T_nodes,
+         label='Exhaust')
+mpl.plot(sp.arange(HX1.nodes) * HX1.node_length * 100, HX1.cool.T_nodes,
+         label='Coolant')
+mpl.plot(sp.arange(HX1.nodes) * HX1.node_length * 100, HX1.TEM.T_hot,
+         label='TEM Hot Side')
+mpl.plot(sp.arange(HX1.nodes) * HX1.node_length * 100, HX1.TEM.T_cool,
+         label='TEM Cold Side')
+mpl.xlabel('Distance Along HX (m)')
+mpl.ylabel('Temperature (K)')
+mpl.title('Temperature v. Distance Along HX')
+mpl.grid()
+mpl.legend()
 
-# mpl.xlabel('Distance Along HX (cm)')
-# mpl.ylabel('Temperature (K)')
-# mpl.title('Temperature v. Distance in HX')
-# mpl.legend(loc='best')
-# mpl.grid()
-# mpl.savefig('Plots/temperature distribution.pdf')
-# mpl.savefig('Plots/temperature distribution.png')
-
-# fig4 = mpl.figure()
-
-# mpl.plot(HX1.x_dim*100, HX1.TEM.I_nodes)
-
-# mpl.xlabel('Distance Along HX (cm)')
-# mpl.ylabel('Current (A)')
-# mpl.title('Current v. Distance in HX')
-# mpl.legend(loc='best')
-# mpl.grid()
-# mpl.savefig('Plots/current distribution.pdf')
-# mpl.savefig('Plots/current distribution.png')
-
-# height = sp.arange(0.5,2.,0.25)*1.e-2
-# power_net = sp.empty(0)
-# Wdot_pumping_cool = sp.empty(0)
-# Wdot_pumping_exh = sp.empty(0)
-# Qdot = sp.empty(0)
-# effectiveness = sp.empty(0)
-# eta_1st = sp.empty(0)
-# eta_2nd = sp.empty(0)
-
-# for i in sp.arange(sp.size(height)):
-#     HX0.exh.height = height[i]
-#     HX0.solve_HX()
-#     HX0.solve_HX()
-#     power_net = sp.append(power_net,HX0.power_net)
-#     Wdot_pumping_exh = sp.append(Wdot_pumping_exh,HX0.exh.Wdot_pumping)
-#     Wdot_pumping_cool = sp.append(Wdot_pumping_cool,HX0.cool.Wdot_pumping)
-#     Qdot = sp.append(Qdot,HX0.Qdot)
-#     effectiveness = sp.append(effectiveness,HX0.effectiveness)
-#     eta_2nd = sp.append(eta_2nd,HX0.eta_2nd)
-#     eta_1st = sp.append(eta_1st,HX0.eta_1st)
-
-# fig1 = mpl.figure()
-
-# mpl.plot(height*1e2,power_net,label='Net Power')
-# mpl.plot(height*1e2,Wdot_pumping_exh,label='Exhaust Pumping Power')
-# mpl.plot(height*1e2,Wdot_pumping_cool,label='Coolant Pumping Power')
-# mpl.plot(height*1e2,Qdot,label='Heat Transfer')
-
-# mpl.title('Power v. Exhaust Duct Height, '+str(HX0.width*100)+'cm duct width')
-# mpl.xlabel('Duct Height (cm)')
-# mpl.ylabel('(kW)')
-# mpl.legend()
-# mpl.grid()
-# mpl.savefig('Plots/power.pdf')
-# mpl.savefig('Plots/power.png')
-
-# fig2 = mpl.figure()
-
-# mpl.plot(height*1e2,effectiveness,label='Effectiveness')
-# mpl.plot(height*1e2,eta_1st,label='1st Law Efficiency')
-# mpl.plot(height*1e2,eta_2nd,label='modified 2nd Law Efficiency')
-
-# mpl.title('Effectiveness v. Exhaust Duct Height, '+str(HX0.width*100)+'cm duct width')
-# mpl.xlabel('Duct Height (cm)')
-# mpl.ylabel('HX Effectiveness')
-# mpl.legend()
-# mpl.grid()
-# mpl.savefig('Plots/effectiveness.pdf')
-# mpl.savefig('Plots/effectiveness.png')
-
-# mpl.show()
-
+mpl.show()
