@@ -3,7 +3,6 @@
 
 # Distribution Modules
 import scipy as sp
-import numpy as np
 import matplotlib.pyplot as mpl
 import os
 
@@ -12,7 +11,8 @@ import os
 import engine
 import TEM
 # In python directory
-import properties as prop 
+import properties as prop
+reload(prop) # uncomment this when making changes in properties
 
 # definitions of classes for mediums in which heat transfer can occur
 
@@ -71,14 +71,15 @@ class exhaust(prop.ideal_gas):
  set_Re_dependents = set_Re_dependents
 
  def set_flow(self):
-  self.set_flow_geometry()
   self.T = self.T_in # Temperature (K) used to calculate fluid
                      # properties.  This is no good if T_out is much
                      # different from T_in
   self.set_TempPres_dependents()
   self.c_p = self.c_p_air
+
   self.C = self.mdot * self.c_p # heat capacity of
   # flow (kW/K)
+  print "Exhaust capacity flow",self.C,"\n"
   self.Vdot = self.mdot / self.rho # volume flow rate (m^3/s) of exhaust
   self.velocity = self.Vdot / (HX.width * self.height)
 
@@ -150,7 +151,6 @@ class coolant(prop.flow):
   self.T = self.T_in # Temperature (K) used to calculate fluid
                      # properties.  This is no good if T_out is much
                      # different from T_in
-  self.set_flow_geometry()
   self.C = self.mdot * self.c_p # heat capacity of flow (kW/K)
   self.Vdot = self.mdot / self.rho # volume flow rate (m^3/s) of exhaust
   self.velocity = self.Vdot / (HX.width * self.height * self.ducts)
@@ -192,6 +192,12 @@ class HX:
   self.plate.set_h()
   # TE stuff
   self.TEM.solve_TEM()
+
+  self.exh.R = 1 / self.exh.h
+  self.plate.R = 1 / self.plate.h
+  self.TEM.R = 1 / self.TEM.h
+  self.cool.R = 1 / self.cool.h
+
   self.leg_pairs = int(self.A / self.TEM.Ate) # Number of TEM leg pairs per node
   # Heat exchanger stuff
   if self.exh.C < self.cool.C:
@@ -200,11 +206,12 @@ class HX:
   else:
    self.C_min = self.cool.C
    self.C_max = self.exh.C
+   print 'error!'
 
   self.R_C = self.cool.C/self.exh.C
 
-  self.U = ( (self.exh.h**-1 + self.plate.h**-1 + self.TEM.h**-1 +
-  self.plate.h**-1 + self.cool.h**-1)**-1 ) # overall heat transfer
+  self.U = ( (self.exh.R + self.plate.R + self.TEM.R +
+  self.plate.R + self.cool.R)**-1 ) # overall heat transfer
                                         # coefficient (kW/m^2-K)
   self.NTU = self.U * self.A * self.cool.ducts / self.C_min # number
                                         # of transfer units   
@@ -220,6 +227,9 @@ class HX:
   # temperature (K) at coolant outlet
 
  def solve_HX(self):
+  self.exh.set_flow_geometry()
+  self.cool.set_flow_geometry()
+
   self.A = self.node_length*self.width*self.cool.ducts # area (m^2)
                                         # through which heat flux
                                         # occurs in each node
@@ -241,6 +251,7 @@ class HX:
   self.cool.T_nodes = sp.zeros(self.nodes) # initializing array for storing
                                      # temperature (K) in each node 
   self.cool.h_nodes = sp.zeros(self.nodes) 
+  self.U_nodes = sp.zeros(self.nodes) 
   self.TEM.T_cool = sp.zeros(self.nodes) # initializing array for storing
                                      # temperature (K) in each node 
   self.TEM.T_hot = sp.zeros(self.nodes) # initializing array for storing
@@ -258,8 +269,8 @@ class HX:
     #print self.TEM.Th # troubleshooting convergence
     self.solve_node()
     print "TEM hot side temp = ",self.TEM.Th,"K"
-    self.TEM.Th = ( -self.Qdot / (((self.exh.h**-1 +
-   self.plate.h**-1)**-1) * self.A)  + self.exh.T ) # redefining TEM hot side 
+    self.TEM.Th = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
+   self.plate.h**-1)**-1 * self.A) ) # redefining TEM hot side 
      # temperature (K) based on
      # known heat flux
     self.TEM.Tc = ( self.Qdot * (1 / (self.plate.h * self.A) + 1 /
@@ -270,10 +281,11 @@ class HX:
    
    self.Qdot_nodes[i] = self.Qdot # storing node heat transfer in array
    self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
+
    self.exh.T_nodes[i] = (self.exh.T_in + self.exh.T_out)/2.
    self.exh.h_nodes[i] = self.exh.h
+
    self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
-   # nodes are reversed to reflect counterflow  
    self.cool.h_nodes[i] = self.cool.h
 
    self.TEM.T_hot[i] = self.TEM.Th # hot side
@@ -283,6 +295,7 @@ class HX:
                                        # TEM at each node.  Use
                                        # negative index because this
                                        # is counterflow.    
+   self.U_nodes[i] = self.U
    self.TEM.I_nodes[i] = self.TEM.I
    self.TEM.V_nodes[i] = self.TEM.V_Seebeck * self.leg_pairs
    self.TEM.power_nodes[i] = sp.absolute(self.TEM.qh - self.TEM.qc) * self.A
@@ -307,33 +320,3 @@ class HX:
   self.eta_1st = self.power_net / self.Qdot
   self.eta_2nd = self.power_net / self.available
   
-##############################################
-# Instantiation
-HX1 = HX()
-HX1.exh.porous = 'no' 
-HX1.exh.T_inlet = 600.
-HX1.exh.P = 100.
-HX1.cool.T_inlet = 300.
-HX1.solve_HX()
-
-print "Program finished."
-
-print "Plotting..."
-
-x = sp.arange(HX1.nodes) * HX1.node_length * 100
-
-mpl.plot(x, HX1.exh.T_nodes,
-         label='Exhaust')
-mpl.plot(x, HX1.cool.T_nodes,
-         label='Coolant')
-mpl.plot(x, HX1.TEM.T_hot,
-         label='TEM Hot Side')
-mpl.plot(x, HX1.TEM.T_cool,
-         label='TEM Cold Side')
-mpl.xlabel('Distance Along HX (m)')
-mpl.ylabel('Temperature (K)')
-mpl.title('Temperature v. Distance Along HX')
-mpl.grid()
-mpl.legend()
-
-mpl.show()
