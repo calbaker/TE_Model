@@ -10,6 +10,8 @@ import os
 # In this directory
 import engine
 import TEM
+reload(TEM)
+
 # In python directory
 import properties as prop
 reload(prop) # uncomment this when making changes in properties
@@ -17,11 +19,11 @@ reload(prop) # uncomment this when making changes in properties
 # definitions of classes for mediums in which heat transfer can occur
 
 def set_flow_geometry(self):
- self.perimeter = 2*(self.height+HX.width) # wetted perimeter (m) of
+ self.perimeter = 2.*(self.height+HX.width) # wetted perimeter (m) of
                                         # exhaust flow
  self.area = self.height * HX.width # cross-section area (m^2) of
                                     # exhaust flow
- self.D = 4*self.area / self.perimeter # coolant hydraulic diameter (m)
+ self.D = 4.*self.area / self.perimeter # coolant hydraulic diameter (m)
 
 def set_Re_dependents(self):
  self.set_Re()
@@ -164,7 +166,7 @@ class HX:
  # initilization of class instances
  cool = coolant()
  exh = exhaust()
- TEM = TEdummy()
+ TEM = TEM.TEModule()
  plate = plate_wall()
  Cummins = engine.engine()
 
@@ -220,7 +222,6 @@ class HX:
                  # Transfer Table 8.3a  
   self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
   self.cool.T_in)  ) # NTU heat transfer (kW)
-#  self.Qdot = ( self.U * self.A * (self.exh.T - self.cool.T) ) # linear heat transfer (kW) 
   self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
   # temperature (K) at exhaust outlet   
   self.cool.T_out = ( self.cool.T_in + self.Qdot / self.cool.C )
@@ -261,11 +262,13 @@ class HX:
   self.TEM.power_nodes = sp.zeros(self.nodes)
 
   for i in sp.arange(self.nodes):
+   print "\nSolving node", i
    self.TEM.Tc = self.cool.T_in # guess at cold side TEM temperature (K)
    self.TEM.Th = self.exh.T_in # guess at hot side TEM temperature (K)
 
-   for j in range(20):
+   for j in range(3):
     self.solve_node()
+    print "iteration", j, "of 2"
     self.TEM.Th = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
    self.plate.h**-1)**-1 * self.A) ) # redefining TEM hot side 
      # temperature (K) based on
@@ -292,9 +295,15 @@ class HX:
                                        # negative index because this
                                        # is counterflow.    
    self.U_nodes[i] = self.U
-   self.TEM.I_nodes[i] = self.TEM.I
+   self.TEM.I_nodes[i] = self.TEM.I # current (A)
    self.TEM.V_nodes[i] = self.TEM.V_Seebeck * self.leg_pairs
-   self.TEM.power_nodes[i] = sp.absolute(self.TEM.qh - self.TEM.qc) * self.A
+   self.TEM.V = sp.sum(self.TEM.V_nodes) # total voltage (V) across
+                                        # all nodes
+   self.TEM.power_nodes[i] = self.TEM.I * self.TEM.V * 1.e-3
+   # electrical power (kW)  
+   # change this formula if
+   # current is ever varied along
+   # the nodes.   
 
    # redefining outlet temperature for next node
    self.exh.T_in = self.exh.T_out
@@ -307,6 +316,7 @@ class HX:
   self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
 #  self.TEM.power = self.TEM.I * sp.sum(self.TEM.V_nodes) * 1e-3 # total TE
                                         # power output (kW)
+  self.effectiveness = self.Qdot / self.available # global HX effectiveness                                        
   self.TEM.power = sp.sum(self.TEM.power_nodes)
                                     
   # total TE power output (kW)
