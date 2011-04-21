@@ -71,7 +71,7 @@ class exhaust(prop.ideal_gas):
  set_Re_dependents = set_Re_dependents
 
  def set_flow(self):
-  self.T = self.T_in # Temperature (K) used to calculate fluid
+  self.T = 0.5 * (self.T_in + self.T_out) # Temperature (K) used to calculate fluid
                      # properties.  This is no good if T_out is much
                      # different from T_in
   self.set_TempPres_dependents()
@@ -79,7 +79,6 @@ class exhaust(prop.ideal_gas):
 
   self.C = self.mdot * self.c_p # heat capacity of
   # flow (kW/K)
-  print "Exhaust capacity flow",self.C,"\n"
   self.Vdot = self.mdot / self.rho # volume flow rate (m^3/s) of exhaust
   self.velocity = self.Vdot / (HX.width * self.height)
 
@@ -148,7 +147,7 @@ class coolant(prop.flow):
  set_Re_dependents = set_Re_dependents
 
  def set_flow(self):
-  self.T = self.T_in # Temperature (K) used to calculate fluid
+  self.T = 0.5 * (self.T_in + self.T_out) # Temperature (K) used to calculate fluid
                      # properties.  This is no good if T_out is much
                      # different from T_in
   self.C = self.mdot * self.c_p # heat capacity of flow (kW/K)
@@ -183,7 +182,9 @@ class HX:
  # x coordinate (m)
 
  def solve_node(self):
-  print "solving node"
+  self.exh.T_out = self.exh.T_in - 5 # Guess at exhaust node out temperature (K)
+  self.cool.T_out = self.cool.T_in - 1 # Guess at exhaust node out temperature (K)
+  
   # Exhaust stuff
   self.exh.set_flow()
   # Coolant stuff
@@ -193,10 +194,10 @@ class HX:
   # TE stuff
   self.TEM.solve_TEM()
 
-  self.exh.R = 1 / self.exh.h
-  self.plate.R = 1 / self.plate.h
-  self.TEM.R = 1 / self.TEM.h
-  self.cool.R = 1 / self.cool.h
+  self.exh.R_thermal = 1 / self.exh.h
+  self.plate.R_thermal = 1 / self.plate.h
+  self.TEM.R_thermal = 1 / self.TEM.h
+  self.cool.R_thermal = 1 / self.cool.h
 
   self.leg_pairs = int(self.A / self.TEM.Ate) # Number of TEM leg pairs per node
   # Heat exchanger stuff
@@ -206,21 +207,20 @@ class HX:
   else:
    self.C_min = self.cool.C
    self.C_max = self.exh.C
-   print 'error!'
 
   self.R_C = self.cool.C/self.exh.C
 
-  self.U = ( (self.exh.R + self.plate.R + self.TEM.R +
-  self.plate.R + self.cool.R)**-1 ) # overall heat transfer
+  self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.TEM.R_thermal +
+  self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
                                         # coefficient (kW/m^2-K)
-  self.NTU = self.U * self.A * self.cool.ducts / self.C_min # number
+  self.NTU = self.U * self.A / self.C_min # number
                                         # of transfer units   
   self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) / (1
   + self.R_C) )  # NTU method for parallel flow from Mills Heat
                  # Transfer Table 8.3a  
   self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
-  self.cool.T)  ) # heat transfer (kW)   
-
+  self.cool.T_in)  ) # NTU heat transfer (kW)
+#  self.Qdot = ( self.U * self.A * (self.exh.T - self.cool.T) ) # linear heat transfer (kW) 
   self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
   # temperature (K) at exhaust outlet   
   self.cool.T_out = ( self.cool.T_in + self.Qdot / self.cool.C )
@@ -261,14 +261,11 @@ class HX:
   self.TEM.power_nodes = sp.zeros(self.nodes)
 
   for i in sp.arange(self.nodes):
-   print "iterating nodes"
    self.TEM.Tc = self.cool.T_in # guess at cold side TEM temperature (K)
    self.TEM.Th = self.exh.T_in # guess at hot side TEM temperature (K)
 
-   for j in range(4):
-    #print self.TEM.Th # troubleshooting convergence
+   for j in range(20):
     self.solve_node()
-    print "TEM hot side temp = ",self.TEM.Th,"K"
     self.TEM.Th = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
    self.plate.h**-1)**-1 * self.A) ) # redefining TEM hot side 
      # temperature (K) based on
@@ -277,7 +274,6 @@ class HX:
    (self.cool.h * self.A)) + self.cool.T) # redefining TEM cold side
      # temperature (K) based on
      # known heat flux
-    print "TEM hot side temp = ",self.TEM.Th,"K"
    
    self.Qdot_nodes[i] = self.Qdot # storing node heat transfer in array
    self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
