@@ -19,9 +19,8 @@ HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
 HX1.solve_HX()
 
-print "Program finished."
-
-print "Plotting..."
+print "\nProgram finished."
+print "\nPlotting..."
 
 x = sp.arange(HX1.nodes) * HX1.node_length * 100
 
@@ -40,6 +39,8 @@ mpl.ylabel('Temperature (K)')
 mpl.title('Temperature v. Distance Along HX')
 mpl.grid()
 mpl.legend()
+mpl.savefig('Plots/flow  temp.png')
+mpl.savefig('Plots/flow  temp.pdf')
 
 mpl.figure()
 mpl.plot(x, HX1.cool.T_nodes,
@@ -58,21 +59,10 @@ mpl.ylabel('Temperature (K)')
 mpl.title('Temperature v. Distance Along HX')
 mpl.grid()
 mpl.legend()
-
-mpl.figure()
-mpl.plot(x, HX1.cool.T_nodes,label='Coolant')
-
-mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes * (HX1.cool.R_thermal + HX1.plate.R_thermal) / HX1.A, label='TEM Cold Side')  
-
-mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes * (HX1.cool.R_thermal + HX1.plate.R_thermal + HX1.TEM.R_thermal) / HX1.A, label='TEM Hot Side') 
-
-mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes * (HX1.cool.R_thermal + HX1.plate.R_thermal + HX1.TEM.R_thermal + HX1.plate.R_thermal + HX1.exh.R_thermal) / HX1.A, label='Exhaust') 
-
-mpl.xlabel('Distance Along HX (m)')
-mpl.ylabel('Temperature (K)')
-mpl.title('Temperature v. Distance Along HX')
-mpl.grid()
-mpl.legend()
+mpl.savefig('Plots/convection temp.png')
+mpl.savefig('Plots/convection temp.pdf')
 
 mpl.show()
 
+DUDh_exh = HX1.exh.h**-2 * HX1.U**-2
+DUDh_plate = HX1.plate.h**-2 * HX1.U**-2 
