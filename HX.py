@@ -10,6 +10,7 @@ import os
 # In this directory
 import engine
 import TEM
+reload(TEM)
 from functions import *
 import exhaust
 import coolant
@@ -142,7 +143,6 @@ class HX:
 
    for j in range(3):
     self.solve_node()
-    print "iteration", j, "of 2"
     self.TEM.Th = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
    self.plate.h**-1)**-1 * self.A) ) # redefining TEM hot side 
      # temperature (K) based on
@@ -156,15 +156,9 @@ class HX:
    self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
 
    self.exh.T_nodes[i] = (self.exh.T_in + self.exh.T_out)/2.
-   print "T at node",i,"=",self.exh.T_nodes[i]
-   print "T_in =",self.exh.T_in
-   print "T_out =",self.exh.T_out
-
    self.exh.h_nodes[i] = self.exh.h
-
    self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
    self.cool.h_nodes[i] = self.cool.h
-
    self.TEM.T_hot[i] = self.TEM.Th # hot side
                                         # temperature (K) of TEM at
                                         # each node
@@ -187,7 +181,6 @@ class HX:
    self.exh.T_in = self.exh.T_out
    self.cool.T_in = self.cool.T_out
    
-  print self.exh.T_nodes
   self.exh.T_outlet = self.exh.T_out
   self.cool.T_outlet = self.cool.T_out
 
