@@ -34,9 +34,7 @@ class exhaust(prop.ideal_gas):
   self.C = self.mdot * self.c_p # heat capacity of
   # flow (kW/K)
   self.Vdot = self.mdot / self.rho # volume flow rate (m^3/s) of exhaust
-  print "Exhaust Vdot =",self.Vdot
   self.velocity = self.Vdot / self.area # velocity (m/s) of exhaust
-  print "Exhaust velocity =",self.velocity
 
   if self.porous == 'Bejan':
    self.Nu_D = 6. # Nu for porous media parallel plates with const
