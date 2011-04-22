@@ -3,15 +3,12 @@
 
 # Distribution Modules
 import scipy as sp
-import numpy as np
 import matplotlib.pyplot as mpl
 
 # User Defined Modules
 # In this directory
 import HX
 reload(HX)
-# In python directory
-import properties as prop
 
 print "Beginning execution..."
 
@@ -34,7 +31,7 @@ mpl.rcParams['xtick.labelsize'] = FONTSIZE
 mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 
-height = sp.arange(0.2,1.,0.2)*1.e-2
+height = sp.arange(0.5,3.0,0.5)*1.e-2
 power_net = sp.empty(0)
 Wdot_pumping_cool = sp.empty(0)
 Wdot_pumping_exh = sp.empty(0)
@@ -45,9 +42,10 @@ eta_2nd = sp.empty(0)
 power_TE = sp.empty(0)
 
 for i in sp.arange(sp.size(height)):
- print "iteration",i,"height =",height[i] 
+ print "\niteration",i,"height =",height[i] 
  HX0.exh.height = height[i]
  HX0.solve_HX()
+ print "TEM thermal resistance =",HX0.TEM.R_thermal
  power_net = sp.append(power_net,HX0.power_net)
  power_TE = sp.append(power_TE,HX0.TEM.power)
  Wdot_pumping_exh = sp.append(Wdot_pumping_exh,HX0.exh.Wdot_pumping)
@@ -85,5 +83,5 @@ mpl.grid()
 mpl.savefig('Plots/effectiveness.pdf')
 mpl.savefig('Plots/effectiveness.png')
 
-#mpl.show()
+mpl.show() # uncomment this to show the plots after running the code.  
 
