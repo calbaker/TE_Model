@@ -10,6 +10,7 @@ import os
 # In this directory
 import engine
 import TEM
+from functions import *
 import exhaust
 import coolant
 
@@ -115,25 +116,24 @@ class HX:
   self.cool.T_in = self.cool.T_inlet
 
   # initializing arrays for tracking variables at nodes
-  zeros = sp.zeros(self.nodes)
-  self.Qdot_nodes = zeros # initialize array for storing
+  self.Qdot_nodes = sp.zeros(self.nodes) # initialize array for storing
                                     # heat transfer (kW) in each node 
-  self.effectiveness_nodes = zeros # initialize array for storing
+  self.effectiveness_nodes = sp.zeros(self.nodes) # initialize array for storing
                                     # heat transfer (kW) in each node 
-  self.exh.T_nodes = zeros # initializing array for storing
+  self.exh.T_nodes = sp.zeros(self.nodes) # initializing array for storing
                                      # temperature (K) in each node 
-  self.exh.h_nodes = zeros
-  self.cool.T_nodes = zeros # initializing array for storing
+  self.exh.h_nodes = sp.zeros(self.nodes)
+  self.cool.T_nodes = sp.zeros(self.nodes) # initializing array for storing
                                      # temperature (K) in each node 
-  self.cool.h_nodes = zeros 
-  self.U_nodes = zeros 
-  self.TEM.T_cool = zeros # initializing array for storing
+  self.cool.h_nodes = sp.zeros(self.nodes) 
+  self.U_nodes = sp.zeros(self.nodes) 
+  self.TEM.T_cool = sp.zeros(self.nodes) # initializing array for storing
                                      # temperature (K) in each node 
-  self.TEM.T_hot = zeros # initializing array for storing
+  self.TEM.T_hot = sp.zeros(self.nodes) # initializing array for storing
                                      # temperature (K) in each node 
-  self.TEM.I_nodes = zeros
-  self.TEM.V_nodes = zeros
-  self.TEM.power_nodes = zeros
+  self.TEM.I_nodes = sp.zeros(self.nodes)
+  self.TEM.V_nodes = sp.zeros(self.nodes)
+  self.TEM.power_nodes = sp.zeros(self.nodes)
 
   for i in sp.arange(self.nodes):
    print "\nSolving node", i
@@ -156,6 +156,10 @@ class HX:
    self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
 
    self.exh.T_nodes[i] = (self.exh.T_in + self.exh.T_out)/2.
+   print "T at node",i,"=",self.exh.T_nodes[i]
+   print "T_in =",self.exh.T_in
+   print "T_out =",self.exh.T_out
+
    self.exh.h_nodes[i] = self.exh.h
 
    self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
@@ -183,6 +187,7 @@ class HX:
    self.exh.T_in = self.exh.T_out
    self.cool.T_in = self.cool.T_out
    
+  print self.exh.T_nodes
   self.exh.T_outlet = self.exh.T_out
   self.cool.T_outlet = self.cool.T_out
 
