@@ -60,9 +60,9 @@ class HX:
   self.cool.T_out = self.cool.T_in - 1 # Guess at exhaust node out temperature (K)
   
   # Exhaust stuff
-  self.exh.set_flow()
+  self.exh.set_flow(self.length)
   # Coolant stuff
-  self.cool.set_flow()
+  self.cool.set_flow(self.length)
   # Wall stuff
   self.plate.set_h()
   # TE stuff
@@ -100,9 +100,9 @@ class HX:
   # temperature (K) at coolant outlet
 
  def solve_HX(self):
-  self.exh.set_flow_geometry() # this should be moved to the
+  self.exh.set_flow_geometry(self.width) # this should be moved to the
                                # corresponding module
-  self.cool.set_flow_geometry()
+  self.cool.set_flow_geometry(self.width)
 
   self.A = self.node_length*self.width*self.cool.ducts # area (m^2)
                                         # through which heat flux
