@@ -12,7 +12,7 @@ class TEModule():
   # init values
   self.Tc = 400. #Cold side temp (K)
   self.Th = 750. #Hot side temp (K)
-  self.n = 50 #Number of segments in p and n legs
+  self.n = 10 #Number of segments in p and n legs
   self.L = 0.01 #length in meters of each leg
   self.i = 1.
   self.err = 0.1 #Tolerance
@@ -29,11 +29,13 @@ class TEModule():
   self.dx = self.L / self.n
 
  def solve_TEM(self):
+  print "Solving TEM"
   # The following block is to plug in a J value based on an
   # approximate load resistance 
   self.SUM1 = 0 #initialize integrals
   #self.SUM2 = 0 #   ""         ""
   for k in range(self.n):
+   print "for loop 1"
    self.T0 = self.Tc + k*(self.Th-self.Tc)/self.n #updates temperature
    self.Ap0 = (0.15*self.T0 + 211.)*1.e-6 #seebeck coefficient (SI Units)
    self.Pp0 = 0.01*1/25 #resistivity (SI units)
@@ -57,12 +59,14 @@ class TEModule():
   self.Ti = self.Tc #(initialize Ti for the while loop condition )
 
   while sp.absolute(self.Ti - self.Th) > self.err: #while loop condition
+   print "while loop 1"
    self.T0 = self.Tc #initialize T0 for the inside for loop
    self.q0 = self.qc #initialize cold side heat flux for the for loop
    self.sum1 = 0
    self.sum2 = 0
 
    for i in range(self.n):
+    print "for loop 2"
     self.Ap0 = (0.15 * self.T0 + 211.)*1.e-6  # ptype seebeck
     self.Pp0 = 0.01 * 1. / 25. # ptype resisitivity
     self.Kp0 = 100. * 3.194 / self.T0 # ptype conducitivity
@@ -85,6 +89,7 @@ class TEModule():
   self.Ti = self.Tc #reinitializes Ti for the while loop condition
  
   while sp.absolute(self.Ti - self.Th) > self.err:
+   print "while loop 2"
    self.T0 = self.Tc 
    self.q0 = self.qc
    self.sum1 = 0
