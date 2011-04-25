@@ -10,32 +10,31 @@ import matplotlib.pyplot as mpl
 class TEModule():
  def __init__(self):
   # init values
-  self.Tc = 400. #Cold side temp (K). used by Chad
-  self.Th = 750. #Hot side temp (K). used by Chad
-  self.n = 10 #Number of segments in p and n legs
-  self.L = 0.01 #length in meters of each leg
+  self.Tc = 400. #Cold side temp (K)
+  self.Th = 750. #Hot side temp (K)
+  self.n = 100 #Number of segments in p and n legs
+  self.L = 0.002   #length in meters of each leg
   self.i = 1.
-  self.err = 5. #Tolerance
-  self.I = 2.0 # (Amps)
-  self.Ap = 20.e-4 #Area of p-type (m^2)
-  self.An = 1.e-4 # Area of n-type (m^2)
-  self.Ate = self.Ap + self.An # area of TE leg pair (m^2). used by Chad
-
+  self.err = 0.1 #Tolerance
+  self.qc = ( -100. * 3.194 * 2 / (self.Th + self.Tc) * (self.Th -
+ self.Tc) / (self.L / 2) ) #initial guess value for qc (based on pure
+                           #conduction) 
+  self.I = 5.0e-1   # (Amps)
+  self.q0 = self.qc
+  self.Ap = 1.e-6 #Area of p-type (m^2)
+  self.An = 1.e-6 # Area of n-type (m^2)
+  self.Ate = self.Ap + self.An # area of TE leg pair (m^2)
   # init values for loop
   self.dx = self.L / self.n
 
  def solve_TEM(self):
   print "Solving TEM"
-  self.qc = ( -100. * 3.194 * 2 / (self.Th + self.Tc) * (self.Th -
- self.Tc) / (self.L / 2) ) #initial guess value for qc (based on pure
-                           #conduction) 
-  self.q0 = self.qc
   # The following block is to plug in a J value based on an
   # approximate load resistance 
   self.SUM1 = 0 #initialize integrals
   #self.SUM2 = 0 #   ""         ""
   for k in range(self.n):
-   print "for loop 1"
+   #print "for loop 1"
    self.T0 = self.Tc + k*(self.Th-self.Tc)/self.n #updates temperature
    self.Ap0 = (0.15*self.T0 + 211.)*1.e-6 #seebeck coefficient (SI Units)
    self.Pp0 = 0.01*1/25 #resistivity (SI units)
@@ -59,14 +58,14 @@ class TEModule():
   self.Ti = self.Tc #(initialize Ti for the while loop condition )
 
   while sp.absolute(self.Ti - self.Th) > self.err: #while loop condition
-   print "while loop 1"
+   #print "while loop 1"
    self.T0 = self.Tc #initialize T0 for the inside for loop
    self.q0 = self.qc #initialize cold side heat flux for the for loop
    self.sum1 = 0
    self.sum2 = 0
 
    for i in range(self.n):
-    print "for loop 2"
+    #print "for loop 2"
     self.Ap0 = (0.15 * self.T0 + 211.)*1.e-6  # ptype seebeck
     self.Pp0 = 0.01 * 1. / 25. # ptype resisitivity
     self.Kp0 = 100. * 3.194 / self.T0 # ptype conducitivity
@@ -89,7 +88,7 @@ class TEModule():
   self.Ti = self.Tc #reinitializes Ti for the while loop condition
  
   while sp.absolute(self.Ti - self.Th) > self.err:
-   print "while loop 2"
+   #print "while loop 2"
    self.T0 = self.Tc 
    self.q0 = self.qc
    self.sum1 = 0
@@ -112,7 +111,7 @@ class TEModule():
    
    self.qc = self.qc * (1 + (self.Th - self.Ti) / self.Th) #updates T0 w/i while loop
   
-  self.Rte = -1/(self.qi / (self.Th - self.Tc)) # Effective TE Resistance in m^2-K/W. used by Chad
+  self.Rte = -1/(self.qi / (self.Th - self.Tc)) # Effective TE Resistance in m^2-K/W
 
   # variables that Chad will use
   self.h = 1. / self.Rte * 1e-3 # heat transfer coefficient (kW/m^2-K)
