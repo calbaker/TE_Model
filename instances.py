@@ -31,7 +31,7 @@ mpl.rcParams['xtick.labelsize'] = FONTSIZE
 mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 
-height = sp.arange(0.5,3.0,0.5)*1.e-2
+height = sp.arange(0.5,5.0,0.25)*1.e-2
 power_net = sp.empty(0)
 Wdot_pumping_cool = sp.empty(0)
 Wdot_pumping_exh = sp.empty(0)
