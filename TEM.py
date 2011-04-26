@@ -16,13 +16,10 @@ class TEModule():
   self.L = 0.002   #length in meters of each leg
   self.i = 1.
   self.err = 0.1 #Tolerance
-  self.qc = ( -100. * 3.194 * 2 / (self.Th + self.Tc) * (self.Th -
- self.Tc) / (self.L / 2) ) #initial guess value for qc (based on pure
-                           #conduction) 
   self.I = 5.0e-1   # (Amps)
-  self.q0 = self.qc
-  self.Ap = 1.e-6 #Area of p-type (m^2)
-  self.An = 1.e-6 # Area of n-type (m^2)
+  self.Ap = 2.25e-6 #Area of p-type (m^2)
+  self.An = 2.25e-6 # Area of n-type (m^2)
+  self.A_void = 1.e-6 # void area (m^2) of space between legs
   self.Ate = self.Ap + self.An # area of TE leg pair (m^2)
   # init values for loop
   self.dx = self.L / self.n
@@ -31,6 +28,11 @@ class TEModule():
   print "Solving TEM"
   # The following block is to plug in a J value based on an
   # approximate load resistance 
+  self.qc = ( -100. * 3.194 * 2 / (self.Th + self.Tc) * (self.Th -
+ self.Tc) / (self.L / 2) ) #initial guess value for qc (based on pure
+                           #conduction)
+  self.q0 = self.qc
+                           
   self.SUM1 = 0 #initialize integrals
   #self.SUM2 = 0 #   ""         ""
   for k in range(self.n):
@@ -39,8 +41,8 @@ class TEModule():
    self.Ap0 = (0.15*self.T0 + 211.)*1.e-6 #seebeck coefficient (SI Units)
    self.Pp0 = 0.01*1/25 #resistivity (SI units)
    self.Kp0 = 100*3.194/self.T0 #Thermal conductivity (SI Units)
-   self.An0 = (0.268*self.T0 - 329)*1.e-6 #ntype seebeck
-   self.Pn0 = 0.01*0.1746/(self.T0 - 310) #ntype resistivity
+   self.An0 = (0.268*self.T0 - 329.)*1.e-6 #ntype seebeck
+   self.Pn0 = 0.01*0.1746/(self.T0 - 310.) #ntype resistivity
    self.Kn0 = 100.*54./self.T0 #ntype thermal conductivity
    self.SUM1 = ( self.Ap0 * (self.Th - self.Tc) / self.n - self.An0 *
   (self.Th - self.Tc) / self.n + self.SUM1 ) #seebeck voltage (V)
