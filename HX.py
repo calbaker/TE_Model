@@ -53,7 +53,7 @@ class HX:
  Cummins = engine.engine()
 
  # More exhaust attributes
- Cummins.set_mdot_charge() # mass flow rate of exhaust
+ Cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
  exh.mdot = Cummins.mdot_charge
 
 
