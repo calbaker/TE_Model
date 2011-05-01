@@ -48,7 +48,7 @@ class HX:
  # initilization of class instances
  cool = coolant.coolant()
  exh = exhaust.exhaust()
- TEM = TEM.TEdummy()
+ TEM = TEdummy()
  plate = plate_wall()
  Cummins = engine.engine()
 
