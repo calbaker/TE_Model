@@ -10,7 +10,7 @@ import os
 # In this directory
 import engine
 import TEM
-reload(TEM)
+#reload(TEM)
 from functions import *
 import exhaust
 import coolant
@@ -48,7 +48,7 @@ class HX:
  # initilization of class instances
  cool = coolant.coolant()
  exh = exhaust.exhaust()
- TEM = TEM.TEModule()
+ TEM = TEM.TEdummy()
  plate = plate_wall()
  Cummins = engine.engine()
 
