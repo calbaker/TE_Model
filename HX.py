@@ -48,7 +48,7 @@ class HX:
  # initilization of class instances
  cool = coolant.coolant()
  exh = exhaust.exhaust()
- TEM = TEM.TEdummy()
+ TEM = TEdummy()
  plate = plate_wall()
  Cummins = engine.engine()
 
@@ -101,7 +101,7 @@ class HX:
   self.cool.T_out = ( self.cool.T_in + self.Qdot / self.cool.C )
   # temperature (K) at coolant outlet
 
- def solve_HX(self):
+ def solve_ll(self): # solve parallel flow heat exchanger
   self.exh.set_flow_geometry(self.width) # this should be moved to the
                                # corresponding module
   self.cool.set_flow_geometry(self.width)
@@ -184,17 +184,18 @@ class HX:
   self.exh.T_outlet = self.exh.T_out
   self.cool.T_outlet = self.cool.T_out
 
-  self.Qdot = sp.sum(self.Qdot_nodes)
-  self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
+  set_performance_metrics(self):
+   self.Qdot = sp.sum(self.Qdot_nodes)
+   self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
 #  self.TEM.power = self.TEM.I * sp.sum(self.TEM.V_nodes) * 1e-3 # total TE
-                                        # power output (kW)
-  self.effectiveness = self.Qdot / self.available # global HX effectiveness                                        
-  self.TEM.power = sp.sum(self.TEM.power_nodes)
-                                    
-  # total TE power output (kW)
-  self.Wdot_pumping = self.exh.Wdot_pumping + self.cool.Wdot_pumping
-  # total pumping power requirement (kW) 
-  self.power_net = self.TEM.power - self.Wdot_pumping 
-  self.eta_1st = self.power_net / self.Qdot
-  self.eta_2nd = self.power_net / self.available
+    # power output (kW)
+   self.effectiveness = self.Qdot / self.available # global HX effectiveness                                        
+   self.TEM.power = sp.sum(self.TEM.power_nodes)
+
+   # total TE power output (kW)
+   self.Wdot_pumping = self.exh.Wdot_pumping + self.cool.Wdot_pumping
+   # total pumping power requirement (kW) 
+   self.power_net = self.TEM.power - self.Wdot_pumping 
+   self.eta_1st = self.power_net / self.Qdot
+   self.eta_2nd = self.power_net / self.available
   
