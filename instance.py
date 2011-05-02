@@ -13,7 +13,8 @@ reload(HX)
 print "Beginning execution..."
 
 HX1 = HX.HX()
-HX1.exh.porous = 'no' 
+HX1.exh.porous = 'no'
+HX1.type = 'parallel'
 HX1.exh.T_inlet = 600.
 HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
@@ -38,29 +39,30 @@ mpl.xlabel('Distance Along HX (m)')
 mpl.ylabel('Temperature (K)')
 mpl.title('Temperature v. Distance Along HX')
 mpl.grid()
-mpl.legend()
-mpl.savefig('Plots/flow  temp.png')
-mpl.savefig('Plots/flow  temp.pdf')
+mpl.legend(loc='best')
+mpl.savefig('Plots/flow temp.png')
+mpl.savefig('Plots/flow temp.pdf')
 
-mpl.figure()
-mpl.plot(x, HX1.cool.T_nodes,
-         label='Coolant')
-mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
-         HX1.plate.h**-1)**-1 * HX1.A), label='TEM Cold Side') 
-mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
-         HX1.plate.h**-1 + HX1.TEM.h**-1)**-1 * HX1.A), label='TEM' +
-         ' Hot Side') 
-mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
-         HX1.plate.h**-1 + HX1.TEM.h**-1 + HX1.plate.h**-1 +
-         HX1.exh.h**-1)**-1 * HX1.A), label='Exhaust') 
+# calculates T using resistance network as a check.  
+# mpl.figure()
+# mpl.plot(x, HX1.cool.T_nodes,
+#          label='Coolant')
+# mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
+#          HX1.plate.h**-1)**-1 * HX1.A), label='TEM Cold Side') 
+# mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
+#          HX1.plate.h**-1 + HX1.TEM.h**-1)**-1 * HX1.A), label='TEM' +
+#          ' Hot Side') 
+# mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
+#          HX1.plate.h**-1 + HX1.TEM.h**-1 + HX1.plate.h**-1 +
+#          HX1.exh.h**-1)**-1 * HX1.A), label='Exhaust') 
 
-mpl.xlabel('Distance Along HX (m)')
-mpl.ylabel('Temperature (K)')
-mpl.title('Temperature v. Distance Along HX')
-mpl.grid()
-mpl.legend()
-mpl.savefig('Plots/convection temp.png')
-mpl.savefig('Plots/convection temp.pdf')
+# mpl.xlabel('Distance Along HX (m)')
+# mpl.ylabel('Temperature (K)')
+# mpl.title('Temperature v. Distance Along HX')
+# mpl.grid()
+# mpl.legend()
+# mpl.savefig('Plots/convection temp.png')
+# mpl.savefig('Plots/convection temp.pdf')
 
 mpl.show()
 
