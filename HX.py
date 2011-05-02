@@ -56,11 +56,11 @@ class HX:
  Cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
  exh.mdot = Cummins.mdot_charge
 
-
  def solve_node(self):
   self.exh.T_out = self.exh.T_in - 5 # Guess at exhaust node out temperature (K)
   self.cool.T_out = self.cool.T_in - 1 # Guess at exhaust node out temperature (K)
-  
+
+#################### Begin independent of HX configuration  
   # Exhaust stuff
   self.exh.set_flow(self.length)
   # Coolant stuff
@@ -90,16 +90,23 @@ class HX:
   self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
                                         # coefficient (kW/m^2-K)
   self.NTU = self.U * self.A / self.C_min # number
-                                        # of transfer units   
-  self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) / (1
-  + self.R_C) )  # NTU method for parallel flow from Mills Heat
+                                        # of transfer units
+#################### End independent of HX configuration  
+  if self.type == 'parallel':                                        
+   self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) / (1
+    + self.R_C) )  # NTU method for parallel flow from Mills Heat
                  # Transfer Table 8.3a  
-  self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
-  self.cool.T_in)  ) # NTU heat transfer (kW)
+   self.cool.T_out = ( self.cool.T_in + self.Qdot / self.cool.C )
+  # temperature (K) at coolant outlet
+  elif self.type == 'counter':
+   self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) /
+  (1 - self.R_C * sp.exp(-self.NTU * (1 - self.R_C))) )
+
+#################### independent of HX configuration  
   self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
   # temperature (K) at exhaust outlet   
-  self.cool.T_out = ( self.cool.T_in + self.Qdot / self.cool.C )
-  # temperature (K) at coolant outlet
+  self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
+   self.cool.T_in)  ) # NTU heat transfer (kW)
 
  def solve_ll(self): # solve parallel flow heat exchanger
   self.exh.set_flow_geometry(self.width) # this should be moved to the
@@ -184,18 +191,18 @@ class HX:
   self.exh.T_outlet = self.exh.T_out
   self.cool.T_outlet = self.cool.T_out
 
-  set_performance_metrics(self):
-   self.Qdot = sp.sum(self.Qdot_nodes)
-   self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
+ def set_performance_metrics(self):
+  self.Qdot = sp.sum(self.Qdot_nodes)
+  self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
 #  self.TEM.power = self.TEM.I * sp.sum(self.TEM.V_nodes) * 1e-3 # total TE
-    # power output (kW)
-   self.effectiveness = self.Qdot / self.available # global HX effectiveness                                        
-   self.TEM.power = sp.sum(self.TEM.power_nodes)
+   # power output (kW)
+  self.effectiveness = self.Qdot / self.available # global HX effectiveness                                        
+  self.TEM.power = sp.sum(self.TEM.power_nodes)
 
-   # total TE power output (kW)
-   self.Wdot_pumping = self.exh.Wdot_pumping + self.cool.Wdot_pumping
-   # total pumping power requirement (kW) 
-   self.power_net = self.TEM.power - self.Wdot_pumping 
-   self.eta_1st = self.power_net / self.Qdot
-   self.eta_2nd = self.power_net / self.available
-  
+  # total TE power output (kW)
+  self.Wdot_pumping = self.exh.Wdot_pumping + self.cool.Wdot_pumping
+  # total pumping power requirement (kW) 
+  self.power_net = self.TEM.power - self.Wdot_pumping 
+  self.eta_1st = self.power_net / self.Qdot
+  self.eta_2nd = self.power_net / self.available
+
