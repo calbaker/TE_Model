@@ -94,18 +94,23 @@ class HX:
    self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) / (1
     + self.R_C) )  # NTU method for parallel flow from Mills Heat
                  # Transfer Table 8.3a  
+   self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
+    self.cool.T_in)  ) # NTU heat transfer (kW)
    self.cool.T_out = ( self.cool.T_in + self.Qdot / self.cool.C )
-  # temperature (K) at coolant outlet
+   # temperature (K) at coolant outlet
+
+
   elif self.type == 'counter':
    self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) /
   (1 - self.R_C * sp.exp(-self.NTU * (1 - self.R_C))) )
    self.cool.T_in = ( self.cool.T_out - self.Qdot / self.cool.C )
+   self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
+    self.cool.T_in)  ) # NTU heat transfer (kW)
+   
 
 #################### independent of HX configuration  
   self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
   # temperature (K) at exhaust outlet   
-  self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
-   self.cool.T_in)  ) # NTU heat transfer (kW)
 
  def solve_HX(self): # solve parallel flow heat exchanger
   self.exh.set_flow_geometry(self.width) # this should be moved to the
