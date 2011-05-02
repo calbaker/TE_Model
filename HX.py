@@ -100,11 +100,12 @@ class HX:
    # temperature (K) at coolant outlet
 
   elif self.type == 'counter':
-   self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) /
+   self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 - self.R_C))) /
   (1 - self.R_C * sp.exp(-self.NTU * (1 - self.R_C))) )
    self.Qdot = ( (self.effectiveness * self.C_min * (self.exh.T_in -
     self.cool.T_out)) / (1 - self.effectiveness * self.C_min / self.cool.C) ) # NTU heat transfer (kW) 
    self.cool.T_in = ( self.cool.T_out - self.Qdot / self.cool.C )
+   print self.type
 
 #################### independent of HX configuration  
   self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
@@ -124,7 +125,10 @@ class HX:
                                    # means the temperature is
                                    # referring to the HX inlet or
                                    # outlet.   
-  self.cool.T_in = self.cool.T_inlet
+  if self.type == 'parallel':
+   self.cool.T_in = self.cool.T_inlet
+  elif self.type == 'counter':
+   self.cool.T_out = self.cool.T_outlet  
 
   # initializing arrays for tracking variables at nodes
   self.Qdot_nodes = sp.zeros(self.nodes) # initialize array for storing
