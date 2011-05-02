@@ -131,24 +131,25 @@ class HX:
    self.cool.T_out = self.cool.T_outlet  
 
   # initializing arrays for tracking variables at nodes
-  self.Qdot_nodes = sp.zeros(self.nodes) # initialize array for storing
+  ZEROS = sp.zeros(self.nodes)
+  self.Qdot_nodes = ZEROS.copy() # initialize array for storing
                                     # heat transfer (kW) in each node 
-  self.effectiveness_nodes = sp.zeros(self.nodes) # initialize array for storing
+  self.effectiveness_nodes = ZEROS.copy() # initialize array for storing
                                     # heat transfer (kW) in each node 
-  self.exh.T_nodes = sp.zeros(self.nodes) # initializing array for storing
+  self.exh.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-  self.exh.h_nodes = sp.zeros(self.nodes)
-  self.cool.T_nodes = sp.zeros(self.nodes) # initializing array for storing
+  self.exh.h_nodes = ZEROS.copy()
+  self.cool.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-  self.cool.h_nodes = sp.zeros(self.nodes) 
-  self.U_nodes = sp.zeros(self.nodes) 
-  self.TEM.T_cool = sp.zeros(self.nodes) # initializing array for storing
+  self.cool.h_nodes = ZEROS.copy() 
+  self.U_nodes = ZEROS.copy() 
+  self.TEM.T_cool = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-  self.TEM.T_hot = sp.zeros(self.nodes) # initializing array for storing
+  self.TEM.T_hot = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-  self.TEM.I_nodes = sp.zeros(self.nodes)
-  self.TEM.V_nodes = sp.zeros(self.nodes)
-  self.TEM.power_nodes = sp.zeros(self.nodes)
+  self.TEM.I_nodes = ZEROS.copy()
+  self.TEM.V_nodes = ZEROS.copy()
+  self.TEM.power_nodes = ZEROS.copy()
 
   for i in sp.arange(self.nodes):
    print "\nSolving node", i
@@ -171,12 +172,19 @@ class HX:
 
    self.exh.T_nodes[i] = (self.exh.T_in + self.exh.T_out)/2.
    self.exh.h_nodes[i] = self.exh.h
-   self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
    self.cool.h_nodes[i] = self.cool.h
    self.TEM.T_hot[i] = self.TEM.Th # hot side
                                         # temperature (K) of TEM at
                                         # each node
-   self.TEM.T_cool[i] = self.TEM.Tc # hot side temperature (K) of
+   if self.type == 'parallel':
+    self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
+    self.TEM.T_cool[i] = self.TEM.Tc # hot side temperature (K) of
+                                       # TEM at each node.  Use
+                                       # negative index because this
+                                       # is counterflow.    
+   if self.type == 'counter':
+    self.cool.T_nodes[-i-1] = (self.cool.T_in + self.cool.T_out)/2.
+    self.TEM.T_cool[-i-1] = self.TEM.Tc # hot side temperature (K) of
                                        # TEM at each node.  Use
                                        # negative index because this
                                        # is counterflow.    
