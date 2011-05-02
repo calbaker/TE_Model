@@ -17,7 +17,7 @@ HX1.exh.porous = 'no'
 HX1.exh.T_inlet = 600.
 HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
-HX1.solve_HX()
+HX1.solve_ll()
 
 print "\nProgram finished."
 print "\nPlotting..."
