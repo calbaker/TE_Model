@@ -99,22 +99,20 @@ class HX:
    self.cool.T_out = ( self.cool.T_in + self.Qdot / self.cool.C )
    # temperature (K) at coolant outlet
 
-
   elif self.type == 'counter':
    self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) /
   (1 - self.R_C * sp.exp(-self.NTU * (1 - self.R_C))) )
+   self.Qdot = ( (self.effectiveness * self.C_min * (self.exh.T_in -
+    self.cool.T_out)) / (1 - self.effectiveness * self.C_min / self.cool.C) ) # NTU heat transfer (kW) 
    self.cool.T_in = ( self.cool.T_out - self.Qdot / self.cool.C )
-   self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
-    self.cool.T_in)  ) # NTU heat transfer (kW)
-   
 
 #################### independent of HX configuration  
   self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
   # temperature (K) at exhaust outlet   
 
+
  def solve_HX(self): # solve parallel flow heat exchanger
-  self.exh.set_flow_geometry(self.width) # this should be moved to the
-                               # corresponding module
+  self.exh.set_flow_geometry(self.width) 
   self.cool.set_flow_geometry(self.width)
 
   self.A = self.node_length*self.width*self.cool.ducts # area (m^2)
@@ -124,7 +122,8 @@ class HX:
                                    # temperatures going into and out
                                    # of the node.  The suffix "let"
                                    # means the temperature is
-                                   # referring to the entire HX.  
+                                   # referring to the HX inlet or
+                                   # outlet.   
   self.cool.T_in = self.cool.T_inlet
 
   # initializing arrays for tracking variables at nodes
@@ -155,11 +154,11 @@ class HX:
    for j in range(3):
     self.solve_node()
     self.TEM.Th = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
-   self.plate.h**-1)**-1 * self.A) ) # redefining TEM hot side 
+     self.plate.h**-1)**-1 * self.A) ) # redefining TEM hot side 
      # temperature (K) based on
      # known heat flux
     self.TEM.Tc = ( self.Qdot * (1 / (self.plate.h * self.A) + 1 /
-   (self.cool.h * self.A)) + self.cool.T) # redefining TEM cold side
+     (self.cool.h * self.A)) + self.cool.T) # redefining TEM cold side
      # temperature (K) based on
      # known heat flux
    
@@ -183,19 +182,22 @@ class HX:
    self.TEM.V = sp.sum(self.TEM.V_nodes) # total voltage (V) across
                                         # all nodes
    self.TEM.power_nodes[i] = self.TEM.I * self.TEM.V * 1.e-3
-   # electrical power (kW)  
-   # change this formula if
-   # current is ever varied along
-   # the nodes.   
+   # electrical power (kW) change this formula if current is ever
+   # varied along the nodes.      
 
    # redefining outlet temperature for next node
    self.exh.T_in = self.exh.T_out
-   self.cool.T_in = self.cool.T_out
+   if self.type == 'parallel':
+    self.cool.T_in = self.cool.T_out
+   elif self.type == 'counter':
+    self.cool.T_out = self.cool.T_in
    
   self.exh.T_outlet = self.exh.T_out
-  self.cool.T_outlet = self.cool.T_out
+  if self.type == 'parallel':
+   self.cool.T_outlet = self.cool.T_out
+  if self.type == 'counter':
+   self.cool.T_inlet = self.cool.T_in
 
- def set_performance_metrics(self):
   self.Qdot = sp.sum(self.Qdot_nodes)
   self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
 #  self.TEM.power = self.TEM.I * sp.sum(self.TEM.V_nodes) * 1e-3 # total TE
