@@ -5,20 +5,22 @@ import properties as prop
 from functions import *
 
 class exhaust(prop.ideal_gas):
- porous = 'no' # is there porous media?
- enhancement = 'none' # is there any means of enhancement? (i.e. fins,
-                      # corrugate metal, etc.)
+ def __init__(self):
+  self.porous = 'no' # is there porous media?
+  self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
+   # corrugate metal, etc.)
 
- T_ref = 300 # reference temperature (K) for availability calculation
+  self.T_ref = 300 # default reference temperature (K) for availability calculation
 
- height = 1.25e-2 # height (m) of exhaust duct
+  self.height = 1.25e-2 # default height (m) of exhaust duct
 
- ducts = 1 # number of exhaust ducts
- porosity = 0.92 # volume of void per total volume
- k_matrix = 5.8e-3 # thermal conductivity(kW/m-K) of metal foam +
-  # air
- PPI = 10 # pores per inch of porous media, used in Mancin model
- K = 2.e-7 # permeability (m^2) of porous metal foam, used in Bejan model
+  self.ducts = 1 # default number of exhaust ducts
+  self.porosity = 0.92 # default volume of void per total volume
+  self.k_matrix = 5.8e-3 # default thermal conductivity(kW/m-K) of metal foam +
+   # air
+  self.PPI = 10 # default pores per inch of porous media, used in Mancin model  
+  self.K = 2.e-7 # default permeability (m^2) of porous metal foam, used in
+   # Bejan model   
 
  set_flow_geometry = set_flow_geometry
  set_Re_dependents = set_Re_dependents
