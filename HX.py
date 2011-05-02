@@ -58,9 +58,7 @@ class HX:
 
  def solve_node(self):
   self.exh.T_out = self.exh.T_in - 5 # Guess at exhaust node out temperature (K)
-  self.cool.T_out = self.cool.T_in - 1 # Guess at exhaust node out temperature (K)
 
-#################### Begin independent of HX configuration  
   # Exhaust stuff
   self.exh.set_flow(self.length)
   # Coolant stuff
@@ -91,7 +89,7 @@ class HX:
                                         # coefficient (kW/m^2-K)
   self.NTU = self.U * self.A / self.C_min # number
                                         # of transfer units
-#################### End independent of HX configuration  
+#################### dependent on HX configuration  
   if self.type == 'parallel':                                        
    self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) / (1
     + self.R_C) )  # NTU method for parallel flow from Mills Heat
@@ -101,6 +99,7 @@ class HX:
   elif self.type == 'counter':
    self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) /
   (1 - self.R_C * sp.exp(-self.NTU * (1 - self.R_C))) )
+   self.cool.T_in = ( self.cool.T_out - self.Qdot / self.cool.C )
 
 #################### independent of HX configuration  
   self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
@@ -108,7 +107,7 @@ class HX:
   self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
    self.cool.T_in)  ) # NTU heat transfer (kW)
 
- def solve_ll(self): # solve parallel flow heat exchanger
+ def solve_HX(self): # solve parallel flow heat exchanger
   self.exh.set_flow_geometry(self.width) # this should be moved to the
                                # corresponding module
   self.cool.set_flow_geometry(self.width)
