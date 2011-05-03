@@ -5,7 +5,9 @@ import properties as prop
 from functions import *
 
 class exhaust(prop.ideal_gas):
+ """class for exhaust flow"""
  def __init__(self):
+  prop.ideal_gas.__init__(self)
   self.porous = 'no' # is there porous media?
   self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
    # corrugate metal, etc.)
