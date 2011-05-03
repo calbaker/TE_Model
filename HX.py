@@ -13,6 +13,7 @@ import TEM
 #reload(TEM)
 from functions import *
 import exhaust
+reload(exhaust)
 import coolant
 
 # definitions of classes for mediums in which heat transfer can occur
@@ -39,7 +40,7 @@ class HX:
   self.width = 15e-2 # width (cm*10**-2) of HX duct. This model treats
    # duct as parallel plates for simpler modeling.
   self.length = 1. # length (m) of HX duct
-  self.nodes = 20 # number of nodes for numerical heat transfer model
+  self.nodes = 50 # number of nodes for numerical heat transfer model
   self.node_length = self.length / self.nodes # length (m) of each node
   self.x_dim = sp.arange(self.node_length/2, self.length +
   self.node_length/2, self.node_length)  
@@ -176,15 +177,8 @@ class HX:
    self.TEM.T_hot[i] = self.TEM.Th # hot side
                                         # temperature (K) of TEM at
                                         # each node
-   if self.type == 'parallel':
-    self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
-    self.TEM.T_cool[i] = self.TEM.Tc # hot side temperature (K) of
-                                       # TEM at each node.  Use
-                                       # negative index because this
-                                       # is counterflow.    
-   if self.type == 'counter':
-    self.cool.T_nodes[-i-1] = (self.cool.T_in + self.cool.T_out)/2.
-    self.TEM.T_cool[-i-1] = self.TEM.Tc # hot side temperature (K) of
+   self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
+   self.TEM.T_cool[i] = self.TEM.Tc # hot side temperature (K) of
                                        # TEM at each node.  Use
                                        # negative index because this
                                        # is counterflow.    
