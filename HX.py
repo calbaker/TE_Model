@@ -9,11 +9,10 @@ import os
 # User Defined Modules
 # In this directory
 import engine
-import TEM
-#reload(TEM)
+import TEM_chad as TEM
+reload(TEM)
 from functions import *
 import exhaust
-reload(exhaust)
 import coolant
 
 # definitions of classes for mediums in which heat transfer can occur
@@ -27,9 +26,10 @@ class plate_wall():
 class TEdummy():
  I = 1
  V_Seebeck = 1
- Ate = 1
+ A = 1
  qh = 1
  qc = 1
+ P = 1
  def solve_TEM(self):
   self.h = 0.6 # guessed effective coefficient of convection (kW/m^2-K) for
          # TE device         
@@ -49,7 +49,7 @@ class HX:
  # initilization of class instances
  cool = coolant.coolant()
  exh = exhaust.exhaust()
- TEM = TEdummy()
+ TEM = TEM.TEModule()
  plate = plate_wall()
  Cummins = engine.engine()
 
@@ -74,7 +74,7 @@ class HX:
   self.TEM.R_thermal = 1 / self.TEM.h
   self.cool.R_thermal = 1 / self.cool.h
 
-  self.leg_pairs = int(self.A / self.TEM.Ate) # Number of TEM leg pairs per node
+  self.leg_pairs = int(self.A / self.TEM.A) # Number of TEM leg pairs per node
   # Heat exchanger stuff
   if self.exh.C < self.cool.C:
    self.C_min = self.exh.C
@@ -148,8 +148,6 @@ class HX:
                                      # temperature (K) in each node 
   self.TEM.T_hot = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-  self.TEM.I_nodes = ZEROS.copy()
-  self.TEM.V_nodes = ZEROS.copy()
   self.TEM.power_nodes = ZEROS.copy()
 
   for i in sp.arange(self.nodes):
@@ -183,21 +181,16 @@ class HX:
                                        # negative index because this
                                        # is counterflow.    
    self.U_nodes[i] = self.U
-   self.TEM.I_nodes[i] = self.TEM.I # current (A)
-   self.TEM.V_nodes[i] = self.TEM.V_Seebeck * self.leg_pairs
-   self.TEM.V = sp.sum(self.TEM.V_nodes) # total voltage (V) across
-                                        # all nodes
-   self.TEM.power_nodes[i] = self.TEM.I * self.TEM.V * 1.e-3
-   # electrical power (kW) change this formula if current is ever
-   # varied along the nodes.      
+   self.TEM.power_nodes[i] = self.TEM.P * self.leg_pairs
 
-   # redefining outlet temperature for next node
+   # redefining outlet temperature (K) for next node
    self.exh.T_in = self.exh.T_out
    if self.type == 'parallel':
     self.cool.T_in = self.cool.T_out
    elif self.type == 'counter':
     self.cool.T_out = self.cool.T_in
-   
+
+   # redefining HX outlet/inlet temperatures (K)
   self.exh.T_outlet = self.exh.T_out
   if self.type == 'parallel':
    self.cool.T_outlet = self.cool.T_out
