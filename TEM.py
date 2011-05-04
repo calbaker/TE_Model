@@ -2,119 +2,107 @@
 
 import scipy as sp
 import numpy as np
-import matplotlib.pyplot as mpl
 
 # User defined modules
 # none yet
 
-class TEModule():
+class leg():
+ """class for individual p-type or n-type TE leg"""
  def __init__(self):
-  # init values
-  self.Tc = 400. #Cold side temp (K)
-  self.Th = 750. #Hot side temp (K)
-  self.n = 100 #Number of segments in p and n legs
-  self.L = 0.002   #length in meters of each leg
-  self.i = 1.
-  self.err = 0.1 #Tolerance
   self.I = 5.0e-1   # (Amps)
-  self.Ap = 2.25e-6 #Area of p-type (m^2)
-  self.An = 2.25e-6 # Area of n-type (m^2)
-  self.A_void = 1.e-6 # void area (m^2) of space between legs
-  self.Ate = self.Ap + self.An # area of TE leg pair (m^2)
-  # init values for loop
-  self.dx = self.L / self.n
+  self.Tc = 400. # Cold side temp (K)
+  self.Th = 750. # Hot side temp (K)
+  self.segments = 100 # Number of segments in p and n legs
+  self.err = 0.1 # error tolerance (K) for while loop 
+  self.A = 2.25e-6 # cross-section area (m^2) of leg
+  self.A_void = 1.e-6 # cross-section area (m^2) of void per leg
+  self.L = 0.002 #length (m) of leg
+  self.rho = 0.01 * 1. / 25. # n-type resisitivity UNITS ???
+                                     # what are all of these different
+                                     # numbers??? 
+  self.dx = self.L / self.segments # length of each segment
 
- def solve_TEM(self):
-  print "Solving TEM"
+  # initial arrays for storing data in each segment                           
+  self.q = sp.zeros(self.segments) # Segment heat flux (W/m^2)
+  self.T = sp.zeros(self.segments) # Segment Temperature (K)
+  self.S = sp.zeros(self.segments) # Segment Seebeck coefficient (???)
+  self.k = sp.zeros(self.segments) # Segment Thermal conductivity (W/m-K)
+  self.V_Seebeck = sp.zeros(self.segments) # Segment Seebeck voltage (V)
+  self.R_segment = sp.zeros(self.segments) # Segment resistance (ohms) ???
+
+ def solve_leg(self):
+  self.J = self.I / self.A # current density in leg (A/m^2)
   # The following block is to plug in a J value based on an
   # approximate load resistance 
-  self.qc = ( -100. * 3.194 * 2 / (self.Th + self.Tc) * (self.Th -
- self.Tc) / (self.L / 2) ) #initial guess value for qc (based on pure
-                           #conduction)
-  self.q0 = self.qc
-                           
-  self.SUM1 = 0 #initialize integrals
-  #self.SUM2 = 0 #   ""         ""
-  for k in range(self.n):
-   #print "for loop 1"
-   self.T0 = self.Tc + k*(self.Th-self.Tc)/self.n #updates temperature
-   self.Ap0 = (0.15*self.T0 + 211.)*1.e-6 #seebeck coefficient (SI Units)
-   self.Pp0 = 0.01*1/25 #resistivity (SI units)
-   self.Kp0 = 100*3.194/self.T0 #Thermal conductivity (SI Units)
-   self.An0 = (0.268*self.T0 - 329.)*1.e-6 #ntype seebeck
-   self.Pn0 = 0.01*0.1746/(self.T0 - 310.) #ntype resistivity
-   self.Kn0 = 100.*54./self.T0 #ntype thermal conductivity
-   self.SUM1 = ( self.Ap0 * (self.Th - self.Tc) / self.n - self.An0 *
-  (self.Th - self.Tc) / self.n + self.SUM1 ) #seebeck voltage (V)
+  self.q_c = ( -100. * 3.194 * 2 / (self.Th + self.Tc) * (self.Th -
+   self.Tc) / (self.L / 2) ) #initial guess for cold side heat flux (W/m^2) based on pure
+                           #conduction UNITS??? Also, what is 3.194???
 
-    #self.SUM2 = ( 2. * (self.Pp0 * self.L / self.n / self.Ap + self.Pp0
-  #* self.L/self.n) +self.SUM2 ) #Accounts for load resistance and
-   #internal resistance (Ohms) 
+  while sp.absolute(self.T[-1] - self.Th) > self.err: # condition such
+                                        # that calculated hot side
+                                        # temperature matches actual
+                                        # hot side temperature
+   self.T[0] = self.Tc # initialize T[0] for the inside for loop
+   self.q[0] = self.q_c # initialize cold side heat flux for the for loop
 
-  self.T0 = self.Tc
-  #self.I = self.SUM1/self.SUM2 #Seebeck voltage/total resistance =
-                               #current (Amps)
-  self.Jn = self.I/self.An #ntype current density (si units)
-  self.Jp = -self.I/self.Ap #pytpe current density (Si Units)
- 
-  self.Ti = self.Tc #(initialize Ti for the while loop condition )
+   for i in sp.arange(1,self.segments):
+    self.S[i-1] = (0.15 * self.T[i-1] + 211.)*1.e-6  # p-type seebeck
+                                        # UNITS ??? what is 0.15 and
+                                        # 211???
+    self.k[i-1] = 100. * 3.194 / self.T[i-1] # p-type conducitivity
+                                        # UNITS ???
+    self.T[i] = ( self.T[i-1] + (self.dx / self.k[i-1]) * (self.J * self.T[i-1] *
+     self.S[i-1] - self.q[i-1]) ) # finite difference for temperature
+                                  # eq.
+    self.q[i] = ( self.q[i-1] + (self.rho * self.J**2 * (1 +
+    self.S[i-1]**2 * self.T[i-1] / (self.rho * self.k[i-1])) - self.J
+    * self.S[i-1] * self.q[i-1] / self.k[i-1]) * self.dx ) #finite
+                                        #difference  
+                                        #for heat flux eq.  Chad
+                                        #changed J * J to J**2
+    self.dT = self.T[i] - self.T[i-1] # temperature (K) difference
+                                      # between current and previous
+                                      # segment
+    self.V_Seebeck[i] = self.S[i] * self.dT # voltage (V) in segment
+    self.R_segment[i] = self.rho * self.dx  # resistance (ohms ???)
+                                        # of segment
+   self.q_c = self.q_c * (1 + (self.Th - self.T[-1]) / self.Th)
+    #updates guess value of q_c
 
-  while sp.absolute(self.Ti - self.Th) > self.err: #while loop condition
-   #print "while loop 1"
-   self.T0 = self.Tc #initialize T0 for the inside for loop
-   self.q0 = self.qc #initialize cold side heat flux for the for loop
-   self.sum1 = 0
-   self.sum2 = 0
-
-   for i in range(self.n):
-    #print "for loop 2"
-    self.Ap0 = (0.15 * self.T0 + 211.)*1.e-6  # ptype seebeck
-    self.Pp0 = 0.01 * 1. / 25. # ptype resisitivity
-    self.Kp0 = 100. * 3.194 / self.T0 # ptype conducitivity
-    self.Ti = ( self.T0 + (self.dx / self.Kp0) * (self.Jp * self.T0 *
-   self.Ap0 - self.q0) ) #finite difference for temperature eq.
-    self.qi = ( self.q0 + (self.Pp0 * self.Jp * self.Jp * (1 +
-   self.Ap0 * self.Ap0 * self.T0 / (self.Pp0 * self.Kp0)) - self.Jp *
-   self.Ap0 * self.q0 / self.Kp0) * self.dx ) #finite difference for heat flux eq
-    self.dT = self.Ti - self.T0
-    self.sum1 = self.sum1 + self.Ap0*self.dT #calculates numerator of efficiency
-    self.sum2 = self.Pp0*self.dx + self.sum2 #denominator of efficiency
-    self.T0 = self.Ti #updates T0 within for loop
-    self.q0 = self.qi #updates q0 within for loop
-
-   self.qc = self.qc*(1 + (self.Th-self.Ti)/self.Th) #updates guess value of qc
-
-  self.qc = ( -100 * 3.194 * 2 / (self.Th + self.Tc) *
-  (self.Th-self.Tc) / (self.L / 2) ) #resets qc to original guess value
-
-  self.Ti = self.Tc #reinitializes Ti for the while loop condition
- 
-  while sp.absolute(self.Ti - self.Th) > self.err:
-   #print "while loop 2"
-   self.T0 = self.Tc 
-   self.q0 = self.qc
-   self.sum1 = 0
-   self.sum2 = 0
+  # outside of loops
+  self.R_thermal = (self.T[0] - self.T[-1]) / self.q[-1] # thermal resistance
+                                        # (m^2-K/W), calculated by hot
+                                        # side temperature (K) - cold
+                                        # side temp divided by hot
+                                        # side heat flux
+  self.V_leg = sp.sum(self.V_Seebeck) # voltage (V) of entire leg
+  self.R_leg = sp.sum(self.R_segment) # resistance (ohms) of entire leg
+  self.P = self.V_leg / self.R_leg * 1.e-3 # power (kW) of entire leg
   
-   for i in range(self.n):
-    self.An0 = (0.268 * self.T0 - 329.)*1e-6 # ntype seebeck
-    self.Pn0 = 0.01 * 0.1746 / (self.T0 - 310.) # ntype resistivity
-    self.Kn0 = 100. * 54. / self.T0 # ntype thermal conductivity
-    self.Ti = ( self.T0 + (self.dx / self.Kn0) * (self.Jn * self.T0 *
-   self.An0 - self.q0) ) #same as previous for loop
-    self.qi = ( self.q0 + (self.Pn0 * self.Jn * self.Jn * (1 +
-   self.An0 * self.An0 * self.T0 / (self.Pn0 * self.Kn0)) - self.Jn *
-   self.An0 * self.q0 /self.Kn0) * self.dx )#same as previous for loop
-    self.dT = self.Ti - self.T0
-    self.sum1 = self.sum1 + self.An0 * self.dT #same as previous for loop
-    self.sum2 = self.Pn0 * self.dx + self.sum2# same as previous for loop
-    self.T0 = self.Ti #updates T0 within for loop
-    self.q0 = self.qi #updates q0 within for loop
-   
-   self.qc = self.qc * (1 + (self.Th - self.Ti) / self.Th) #updates T0 w/i while loop
-  
-  self.Rte = -1/(self.qi / (self.Th - self.Tc)) # Effective TE Resistance in m^2-K/W
+class TEModule():
+ """class for TEModule that includes a pair of legs"""
+ def __init__(self):
+  self.Th = 500.
+  self.Tc = 320.
+  self.Ptype = leg() # p-type instance of leg
+  self.Ntype = leg() # n-type instance of leg
+  self.I = 1 # current through leg pair (Amps)
+  self.Ptype.I = -self.I
+  self.Ntype.I = self.I
+  self.A = self.Ntype.A + self.Ptype.A
 
-  # variables that Chad will use
-  self.h = 1. / self.Rte * 1e-3 # heat transfer coefficient (kW/m^2-K)
-  self.V_Seebeck = self.SUM1 # seebeck voltage
+ def solve_TEM(self):
+  self.Ntype.Th = self.Th
+  self.Ntype.Tc = self.Tc
+  self.Ntype.solve_leg()
+
+  self.Ptype.Th = self.Th
+  self.Ptype.Tc = self.Tc
+  self.Ptype.solve_leg()
+
+  self.R_thermal = ( (self.Ntype.R_thermal**-1. +
+   self.Ptype.R_thermal**-1.)**-1. )  # Effective leg pair resistance
+                               # (m^2-K/W)
+  self.P = self.Ntype.P + self.Ptype.P # total power (kW) of leg pair                             
+  self.h = 1. / self.R_thermal * 1e-3 # heat transfer coefficient (kW/m^2-K)
+  
