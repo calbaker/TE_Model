@@ -1,6 +1,7 @@
 # Distribution modules
 
 import scipy as sp
+import numpy as np
 
 # User defined modules
 # none yet
@@ -67,17 +68,41 @@ class leg():
                                         # of segment
    self.q_c = self.q_c * (1 + (self.Th - self.T[-1]) / self.Th)
     #updates guess value of q_c
-#    self.R = self. 
+
+  # outside of loops
+  self.R_thermal = (self.T[0] - self.T[-1]) / self.q[-1] # thermal resistance
+                                        # (m^2-K/W), calculated by hot
+                                        # side temperature (K) - cold
+                                        # side temp divided by hot
+                                        # side heat flux
+  self.V_leg = sp.sum(self.V_Seebeck) # voltage (V) of entire leg
+  self.R_leg = sp.sum(self.R_segment) # resistance (ohms) of entire leg
+  self.P = self.V_leg / self.R_leg * 1.e-3 # power (kW) of entire leg
   
+class TEModule():
+ """class for TEModule that includes a pair of legs"""
+ def __init__(self):
+  self.Th = 500.
+  self.Tc = 320.
+  self.Ptype = leg() # p-type instance of leg
+  self.Ntype = leg() # n-type instance of leg
+  self.I = 1 # current through leg pair (Amps)
+  self.Ptype.I = -self.I
+  self.Ntype.I = self.I
+  self.A = self.Ntype.A + self.Ptype.A
 
-# class TEModule():
-#  """class for TEModule that includes a pair of legs"""
-#  def __init__(self):
-#   self.N = leg() # n-type instance of leg
-#   self.P = leg() # p-type instance of leg
+ def solve_TEM(self):
+  self.Ntype.Th = self.Th
+  self.Ntype.Tc = self.Tc
+  self.Ntype.solve_leg()
 
-#   self. = -1/(self.qi / (self.Th - self.Tc)) # Effective TE Resistance (m^2-K/W)
+  self.Ptype.Th = self.Th
+  self.Ptype.Tc = self.Tc
+  self.Ptype.solve_leg()
 
-#   # variables that Chad will use
-#   self.h = 1. / self.Rte * 1e-3 # heat transfer coefficient (kW/m^2-K)
-#   self.V_Seebeck = self.SUM1 # seebeck voltage
+  self.R_thermal = ( (self.Ntype.R_thermal**-1. +
+   self.Ptype.R_thermal**-1.)**-1. )  # Effective leg pair resistance
+                               # (m^2-K/W)
+  self.P = self.Ntype.P + self.Ptype.P # total power (kW) of leg pair                             
+  self.h = 1. / self.R_thermal * 1e-3 # heat transfer coefficient (kW/m^2-K)
+  
