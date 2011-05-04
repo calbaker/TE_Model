@@ -9,7 +9,7 @@ import os
 # User Defined Modules
 # In this directory
 import engine
-import TEM_chad as TEM
+import TEM
 reload(TEM)
 from functions import *
 import exhaust
