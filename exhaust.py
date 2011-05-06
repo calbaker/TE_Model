@@ -4,9 +4,12 @@ import properties as prop
 # In this directory
 from functions import *
 
-class exhaust(prop.ideal_gas):
+
+class Exhaust(prop.ideal_gas):
     """class for exhaust flow"""
+
     def __init__(self):
+        """sets constants and initiates class instances"""
         prop.ideal_gas.__init__(self)
         self.porous = 'no' # is there porous media?
         self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
@@ -28,8 +31,9 @@ class exhaust(prop.ideal_gas):
     set_Re_dependents = set_Re_dependents
 
     def set_flow(self,length):
-
-        self.T = 0.5 * (self.T_in + self.T_out) # Temperature (K) used to calculate fluid
+        """calculates flow parameters"""        
+        self.T = 0.5 * (self.T_in + self.T_out)
+        # Temperature (K) used to calculate fluid
             # properties.  This is no good if T_out is much
             # different from T_in
         self.set_TempPres_dependents()
@@ -53,7 +57,6 @@ class exhaust(prop.ideal_gas):
             self.k = self.k_matrix
             self.deltaP = (self.f * self.perimeter * length /
              self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
-
 
         elif self.porous == 'Mancin':
             self.k = self.k_matrix
