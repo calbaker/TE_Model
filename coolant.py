@@ -3,8 +3,12 @@ import properties as prop
 
 from functions import *
 
-class coolant(prop.flow):
+
+class Coolant(prop.flow):
+    """class for coolant flow"""
+
     def __init__(self):
+        """sets constants and initiates class instances"""        
         self.height = 0.25e-2 # height (m) of coolant duct
         self.mdot = 0.5 # mass flow rate (kg/s) of coolant
         self.ducts = 2 # number of coolant ducts per hot duct
@@ -22,6 +26,7 @@ class coolant(prop.flow):
     set_Re_dependents = set_Re_dependents
 
     def set_flow(self,length):
+        """calculates flow parameters"""
         # If T_out is not defined, set it equal to T_in since it really
         # doesn't matter for calculations. Also, vice versa.
         try:
