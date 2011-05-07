@@ -33,7 +33,7 @@ class _TEDummy():
     qh = 1
     qc = 1
     P = 1
-    def solve_TEM(self):
+    def solve_tem(self):
         self.h = 0.6 # guessed effective coefficient of convection (kW/m^2-K) for
          # TE device         
 
@@ -73,7 +73,7 @@ class HX:
         # Wall stuff
         self.plate.set_h()
         # TE stuff
-        self.TEM.solve_TEM()
+        self.TEM.solve_tem()
 
         self.exh.R_thermal = 1 / self.exh.h
         self.plate.R_thermal = 1 / self.plate.h
