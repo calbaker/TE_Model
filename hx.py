@@ -10,7 +10,6 @@ import os
 # In this directory
 import engine
 import tem
-reload(tem)
 from functions import *
 import exhaust
 import coolant
@@ -23,19 +22,6 @@ class _PlateWall():
     t = 0.01 # thickness (m) of HX plate
     def set_h(self):
         self.h = self.k/self.t
-
-
-class _TEDummy():
-    """class for modeling what happens in pure conduction with made up numbers"""
-    I = 1
-    V_Seebeck = 1
-    A = 1
-    qh = 1
-    qc = 1
-    P = 1
-    def solve_tem(self):
-        self.h = 0.6 # guessed effective coefficient of convection (kW/m^2-K) for
-         # TE device         
 
 
 class HX:
@@ -80,7 +66,7 @@ class HX:
         self.TEM.R_thermal = 1 / self.TEM.h
         self.cool.R_thermal = 1 / self.cool.h
 
-        self.leg_pairs = int(self.A / self.TEM.A) # Number of TEM leg pairs per node
+        self.leg_pairs = int(self.area / self.TEM.area) # Number of TEM leg pairs per node
         # Heat exchanger stuff
         if self.exh.C < self.cool.C:
             self.C_min = self.exh.C
@@ -94,7 +80,7 @@ class HX:
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.TEM.R_thermal +
         self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
             # coefficient (kW/m^2-K)
-        self.NTU = self.U * self.A / self.C_min # number
+        self.NTU = self.U * self.area / self.C_min # number
             # of transfer units
 #################### dependent on HX configuration  
         if self.type == 'parallel':                                        
@@ -122,7 +108,7 @@ class HX:
         self.exh.set_flow_geometry(self.width) 
         self.cool.set_flow_geometry(self.width)
         
-        self.A = self.node_length*self.width*self.cool.ducts # area (m^2)
+        self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
                                         # through which heat flux
                                         # occurs in each node
         self.exh.T_in = self.exh.T_inlet # T_in and T_out correspond to the
@@ -164,11 +150,11 @@ class HX:
             for j in range(3):
                 self.solve_node()
                 self.TEM.Th = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
-                self.plate.h**-1)**-1 * self.A) ) # redefining TEM hot side 
+                self.plate.h**-1)**-1 * self.area) ) # redefining TEM hot side 
                 # temperature (K) based on
                 # known heat flux
-                self.TEM.Tc = ( self.Qdot * (1 / (self.plate.h * self.A) + 1 /
-                (self.cool.h * self.A)) + self.cool.T) # redefining TEM cold side
+                self.TEM.Tc = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
+                (self.cool.h * self.area)) + self.cool.T) # redefining TEM cold side
                 # temperature (K) based on
                 # known heat flux
    
