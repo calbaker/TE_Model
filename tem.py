@@ -46,7 +46,7 @@ class Leg():
         # length of each segment (m)
         self.T[0] = self.T_c
         self.set_properties()
-        self.q[0] = ( self.k / self.length * (self.T_h -
+        self.q[0] = ( -self.k / self.length * (self.T_h -
         self.T_c) )
         # initial guess for q[0] (W/m^2)
         
@@ -69,7 +69,7 @@ class Leg():
         # length of each segment (m)
         self.T[0] = self.T_c
         self.set_properties()
-        self.q[0] = ( self.k / self.segment_length * (self.T_h -
+        self.q[0] = ( -self.k / self.segment_length * (self.T_h -
             self.T_c) )
         
         # for loop for iterating over segments
