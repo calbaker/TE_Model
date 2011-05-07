@@ -7,26 +7,26 @@ import matplotlib.pyplot as mpl
 
 # User Defined Modules
 # In this directory
-import HX
-reload(HX)
+import hx
+reload(hx)
 
 print "Beginning execution..."
 
-HX1 = HX.HX()
+HX1 = hx.HX()
 HX1.exh.porous = 'no'
 HX1.type = 'parallel'
 HX1.exh.T_inlet = 600.
 HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
-HX1.solve_HX()
+HX1.solve_hx()
 
-# HX2 = HX.HX()
+# HX2 = hx.HX()
 # HX2.exh.porous = 'no'
 # HX2.type = 'counter'
 # HX2.exh.T_inlet = 600.
 # HX2.exh.P = 100.
 # HX2.cool.T_outlet = 306.
-# HX2.solve_HX()
+# HX2.solve_hx()
 
 print "\nProgram finished."
 print "\nPlotting..."
@@ -44,14 +44,10 @@ mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 
 mpl.figure()
-mpl.plot(x, HX1.cool.T_nodes,
-         label='Coolant')
-mpl.plot(x, HX1.TEM.T_cool,
-         label='TEM Cold Side')
-mpl.plot(x, HX1.TEM.T_hot,
-         label='TEM Hot Side')
-mpl.plot(x, HX1.exh.T_nodes,
-         label='Exhaust')
+mpl.plot(x, HX1.exh.T_nodes, '-r', label='Exhaust')
+mpl.plot(x, HX1.TEM.T_hot, '-g', label='TEM Hot Side')
+mpl.plot(x, HX1.TEM.T_cool, '-k', label='TEM Cold Side')
+mpl.plot(x, HX1.cool.T_nodes, '-b', label='Coolant')
 
 mpl.xlabel('Distance Along HX (m)')
 mpl.ylabel('Temperature (K)')
