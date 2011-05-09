@@ -10,6 +10,7 @@ import os
 # In this directory
 import engine
 import tem
+reload(tem)
 from functions import *
 import exhaust
 import coolant
@@ -135,28 +136,26 @@ class HX:
                                      # temperature (K) in each node 
         self.cool.h_nodes = ZEROS.copy() 
         self.U_nodes = ZEROS.copy() 
-        self.TEM.T_cool = ZEROS.copy() # initializing array for storing
+        self.TEM.T_c_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-        self.TEM.T_hot = ZEROS.copy() # initializing array for storing
+        self.TEM.T_h_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
         self.TEM.power_nodes = ZEROS.copy()
         
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
             print "\nSolving node", i
-            self.TEM.Tc = self.cool.T_in # guess at cold side TEM temperature (K)
-            self.TEM.Th = self.exh.T_in # guess at hot side TEM temperature (K)
+            self.TEM.T_c = self.cool.T_in # guess at cold side TEM temperature (K)
+            self.TEM.T_h_goal = self.exh.T_in # guess at hot side TEM temperature (K)
 
             for j in range(3):
                 self.solve_node()
-                self.TEM.Th = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
-                self.plate.h**-1)**-1 * self.area) ) # redefining TEM hot side 
-                # temperature (K) based on
-                # known heat flux
-                self.TEM.Tc = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
-                (self.cool.h * self.area)) + self.cool.T) # redefining TEM cold side
-                # temperature (K) based on
-                # known heat flux
+                self.TEM.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
+                self.plate.h**-1)**-1 * self.area) )
+                # redefining TEM hot side temperature (K) based on known heat flux 
+                self.TEM.T_c = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
+                (self.cool.h * self.area)) + self.cool.T)
+                # redefining TEM cold side temperature (K) based on known heat flux
    
             self.Qdot_nodes[i] = self.Qdot # storing node heat transfer in array
             self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
@@ -164,16 +163,16 @@ class HX:
             self.exh.T_nodes[i] = (self.exh.T_in + self.exh.T_out)/2.
             self.exh.h_nodes[i] = self.exh.h
             self.cool.h_nodes[i] = self.cool.h
-            self.TEM.T_hot[i] = self.TEM.Th # hot side
+            self.TEM.T_h_nodes[i] = self.TEM.T_h # hot side
                                         # temperature (K) of TEM at
                                         # each node
             self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
-            self.TEM.T_cool[i] = self.TEM.Tc # hot side temperature (K) of
+            self.TEM.T_c_nodes[i] = self.TEM.T_c # hot side temperature (K) of
                                        # TEM at each node.  Use
                                        # negative index because this
                                        # is counterflow.    
             self.U_nodes[i] = self.U
-            self.TEM.power_nodes[i] = self.TEM.P * self.leg_pairs
+            self.TEM.power_nodes[i] = self.TEM.P_heat * self.leg_pairs
 
             # redefining outlet temperature (K) for next node
             self.exh.T_in = self.exh.T_out
@@ -191,8 +190,6 @@ class HX:
 
         self.Qdot = sp.sum(self.Qdot_nodes)
         self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
-        #  self.TEM.power = self.TEM.I * sp.sum(self.TEM.V_nodes) * 1e-3 # total TE
-        # power output (kW)
         self.effectiveness = self.Qdot / self.available # global HX effectiveness                                        
         self.TEM.power = sp.sum(self.TEM.power_nodes)
         # total TE power output (kW)
