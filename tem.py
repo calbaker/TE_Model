@@ -91,26 +91,6 @@ class Leg():
         * self.alpha * self.q[i-1] / self.k) * self.segment_length
         )
 
-    def solve_dumb(self):
-        """solves for the case of pure conduction"""
-        self.segment_length = self.length / self.segments
-        # length of each segment (m)
-        self.T[0] = self.T_c
-        self.set_properties()
-        self.q[0] = ( -self.k / self.segment_length * (self.T_h_goal -
-            self.T_c) )
-        
-        # for loop for iterating over segments
-        for i in sp.arange(1,self.segments):
-            self.q[i] = ( self.k / self.segment_length * (self.T_h_goal -
-        self.T_c) )
-            self.set_properties()
-                # this method is here because properties will eventually
-                # be temperature dependent
-            self.T[i] = ( self.T[i-1] + self.q[i-1] / self.k * self.segment_length )
-                # determines temperature of current segment based on
-                # properties evaluated at previous segment
-                    
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
