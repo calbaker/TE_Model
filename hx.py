@@ -40,7 +40,7 @@ class HX:
     # initilization of class instances
     cool = coolant.Coolant()
     exh = exhaust.Exhaust()
-    TEM = _TEDummy()
+    TEM = tem.TEModule()
     plate = _PlateWall()
     Cummins = engine.Engine()
 
