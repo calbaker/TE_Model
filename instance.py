@@ -45,15 +45,16 @@ mpl.rcParams['lines.linewidth'] = 1.5
 
 mpl.figure()
 mpl.plot(x, HX1.exh.T_nodes, '-r', label='Exhaust')
-mpl.plot(x, HX1.TEM.T_hot, '-g', label='TEM Hot Side')
-mpl.plot(x, HX1.TEM.T_cool, '-k', label='TEM Cold Side')
+mpl.plot(x, HX1.TEM.T_h_nodes, '-g', label='TEM Hot Side')
+mpl.plot(x, HX1.TEM.T_c_nodes, '-k', label='TEM Cold Side')
 mpl.plot(x, HX1.cool.T_nodes, '-b', label='Coolant')
 
 mpl.xlabel('Distance Along HX (m)')
 mpl.ylabel('Temperature (K)')
+mpl.ylim(290,610)
 mpl.title('Temperature v. Distance, '+HX1.type)
 mpl.grid()
-mpl.legend(loc='upper left')
+mpl.legend(loc='best')
 mpl.savefig('Plots/temp '+HX1.type+'.png')
 mpl.savefig('Plots/temp '+HX1.type+'.pdf')
 
