@@ -14,17 +14,17 @@ class Leg():
     def __init__(self):
         """this method sets everything that is constant and
         initializes some arrays""" 
-        self.segments = 10. # number of segments for finite difference model
-        self.length = 1.e-3  # leg length (m)
-        self.area = (1.e-3)**2. # leg area (m^2)
+        self.segments = 100. # number of segments for finite difference model
+        self.length = 3.e-3  # leg length (m)
+        self.area = (3.e-3)**2. # leg area (m^2)
         self.T_h_goal = 550.
         # hot side temperature (K) that matches HX BC
         self.T_c = 350. # cold side temperature (K)
-        self.I = -0.35 # electrical current (Amps)
-        self.J = self.I / self.area # (Amps/m^2)
         self.T = sp.zeros(self.segments) # initial array for
                                         # temperature (K)
         self.q = sp.zeros(self.segments) # initial array for heat flux (W/m^2)
+        self.V_segment = sp.zeros(self.segments)
+        # initial array for Seebeck voltage (V)
         self.error = 1. # allowable hot side temperature (K) error
 
     def set_properties(self):
@@ -40,12 +40,25 @@ class Leg():
             self.rho = 1./self.sigma / 100.
             # electrical resistivity (Ohm-m)
             
-
+        if self.material == "MgS":
+            # These properties came from Gao et al.  
+            self.k = 3. 
+            # thermal conductivity (W/m-K) 
+            self.alpha = -150.e-6
+            # Seebeck coefficient (V/K)
+            self.sigma = 1.5e3 # (S/cm) (S/cm = 1/Ohm-cm)
+            # electrical conductivity (1/Ohm-cm)
+            self.rho = 1./self.sigma / 100.
+            # electrical resistivity (Ohm-m)
+            self.I
+            
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
         side heat flux and changes that heat flux until it results in
         the desired hot side temperature."""
+        self.segment_length = self.length / self.segments
+        # length of each segment (m)
         self.T[0] = self.T_c
         self.set_properties()
         self.q_c = ( sp.array([0.9,1.1]) * (-self.k / self.length * (self.T_h_goal -
@@ -59,24 +72,19 @@ class Leg():
         for i in sp.arange(sp.size(self.q_c)):
             self.q[0] = self.q_c[i]
             self.solve_leg_once()
-            print self.T[-1]
             self.T_h[i] = self.T[-1]
         self.q_c_new = ( (self.q_c[1] - self.q_c[0]) / (self.T_h[1] - self.T_h[0]) * (self.T_h_goal - self.T_h[1]) + self.q_c[1] )
         # linear interpolation for q_c based on previous q_c's
         # and previous T_h's 
         self.q_c = sp.append(self.q_c, self.q_c_new)
         self.q[0] = self.q_c_new
-        print "q_c_new =",self.q_c_new
-        print "q_c[-1] =",self.q_c[-1]
-        print "q[0] =",self.q[0]
         self.solve_leg_once()
         self.T_h = sp.append(self.T_h, self.T[-1])
             
     def solve_leg_once(self):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
-        self.segment_length = self.length / self.segments
-        # length of each segment (m)
+        self.J = self.I / self.area # (Amps/m^2)
         # for loop for iterating over segments
         for i in sp.arange(1,self.segments):
             self.set_properties()
@@ -90,16 +98,46 @@ class Leg():
         self.alpha**2. * self.T[i-1] / (self.rho * self.k)) - self.J
         * self.alpha * self.q[i-1] / self.k) * self.segment_length
         )
-
+            self.V_segment[i] = self.alpha * (self.T[i] - self.T[i-1]) 
+        self.V = sp.sum(self.V_segment)
+        self.P_electrical = self.V * self.I
+        self.P_heat = (self.q[-1] - self.q[0]) * self.area 
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
 
     def __init__(self):
         """sets constants and defines leg instances"""
+        self.I = 0.35 # electrical current (Amps)
         self.Ptype = Leg() # p-type instance of leg
         self.Ntype = Leg() # n-type instance of leg
-        self.area = self.Ntype.area + self.Ptype.area
+        self.Ptype.material = 'MgS'
+        self.Ntype.material = 'HMS'
+        self.area_void = (1.e-3)**2 # void area (m^2)
 
     def solve_tem(self):
         """solves legs and combines results of leg pair"""
+        self.area = self.Ntype.area + self.Ptype.area + self.area_void 
+        self.Ptype.I = -self.I
+        # Current must have same sign as heat flux for p-type
+        # material. Heat flux is negative because temperature gradient
+        # is positive.  
+        self.Ntype.I = self.I
+        self.Ptype.T_h_goal = self.T_h_goal
+        self.Ntype.T_h_goal = self.T_h_goal
+        self.Ptype.T_c = self.T_c
+        self.Ntype.T_c = self.T_c
+        self.Ntype.solve_leg()
+        self.Ptype.solve_leg()
+        self.T_h = self.Ntype.T[-1]
+        self.V = sp.sum(self.Ptype.V) + sp.sum(self.Ntype.V)
+        # Everything from here on out is in kW instead of W
+        self.q = ( (self.Ptype.q[-1] * self.Ptype.area + self.Ntype.q[-1]
+        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
+        self.area_void) ) * 1.e-3 # area averaged heat flux (kW/m^2)
+        self.P_electrical = ( self.Ntype.P_electrical +
+        self.Ptype.P_electrical ) * 1.e-3 # power based on V*I (kW)
+        self.P_heat = ( self.Ntype.P_heat +
+        self.Ptype.P_heat ) * 1.e-3 # power based on heat flux difference (kW)
+        self.h = self.q / (self.T_c - self.T_h) 
+        # effective coeffient of convection (kW/m^2-K)
