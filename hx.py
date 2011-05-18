@@ -4,13 +4,11 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as mpl
-import os
 
 # User Defined Modules
 # In this directory
 import engine
 import tem
-reload(tem)
 from functions import *
 import exhaust
 import coolant
@@ -23,7 +21,7 @@ class _PlateWall():
         self.h = self.k/self.t
 
 
-class HX:
+class HX():
     """class for handling HX system"""
     def __init__(self):
         """Geometry and constants"""
@@ -36,16 +34,16 @@ class HX:
         self.node_length/2, self.node_length)  
         # x coordinate (m)
 
-    # initilization of class instances
-    cool = coolant.Coolant()
-    exh = exhaust.Exhaust()
-    TEM = tem.TEModule()
-    plate = _PlateWall()
-    Cummins = engine.Engine()
+        # initilization of class instances
+        self.cool = coolant.Coolant()
+        self.exh = exhaust.Exhaust()
+        self.TEM = tem.TEModule()
+        self.plate = _PlateWall()
+        self.Cummins = engine.Engine()
 
-    # More exhaust attributes
-    Cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
-    exh.mdot = Cummins.mdot_charge
+    def set_mdot_charge(self):
+        self.Cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
+        self.exh.mdot = self.Cummins.mdot_charge
 
     def solve_node(self):
         """solves for performance of streamwise slice of HX"""
@@ -102,6 +100,7 @@ class HX:
 
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
+        self.set_mdot_charge()
         self.exh.set_flow_geometry(self.width) 
         self.cool.set_flow_geometry(self.width)
         
