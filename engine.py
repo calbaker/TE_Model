@@ -1,5 +1,5 @@
-# Engine class used to determine attributes of engine.  This will be
-# fleshed out with experimental data later. 
+"""Engine class used to determine attributes of engine.  This will be
+fleshed out with experimental data later. """
 
 # Distribution modules
 import scipy as sp
@@ -8,10 +8,10 @@ import scipy as sp
 import properties as prop
 
 
-class Engine:
-    # Operating condintions for Cummins Engine
-    # This module eventually needs to provide charge flow rate, EGR
-    # flow rate, exhaust port temperature, post turbo temperature.  
+class Engine():
+    """Operating condintions for Cummins Engine. This module
+    eventually needs to provide charge flow rate, EGR flow rate,
+    exhaust port temperature, post turbo temperature.""" 
 
     def __init__(self,**kwargs):
         """sets constants, some of which need to be moved to another method"""
