@@ -15,7 +15,7 @@ print "Beginning execution..."
 HX1 = hx.HX()
 HX1.exh.porous = 'no'
 HX1.type = 'parallel'
-HX1.exh.T_inlet = 600.
+HX1.exh.T_inlet = 800.
 HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
 HX1.solve_hx()
@@ -51,7 +51,6 @@ mpl.plot(x, HX1.cool.T_nodes, '-b', label='Coolant')
 
 mpl.xlabel('Distance Along HX (m)')
 mpl.ylabel('Temperature (K)')
-mpl.ylim(290,610)
 mpl.title('Temperature v. Distance, '+HX1.type)
 mpl.grid()
 mpl.legend(loc='best')
