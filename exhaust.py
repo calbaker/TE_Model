@@ -17,7 +17,7 @@ class Exhaust(prop.ideal_gas):
 
         self.T_ref = 300 # default reference temperature (K) for availability calculation
 
-        self.height = 1.25e-2 # default height (m) of exhaust duct
+        self.height = 3.5e-2 # default height (m) of exhaust duct
 
         self.ducts = 1 # default number of exhaust ducts
         self.porosity = 0.92 # default volume of void per total volume
