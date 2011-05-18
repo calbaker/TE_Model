@@ -4,14 +4,14 @@ import matplotlib.pyplot as mpl
 
 # local user modules
 import tem
-reload(tem)
 
-leg = tem.Leg()
-leg.material = 'HMS'
-leg.solve_leg()
+TEM = tem.TEModule()
+TEM.T_h_goal = 600.
+TEM.T_c = 300.
+TEM.solve_tem()
 
 # Plot configuration
-FONTSIZE = 14
+FONTSIZE = 20
 mpl.rcParams['axes.labelsize'] = FONTSIZE
 mpl.rcParams['axes.titlesize'] = FONTSIZE
 mpl.rcParams['legend.fontsize'] = FONTSIZE
@@ -20,23 +20,17 @@ mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 mpl.rcParams['lines.markersize'] = 10
 
-q_c = sp.arange(0.1,10.,0.1) * leg.q_c[0]
-T_h = sp.zeros(sp.size(q_c))
-for i in sp.arange(sp.size(q_c)):
-    leg.q[0] = q_c[i]
-    leg.solve_leg_once()
-    T_h[i] = leg.T[-1]
+x = sp.arange(TEM.Ntype.segments) * TEM.Ntype.segment_length * 1.e6
+# x position (micron)
 
-dTdq = sp.zeros(sp.size(leg.q_c) - 1)    
-
-for j in sp.arange(sp.size(leg.q_c) - 1):
-    dTdq[j] = (leg.T_h[j + 1] - leg.T_h[j]) / (leg.q_c[j + 1] - leg.q_c[j])
-
-fig2 = mpl.figure()
-mpl.title('TE Hot Side Temp v. Cold Side Heat')
-mpl.plot(q_c*1.e-3, T_h)
-mpl.xlabel(r'Cold Side $q^{\prime\prime}$ $\left[\frac{kW}{m^2 K}\right]$')
-mpl.ylabel('Hot Side Temperature (K)')
+fig1 = mpl.figure()
+mpl.plot(x, TEM.Ntype.T, label='N-type leg')
+mpl.plot(x, TEM.Ptype.T, label='P-type leg')
+mpl.title('TEM Temperature Profile')
+mpl.ylabel('Temperature (K)')
+mpl.xlabel(r'Position ($\mu m$)')
 mpl.grid()
+mpl.savefig('Plots/TEM temperature profile.pdf')
+mpl.savefig('Plots/TEM temperature profile.png')
 
 mpl.show()
