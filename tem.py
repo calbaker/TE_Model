@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as mpl
 
 # User defined modules
-# none yet
+# none
 
 
 class Leg():
@@ -15,7 +15,7 @@ class Leg():
         """this method sets everything that is constant and
         initializes some arrays""" 
         self.segments = 100. # number of segments for finite difference model
-        self.length = 3.e-3  # leg length (m)
+        self.length = 1.e-3  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
         self.T_h_goal = 550.
         # hot side temperature (K) that matches HX BC
@@ -138,6 +138,38 @@ class TEModule():
         self.P_electrical = ( self.Ntype.P_electrical +
         self.Ptype.P_electrical ) * 1.e-3 # power based on V*I (kW)
         self.P_heat = ( self.Ntype.P_heat +
-        self.Ptype.P_heat ) * 1.e-3 # power based on heat flux difference (kW)
+        self.Ptype.P_heat ) * 1.e-3
+        # power based on heat flux difference (kW)
+        self.eta = -self.P_heat / (self.q * self.area)
         self.h = self.q / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
+
+
+class TECarnot():
+    """Class for TE device with performance calculated using carnot
+    efficiency evaluated over the entire leg"""
+    def __init__(self):
+        """Sets a bunch of constants and whatnot"""
+        self.k = 4.
+        # thermal conductivity (W/m-K) 
+        self.alpha = 150.e-6
+        # Seebeck coefficient (V/K)
+        self.sigma = 1000.
+        # electrical conductivity (1/Ohm-cm)
+        self.rho = 1./self.sigma / 100.
+        # electrical resistivity (Ohm-m)
+        self.length = 1.e-3  # leg length (m)
+        self.area = (3.e-3)**2. # leg area (m^2) 
+        self.area_void = (3.e-3)**2. # void area (m^2)
+        self.T_h_goal = 500. # dummy variable
+        self.T_c = 350. # cold side temperature (K)
+
+    def set_h(self):
+        """Sets TE effective heat transfer coefficient"""
+        self.h = self.k * 
+
+    def solve_tem(self):
+        """Solves for performance metrics of TE device"""
+        self.set_h()
+        self.ZT = self.sigma * self.alpha**2. / self.k
+        self.
