@@ -15,8 +15,6 @@ from functions import *
 import exhaust
 import coolant
 
-# definitions of classes for mediums in which heat transfer can occur
-
 class _PlateWall():
     """class for modeling metal walls of heat exchanger"""
     k = 0.2 # thermal conductivity (kW/m-K) of Aluminum HX plate
@@ -110,12 +108,10 @@ class HX:
         self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
                                         # through which heat flux
                                         # occurs in each node
-        self.exh.T_in = self.exh.T_inlet # T_in and T_out correspond to the
-                                   # temperatures going into and out
-                                   # of the node.  The suffix "let"
-                                   # means the temperature is
-                                   # referring to the HX inlet or
-                                   # outlet.   
+        self.exh.T_in = self.exh.T_inlet
+        # T_in and T_out correspond to the temperatures going into and
+        # out of the node.  The suffix "let" means the temperature is
+        # referring to the HX inlet or outlet.    
         if self.type == 'parallel':
             self.cool.T_in = self.cool.T_inlet
         elif self.type == 'counter':
@@ -166,10 +162,8 @@ class HX:
                                         # temperature (K) of TEM at
                                         # each node
             self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
-            self.TEM.T_c_nodes[i] = self.TEM.T_c # hot side temperature (K) of
-                                       # TEM at each node.  Use
-                                       # negative index because this
-                                       # is counterflow.    
+            self.TEM.T_c_nodes[i] = self.TEM.T_c
+            # cold side temperature (K) of TEM at each node.  
             self.U_nodes[i] = self.U
             self.TEM.power_nodes[i] = self.TEM.P_heat * self.leg_pairs
             self.TEM.eta_nodes[i] = self.TEM.eta
