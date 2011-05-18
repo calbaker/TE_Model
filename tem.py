@@ -166,10 +166,12 @@ class TECarnot():
 
     def set_h(self):
         """Sets TE effective heat transfer coefficient"""
-        self.h = self.k * 
+        self.h = ( self.k * (self.area / (self.area_void + self.area)) 
+        / self.length )
+        # effective heat transfer coefficient (W/m^2-K)
 
     def solve_tem(self):
         """Solves for performance metrics of TE device"""
         self.set_h()
         self.ZT = self.sigma * self.alpha**2. / self.k
-        self.
+        self.eta = 3530453.
