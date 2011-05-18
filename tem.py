@@ -163,15 +163,26 @@ class TECarnot():
         self.area_void = (3.e-3)**2. # void area (m^2)
         self.T_h_goal = 500. # dummy variable
         self.T_c = 350. # cold side temperature (K)
+        self.ZT = 1. # arbitrary ZT guess
 
     def set_h(self):
         """Sets TE effective heat transfer coefficient"""
         self.h = ( self.k * (self.area / (self.area_void + self.area)) 
-        / self.length )
-        # effective heat transfer coefficient (W/m^2-K)
+        / self.length * 1.e-3)
+        # effective heat transfer coefficient (kW/m^2-K)
+
+    def set_ZT(self):
+        """Sets ZT based on formula"""
+        self.ZT = self.sigma * self.alpha**2. / self.k
 
     def solve_tem(self):
         """Solves for performance metrics of TE device"""
         self.set_h()
-        self.ZT = self.sigma * self.alpha**2. / self.k
-        self.eta = 3530453.
+        self.T_h = self.T_h_goal
+        self.eta = ( (self.T_h - self.T_c) * (sp.sqrt(1. + self.ZT) -
+        1.) / (self.T_h * (sp.sqrt(1. + self.ZT) + self.T_c / self.T_h)) )
+        # Carnot efficiency in segment
+        self.q = self.h * (self.T_h - self.T_c)
+        self.area_total = self.area + self.area_void
+        self.P_heat = self.eta * self.q * self.area_total
+        # TE power for leg pair (kW)
