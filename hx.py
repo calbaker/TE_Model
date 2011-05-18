@@ -20,7 +20,7 @@ import coolant
 class _PlateWall():
     """class for modeling metal walls of heat exchanger"""
     k = 0.2 # thermal conductivity (kW/m-K) of Aluminum HX plate
-    t = 0.01 # thickness (m) of HX plate
+    t = 0.005 # thickness (m) of HX plate
     def set_h(self):
         self.h = self.k/self.t
 
@@ -75,9 +75,7 @@ class HX:
         else:
             self.C_min = self.cool.C
             self.C_max = self.exh.C
-            
-        self.R_C = self.C_min / self.C_max
-
+        self.R_C = self.C_min / self.C_max 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.TEM.R_thermal +
         self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
             # coefficient (kW/m^2-K)
@@ -141,6 +139,7 @@ class HX:
         self.TEM.T_h_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
         self.TEM.power_nodes = ZEROS.copy()
+        self.TEM.eta_nodes = ZEROS.copy()
         
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
@@ -173,6 +172,7 @@ class HX:
                                        # is counterflow.    
             self.U_nodes[i] = self.U
             self.TEM.power_nodes[i] = self.TEM.P_heat * self.leg_pairs
+            self.TEM.eta_nodes[i] = self.TEM.eta
 
             # redefining outlet temperature (K) for next node
             self.exh.T_in = self.exh.T_out
