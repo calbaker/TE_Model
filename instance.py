@@ -4,17 +4,21 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as mpl
+import os
+
+os.chdir('/home/chad/Documents/UT Stuff/Research/Diesel TE/Model')
 
 # User Defined Modules
 # In this directory
 import hx
-reload(hx)
+import tem
 
 print "Beginning execution..."
 
 HX1 = hx.HX()
 HX1.exh.porous = 'no'
 HX1.type = 'parallel'
+#HX1.TEM = tem.TECarnot()
 HX1.exh.T_inlet = 800.
 HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
