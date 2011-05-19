@@ -17,11 +17,11 @@ print "Beginning execution..."
 
 HX1 = hx.HX()
 HX1.type = 'parallel'
-HX1.TEM = tem.TECarnot()
+HX1.tem = tem.TECarnot()
 HX1.exh.T_inlet = 800.
 HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
-HX1.TEM.set_ZT()
+#HX1.tem.set_ZT()
 HX1.solve_hx()
 
 # HX2 = hx.HX()
@@ -35,9 +35,6 @@ HX1.solve_hx()
 print "\nProgram finished."
 print "\nPlotting..."
 
-x = sp.arange(HX1.nodes) * HX1.node_length * 100
-
-
 # Plot configuration
 FONTSIZE = 14
 mpl.rcParams['axes.labelsize'] = FONTSIZE
@@ -48,10 +45,10 @@ mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 
 mpl.figure()
-mpl.plot(x, HX1.exh.T_nodes, '-r', label='Exhaust')
-mpl.plot(x, HX1.TEM.T_h_nodes, '-g', label='TEM Hot Side')
-mpl.plot(x, HX1.TEM.T_c_nodes, '-k', label='TEM Cold Side')
-mpl.plot(x, HX1.cool.T_nodes, '-b', label='Coolant')
+mpl.plot(HX1.x_dim, HX1.exh.T_nodes, '-r', label='Exhaust')
+mpl.plot(HX1.x_dim, HX1.tem.T_h_nodes, '-g', label='TEM Hot Side')
+mpl.plot(HX1.x_dim, HX1.tem.T_c_nodes, '-k', label='TEM Cold Side')
+mpl.plot(HX1.x_dim, HX1.cool.T_nodes, '-b', label='Coolant')
 
 mpl.xlabel('Distance Along HX (m)')
 mpl.ylabel('Temperature (K)')
