@@ -9,7 +9,6 @@ import matplotlib.pyplot as mpl
 # In this directory
 import engine
 import tem
-from functions import *
 import exhaust
 import coolant
 
