@@ -2,7 +2,7 @@
 import properties as prop
 
 # In this directory
-from functions import *
+import functions
 
 
 class Exhaust(prop.ideal_gas):
@@ -27,8 +27,8 @@ class Exhaust(prop.ideal_gas):
         self.K = 2.e-7 # default permeability (m^2) of porous metal foam, used in
             # Bejan model   
 
-    set_flow_geometry = set_flow_geometry
-    set_Re_dependents = set_Re_dependents
+    set_flow_geometry = functions.set_flow_geometry
+    set_Re_dependents = functions.set_Re_dependents
 
     def set_flow(self,length):
         """calculates flow parameters"""        
@@ -44,7 +44,7 @@ class Exhaust(prop.ideal_gas):
         self.Vdot = self.mdot / self.rho # volume flow rate (m^3/s) of exhaust
         self.velocity = self.Vdot / self.area # velocity (m/s) of exhaust
 
-        if self.porous == 'Bejan':
+        if self.enhancement == 'Bejan porous':
             self.Nu_D = 6. # Nu for porous media parallel plates with const
                 # heat flux.  Bejan Eq. 12.77 
             self.Re_K = self.velocity * self.K**0.5 / self.nu # Re
@@ -58,7 +58,7 @@ class Exhaust(prop.ideal_gas):
             self.deltaP = (self.f * self.perimeter * length /
              self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
 
-        elif self.porous == 'Mancin':
+        elif self.enhancement == 'Mancin porous':
             self.k = self.k_matrix
             self.Nu_D = 6. # Nu for porous media parallel plates with
                 # q''= const.  Bejan Eq. 12.77
@@ -75,13 +75,13 @@ class Exhaust(prop.ideal_gas):
             self.deltaP = (length * 2. * self.F * self.G**2 /
             (self.D_pore * self.rho)) # pressure drop from Mancin et al.
 
-        elif self.enhancement == 'none':
+        elif self.enhancement == 'corrugated':
             self.k = self.k_air
             self.set_Re_dependents()
             self.deltaP = (self.f * self.perimeter * length /
              self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
 
-        elif self.enhancement == 'corrugated':
+        else:
             self.k = self.k_air
             self.set_Re_dependents()
             self.deltaP = (self.f * self.perimeter * length /
