@@ -21,6 +21,7 @@ HX1.TEM = tem.TECarnot()
 HX1.exh.T_inlet = 800.
 HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
+HX1.TEM.set_ZT()
 HX1.solve_hx()
 
 # HX2 = hx.HX()
