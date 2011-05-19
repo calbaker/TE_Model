@@ -8,7 +8,8 @@ import matplotlib.pyplot as mpl
 # none
 
 def set_ZT(self):
-    """Sets ZT based on formula"""
+    """Sets ZT based on formula
+    self.ZT = self.sigma * self.alpha**2. / self.k""" 
     self.ZT = self.sigma * self.alpha**2. / self.k
 
 
