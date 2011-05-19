@@ -1,7 +1,8 @@
 # In python directory
 import properties as prop
 
-from functions import *
+# In local directory
+import functions
 
 
 class Coolant(prop.flow):
@@ -22,8 +23,8 @@ class Coolant(prop.flow):
         self.rho = 1000. # density (kg/m**3) of water
         self.k = 0.646e-3 # thermal conductivity of water at 325K (kW/m*K)
 
-    set_flow_geometry = set_flow_geometry
-    set_Re_dependents = set_Re_dependents
+    set_flow_geometry = functions.set_flow_geometry
+    set_Re_dependents = functions.set_Re_dependents
 
     def set_flow(self,length):
         """calculates flow parameters"""
