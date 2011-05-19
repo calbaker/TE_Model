@@ -17,26 +17,30 @@ print "Beginning execution..."
 
 HX1 = hx.HX()
 HX1.type = 'parallel'
-HX1.TEM = tem.TECarnot()
-HX1.exh.T_inlet = 800.
+HX1.tem = tem.TECarnot()
+HX1.exh.T_inlet = 700.
 HX1.exh.P = 100.
 HX1.cool.T_inlet = 300.
-#HX1.TEM.set_ZT()
-HX1.solve_hx()
+#HX1.tem.set_ZT()
 
-# HX2 = hx.HX()
-# HX2.exh.porous = 'no'
-# HX2.type = 'counter'
-# HX2.exh.T_inlet = 600.
-# HX2.exh.P = 100.
-# HX2.cool.T_outlet = 306.
-# HX2.solve_hx()
+HX1.exh.height_array = sp.arange(1., 5., 0.05) * 1.e-2
+# array for varied exhaust duct height (m)
+array_size = sp.size(HX1.exh.height_array)
+HX1.power_net_array = sp.zeros(array_size)
+HX1.Wdot_pumping_array = sp.zeros(array_size)
+HX1.Qdot_array = sp.zeros(array_size)
+HX1.tem.power_array = sp.zeros(array_size)
+
+for i in sp.arange(sp.size(HX1.exh.height_array)):
+    HX1.exh.height = HX1.exh.height_array[i]
+    HX1.solve_hx()
+    HX1.power_net_array[i] = HX1.power_net
+    HX1.Wdot_pumping_array[i] = HX1.Wdot_pumping
+    HX1.Qdot_array[i] = HX1.Qdot
+    HX1.tem.power_array[i] = HX1.tem.power
 
 print "\nProgram finished."
 print "\nPlotting..."
-
-x = sp.arange(HX1.nodes) * HX1.node_length * 100
-
 
 # Plot configuration
 FONTSIZE = 14
@@ -48,45 +52,20 @@ mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 
 mpl.figure()
-mpl.plot(x, HX1.exh.T_nodes, '-r', label='Exhaust')
-mpl.plot(x, HX1.TEM.T_h_nodes, '-g', label='TEM Hot Side')
-mpl.plot(x, HX1.TEM.T_c_nodes, '-k', label='TEM Cold Side')
-mpl.plot(x, HX1.cool.T_nodes, '-b', label='Coolant')
-
-mpl.xlabel('Distance Along HX (m)')
-mpl.ylabel('Temperature (K)')
-mpl.title('Temperature v. Distance, '+HX1.type)
+mpl.plot(HX1.exh.height_array * 100., HX1.power_net_array,
+         label='Net')  
+mpl.plot(HX1.exh.height_array * 100., HX1.Wdot_pumping_array,
+         label='Pumping')
+mpl.plot(HX1.exh.height_array * 100., HX1.tem.power_array,
+         label='TEM')
+mpl.plot(HX1.exh.height_array * 100., HX1.Qdot_array,
+         label=r'$\dot{Q}$') 
 mpl.grid()
-mpl.legend(loc='best')
-mpl.savefig('Plots/temp '+HX1.type+'.png')
-mpl.savefig('Plots/temp '+HX1.type+'.pdf')
-
-# calculates T using resistance network as a check.  
-# mpl.figure()
-# mpl.plot(x, HX1.cool.T_nodes,
-#          label='Coolant')
-# mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
-#          HX1.plate.h**-1)**-1 * HX1.A), label='TEM Cold Side') 
-# mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
-#          HX1.plate.h**-1 + HX1.TEM.h**-1)**-1 * HX1.A), label='TEM' +
-#          ' Hot Side') 
-# mpl.plot(x, HX1.cool.T_nodes + HX1.Qdot_nodes / ((HX1.cool.h**-1 +
-#          HX1.plate.h**-1 + HX1.TEM.h**-1 + HX1.plate.h**-1 +
-#          HX1.exh.h**-1)**-1 * HX1.A), label='Exhaust') 
-
-# mpl.xlabel('Distance Along HX (m)')
-# mpl.ylabel('Temperature (K)')
-# mpl.title('Temperature v. Distance Along HX')
-# mpl.grid()
-# mpl.legend()
-# mpl.savefig('Plots/convection temp.png')
-# mpl.savefig('Plots/convection temp.pdf')
+mpl.xlabel('Exhaust Duct Height (cm)')
+mpl.ylabel('Power (kW)')
+mpl.title('Power v. Exhaust Duct Height')
+mpl.legend()
+mpl.savefig('Plots/power v height.pdf')
+mpl.savefig('Plots/power v height.png')
 
 mpl.show()
-
-DUDh_exh = HX1.exh.h**-2 * HX1.U**-2 # derivative of overall heat
-                                     # transfer w.r.t. exhaust heat
-                                     # transfer coefficient  
-DUDh_plate = HX1.plate.h**-2 * HX1.U**-2 # derivative of overall heat
-                                     # transfer w.r.t. plate heat
-                                     # transfer coefficient 
