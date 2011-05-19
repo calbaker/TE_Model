@@ -36,7 +36,7 @@ class HX():
         # initilization of class instances
         self.cool = coolant.Coolant()
         self.exh = exhaust.Exhaust()
-        self.TEM = tem.TEModule()
+        self.tem = tem.TEModule()
         self.plate = _PlateWall()
         self.Cummins = engine.Engine()
 
@@ -55,14 +55,14 @@ class HX():
         # Wall stuff
         self.plate.set_h()
         # TE stuff
-        self.TEM.solve_tem()
+        self.tem.solve_tem()
 
         self.exh.R_thermal = 1 / self.exh.h
         self.plate.R_thermal = 1 / self.plate.h
-        self.TEM.R_thermal = 1 / self.TEM.h
+        self.tem.R_thermal = 1 / self.tem.h
         self.cool.R_thermal = 1 / self.cool.h
 
-        self.leg_pairs = int(self.area / self.TEM.area) # Number of TEM leg pairs per node
+        self.leg_pairs = int(self.area / self.tem.area) # Number of TEM leg pairs per node
         # Heat exchanger stuff
         if self.exh.C < self.cool.C:
             self.C_min = self.exh.C
@@ -71,7 +71,7 @@ class HX():
             self.C_min = self.cool.C
             self.C_max = self.exh.C
         self.R_C = self.C_min / self.C_max 
-        self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.TEM.R_thermal +
+        self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.tem.R_thermal +
         self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
             # coefficient (kW/m^2-K)
         self.NTU = self.U * self.area / self.C_min # number
@@ -128,25 +128,25 @@ class HX():
                                      # temperature (K) in each node 
         self.cool.h_nodes = ZEROS.copy() 
         self.U_nodes = ZEROS.copy() 
-        self.TEM.T_c_nodes = ZEROS.copy() # initializing array for storing
+        self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-        self.TEM.T_h_nodes = ZEROS.copy() # initializing array for storing
+        self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-        self.TEM.power_nodes = ZEROS.copy()
-        self.TEM.eta_nodes = ZEROS.copy()
+        self.tem.power_nodes = ZEROS.copy()
+        self.tem.eta_nodes = ZEROS.copy()
         
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
             print "\nSolving node", i
-            self.TEM.T_c = self.cool.T_in # guess at cold side TEM temperature (K)
-            self.TEM.T_h_goal = self.exh.T_in # guess at hot side TEM temperature (K)
+            self.tem.T_c = self.cool.T_in # guess at cold side tem temperature (K)
+            self.tem.T_h_goal = self.exh.T_in # guess at hot side TEM temperature (K)
 
             for j in range(3):
                 self.solve_node()
-                self.TEM.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
+                self.tem.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
                 self.plate.h**-1)**-1 * self.area) )
                 # redefining TEM hot side temperature (K) based on known heat flux 
-                self.TEM.T_c = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
+                self.tem.T_c = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
                 (self.cool.h * self.area)) + self.cool.T)
                 # redefining TEM cold side temperature (K) based on known heat flux
    
@@ -156,15 +156,15 @@ class HX():
             self.exh.T_nodes[i] = (self.exh.T_in + self.exh.T_out)/2.
             self.exh.h_nodes[i] = self.exh.h
             self.cool.h_nodes[i] = self.cool.h
-            self.TEM.T_h_nodes[i] = self.TEM.T_h # hot side
+            self.tem.T_h_nodes[i] = self.tem.T_h # hot side
                                         # temperature (K) of TEM at
                                         # each node
             self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
-            self.TEM.T_c_nodes[i] = self.TEM.T_c
+            self.tem.T_c_nodes[i] = self.tem.T_c
             # cold side temperature (K) of TEM at each node.  
             self.U_nodes[i] = self.U
-            self.TEM.power_nodes[i] = self.TEM.P_heat * self.leg_pairs
-            self.TEM.eta_nodes[i] = self.TEM.eta
+            self.tem.power_nodes[i] = self.tem.P_heat * self.leg_pairs
+            self.tem.eta_nodes[i] = self.tem.eta
 
             # redefining outlet temperature (K) for next node
             self.exh.T_in = self.exh.T_out
@@ -183,11 +183,11 @@ class HX():
         self.Qdot = sp.sum(self.Qdot_nodes)
         self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
         self.effectiveness = self.Qdot / self.available # global HX effectiveness                                        
-        self.TEM.power = sp.sum(self.TEM.power_nodes)
+        self.tem.power = sp.sum(self.tem.power_nodes)
         # total TE power output (kW)
         self.Wdot_pumping = self.exh.Wdot_pumping + self.cool.Wdot_pumping
         # total pumping power requirement (kW) 
-        self.power_net = self.TEM.power - self.Wdot_pumping 
+        self.power_net = self.tem.power - self.Wdot_pumping 
         self.eta_1st = self.power_net / self.Qdot
         self.eta_2nd = self.power_net / self.available
 
