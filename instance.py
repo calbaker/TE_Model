@@ -16,7 +16,6 @@ import tem
 print "Beginning execution..."
 
 HX1 = hx.HX()
-HX1.exh.porous = 'no'
 HX1.type = 'parallel'
 HX1.TEM = tem.TECarnot()
 HX1.exh.T_inlet = 800.
