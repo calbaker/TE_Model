@@ -7,6 +7,10 @@ import matplotlib.pyplot as mpl
 # User defined modules
 # none
 
+def set_ZT(self):
+    """Sets ZT based on formula"""
+    self.ZT = self.sigma * self.alpha**2. / self.k
+
 
 class Leg():
     """class for individual p-type or n-type TE leg"""
@@ -165,15 +169,13 @@ class TECarnot():
         self.T_c = 350. # cold side temperature (K)
         self.ZT = 1. # arbitrary ZT guess
 
+    set_ZT = set_ZT
+
     def set_h(self):
         """Sets TE effective heat transfer coefficient"""
         self.h = ( self.k * (self.area / (self.area_void + self.area)) 
         / self.length * 1.e-3)
         # effective heat transfer coefficient (kW/m^2-K)
-
-    def set_ZT(self):
-        """Sets ZT based on formula"""
-        self.ZT = self.sigma * self.alpha**2. / self.k
 
     def solve_tem(self):
         """Solves for performance metrics of TE device"""
