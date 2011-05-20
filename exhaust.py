@@ -36,7 +36,7 @@ class Exhaust(prop.ideal_gas):
         # Temperature (K) used to calculate fluid
             # properties.  This is no good if T_out is much
             # different from T_in
-        self.set_TempPres_dependents()
+        self.set_alpha()
         self.c_p = self.c_p_air
 
         self.C = self.mdot * self.c_p # heat capacity of
