@@ -12,6 +12,7 @@ import tem
 import exhaust
 import coolant
 
+
 class _PlateWall():
     """class for modeling metal walls of heat exchanger"""
     k = 0.2 # thermal conductivity (kW/m-K) of Aluminum HX plate
@@ -22,9 +23,10 @@ class _PlateWall():
 
 class HX():
     """class for handling HX system"""
+
     def __init__(self):
         """Geometry and constants"""
-        self.width = 15e-2 # width (cm*10**-2) of HX duct. This model treats
+        self.width = 15.e-2 # width (cm*10**-2) of HX duct. This model treats
             # duct as parallel plates for simpler modeling.
         self.length = 1. # length (m) of HX duct
         self.nodes = 50 # number of nodes for numerical heat transfer model
@@ -38,11 +40,11 @@ class HX():
         self.exh = exhaust.Exhaust()
         self.tem = tem.TEModule()
         self.plate = _PlateWall()
-        self.Cummins = engine.Engine()
+        self.cummins = engine.Engine()
 
     def set_mdot_charge(self):
-        self.Cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
-        self.exh.mdot = self.Cummins.mdot_charge
+        self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
+        self.exh.mdot = self.cummins.mdot_charge
 
     def solve_node(self):
         """solves for performance of streamwise slice of HX"""
@@ -50,6 +52,7 @@ class HX():
 
         # Exhaust stuff
         self.exh.set_flow(self.length)
+#        self.exh.h = self.exh.h * 10.
         # Coolant stuff
         self.cool.set_flow(self.length)
         # Wall stuff
@@ -138,10 +141,14 @@ class HX():
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
             print "\nSolving node", i
-            self.tem.T_c = self.cool.T_in # guess at cold side tem temperature (K)
+            # These following if statments might be a bad workaround.  
+            if self.type == 'parallel':
+                self.tem.T_c = self.cool.T_in # guess at cold side tem temperature (K)
+            elif self.type == 'counter':
+                self.tem.T_c = self.cool.T_out # guess at cold side tem temperature (K)
             self.tem.T_h_goal = self.exh.T_in # guess at hot side TEM temperature (K)
 
-            for j in range(3):
+            for j in range(3): # check if 3 is sufficient for good convergence
                 self.solve_node()
                 self.tem.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
                 self.plate.h**-1)**-1 * self.area) )
