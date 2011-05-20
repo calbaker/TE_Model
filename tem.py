@@ -45,7 +45,7 @@ class Leg():
             self.rho = 1./self.sigma / 100.
             # electrical resistivity (Ohm-m)
             
-        if self.material == "MgS":
+        if self.material == "MgSi":
             # These properties came from Gao et al.  
             self.k = 3. 
             # thermal conductivity (W/m-K) 
@@ -116,7 +116,7 @@ class TEModule():
         self.I = 0.35 # electrical current (Amps)
         self.Ptype = Leg() # p-type instance of leg
         self.Ntype = Leg() # n-type instance of leg
-        self.Ptype.material = 'MgS'
+        self.Ptype.material = 'MgSi'
         self.Ntype.material = 'HMS'
         self.area_void = (1.e-3)**2 # void area (m^2)
 
@@ -173,7 +173,8 @@ class TECarnot():
     set_ZT = set_ZT
 
     def set_h(self):
-        """Sets TE effective heat transfer coefficient"""
+        """Sets TE effective heat transfer coefficient based on pure
+        conduction""" 
         self.h = ( self.k * (self.area / (self.area_void + self.area)) 
         / self.length * 1.e-3)
         # effective heat transfer coefficient (kW/m^2-K)
