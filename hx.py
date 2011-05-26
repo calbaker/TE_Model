@@ -37,7 +37,9 @@ class HX():
 
         # initilization of class instances
         self.cool = coolant.Coolant()
+        self.cool.width = self.width
         self.exh = exhaust.Exhaust()
+        self.exh.width = self.width
         self.tem = tem.TEModule()
         self.plate = _PlateWall()
         self.cummins = engine.Engine()
@@ -103,8 +105,8 @@ class HX():
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
         self.set_mdot_charge()
-        self.exh.set_flow_geometry(self.width) 
-        self.cool.set_flow_geometry(self.width)
+        self.exh.set_flow_geometry(self.exh.width) 
+        self.cool.set_flow_geometry(self.cool.width)
         
         self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
                                         # through which heat flux
