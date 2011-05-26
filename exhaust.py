@@ -128,8 +128,8 @@ class Exhaust(prop.ideal_gas):
             self.Nu_D = ( self.Nu_D * (self.fins * 2. * self.height *
         length / (self.width * length)) )
             # effective Nusselt number caused by fins
-            self.deltaP = (self.f * self.perimeter * length /
-        self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
+            self.deltaP = (self.f * self.fin_perimeter * length /
+        self.fin_area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
 
         else:
             self.k = self.k_air
