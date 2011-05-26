@@ -17,11 +17,10 @@ print "Beginning execution..."
 
 hx_parallel = hx.HX()
 hx_parallel.type = 'parallel'
-hx_parallel.tem = tem.TEModule()
 hx_parallel.exh.T_inlet = 800.
 hx_parallel.exh.P = 100.
 hx_parallel.cool.T_inlet = 300.
-#hx_parallel.tem.set_ZT()
+hx_parallel.tem = tem.TECarnot()
 hx_parallel.solve_hx()
 
 hx_counter = hx.HX()
@@ -30,6 +29,7 @@ hx_counter.type = 'counter'
 hx_counter.exh.T_inlet = 600.
 hx_counter.exh.P = 100.
 hx_counter.cool.T_outlet = 306.
+hx_counter.tem = tem = tem.TECarnot()
 hx_counter.solve_hx()
 
 print "\nProgram finished."
