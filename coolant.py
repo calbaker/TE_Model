@@ -26,7 +26,7 @@ class Coolant(prop.flow):
     set_flow_geometry = functions.set_flow_geometry
     set_Re_dependents = functions.set_Re_dependents
 
-    def set_flow(self,length):
+    def set_flow(self):
         """calculates flow parameters"""
         # If T_out is not defined, set it equal to T_in since it really
         # doesn't matter for calculations. Also, vice versa.
@@ -53,6 +53,6 @@ class Coolant(prop.flow):
         self.nu = self.mu/self.rho
         self.set_Re_dependents()
         self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
-        self.deltaP =  ( self.f * self.perimeter * length / self.area *
+        self.deltaP =  ( self.f * self.perimeter * self.length / self.area *
         (0.5*self.rho * self.velocity**2)*1.e-3 ) # pressure drop (kPa) 
         self.Wdot_pumping = self.Vdot * self.deltaP # pumping power (kW)
