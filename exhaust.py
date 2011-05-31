@@ -113,12 +113,14 @@ class Exhaust(prop.ideal_gas):
             # array of square ducts
             self.fin = _Fin()
             self.fin.height = self.height
-            self.fin_perimeter = ( 2. * (self.width / (self.fins + 1.) +
-        self.height) ) # perimeter of new duct formed by fins
-            self.fin_area = ( self.width / (self.fins + 1.) *
+            self.fin_perimeter = ( 2. * ((self.width - self.fins *
+        self.fin.thickness) / (self.fins + 1.) + self.height) )
+            # perimeter of new duct formed by fins with constant
+            # overal duct width 
+            self.flow_area = ( self.width / (self.fins + 1.) *
         self.height )
             # flow area (m^2) of new duct formed by fin    
-            self.D = 4. * self.fin_area / self.fin_perimeter
+            self.D = 4. * self.flow_area / self.fin_perimeter
             self.k = self.k_air
             self.set_Re_dependents()
             self.h = self.Nu_D * self.k / self.D
@@ -129,7 +131,7 @@ class Exhaust(prop.ideal_gas):
         length / (self.width * length)) )
             # effective Nusselt number caused by fins
             self.deltaP = (self.f * self.fin_perimeter * length /
-        self.fin_area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
+        self.flow_area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
 
         else:
             self.k = self.k_air
