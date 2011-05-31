@@ -114,11 +114,10 @@ class Exhaust(prop.ideal_gas):
             self.fin = _Fin()
             self.fin.height = self.height
             self.fin_perimeter = ( 2. * ((self.width - self.fins *
-        self.fin.thickness) / (self.fins + 1.) + self.height) )
-            # perimeter of new duct formed by fins with constant
-            # overal duct width 
-            self.flow_area = ( self.width / (self.fins + 1.) *
-        self.height )
+        self.fin.thickness) / (self.fins + 1.) + self.height) ) 
+            # perimeter of new duct formed by fins with constant overal duct width
+            self.flow_area = ( (self.width - self.fins *
+        self.fin.thickness) / (self.fins + 1.) * self.height ) 
             # flow area (m^2) of new duct formed by fin    
             self.D = 4. * self.flow_area / self.fin_perimeter
             self.k = self.k_air
