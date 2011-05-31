@@ -38,8 +38,10 @@ class HX():
         # initilization of class instances
         self.cool = coolant.Coolant()
         self.cool.width = self.width
+        self.cool.length = self.length
         self.exh = exhaust.Exhaust()
         self.exh.width = self.width
+        self.exh.length = self.length
         self.tem = tem.TEModule()
         self.plate = _PlateWall()
         self.cummins = engine.Engine()
@@ -53,10 +55,12 @@ class HX():
         self.exh.T_out = self.exh.T_in - 5 # Guess at exhaust node out temperature (K)
 
         # Exhaust stuff
-        self.exh.set_flow(self.length)
-#        self.exh.h = self.exh.h * 10.
+        self.exh.set_flow()
+        # self.exh.h = self.exh.h * 10.
+        if self.exh.enhancement == 'straight fins':
+            self.exh.fin.h = self.exh.h
         # Coolant stuff
-        self.cool.set_flow(self.length)
+        self.cool.set_flow()
         # Wall stuff
         self.plate.set_h()
         # TE stuff
@@ -100,7 +104,8 @@ class HX():
 
 #################### independent of HX configuration  
         self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
-            # temperature (K) at exhaust outlet   
+            # temperature (K) at exhaust outlet
+        self.exh.T = (self.exh.T_in + self.exh.T_out) / 2. 
 
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
@@ -143,12 +148,14 @@ class HX():
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
             print "\nSolving node", i
-            # These following if statments might be a bad workaround.  
             if self.type == 'parallel':
-                self.tem.T_c = self.cool.T_in # guess at cold side tem temperature (K)
+                self.tem.T_c = self.cool.T_in
+                # guess at cold side tem temperature (K)
             elif self.type == 'counter':
-                self.tem.T_c = self.cool.T_out # guess at cold side tem temperature (K)
-            self.tem.T_h_goal = self.exh.T_in # guess at hot side TEM temperature (K)
+                self.tem.T_c = self.cool.T_out
+                # guess at cold side tem temperature (K)
+            self.tem.T_h_goal = self.exh.T_in
+            # guess at hot side TEM temperature (K)
 
             for j in range(3): # check if 3 is sufficient for good convergence
                 self.solve_node()
@@ -157,12 +164,14 @@ class HX():
                 # redefining TEM hot side temperature (K) based on known heat flux 
                 self.tem.T_c = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
                 (self.cool.h * self.area)) + self.cool.T)
-                # redefining TEM cold side temperature (K) based on known heat flux
+                # redefining TEM cold side temperature (K) based on
+                # known heat flux
+                
    
             self.Qdot_nodes[i] = self.Qdot # storing node heat transfer in array
             self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
 
-            self.exh.T_nodes[i] = (self.exh.T_in + self.exh.T_out)/2.
+            self.exh.T_nodes[i] = self.exh.T
             self.exh.h_nodes[i] = self.exh.h
             self.cool.h_nodes[i] = self.cool.h
             self.tem.T_h_nodes[i] = self.tem.T_h # hot side
