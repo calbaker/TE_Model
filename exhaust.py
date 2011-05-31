@@ -17,7 +17,7 @@ class _Fin():
     def __init__(self):
         """Sets constants and things that need to be guessed to
         execute as a standalone model."""
-        self.thickness = 25.e-3 # fin thickness (m)
+        self.thickness = 1.e-3 # fin thickness (m)
         self.height = 1.75e-2
         # height (m) of fin for adiabatic to occur at symmetry line of
         # duct
@@ -29,7 +29,14 @@ class _Fin():
     def set_eta(self):
         """Determines fin efficiency"""
         self.m = np.sqrt(2. * self.h / (self.k * self.thickness))
-        self.eta = np.tanh(self.m * self.height) / (self.m * self.height) 
+        self.eta = ( np.tanh(self.m * self.height) / (self.m *
+        self.height) )
+
+    def set_h(self):
+        """Determines effective heat transfer coefficient of fin."""
+        self.set_eta()
+        self.h_effective = ( self.eta * self.h * 2. * self.length *
+        self.height )
 
 
 class Exhaust(prop.ideal_gas):
@@ -57,7 +64,7 @@ class Exhaust(prop.ideal_gas):
     set_flow_geometry = functions.set_flow_geometry
     set_Re_dependents = functions.set_Re_dependents
 
-    def set_flow(self,length):
+    def set_flow(self):
         """calculates flow parameters"""        
         self.T = 0.5 * (self.T_in + self.T_out)
         # Temperature (K) used to calculate fluid
@@ -82,8 +89,9 @@ class Exhaust(prop.ideal_gas):
                 # that f is pretty close to
                 # 0.55
             self.k = self.k_matrix
-            self.deltaP = (self.f * self.perimeter * length /
+            self.deltaP = (self.f * self.perimeter * self.length /
              self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
+            self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
 
         elif self.enhancement == 'Mancin porous':
             self.k = self.k_matrix
@@ -99,45 +107,41 @@ class Exhaust(prop.ideal_gas):
             # Re of porous media from Mancin et al.
             self.F = ( (1.765 * self.Re_K**(-0.1014) * self.porosity**2 /
             self.PPI**(0.6)) ) # friction factorb from Mancin et al. 
-            self.deltaP = (length * 2. * self.F * self.G**2 /
+            self.deltaP = (self.length * 2. * self.F * self.G**2 /
             (self.D_pore * self.rho)) # pressure drop from Mancin et al.
-
-        elif self.enhancement == 'corrugated':
-            self.k = self.k_air
-            self.set_Re_dependents()
-            self.deltaP = (self.f * self.perimeter * length /
-             self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
+            self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
 
         elif self.enhancement == 'straight fins':
             # The fins will be spaced in such a way as to make an
             # array of square ducts
             self.fin = _Fin()
             self.fin.height = self.height
-            self.fin_perimeter = ( 2. * ((self.width - self.fins *
+            self.fin.length = self.length
+            self.flow_perimeter = ( 2. * ((self.width - self.fins *
         self.fin.thickness) / (self.fins + 1.) + self.height) ) 
             # perimeter of new duct formed by fins with constant overal duct width
             self.flow_area = ( (self.width - self.fins *
         self.fin.thickness) / (self.fins + 1.) * self.height ) 
             # flow area (m^2) of new duct formed by fin    
-            self.D = 4. * self.flow_area / self.fin_perimeter
+            self.D = 4. * self.flow_area / self.flow_perimeter
             self.k = self.k_air
             self.set_Re_dependents()
             self.h = self.Nu_D * self.k / self.D
             # coefficient of convection (kW/m^2-K) 
             self.fin.h = self.h
-            self.fin.set_eta()
-            self.Nu_D = ( self.Nu_D * (self.fins * 2. * self.height *
-        length / (self.width * length)) )
-            # effective Nusselt number caused by fins
-            self.deltaP = (self.f * self.fin_perimeter * length /
+            self.fin.set_h()
+            self.h = ( self.Nu_D * self.k / self.D * (self.width -
+        self.fins * self.fin.thickness) + self.fin.h_effective *
+        self.fins * self.fin.thickness ) 
+            self.deltaP = (self.f * self.flow_perimeter * self.length /
         self.flow_area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
 
         else:
             self.k = self.k_air
             self.set_Re_dependents()
-            self.deltaP = (self.f * self.perimeter * length /
-            self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa) 
+            self.deltaP = (self.f * self.perimeter * self.length /
+            self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
+            self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
 
-        self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
         self.Wdot_pumping = self.Vdot * self.deltaP # pumping power (kW)
 
