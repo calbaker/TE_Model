@@ -35,8 +35,8 @@ class _Fin():
     def set_h(self):
         """Determines effective heat transfer coefficient of fin."""
         self.set_eta()
-        self.h_effective = ( self.eta * self.h * 2. * self.length *
-        self.height )
+        self.h_base = ( 2. * self.eta * self.h * self.height /
+        self.thickness )
 
 
 class Exhaust(prop.ideal_gas):
@@ -59,7 +59,9 @@ class Exhaust(prop.ideal_gas):
             # air
         self.PPI = 10 # default pores per inch of porous media, used in Mancin model  
         self.K = 2.e-7 # default permeability (m^2) of porous metal foam, used in
-            # Bejan model   
+            # Bejan model
+        self.fin = _Fin() # workaround to be able to change fin from
+                          # instance
 
     set_flow_geometry = functions.set_flow_geometry
     set_Re_dependents = functions.set_Re_dependents
@@ -114,7 +116,6 @@ class Exhaust(prop.ideal_gas):
         elif self.enhancement == 'straight fins':
             # The fins will be spaced in such a way as to make an
             # array of square ducts
-            self.fin = _Fin()
             self.fin.height = self.height
             self.fin.length = self.length
             self.flow_perimeter = ( 2. * ((self.width - self.fins *
@@ -130,13 +131,13 @@ class Exhaust(prop.ideal_gas):
             # coefficient of convection (kW/m^2-K) 
             self.fin.h = self.h
             self.fin.set_h()
-            self.h = ( self.Nu_D * self.k / self.D * (self.width -
-        self.fins * self.fin.thickness) + self.fin.h_effective *
-        self.fins * self.fin.thickness ) 
+            self.h = ( (self.h * (self.width - self.fins *
+        self.fin.thickness) + self.fin.h_base * self.fins *
+        self.fin.thickness) / self.width ) 
             self.deltaP = (self.f * self.flow_perimeter * self.length /
         self.flow_area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
 
-        else:
+        elif self.enhancement == 'none':            
             self.k = self.k_air
             self.set_Re_dependents()
             self.deltaP = (self.f * self.perimeter * self.length /
