@@ -42,7 +42,7 @@ class Leg():
             # Seebeck coefficient (V/K)
             self.sigma = 1000.
             # electrical conductivity (1/Ohm-cm)
-            self.rho = 1./self.sigma / 100.
+            self.rho = 1. / self.sigma / 100.
             # electrical resistivity (Ohm-m)
             
         if self.material == "MgSi":
@@ -53,9 +53,30 @@ class Leg():
             # Seebeck coefficient (V/K)
             self.sigma = 1.5e3 # (S/cm) (S/cm = 1/Ohm-cm)
             # electrical conductivity (1/Ohm-cm)
-            self.rho = 1./self.sigma / 100.
+            self.rho = 1. / self.sigma / 100.
             # electrical resistivity (Ohm-m)
             self.I
+
+        # from CRC TE Handbook Table 12.1
+        if self.material == 'CRC n-type':
+            self.k = 54. / self.T_props * 100.
+            # thermal conductivity (W/m-K)
+            self.alpha = (0.268 * self.T_props - 329.) * 1.e-6
+            # Seebeck coefficient (V/K)
+            self.sigma = (self.T_props - 310.) / 0.1746
+            # electrical conductivity (S/cm)
+            self.rho = 1. / self.sigma / 100.
+            # electrical resistivity (Ohm-m)
+
+        if self.material == 'CRC p-type':
+            self.k = 3.194 / self.T_props * 100.
+            # thermal conductivity (W/m-K)
+            self.alpha = (0.150 * self.T_props + 211.) * 1.e-6
+            # Seebeck coefficient (V/K)
+            self.sigma = 25.
+            # electrical conductivity (S/cm)
+            self.rho = 1. / self.sigma / 100.
+            # electrical resistivity (Ohm-m)
             
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
@@ -65,6 +86,7 @@ class Leg():
         self.segment_length = self.length / self.segments
         # length of each segment (m)
         self.T[0] = self.T_c
+        self.T_props = self.T[0]
         self.set_properties()
         self.q_c = ( sp.array([0.9,1.1]) * (-self.k / self.length * (self.T_h_goal -
         self.T_c)) )
@@ -92,6 +114,7 @@ class Leg():
         self.J = self.I / self.area # (Amps/m^2)
         # for loop for iterating over segments
         for i in sp.arange(1,self.segments):
+            self.T_props = self.T[i-1]
             self.set_properties()
             # this method is here because properties will eventually
             # be temperature dependent
@@ -116,8 +139,8 @@ class TEModule():
         self.I = 0.35 # electrical current (Amps)
         self.Ptype = Leg() # p-type instance of leg
         self.Ntype = Leg() # n-type instance of leg
-        self.Ptype.material = 'MgSi'
-        self.Ntype.material = 'HMS'
+        self.Ptype.material = 'CRC p-type'
+        self.Ntype.material = 'CRC n-type'
         self.area_void = (1.e-3)**2 # void area (m^2)
 
     def solve_tem(self):
