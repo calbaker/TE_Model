@@ -31,7 +31,12 @@ class Leg():
     set_ZT = set_ZT
 
     def set_properties(self):
-        """sets thermal and electrical properties"""
+        """Sets thermal and electrical properties, as a function of
+        temperature if self.T_props is used.
+        Material choices for n-type are HMS, ex1 n-type, ex2 n-type,
+        and ex3 n-type
+        Material choices for p-type are MgSI, ex1 p-type, ex2 p-type,
+        and ex3 p-type"""
         if self.material == "HMS":
             # These properties came from Xi Chen's HMS properties.ppt
             self.k = 4.
