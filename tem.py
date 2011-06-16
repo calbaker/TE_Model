@@ -142,7 +142,7 @@ class Leg():
         self.T_props = self.T[0]
         self.set_properties()
         self.q_c = ( sp.array([0.9,1.1]) * (-self.k / self.length * (self.T_h_goal -
-        self.T_c)) )
+        self.T_c)) ) # (W/m^2)
         # array for storing guesses for q[0] (W/m^2) during while loop
         # iteration
         self.T_h = sp.zeros(2)
@@ -190,6 +190,7 @@ class Leg():
         self.V = sp.sum(self.V_segment)
         self.P_electrical = self.V * self.I
         self.P_heat = (self.q[-1] - self.q[0]) * self.area 
+
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
