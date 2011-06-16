@@ -19,18 +19,16 @@ class Leg():
     def __init__(self):
         """this method sets everything that is constant and
         initializes some arrays""" 
+        self.I = 0.5 # current (A)
         self.segments = 100. # number of segments for finite difference model
         self.length = 1.e-3  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
         self.T_h_goal = 550.
         # hot side temperature (K) that matches HX BC
         self.T_c = 350. # cold side temperature (K)
-        self.T = sp.zeros(self.segments) # initial array for
-                                        # temperature (K)
-        self.q = sp.zeros(self.segments) # initial array for heat flux (W/m^2)
-        self.V_segment = sp.zeros(self.segments)
-        # initial array for Seebeck voltage (V)
         self.error = 1. # allowable hot side temperature (K) error
+
+    set_ZT = set_ZT
 
     def set_properties(self):
         """sets thermal and electrical properties"""
@@ -58,7 +56,7 @@ class Leg():
             self.I
 
         # from CRC TE Handbook Table 12.1
-        if self.material == 'CRC n-type':
+        if self.material == 'ex1 n-type':
             self.k = 54. / self.T_props * 100.
             # thermal conductivity (W/m-K)
             self.alpha = (0.268 * self.T_props - 329.) * 1.e-6
@@ -68,7 +66,8 @@ class Leg():
             self.rho = 1. / self.sigma / 100.
             # electrical resistivity (Ohm-m)
 
-        if self.material == 'CRC p-type':
+        # from CRC TE Handbook Table 12.1
+        if self.material == 'ex1 p-type':
             self.k = 3.194 / self.T_props * 100.
             # thermal conductivity (W/m-K)
             self.alpha = (0.150 * self.T_props + 211.) * 1.e-6
@@ -78,11 +77,60 @@ class Leg():
             self.rho = 1. / self.sigma / 100.
             # electrical resistivity (Ohm-m)
             
+        # from CRC TE Handbook Table 12.1
+        if self.material == 'ex2 n-type':
+            self.k = 3. / self.T_props * 100.
+            # thermal conductivity (W/m-K)
+            self.alpha = (0.20 * self.T_props - 400.) * 1.e-6
+            # Seebeck coefficient (V/K)
+            self.sigma = 1.e5 / self.T_props
+            # electrical conductivity (S/cm)
+            self.rho = 1. / self.sigma / 100.
+            # electrical resistivity (Ohm-m)
+
+        # from CRC TE Handbook Table 12.1
+        if self.material == 'ex2 p-type':
+            self.k = 10. / self.T_props * 100.
+            # thermal conductivity (W/m-K)
+            self.alpha = (200.) * 1.e-6
+            # Seebeck coefficient (V/K)
+            self.sigma = self.T_props
+            # electrical conductivity (S/cm)
+            self.rho = 1. / self.sigma / 100.
+            # electrical resistivity (Ohm-m)
+            
+        # from CRC TE Handbook Table 12.1
+        if self.material == 'ex3 n-type':
+            self.k = 3. / self.T_props * 100.
+            # thermal conductivity (W/m-K)
+            self.alpha = 0.20 * self.T_props * 1.e-6
+            # Seebeck coefficient (V/K)
+            self.sigma = 1000.
+            # electrical conductivity (S/cm)
+            self.rho = 1. / self.sigma / 100.
+            # electrical resistivity (Ohm-m)
+
+        # from CRC TE Handbook Table 12.1
+        if self.material == 'ex3 p-type':
+            self.k = 10. / self.T_props * 100.
+            # thermal conductivity (W/m-K)
+            self.alpha = 200. * 1.e-6
+            # Seebeck coefficient (V/K)
+            self.sigma = self.T_props
+            # electrical conductivity (S/cm)
+            self.rho = 1. / self.sigma / 100.
+            # electrical resistivity (Ohm-m)
+            
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
         side heat flux and changes that heat flux until it results in
         the desired hot side temperature."""
+        self.T = sp.zeros(self.segments) # initial array for
+                                        # temperature (K)
+        self.q = sp.zeros(self.segments) # initial array for heat flux (W/m^2)
+        self.V_segment = sp.zeros(self.segments)
+        # initial array for Seebeck voltage (V)
         self.segment_length = self.length / self.segments
         # length of each segment (m)
         self.T[0] = self.T_c
@@ -100,33 +148,40 @@ class Leg():
             self.q[0] = self.q_c[i]
             self.solve_leg_once()
             self.T_h[i] = self.T[-1]
-        self.q_c_new = ( (self.q_c[1] - self.q_c[0]) / (self.T_h[1] - self.T_h[0]) * (self.T_h_goal - self.T_h[1]) + self.q_c[1] )
-        # linear interpolation for q_c based on previous q_c's
-        # and previous T_h's 
-        self.q_c = sp.append(self.q_c, self.q_c_new)
-        self.q[0] = self.q_c_new
-        self.solve_leg_once()
-        self.T_h = sp.append(self.T_h, self.T[-1])
+        i = 1
+        while ( sp.absolute(self.T_h[-1] - self.T_h_goal) > self.error ): 
+            self.q_c_new = ( (self.q_c[i] - self.q_c[i-1]) /
+        (self.T_h[i] - self.T_h[i-1]) * (self.T_h_goal - self.T_h[i])
+        + self.q_c[i] ) 
+            # linear interpolation for q_c based on previous q_c's
+            # and previous T_h's
+            self.q_c = sp.append(self.q_c, self.q_c_new)
+            self.q[0] = self.q_c_new
+            self.solve_leg_once()
+            self.T_h = sp.append(self.T_h, self.T[-1])
+            i = i + 1
+        self.iterations = ( "The leg required " + str(i-1) +
+        " iterations." )
+        self.eta = self.P_electrical / (self.q[-1] * self.area)
+        # Efficiency of leg
             
     def solve_leg_once(self):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
         self.J = self.I / self.area # (Amps/m^2)
         # for loop for iterating over segments
-        for i in sp.arange(1,self.segments):
-            self.T_props = self.T[i-1]
+        for j in sp.arange(1,self.segments):
+            self.T_props = self.T[j-1]
             self.set_properties()
-            # this method is here because properties will eventually
-            # be temperature dependent
-            self.T[i] = ( self.T[i-1] + self.segment_length / self.k *
-        (self.J * self.T[i-1] * self.alpha - self.q[i-1]) ) 
+            self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
+        (self.J * self.T[j-1] * self.alpha - self.q[j-1]) ) 
             # determines temperature of current segment based on
             # properties evaluated at previous segment
-            self.q[i] = ( self.q[i-1] + (self.rho * self.J**2. * (1. -
-        self.alpha**2. * self.T[i-1] / (self.rho * self.k)) - self.J
-        * self.alpha * self.q[i-1] / self.k) * self.segment_length
+            self.q[j] = ( self.q[j-1] + (self.rho * self.J**2. * (1. +
+        self.alpha**2. * self.T[j-1] / (self.rho * self.k)) - self.J
+        * self.alpha * self.q[j-1] / self.k) * self.segment_length
         )
-            self.V_segment[i] = self.alpha * (self.T[i] - self.T[i-1]) 
+            self.V_segment[j] = self.alpha * (self.T[j] - self.T[j-1])
         self.V = sp.sum(self.V_segment)
         self.P_electrical = self.V * self.I
         self.P_heat = (self.q[-1] - self.q[0]) * self.area 
@@ -162,7 +217,8 @@ class TEModule():
         # Everything from here on out is in kW instead of W
         self.q = ( (self.Ptype.q[-1] * self.Ptype.area + self.Ntype.q[-1]
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void) ) * 1.e-3 # area averaged heat flux (kW/m^2)
+        self.area_void) ) * 1.e-3
+        # area averaged hot side heat flux (kW/m^2)
         self.P_electrical = ( self.Ntype.P_electrical +
         self.Ptype.P_electrical ) * 1.e-3 # power based on V*I (kW)
         self.P_heat = ( self.Ntype.P_heat +
