@@ -141,7 +141,9 @@ class HX():
         self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
         self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
-                                     # temperature (K) in each node 
+                                     # temperature (K) in each node
+        self.tem.T_nodes = sp.zeros(sp.size(self.tem.segments),sp.size(self.nodes))
+        self.tem.h_nodes = ZEROS.copy()                                     
         self.tem.power_nodes = ZEROS.copy()
         self.tem.eta_nodes = ZEROS.copy()
         
@@ -157,7 +159,11 @@ class HX():
             self.tem.T_h_goal = self.exh.T_in
             # guess at hot side TEM temperature (K)
 
-            for j in range(3): # check if 3 is sufficient for good convergence
+            # This loop iterates until the thermal resistance of the
+            # TE device matches up with the thermal resistance assumed
+            # by the heat exchanger model.   
+            for j in range(3): # check if 3 is sufficient for good
+                               # convergence ???????
                 self.solve_node()
                 self.tem.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
                 self.plate.h**-1)**-1 * self.area) )
