@@ -10,7 +10,7 @@ class Coolant(prop.flow):
 
     def __init__(self):
         """sets constants and initiates class instances"""        
-        self.height = 0.25e-2 # height (m) of coolant duct
+        self.height = 1.e-2 # height (m) of coolant duct
         self.mdot = 0.5 # mass flow rate (kg/s) of coolant
         self.ducts = 2 # number of coolant ducts per hot duct
         self.geometry = 'parallel plates'
