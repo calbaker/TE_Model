@@ -7,7 +7,7 @@ import tem
 reload(tem)
 
 leg = tem.Leg()
-leg.I = 0.35
+leg.I = 10.
 leg.material = 'HMS'
 leg.solve_leg()
 
