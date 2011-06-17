@@ -138,8 +138,6 @@ class Leg():
         # initial array for heat flux (W/m^2)
         self.V_segment = sp.zeros(self.segments)
         # initial array for Seebeck voltage (V)
-        self.Peltier_segment = sp.zeros(self.segments)
-        # initial array for Peltier voltage?? (V)        
         self.segment_length = self.length / self.segments
         # length of each segment (m)
         self.T[0] = self.T_c
@@ -191,13 +189,8 @@ class Leg():
         * self.alpha * self.q[j-1] / self.k) * self.segment_length
         )
             self.V_segment[j] = self.alpha * (self.T[j] - self.T[j-1])
-            self.Peltier_segment[j] = self.rho * self.segment_length
-            # I have no idea what this is.  Maybe it's Peltier
-            # power???? 
         self.V = sp.sum(self.V_segment)
-        self.Peltier = sp.sum(self.Peltier_segment)
-        self.P_electrical = ( self.I * (self.V + self.Peltier *
-        self.I) ) 
+        self.P_electrical = self.V * self.I
         self.P_heat = (self.q[-1] - self.q[0]) * self.area 
 
 
