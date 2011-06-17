@@ -25,7 +25,7 @@ Ptype.area = (0.01)**2 # area (m^2)
 Ptype.T_h_goal = 750.
 Ptype.T_c = 400.
 
-Ntype.current_density = sp.arange(20., 51., 5.) * 100.**2
+Ntype.current_density = sp.arange(20., 51., 1.) * 100.**2
 Ntype.currents = Ntype.current_density * Ntype.area
 Ntype.etas = sp.zeros(sp.size(Ntype.currents))
 for i in sp.arange(sp.size(Ntype.currents)):
@@ -51,29 +51,43 @@ mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 
 fig1 = mpl.figure()
-mpl.plot(Ntype.current_density / 100.**2, Ntype.etas * 100., label='N type')
+mpl.plot(Ntype.current_density / 100.**2, Ntype.etas * 100.,
+         label='N type')
 mpl.grid()
 mpl.xlabel(r'Current Density ($A/cm^2$)')
 mpl.ylabel(r'$\eta$ (%)')
-mpl.ylim(ymin=0)
 mpl.title('Efficiency v. Current\nfor TE Legs')
 mpl.legend(loc='best')
 fig1.subplots_adjust(bottom=0.12)
 fig1.subplots_adjust(top=0.88)
-mpl.savefig('Plots/eta v current.pdf')
-mpl.savefig('Plots/eta v current.png')
+mpl.savefig('Plots/eta v current n.pdf')
+mpl.savefig('Plots/eta v current n.png')
 
 fig2 = mpl.figure()
-mpl.plot(Ptype.current_density / 100.**2, Ptype.etas * 100., label='P type')
+mpl.plot(Ptype.current_density / 100.**2, Ptype.etas * 100.,
+         label='P type')
 mpl.grid()
 mpl.xlabel(r'Current Density ($A/cm^2$)')
 mpl.ylabel(r'$\eta$ (%)')
-mpl.ylim(ymin=0)
 mpl.title('Efficiency v. Current\nfor TE Legs')
 mpl.legend(loc='best')
 fig2.subplots_adjust(bottom=0.12)
 fig2.subplots_adjust(top=0.88)
-mpl.savefig('Plots/eta v current.pdf')
-mpl.savefig('Plots/eta v current.png')
+mpl.savefig('Plots/eta v current p.pdf')
+mpl.savefig('Plots/eta v current p.png')
+
+fig3 = mpl.figure()
+mpl.plot(Ptype.current_density / 100.**2, Ptype.etas * 100.,
+         label='P type')
+mpl.plot(Ntype.current_density / 100.**2, Ntype.etas * 100.,
+         label='N type')
+mpl.grid()
+mpl.xlabel(r'Current Density ($A/cm^2$)')
+mpl.ylabel(r'$\eta$ (%)')
+mpl.title('Efficiency v. Current\nfor TE Legs')
+mpl.legend(loc='best')
+fig3.subplots_adjust(bottom=0.12)
+fig3savefig('Plots/eta v current both.pdf')
+mpl.savefig('Plots/eta v current both.png')
 
 mpl.show()
