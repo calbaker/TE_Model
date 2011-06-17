@@ -22,7 +22,7 @@ class Leg():
         self.I = 0.5 # current (A)
         self.segments = 100.
         # number of segments for finite difference model
-        self.length = 1.e-3  # leg length (m)
+        self.length = 1.e-2  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
         self.T_h_goal = 550.
         # hot side temperature (K) that matches HX BC
@@ -186,13 +186,14 @@ class Leg():
             # qi = q0 + (Pp0*J*J*(1 + Ap0*Ap0*T0/(Pp0*Kp0)) - J*Ap0*q0/Kp0)*dx
 
             self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
-        (self.J * self.T[j-1] * self.alpha - self.q[j-1]) ) 
+            (self.J * self.T[j-1] * self.alpha - self.q[j-1]) )
             # determines temperature of current segment based on
             # properties evaluated at previous segment
-            self.q[j] = ( self.q[j-1] + (self.rho * self.J**2. * (1. +
-        self.alpha**2. * self.T[j-1] / (self.rho * self.k)) - self.J
-        * self.alpha * self.q[j-1] / self.k) * self.segment_length
-        )
+            # dq = (Pp0*J*J*(1 + Ap0*Ap0*T0/(Pp0*Kp0)) - J*Ap0*q0/Kp0) 
+            self.dq = ( (self.rho * self.J**2 * (1 + self.alpha**2 *
+            self.T[j-1] / (self.rho * self.k)) - self.J * self.alpha *
+            self.q[j-1] / self.k) )
+            self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
             self.V_segment[j] = self.alpha * (self.T[j] - self.T[j-1])
         self.V = sp.sum(self.V_segment)
         self.P_electrical = self.V * self.I
