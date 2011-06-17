@@ -26,7 +26,8 @@ eff = sp.zeros(m)
 
 for p in range(m):
     
-    J = (-2.5 + p/20)*10**(4)
+    J = (-2.5 + p/20.)*1e4
+    print J
     Jp[p] = J
     Ti = Tc
     #J = 0 #-1.0e4
