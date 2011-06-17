@@ -10,7 +10,7 @@ import matplotlib.pyplot as mpl
 def set_ZT(self):
     """Sets ZT based on formula
     self.ZT = self.sigma * self.alpha**2. / self.k""" 
-    self.ZT = self.sigma * self.alpha**2. / self.k
+    self.ZT = self.sigma * self.alpha**2. * self.T_props / self.k
 
 
 class Leg():
@@ -20,7 +20,8 @@ class Leg():
         """this method sets everything that is constant and
         initializes some arrays""" 
         self.I = 0.5 # current (A)
-        self.segments = 100. # number of segments for finite difference model
+        self.segments = 100.
+        # number of segments for finite difference model
         self.length = 1.e-3  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
         self.T_h_goal = 550.
@@ -133,18 +134,21 @@ class Leg():
         the desired hot side temperature."""
         self.T = sp.zeros(self.segments) # initial array for
                                         # temperature (K)
-        self.q = sp.zeros(self.segments) # initial array for heat flux (W/m^2)
+        self.q = sp.zeros(self.segments)
+        # initial array for heat flux (W/m^2)
         self.V_segment = sp.zeros(self.segments)
         # initial array for Seebeck voltage (V)
+        self.Peltier_segment = sp.zeros(self.segments)
+        # initial array for Peltier voltage?? (V)        
         self.segment_length = self.length / self.segments
         # length of each segment (m)
         self.T[0] = self.T_c
         self.T_props = self.T[0]
         self.set_properties()
-        self.q_c = ( sp.array([0.9,1.1]) * (-self.k / self.length * (self.T_h_goal -
-        self.T_c)) ) # (W/m^2)
-        # array for storing guesses for q[0] (W/m^2) during while loop
-        # iteration
+        self.q_c = ( sp.array([0.9,1.1]) * (-self.k / self.length *
+        (self.T_h_goal - self.T_c)) )
+        # (W/m^2) array for storing guesses for q[0] (W/m^2) during
+        # while loop iteration 
         self.T_h = sp.zeros(2)
         # array for storing T_h (K) during while loop iteration.  
         # for loop for providing two arbitrary points to use for
@@ -187,8 +191,13 @@ class Leg():
         * self.alpha * self.q[j-1] / self.k) * self.segment_length
         )
             self.V_segment[j] = self.alpha * (self.T[j] - self.T[j-1])
+            self.Peltier_segment[j] = self.rho * self.segment_length
+            # I have no idea what this is.  Maybe it's Peltier
+            # power???? 
         self.V = sp.sum(self.V_segment)
-        self.P_electrical = self.V * self.I
+        self.Peltier = sp.sum(self.Peltier_segment)
+        self.P_electrical = ( self.I * (self.V + self.Peltier *
+        self.I) ) 
         self.P_heat = (self.q[-1] - self.q[0]) * self.area 
 
 
@@ -230,7 +239,7 @@ class TEModule():
         self.P_heat = ( self.Ntype.P_heat +
         self.Ptype.P_heat ) * 1.e-3
         # power based on heat flux difference (kW)
-        self.eta = -self.P_heat / (self.q * self.area)
+        self.eta = -self.P_electrical / (self.q * self.area)
         self.h = self.q / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
 
