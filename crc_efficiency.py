@@ -16,14 +16,12 @@ reload(tem)
 Ntype = tem.Leg()
 Ntype.material = 'ex1 n-type'
 Ntype.area = (0.01)**2
-Ntype.length = 1.e-3 
 Ntype.T_h_goal = 750.
 Ntype.T_c = 400.
 
 Ptype = tem.Leg()
 Ptype.material = 'ex1 p-type'
 Ptype.area = (0.01)**2 # area (m^2)
-Ptype.length = 1.e-3 
 Ptype.T_h_goal = 750.
 Ptype.T_c = 400.
 
