@@ -26,9 +26,9 @@ class HX():
 
     def __init__(self):
         """Geometry and constants"""
-        self.width = 15.e-2 # width (cm*10**-2) of HX duct. This model treats
+        self.width = 10.e-2 # width (cm*10**-2) of HX duct. This model treats
             # duct as parallel plates for simpler modeling.
-        self.length = 1. # length (m) of HX duct
+        self.length = 20.e-2 # length (m) of HX duct
         self.nodes = 50 # number of nodes for numerical heat transfer model
         self.node_length = self.length / self.nodes # length (m) of each node
         self.x_dim = sp.arange(self.node_length/2, self.length +
@@ -142,7 +142,7 @@ class HX():
                                      # temperature (K) in each node 
         self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node
-        self.tem.T_nodes = sp.zeros(sp.size(self.tem.segments),sp.size(self.nodes))
+#        self.tem.T_nodes = sp.zeros(sp.size(self.tem.segments),sp.size(self.nodes))
         self.tem.h_nodes = ZEROS.copy()                                     
         self.tem.power_nodes = ZEROS.copy()
         self.tem.eta_nodes = ZEROS.copy()
