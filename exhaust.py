@@ -24,7 +24,10 @@ class _Fin():
         self.k = 0.2 # thermal conductivity (kW/m-K) of fin material
         self.h = 0.2
         # heat transfer coefficient (kW/m^2-K).  This can be updated
-        # from Exhaust.  
+        # from Exhaust.
+        self.bypass = 0.80
+        # fraction of exhaust flow bypassing heat exchanger
+
 
     def set_eta(self):
         """Determines fin efficiency"""
