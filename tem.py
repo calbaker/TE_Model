@@ -127,6 +127,22 @@ class Leg():
             # electrical conductivity (S/cm)
             self.rho = 1. / self.sigma / 100.
             # electrical resistivity (Ohm-m)
+
+        # From CRC TE Handbook Table 27.7
+        if self.material == 'ideal BiTe n-type':
+            self.k = 1.5 # Thermal conductivity (W/m-K)
+            self.alpha = -206.e-6 # Seebeck coefficient (V/K)
+            # I made this negative even though it's for a p-type
+            # material.  This is just for a hypothetical model.
+            self.rho = 8.89 * 1.e-6
+            # electrical resistivity (Ohm-m)
+            
+        # From CRC TE Handbook Table 27.7
+        if self.material == 'ideal BiTe p-type':
+            self.k = 1.5 # Thermal conductivity (W/m-K)
+            self.alpha = 206.e-6 # Seebeck coefficient (V/K)
+            self.rho = 8.89 * 1.e-6
+            # electrical resistivity (Ohm-m)
             
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
