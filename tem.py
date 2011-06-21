@@ -251,7 +251,7 @@ class TEModule():
         # area averaged hot side heat flux (kW/m^2)
         self.P_electrical = -( self.Ntype.P_electrical +
         self.Ptype.P_electrical ) * 1.e-3 # power based on V*I (kW)
-        self.P_heat = -( self.Ntype.P_heat +
+        self.P_heat = ( self.Ntype.P_heat +
         self.Ptype.P_heat ) * 1.e-3
         # power based on heat flux difference (kW).  Both powers are
         # multiplied by negative 1 because of the way positive power
