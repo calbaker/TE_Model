@@ -37,14 +37,20 @@ class HX():
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
-        self.cool.width = self.width
-        self.cool.length = self.length
         self.exh = exhaust.Exhaust()
-        self.exh.width = self.width
-        self.exh.length = self.length
         self.tem = tem.TEModule()
         self.plate = _PlateWall()
         self.cummins = engine.Engine()
+
+        self.fix_geometry()
+
+    def fix_geometry(self):
+        """Makes sure that common geometry like width and length is
+        the same between exh, cool, and the overal heat exchanger."""
+        self.cool.width = self.width
+        self.cool.length = self.length
+        self.exh.width = self.width
+        self.exh.length = self.length
 
     def set_mdot_charge(self):
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
@@ -110,6 +116,7 @@ class HX():
 
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
+        self.fix_geometry()
         self.set_mdot_charge()
         self.exh.set_flow_geometry(self.exh.width) 
         self.cool.set_flow_geometry(self.cool.width)
