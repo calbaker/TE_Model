@@ -34,25 +34,27 @@ class HX():
         self.x_dim = sp.arange(self.node_length/2, self.length +
         self.node_length/2, self.node_length)  
         # x coordinate (m)
+        self.bypass = 0.80
+        # fraction of exhaust flow bypassing heat exchanger
 
-        # initilization of class instances
-        self.cool = coolant.Coolant()
-        self.cool.width = self.width
-        self.cool.length = self.length
-        self.exh = exhaust.Exhaust()
-        self.exh.width = self.width
-        self.exh.length = self.length
-        self.tem = tem.TEModule()
-        self.plate = _PlateWall()
-        self.cummins = engine.Engine()
+    cool = coolant.Coolant()
+    cool.width = self.width
+    cool.length = self.length
+    exh = exhaust.Exhaust()
+    exh.width = self.width
+    exh.length = self.length
+    tem = tem.TEModule()
+    plate = _PlateWall()
+    cummins = engine.Engine()
 
     def set_mdot_charge(self):
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
-        self.exh.mdot = self.cummins.mdot_charge
+        self.exh.mdot = self.cummins.mdot_charge * (1. - self.bypass) 
 
     def solve_node(self):
         """solves for performance of streamwise slice of HX"""
-        self.exh.T_out = self.exh.T_in - 5 # Guess at exhaust node out temperature (K)
+        self.exh.T_out = self.exh.T_in - 5
+        # Guess at exhaust node out temperature (K)
 
         # Exhaust stuff
         self.exh.set_flow()
