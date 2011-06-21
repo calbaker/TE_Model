@@ -10,7 +10,7 @@ import matplotlib.pyplot as mpl
 def set_ZT(self):
     """Sets ZT based on formula
     self.ZT = self.sigma * self.alpha**2. / self.k""" 
-    self.ZT = self.sigma * self.alpha**2. * self.T_props / self.k
+    self.ZT = self.alpha**2. * self.T_props / (self.k * self.rho)
 
 
 class Leg():
@@ -221,11 +221,11 @@ class TEModule():
 
     def __init__(self):
         """sets constants and defines leg instances"""
-        self.I = 0.35 # electrical current (Amps)
+        self.I = 3.1 # electrical current (Amps)
         self.Ptype = Leg() # p-type instance of leg
         self.Ntype = Leg() # n-type instance of leg
-        self.Ptype.material = 'ex1 p-type'
-        self.Ntype.material = 'ex1 n-type'
+        self.Ptype.material = 'ideal BiTe p-type'
+        self.Ntype.material = 'ideal BiTe n-type'
         self.area_void = (1.e-3)**2 # void area (m^2)
 
     def solve_tem(self):
@@ -249,12 +249,14 @@ class TEModule():
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
         self.area_void) ) * 1.e-3
         # area averaged hot side heat flux (kW/m^2)
-        self.P_electrical = ( self.Ntype.P_electrical +
+        self.P_electrical = -( self.Ntype.P_electrical +
         self.Ptype.P_electrical ) * 1.e-3 # power based on V*I (kW)
-        self.P_heat = ( self.Ntype.P_heat +
+        self.P_heat = -( self.Ntype.P_heat +
         self.Ptype.P_heat ) * 1.e-3
-        # power based on heat flux difference (kW)
-        self.eta = -self.P_electrical / (self.q * self.area)
+        # power based on heat flux difference (kW).  Both powers are
+        # multiplied by negative 1 because of the way positive power
+        # is defined in the TE model.  
+        self.eta = -self.P_heat / (self.q * self.area)
         self.h = self.q / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
 
@@ -272,7 +274,7 @@ class TECarnot():
         # electrical conductivity (1/Ohm-cm)
         self.rho = 1./self.sigma / 100.
         # electrical resistivity (Ohm-m)
-        self.length = 1.e-3  # leg length (m)
+        self.length = 1.e-2  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2) 
         self.area_void = (3.e-3)**2. # void area (m^2)
         self.T_h_goal = 500. # dummy variable
