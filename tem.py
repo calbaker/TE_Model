@@ -224,8 +224,8 @@ class TEModule():
         self.I = 0.35 # electrical current (Amps)
         self.Ptype = Leg() # p-type instance of leg
         self.Ntype = Leg() # n-type instance of leg
-        self.Ptype.material = 'CRC p-type'
-        self.Ntype.material = 'CRC n-type'
+        self.Ptype.material = 'ex1 p-type'
+        self.Ntype.material = 'ex1 n-type'
         self.area_void = (1.e-3)**2 # void area (m^2)
 
     def solve_tem(self):
