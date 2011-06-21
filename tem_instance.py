@@ -6,6 +6,8 @@ import matplotlib.pyplot as mpl
 import tem
 
 TEM = tem.TEModule()
+TEM.Ntype.material = 'ideal BiTe n-type'
+TEM.Ptype.material = 'ideal BiTe p-type'
 TEM.T_h_goal = 600.
 TEM.T_c = 300.
 TEM.solve_tem()
@@ -24,12 +26,13 @@ x = sp.arange(TEM.Ntype.segments) * TEM.Ntype.segment_length * 1.e6
 # x position (micron)
 
 fig1 = mpl.figure()
-mpl.plot(x, TEM.Ntype.T, label='N-type leg')
-mpl.plot(x, TEM.Ptype.T, label='P-type leg')
+mpl.plot(x*1e-3, TEM.Ntype.T, label='N-type leg')
+mpl.plot(x*1e-3, TEM.Ptype.T, label='P-type leg')
 mpl.title('TEM Temperature Profile')
 mpl.ylabel('Temperature (K)')
-mpl.xlabel(r'Position ($\mu m$)')
+mpl.xlabel('Position (mm)')
 mpl.grid()
+mpl.legend(loc='best')
 mpl.savefig('Plots/TEM temperature profile.pdf')
 mpl.savefig('Plots/TEM temperature profile.png')
 
