@@ -49,7 +49,7 @@ class Exhaust(prop.ideal_gas):
         self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
             # corrugate metal, etc.)
         self.T_ref = 300 # default reference temperature (K) for availability calculation
-        self.height = 3.5e-2 # default height (m) of exhaust duct
+        self.height = 1.5e-2 # default height (m) of exhaust duct
         self.ducts = 1 # default number of exhaust ducts
         self.porosity = 0.92 # default volume of void per total volume
         self.k_matrix = 5.8e-3 # default thermal conductivity(kW/m-K) of metal foam +
@@ -113,7 +113,8 @@ class Exhaust(prop.ideal_gas):
         elif self.enhancement == 'straight fins':
             # The fins will be spaced in such a way as to make an
             # array of square ducts
-            self.fin.height = self.height
+            self.fin.height = self.height # maybe this should be
+                                        # divided by two ???
             self.fin.length = self.length
             self.flow_perimeter = ( 2. * ((self.width - self.fins *
         self.fin.thickness) / (self.fins + 1.) + self.height) ) 
