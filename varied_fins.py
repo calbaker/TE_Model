@@ -17,7 +17,9 @@ print "Beginning execution..."
 
 hx = hx.HX()
 hx.type = 'parallel'
-hx.tem = tem.TECarnot()
+#hx.tem = tem.TECarnot()
+hx.tem.Ntype.material = 'ideal BiTe n-type'
+hx.tem.Ptype.material = 'ideal BiTe p-type'
 hx.exh.T_inlet = 700.
 hx.exh.P = 100.
 hx.exh.enhancement = "straight fins"
