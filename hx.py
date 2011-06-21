@@ -34,7 +34,6 @@ class HX():
         self.x_dim = sp.arange(self.node_length/2, self.length +
         self.node_length/2, self.node_length)  
         # x coordinate (m)
-        self.initialize_subclasses()
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
