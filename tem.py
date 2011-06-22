@@ -154,6 +154,8 @@ class Leg():
         # initial array for heat flux (W/m^2)
         self.V_segment = sp.zeros(self.segments)
         # initial array for Seebeck voltage (V)
+        self.P_flux_segment = sp.zeros(self.segments)
+        # initial array for power flux in segment (W/m^2)
         self.segment_length = self.length / self.segments
         # length of each segment (m)
         self.T[0] = self.T_c
@@ -209,9 +211,13 @@ class Leg():
             self.T[j-1] / (self.rho * self.k)) - self.J * self.alpha *
             self.q[j-1] / self.k) )
             self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
-            self.V_segment[j] = self.alpha * (self.T[j] - self.T[j-1]) 
-        self.V = sp.sum(self.V_segment)
-        self.P = self.V * self.I
+            self.V_segment[j] = ( self.alpha * (self.T[j] -
+            self.T[j-1]) )
+            self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
+            self.J * self.rho * self.segment_length) )
+                                  
+        self.P = sp.sum(self.P_flux_segment) * self.area
+        # Power for the entire leg (W)
 
 
 class TEModule():
@@ -241,18 +247,13 @@ class TEModule():
         self.Ntype.solve_leg()
         self.Ptype.solve_leg()
         self.T_h = self.Ntype.T[-1]
-        self.V = sp.sum(self.Ptype.V) + sp.sum(self.Ntype.V)
         # Everything from here on out is in kW instead of W
         self.q = ( (self.Ptype.q[-1] * self.Ptype.area + self.Ntype.q[-1]
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
         self.area_void) ) * 1.e-3
         # area averaged hot side heat flux (kW/m^2)
-        self.P = -( self.Ntype.P +
-        self.Ptype.P ) * 1.e-3 # power based on V*I (kW)
-        self.P = ( -( self.Ntype.P +  self.Ptype.P ) * 1.e-3 )  
-        # power based on heat flux difference (kW).  Both powers are
-        # multiplied by negative 1 because of the way positive power
-        # is defined in the TE model.  
+        self.P = -( self.Ntype.P + self.Ptype.P ) * 1.e-3
+        # power for the entire leg pair(kW)
         self.eta = self.P / (self.q * self.area)
         self.h = self.q / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
