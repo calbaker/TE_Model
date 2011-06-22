@@ -6,9 +6,9 @@ import matplotlib.pyplot as mpl
 import tem
 
 TEM = tem.TEModule()
-TEM.Ntype.material = 'ex1 n-type'
-TEM.Ptype.material = 'ex1 p-type'
-TEM.Ptype.area = TEM.Ptype.area * 20.7
+TEM.I = 10.
+TEM.Ntype.material = 'ideal BiTe n-type'
+TEM.Ptype.material = 'ideal BiTe p-type'
 TEM.T_h_goal = 650.
 TEM.T_c = 400.
 TEM.solve_tem()
@@ -40,18 +40,12 @@ mpl.savefig('Plots/TEM temp v position.pdf')
 mpl.savefig('Plots/TEM temp v position.png')
 
 fig2 = mpl.figure()
-
-mpl.subplot(211)
-mpl.grid()
 mpl.plot(TEM.Ntype.T, TEM.Ntype.q * 1e-3, label=TEM.Ntype.material)
-mpl.title('TEM Heat Flux v Temperature')
-mpl.ylabel(r'q $\frac{kW}{m^2K}$')
-
-mpl.subplot(212)
 mpl.plot(TEM.Ptype.T, TEM.Ptype.q * 1e-3, label=TEM.Ptype.material)
 mpl.grid()
 mpl.xlabel('T (K)')
 mpl.ylabel(r'q $\frac{kW}{m^2K}$')
+mpl.title('TEM Heat Flux v Temperature')
 fig2.subplots_adjust(bottom=0.12)
 fig2.subplots_adjust(left=0.22)
 mpl.legend(loc='best')
@@ -59,20 +53,14 @@ mpl.savefig('Plots/TEM heat v temp.pdf')
 mpl.savefig('Plots/TEM heat v temp.png')
 
 fig3 = mpl.figure()
-
-mpl.subplot(211)
-mpl.grid()
 mpl.plot(x*1e-3, TEM.Ntype.q * 1e-3, label=TEM.Ntype.material)
-mpl.title('TEM Heat Flux v Position')
-mpl.ylabel(r'q $\frac{kW}{m^2K}$')
-
-mpl.subplot(212)
 mpl.plot(x*1e-3, TEM.Ptype.q * 1e-3, label=TEM.Ptype.material)
-mpl.grid()
 mpl.xlabel('x (mm)')
 mpl.ylabel(r'q $\frac{kW}{m^2K}$')
+mpl.title('TEM Heat Flux v Position')
 fig3.subplots_adjust(bottom=0.12)
 fig3.subplots_adjust(left=0.22)
+mpl.grid()
 mpl.legend(loc='best')
 mpl.savefig('Plots/TEM heat v position.pdf')
 mpl.savefig('Plots/TEM heat v position.png')
