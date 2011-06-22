@@ -221,5 +221,5 @@ class HX():
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power - self.Wdot_pumping 
         self.eta_1st = self.power_net / self.Qdot
-        self.eta_2nd = self.power_net / self.available
+        self.eta_1st_modified = self.power_net / self.available
 
