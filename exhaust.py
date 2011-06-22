@@ -18,9 +18,6 @@ class _Fin():
         """Sets constants and things that need to be guessed to
         execute as a standalone model."""
         self.thickness = 1.e-3 # fin thickness (m)
-        self.height = 1.75e-2
-        # height (m) of fin for adiabatic to occur at symmetry line of
-        # duct
         self.k = 0.2 # thermal conductivity (kW/m-K) of fin material
         self.h = 0.2
         # heat transfer coefficient (kW/m^2-K).  This can be updated
@@ -113,10 +110,14 @@ class Exhaust(prop.ideal_gas):
             self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
 
         elif self.enhancement == 'straight fins':
-            # The fins will be spaced in such a way as to make an
-            # array of square ducts
-            self.fin.height = self.height # maybe this should be
-                                        # divided by two ???
+            # self.fins is the number of fins that fully extend across
+            # the duct.  The flow area and flow perimeter calculations
+            # depend on this.  For the heat transfer, this number also
+            # work. The fins will be spaced in such a way as to make
+            # an  array of square ducts. 
+            self.fin.height = self.height / 2
+            # height of fin pair such that their tips meet in the
+            # middle and are adiabatic.  
             self.fin.length = self.length
             self.flow_perimeter = ( 2. * ((self.width - self.fins *
         self.fin.thickness) / (self.fins + 1.) + self.height) ) 
