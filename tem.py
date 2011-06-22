@@ -225,7 +225,7 @@ class TEModule():
 
     def __init__(self):
         """sets constants and defines leg instances"""
-        self.I = 3.1 # electrical current (Amps)
+        self.I = 1. # electrical current (Amps)
         self.Ptype = Leg() # p-type instance of leg
         self.Ntype = Leg() # n-type instance of leg
         self.Ptype.material = 'ideal BiTe p-type'

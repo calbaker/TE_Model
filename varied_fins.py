@@ -23,9 +23,8 @@ hx.tem.Ptype.material = 'ideal BiTe p-type'
 hx.exh.T_inlet = 700.
 hx.exh.P = 100.
 hx.exh.enhancement = "straight fins"
-hx.exh.fin.thickness = 2.5
+hx.exh.fin.thickness = 2.5e-3
 hx.cool.T_inlet = 300.
-#hx.tem.set_ZT()
 
 hx.exh.fin_array = sp.arange(1., 6., 1.)
 # array for varied exhaust duct height (m)
@@ -37,6 +36,7 @@ hx.tem.power_array = sp.zeros(array_size)
 
 for i in sp.arange(sp.size(hx.exh.fin_array)):
     hx.exh.fins = hx.exh.fin_array[i]
+    print "\nSolving for", hx.exh.fins, "fins"
     hx.solve_hx()
     hx.power_net_array[i] = hx.power_net
     hx.Wdot_pumping_array[i] = hx.Wdot_pumping

@@ -25,7 +25,7 @@ Ptype.area = (0.01)**2 # area (m^2)
 Ptype.T_h_goal = 750.
 Ptype.T_c = 400.
 
-Ntype.current_density = sp.arange(15., 51., 1.) * 100.**2
+Ntype.current_density = sp.arange(20., 51., 1.) * 100.**2
 Ntype.currents = Ntype.current_density * Ntype.area
 Ntype.etas = sp.zeros(sp.size(Ntype.currents))
 for i in sp.arange(sp.size(Ntype.currents)):
@@ -51,32 +51,35 @@ mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 
 fig1 = mpl.figure()
-mpl.plot(Ntype.current_density / 100.**2, Ntype.etas * 100.,
-         label=Ntype.material)
-mpl.twiny()
-mpl.plot(Ptype.current_density / 100.**2, Ptype.etas * 100.,
-         label=Ptype.material)
-mpl.grid()
-mpl.xlabel(r'Current Density ($A/cm^2$)')
-mpl.ylabel(r'$\eta$ (%)')
-mpl.title('Efficiency v. Current\n\n\n')  
-mpl.legend(loc='best')
+ax1 = fig1.add_subplot(111)
+ax1.plot(Ptype.current_density / 100.**2, Ptype.etas * 100.,
+         label=Ptype.material, color='r')
+ax1.set_xlabel(r'Current Density ($A/cm^2$)')
+ax1.set_ylabel(r'$\eta$ (%)')
+ax1.set_xlim(-2.5, 0.5)
+ax2 = ax1.twiny()
+ax3 = mpl.twinx()
+ax3.plot(Ntype.current_density / 100.**2, Ntype.etas * 100.,
+         label=Ntype.material, color='k')
+ax3.set_xlim(20,50)
+ax3.grid()
+#ax2.set_title('Efficiency v. Current\n\n\n')  
 fig1.subplots_adjust(bottom=0.12)
 fig1.subplots_adjust(top=0.88)
 fig1.savefig('Plots/eta v current ex1.pdf')
 fig1.savefig('Plots/eta v current ex1.png')
 
 # fig2 = mpl.figure()
-# mpl.plot(Ptype.current_density / 100.**2, Ptype.etas * 100.,
+# mpl.plot(Ntype.current_density / 100.**2, Ntype.etas * 100.,
 #          label='P type')
 # mpl.grid()
 # mpl.xlabel(r'Current Density ($A/cm^2$)')
 # mpl.ylabel(r'$\eta$ (%)')
-# mpl.title('Efficiency v. Current\n' + Ptype.material)  
+# mpl.title('Efficiency v. Current\n' + Ntype.material)  
 # mpl.legend(loc='best')
 # fig2.subplots_adjust(bottom=0.12)
 # fig2.subplots_adjust(top=0.88)
-# fig2.savefig('Plots/eta v current ' + Ptype.material + '.pdf')
-# fig2.savefig('Plots/eta v current ' + Ptype.material + '.png')
+# fig2.savefig('Plots/eta v current ' + Ntype.material + '.pdf')
+# fig2.savefig('Plots/eta v current ' + Ntype.material + '.png')
 
 mpl.show()
