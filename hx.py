@@ -195,7 +195,7 @@ class HX():
             self.tem.T_c_nodes[i] = self.tem.T_c
             # cold side temperature (K) of TEM at each node.  
             self.U_nodes[i] = self.U
-            self.tem.power_nodes[i] = self.tem.P_heat * self.leg_pairs
+            self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
             self.tem.eta_nodes[i] = self.tem.eta
 
             # redefining outlet temperature (K) for next node
