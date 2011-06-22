@@ -6,6 +6,7 @@ import matplotlib.pyplot as mpl
 import tem
 
 TEM = tem.TEModule()
+TEM.I = 10.
 TEM.Ntype.material = 'ideal BiTe n-type'
 TEM.Ptype.material = 'ideal BiTe p-type'
 TEM.T_h_goal = 650.

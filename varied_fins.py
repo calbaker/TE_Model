@@ -26,7 +26,7 @@ hx.exh.enhancement = "straight fins"
 hx.exh.fin.thickness = 2.5e-3
 hx.cool.T_inlet = 300.
 
-hx.exh.fin_array = sp.arange(1., 6., 1.)
+hx.exh.fin_array = sp.arange(1., 15., 1.)
 # array for varied exhaust duct height (m)
 array_size = sp.size(hx.exh.fin_array)
 hx.power_net_array = sp.zeros(array_size)
