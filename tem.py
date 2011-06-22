@@ -76,7 +76,6 @@ class Leg():
         if self.material == 'ex1 p-type':
             self.k = 3.194 / self.T_props * 100.
             # thermal conductivity (W/m-K)
-            self.Ap0 = (0.15*self.T_props + 211.)*10**(-6)
             self.alpha = (0.150 * self.T_props + 211.) * 1.e-6
             # Seebeck coefficient (V/K)
             self.sigma = 25.
@@ -186,7 +185,7 @@ class Leg():
             i = i + 1
         self.iterations = ( "The leg required " + str(i-1) +
         " iterations." )
-        self.eta = self.P_heat / (self.q[-1] * self.area)
+        self.eta = self.P / (self.q[-1] * self.area)
         # Efficiency of leg
             
     def solve_leg_once(self):
@@ -210,10 +209,9 @@ class Leg():
             self.T[j-1] / (self.rho * self.k)) - self.J * self.alpha *
             self.q[j-1] / self.k) )
             self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
-            self.V_segment[j] = self.alpha * (self.T[j] - self.T[j-1])
+            self.V_segment[j] = self.alpha * (self.T[j] - self.T[j-1]) 
         self.V = sp.sum(self.V_segment)
-        self.P_electrical = self.V * self.I
-        self.P_heat = (self.q[-1] - self.q[0]) * self.area 
+        self.P = self.V * self.I
 
 
 class TEModule():
@@ -249,14 +247,13 @@ class TEModule():
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
         self.area_void) ) * 1.e-3
         # area averaged hot side heat flux (kW/m^2)
-        self.P_electrical = -( self.Ntype.P_electrical +
-        self.Ptype.P_electrical ) * 1.e-3 # power based on V*I (kW)
-        self.P_heat = ( self.Ntype.P_heat +
-        self.Ptype.P_heat ) * 1.e-3
+        self.P = -( self.Ntype.P +
+        self.Ptype.P ) * 1.e-3 # power based on V*I (kW)
+        self.P = ( -( self.Ntype.P +  self.Ptype.P ) * 1.e-3 )  
         # power based on heat flux difference (kW).  Both powers are
         # multiplied by negative 1 because of the way positive power
         # is defined in the TE model.  
-        self.eta = -self.P_heat / (self.q * self.area)
+        self.eta = self.P / (self.q * self.area)
         self.h = self.q / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
 
@@ -299,5 +296,5 @@ class TECarnot():
         # Carnot efficiency in segment
         self.q = self.h * (self.T_h - self.T_c)
         self.area_total = self.area + self.area_void
-        self.P_heat = self.eta * self.q * self.area_total
+        self.P = self.eta * self.q * self.area_total
         # TE power for leg pair (kW)
