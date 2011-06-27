@@ -15,8 +15,8 @@ import hx
 print "Beginning execution..."
 
 hx = hx.HX()
-hx.tem.Ntype.material = 'ideal BiTe n-type'
-hx.tem.Ptype.material = 'ideal BiTe p-type'
+hx.tem.Ntype.material = 'HMS'
+hx.tem.Ptype.material = 'MgSi'
 hx.type = 'parallel'
 hx.exh.T_inlet = 800.
 hx.exh.P = 100.

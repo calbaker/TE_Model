@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as mpl
 
 # User defined modules
-# none
+import set_TEproperties
 
 def set_ZT(self):
     """Sets ZT based on formula
@@ -31,118 +31,8 @@ class Leg():
 
     set_ZT = set_ZT
 
-    def set_properties(self):
-        """Sets thermal and electrical properties, as a function of
-        temperature if self.T_props is used.
-        Material choices for n-type are HMS, ex1 n-type, ex2 n-type,
-        and ex3 n-type
-        Material choices for p-type are MgSI, ex1 p-type, ex2 p-type,
-        and ex3 p-type"""
-        if self.material == "HMS":
-            # These properties came from Xi Chen's HMS properties.ppt
-            self.k = 4.
-            # thermal conductivity (W/m-K) 
-            self.alpha = 150.e-6
-            # Seebeck coefficient (V/K)
-            self.sigma = 1000.
-            # electrical conductivity (1/Ohm-cm)
-            self.rho = 1. / self.sigma / 100.
-            # electrical resistivity (Ohm-m)
-            
-        if self.material == "MgSi":
-            # These properties came from Gao et al.  
-            self.k = 3. 
-            # thermal conductivity (W/m-K) 
-            self.alpha = -150.e-6
-            # Seebeck coefficient (V/K)
-            self.sigma = 1.5e3 # (S/cm) (S/cm = 1/Ohm-cm)
-            # electrical conductivity (1/Ohm-cm)
-            self.rho = 1. / self.sigma / 100.
-            # electrical resistivity (Ohm-m)
-            self.I
-
-        # from CRC TE Handbook Table 12.1
-        if self.material == 'ex1 n-type':
-            self.k = 54. / self.T_props * 100.
-            # thermal conductivity (W/m-K)
-            self.alpha = (0.268 * self.T_props - 329.) * 1.e-6
-            # Seebeck coefficient (V/K)
-            self.sigma = (self.T_props - 310.) / 0.1746
-            # electrical conductivity (S/cm)
-            self.rho = 1. / self.sigma / 100.
-            # electrical resistivity (Ohm-m)
-
-        # from CRC TE Handbook Table 12.1
-        if self.material == 'ex1 p-type':
-            self.k = 3.194 / self.T_props * 100.
-            # thermal conductivity (W/m-K)
-            self.alpha = (0.150 * self.T_props + 211.) * 1.e-6
-            # Seebeck coefficient (V/K)
-            self.sigma = 25.
-            # electrical conductivity (S/cm)
-            self.rho = 1. / self.sigma / 100.
-            # electrical resistivity (Ohm-m)
-            
-        # from CRC TE Handbook Table 12.1
-        if self.material == 'ex2 n-type':
-            self.k = 3. / self.T_props * 100.
-            # thermal conductivity (W/m-K)
-            self.alpha = (0.20 * self.T_props - 400.) * 1.e-6
-            # Seebeck coefficient (V/K)
-            self.sigma = 1.e5 / self.T_props
-            # electrical conductivity (S/cm)
-            self.rho = 1. / self.sigma / 100.
-            # electrical resistivity (Ohm-m)
-
-        # from CRC TE Handbook Table 12.1
-        if self.material == 'ex2 p-type':
-            self.k = 10. / self.T_props * 100.
-            # thermal conductivity (W/m-K)
-            self.alpha = (200.) * 1.e-6
-            # Seebeck coefficient (V/K)
-            self.sigma = self.T_props
-            # electrical conductivity (S/cm)
-            self.rho = 1. / self.sigma / 100.
-            # electrical resistivity (Ohm-m)
-            
-        # from CRC TE Handbook Table 12.1
-        if self.material == 'ex3 n-type':
-            self.k = 3. / self.T_props * 100.
-            # thermal conductivity (W/m-K)
-            self.alpha = 0.20 * self.T_props * 1.e-6
-            # Seebeck coefficient (V/K)
-            self.sigma = 1000.
-            # electrical conductivity (S/cm)
-            self.rho = 1. / self.sigma / 100.
-            # electrical resistivity (Ohm-m)
-
-        # from CRC TE Handbook Table 12.1
-        if self.material == 'ex3 p-type':
-            self.k = 10. / self.T_props * 100.
-            # thermal conductivity (W/m-K)
-            self.alpha = 200. * 1.e-6
-            # Seebeck coefficient (V/K)
-            self.sigma = self.T_props
-            # electrical conductivity (S/cm)
-            self.rho = 1. / self.sigma / 100.
-            # electrical resistivity (Ohm-m)
-
-        # From CRC TE Handbook Table 27.7
-        if self.material == 'ideal BiTe n-type':
-            self.k = 1.5 # Thermal conductivity (W/m-K)
-            self.alpha = -206.e-6 # Seebeck coefficient (V/K)
-            # I made this negative even though it's for a p-type
-            # material.  This is just for a hypothetical model.
-            self.rho = 8.89 * 1.e-6
-            # electrical resistivity (Ohm-m)
-            
-        # From CRC TE Handbook Table 27.7
-        if self.material == 'ideal BiTe p-type':
-            self.k = 1.5 # Thermal conductivity (W/m-K)
-            self.alpha = 206.e-6 # Seebeck coefficient (V/K)
-            self.rho = 8.89 * 1.e-6
-            # electrical resistivity (Ohm-m)
-            
+    set_TEproperties = set_TEproperties.set_TEproperties
+    
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
@@ -160,7 +50,7 @@ class Leg():
         # length of each segment (m)
         self.T[0] = self.T_c
         self.T_props = self.T[0]
-        self.set_properties()
+        self.set_TEproperties()
         self.q_c = ( sp.array([0.9,1.1]) * (-self.k / self.length *
         (self.T_h_goal - self.T_c)) )
         # (W/m^2) array for storing guesses for q[0] (W/m^2) during
@@ -197,7 +87,7 @@ class Leg():
         # for loop for iterating over segments
         for j in sp.arange(1,self.segments):
             self.T_props = self.T[j-1]
-            self.set_properties()
+            self.set_TEproperties()
             # From Prem's code for comparison
             # Ti = T0 + (dx/Kp0)*(J*T0*Ap0 - q0)
             # qi = q0 + (Pp0*J*J*(1 + Ap0*Ap0*T0/(Pp0*Kp0)) - J*Ap0*q0/Kp0)*dx
