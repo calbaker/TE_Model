@@ -59,8 +59,8 @@ mpl.legend()
 mpl.grid()
 fig1.subplots_adjust(bottom=0.12)
 fig1.subplots_adjust(top=0.88)
-fig2.savefig('Plots/eta v current ' + Ptype.material + ' .pdf') 
-fig2.savefig('Plots/eta v current ' + Ptype.material + ' .png') 
+fig1.savefig('Plots/eta v current ' + Ptype.material + ' .pdf') 
+fig1.savefig('Plots/eta v current ' + Ptype.material + ' .png') 
 
 fig2 = mpl.figure()
 mpl.plot(Ntype.current_density / 100.**2, Ntype.etas * 100.,
