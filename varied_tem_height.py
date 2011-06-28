@@ -14,14 +14,16 @@ import tem
 reload(tem)
 
 Ntype = tem.Leg()
-Ntype.material = 'ideal BiTe n-type'
+Ntype.material = 'MgSi'
+Ntype.set_prop_fit()
 Ntype.area = (0.01)**2
 Ntype.T_h_goal = 750.
 Ntype.T_c = 400.
 Ntype.I = 34.
 
 Ptype = tem.Leg()
-Ptype.material = 'ideal BiTe p-type'
+Ptype.material = 'HMS'
+Ptype.set_prop_fit()
 Ptype.area = (0.01)**2
 Ptype.T_h_goal = 750.
 Ptype.T_c = 400.
