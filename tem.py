@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as mpl
 
 # User defined modules
-import set_TEproperties
+import te_prop
 
 def set_ZT(self):
     """Sets ZT based on formula
@@ -30,8 +30,8 @@ class Leg():
         self.error = 1. # allowable hot side temperature (K) error
 
     set_ZT = set_ZT
-
-    set_TEproperties = set_TEproperties.set_TEproperties
+    set_prop_fit = te_prop.set_prop_fit
+    set_TEproperties = te_prop.set_TEproperties
     
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics

@@ -133,6 +133,9 @@ class HX():
         elif self.type == 'counter':
             self.cool.T_out = self.cool.T_outlet  
 
+        self.tem.Ptype.set_prop_fit()
+        self.tem.Ntype.set_prop_fit()
+
         # initializing arrays for tracking variables at nodes
         ZEROS = sp.zeros(self.nodes)
         self.Qdot_nodes = ZEROS.copy() # initialize array for storing
