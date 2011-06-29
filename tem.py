@@ -121,10 +121,13 @@ class TEModule():
         self.Ptype.material = 'ideal BiTe p-type'
         self.Ntype.material = 'ideal BiTe n-type'
         self.area_void = (1.e-3)**2 # void area (m^2)
+        self.length = 1.e-2 # default leg height (m)
 
     def solve_tem(self):
         """solves legs and combines results of leg pair"""
         self.area = self.Ntype.area + self.Ptype.area + self.area_void 
+        self.Ntype.length = self.length
+        self.Ptype.length = self.length
         self.Ptype.I = -self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient
@@ -147,45 +150,3 @@ class TEModule():
         self.eta = self.P / (self.q * self.area)
         self.h = self.q / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
-
-
-class TECarnot():
-    """Class for TE device with performance calculated using carnot
-    efficiency evaluated over the entire leg"""
-    def __init__(self):
-        """Sets a bunch of constants and whatnot"""
-        self.k = 4.
-        # thermal conductivity (W/m-K) 
-        self.alpha = 150.e-6
-        # Seebeck coefficient (V/K)
-        self.sigma = 1000.
-        # electrical conductivity (1/Ohm-cm)
-        self.rho = 1./self.sigma / 100.
-        # electrical resistivity (Ohm-m)
-        self.length = 1.e-2  # leg length (m)
-        self.area = (3.e-3)**2. # leg area (m^2) 
-        self.area_void = (3.e-3)**2. # void area (m^2)
-        self.T_h_goal = 500. # dummy variable
-        self.T_c = 350. # cold side temperature (K)
-        self.ZT = 1. # arbitrary ZT guess
-
-    set_ZT = set_ZT
-
-    def set_h(self):
-        """Sets TE effective heat transfer coefficient based on pure
-        conduction""" 
-        self.h = ( self.k * (self.area / (self.area_void + self.area)) 
-        / self.length * 1.e-3)
-        # effective heat transfer coefficient (kW/m^2-K)
-
-    def solve_tem(self):
-        """Solves for performance metrics of TE device"""
-        self.set_h()
-        self.T_h = self.T_h_goal
-        self.eta = ( (self.T_h - self.T_c) * (sp.sqrt(1. + self.ZT) -
-        1.) / (self.T_h * (sp.sqrt(1. + self.ZT) + self.T_c / self.T_h)) )
-        # Carnot efficiency in segment
-        self.q = self.h * (self.T_h - self.T_c)
-        self.area_total = self.area + self.area_void
-        self.P = self.eta * self.q * self.area_total
-        # TE power for leg pair (kW)
