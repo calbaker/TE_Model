@@ -29,11 +29,7 @@ class HX():
         self.width = 10.e-2 # width (cm*10**-2) of HX duct. This model treats
             # duct as parallel plates for simpler modeling.
         self.length = 20.e-2 # length (m) of HX duct
-        self.nodes = 50 # number of nodes for numerical heat transfer model
-        self.node_length = self.length / self.nodes # length (m) of each node
-        self.x_dim = sp.arange(self.node_length/2, self.length +
-        self.node_length/2, self.node_length)  
-        # x coordinate (m)
+        self.nodes = 25 # number of nodes for numerical heat transfer model
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -53,6 +49,10 @@ class HX():
         self.exh.length = self.length
 
     def set_mdot_charge(self):
+        """Sets exhaust mass flow rate. Eventually, this should be a
+        function of speed, load, and EGR fraction.  Also, it should
+        come from experimental data.  Also, it should probably go
+        within the exhaust module."""
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge * (1. - self.exh.bypass) 
 
@@ -116,6 +116,11 @@ class HX():
 
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
+        self.node_length = self.length / self.nodes
+        # length (m) of each node
+        self.x_dim = sp.arange(self.node_length/2, self.length +
+        self.node_length/2, self.node_length)   
+        # x coordinate (m)
         self.fix_geometry()
         self.set_mdot_charge()
         self.exh.set_flow_geometry(self.exh.width) 
