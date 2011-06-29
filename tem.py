@@ -146,7 +146,9 @@ class TEModule():
         self.area_void) ) * 1.e-3
         # area averaged hot side heat flux (kW/m^2)
         self.P = -( self.Ntype.P + self.Ptype.P ) * 1.e-3
-        # power for the entire leg pair(kW)
-        self.eta = self.P / (self.q * self.area)
+        # power for the entire leg pair(kW). Negative sign makes this
+        # a positive number. Heat flux is negative so efficiency needs
+        # a negative sign also.  
+        self.eta = -self.P / (self.q * self.area)
         self.h = self.q / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
