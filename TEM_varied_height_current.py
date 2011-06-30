@@ -32,7 +32,7 @@ TEM.T_h_goal = T_h_goal
 TEM.T_c = T_c
 TEM.solve_tem()
 
-TEM.lengths = sp.linspace(3., 10., 50) * 1e-3
+TEM.lengths = sp.linspace(3., 10., 10) * 1e-3
 TEM.currents = sp.linspace(0.1, 3.5, 10) * TEM.I
 TEM.etas = sp.zeros([sp.size(TEM.lengths), sp.size(TEM.currents)])
 for i in sp.arange(sp.size(TEM.lengths)):
@@ -44,7 +44,7 @@ for i in sp.arange(sp.size(TEM.lengths)):
         TEM.etas[i,j] = TEM.eta
 
 # Plot configuration
-FONTSIZE = 12
+FONTSIZE = 20
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
@@ -52,7 +52,7 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
-LEVELS = sp.linspace(0., 10., 15)
+LEVELS = sp.linspace(0., 5., 15)
 
 fig = plt.figure()
 length, currents = sp.meshgrid(TEM.lengths, TEM.currents)
