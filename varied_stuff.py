@@ -41,8 +41,8 @@ hx.cool.T_inlet = 300.
 
 hx.solve_hx()
 
-currents = sp.linspace(0.1, 5., 10)
-area_voids = sp.linspace(0.1, 2., 10) * area
+currents = sp.linspace(2., 6., 25)
+area_voids = sp.linspace(15., 75., 25) * area
 
 hx.power_net_array = sp.zeros([sp.size(currents),
                                sp.size(area_voids)]) 
@@ -67,13 +67,15 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
 fig = plt.figure()
-currents2d, area_voids2d = sp.meshgrid(currents, area_voids * (1.e3)**2)
-FCS = plt.contourf(currents2d, area_voids2d, hx.power_net_array.T)
+currents2d, area_voids2d = sp.meshgrid(currents, area_voids *
+                                       (1.e3)**2)
+LEVELS = sp.linspace(0., 1., 10)
+FCS = plt.contourf(currents2d, area_voids2d, hx.power_net_array.T, LEVELS)
 CB = plt.colorbar(FCS, orientation='horizontal', format='%0.1f')
 plt.xlabel('Current (A)')
 plt.ylabel(r'Void Area ($mm^2$)')
 plt.title('Net Power v. Current and Void Area')
-fig.savefig('Plots/power v current and void.pdf')
-fig.savefig('Plots/power v current and void.png')
+fig.savefig('Plots/power v current and void hi res.pdf')
+fig.savefig('Plots/power v current and void hi res.png')
 
 plt.show()
