@@ -32,8 +32,8 @@ TEM.T_h_goal = T_h_goal
 TEM.T_c = T_c
 TEM.solve_tem()
 
-TEM.lengths = sp.linspace(3., 10., 10) * 1e-3
-TEM.currents = sp.linspace(0.1, 3.5, 10) * TEM.I
+TEM.lengths = sp.linspace(0., 10., 30) * 1e-3
+TEM.currents = sp.linspace(0.1, 10., 30) * TEM.I
 TEM.etas = sp.zeros([sp.size(TEM.lengths), sp.size(TEM.currents)])
 for i in sp.arange(sp.size(TEM.lengths)):
     print "length = ", TEM.length * 1.e3
