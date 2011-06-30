@@ -78,7 +78,7 @@ plt.plot(hx.exh.fin.spacings * 100., hx.Qdot_array / 10.,
 plt.plot(hx.exh.fin.spacings * 100., hx.tem.power_array,
          label='TEM')
 plt.plot(hx.exh.fin.spacings * 100., hx.power_net_array,
-         label='Net')  
+         label='$P_{net}$')  
 plt.plot(hx.exh.fin.spacings * 100., hx.Wdot_pumping_array,
          label='Pumping')
 plt.grid()
@@ -96,7 +96,7 @@ plt.figure()
 plt.plot(hx.exh.fin_array, hx.Qdot_array / 10., label=r'$\dot{Q}/10$') 
 plt.plot(hx.exh.fin_array, hx.tem.power_array,  label='TEM')
 plt.plot(hx.exh.fin_array, hx.power_net_array,
-         label='Net')  
+         label='$P_{net}$')  
 plt.plot(hx.exh.fin_array, hx.Wdot_pumping_array,
          label='Pumping')
 plt.grid()
