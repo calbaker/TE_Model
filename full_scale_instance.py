@@ -15,14 +15,14 @@ import hx
 print "Beginning execution..."
 
 area = (0.002)**2
-length = 5.e-3
+length = 2.e-3
 
 hx = hx.HX()
 hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
 hx.length = 1.
-hx.tem.I = 2.
+hx.tem.I = 4.5
 hx.tem.length = length
 hx.tem.Ntype.material = 'MgSi'
 hx.tem.Ntype.area = area
