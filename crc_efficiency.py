@@ -49,30 +49,29 @@ mpl.rcParams['xtick.labelsize'] = FONTSIZE
 mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 
-fig1 = mpl.figure()
-mpl.plot(Ptype.current_density / 100.**2, Ptype.etas * 100.,
-         label=Ptype.material, color='r')
-mpl.xlabel(r'Current Density ($A/cm^2$)')
-mpl.ylabel(r'$\eta$ (%)')
-mpl.title('Efficiency v. Current')  
-mpl.legend()
-mpl.grid()
-fig1.subplots_adjust(bottom=0.12)
-fig1.subplots_adjust(top=0.88)
-fig1.savefig('Plots/eta v current ' + Ptype.material + ' .pdf') 
-fig1.savefig('Plots/eta v current ' + Ptype.material + ' .png') 
+FIGDIM1 = ([0.10, 0.15, 0.38, 0.8])
+FIGDIM2 = ([0.58, 0.15, 0.38, 0.8])
 
-fig2 = mpl.figure()
-mpl.plot(Ntype.current_density / 100.**2, Ntype.etas * 100.,
-         label=Ntype.material, color='b')
-mpl.xlabel(r'Current Density ($A/cm^2$)')
-mpl.ylabel(r'$\eta$ (%)')
-mpl.title('Efficiency v. Current')  
-mpl.legend()
-mpl.grid()
-fig2.subplots_adjust(bottom=0.12)
-fig2.subplots_adjust(top=0.88)
-fig2.savefig('Plots/eta v current ' + Ntype.material + ' .pdf') 
-fig2.savefig('Plots/eta v current ' + Ntype.material + ' .png') 
+fig = plt.figure()
+ax1 = fig.add_axes(FIGDIM1)
+ax1.plot(Ntype.current_density / 100.**2, Ntype.etas * 100.,
+                  label=Ntype.material, color='b') 
+ax1.set_xlabel(r'Current Density (A/$cm^2$)')
+ax1.set_ylabel(r'$\eta$')
+ax1.set_ylim(2.4,2.9)
+ax1.legend(loc='lower center')
+ax1.grid()
+
+ax2 = fig.add_axes(FIGDIM2)
+ax2.plot(-Ptype.current_density / 100.**2, Ptype.etas * 100.,
+         label=Ptype.material, color='r') 
+ax2.set_ylim(-0.5,3.)
+ax2.set_xlabel(r'Neg. Current Density (A/$cm^2$)')
+ax1.set_xlabel(r'Current Density (A/$cm^2$)')
+ax2.legend(loc='lower center')
+ax2.grid()
+
+fig.savefig('Plots/eta v current CRC ex1.png')
+fig.savefig('Plots/eta v current CRC ex1.pdf')
 
 mpl.show()
