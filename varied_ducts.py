@@ -29,7 +29,7 @@ hx.tem.Ntype.material = 'MgSi'
 hx.tem.Ntype.area = area
 hx.tem.Ptype.material = 'HMS'
 hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 25. * area
+hx.tem.area_void = 50. * area
 hx.type = 'parallel'
 hx.exh.enhancement = "straight fins"
 hx.exh.fin.thickness = 5.e-3
@@ -42,7 +42,7 @@ hx.cool.T_inlet = 300.
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
-ducts = sp.linspace(1, 10, 10)
+ducts = sp.linspace(1, 15, 15)
 hx.Qdot_array = sp.zeros(sp.size(ducts))
 hx.tem.power_array = sp.zeros(sp.size(ducts)) 
 hx.power_net_array = sp.zeros(sp.size(ducts))
@@ -86,7 +86,7 @@ plt.plot(ducts, hx.Wdot_pumping_array, label='Pumping')
 plt.grid()
 plt.xlabel('Ducts')
 plt.ylabel('Power (kW)')
-plt.ylim(0,2.5)
+plt.ylim(0,5)
 plt.ylim(ymin=0)
 plt.subplots_adjust(bottom=0.15)
 plt.title('Power v. Number of Ducts')
