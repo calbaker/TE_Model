@@ -119,6 +119,8 @@ class Exhaust(prop.ideal_gas):
             # height of fin pair such that their tips meet in the
             # middle and are adiabatic.  
             self.fin.length = self.length
+            self.fin.spacing = ( self.width - self.fins *
+        self.fin.thickness ) / (self.fins + 1)
             self.flow_perimeter = ( 2. * ((self.width - self.fins *
         self.fin.thickness) / (self.fins + 1.) + self.height) ) 
             # perimeter of new duct formed by fins with constant overal duct width

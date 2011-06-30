@@ -30,14 +30,13 @@ hx.tem.Ptype.material = 'HMS'
 hx.tem.Ptype.area = area * 2. 
 hx.tem.area_void = 25. * area
 hx.type = 'parallel'
-hx.exh.enhancement = "straight fins"
-hx.exh.fin.thickness = 2.5e-3
-hx.exh.fins = 10.
+hx.exh.enhancement = 'straight fins'
+hx.exh.fins = 15
 
 hx.exh.T_inlet = 800.
 hx.exh.P = 100.
 hx.cool.T_inlet = 300.
-#hx.tem = tem.TECarnot()
+
 hx.solve_hx()
 
 print "\nProgram finished."
@@ -63,6 +62,7 @@ plt.ylabel('Temperature (K)')
 plt.title('Temperature v. Distance, '+hx.type)
 plt.grid()
 plt.legend(loc='best')
+plt.subplots_adjust(bottom=0.15)
 plt.savefig('Plots/temp '+hx.type+'.png')
 plt.savefig('Plots/temp '+hx.type+'.pdf')
 

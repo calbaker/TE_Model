@@ -13,23 +13,26 @@ os.chdir('/home/chad/Documents/UT Stuff/Research/Diesel TE/TE_Model')
 import tem
 reload(tem)
 
+I = 22. # current (amps)
+area = (0.01)**2
+
 Ntype = tem.Leg()
 Ntype.material = 'MgSi'
 Ntype.set_prop_fit()
-Ntype.area = (0.01)**2
+Ntype.area = area
 Ntype.T_h_goal = 750.
 Ntype.T_c = 400.
-Ntype.I = 34.
+Ntype.I = I
 
 Ptype = tem.Leg()
 Ptype.material = 'HMS'
 Ptype.set_prop_fit()
-Ptype.area = (0.01)**2
+Ptype.area = area * 22./14.
 Ptype.T_h_goal = 750.
 Ptype.T_c = 400.
-Ptype.I = -34
+Ptype.I = -I
 
-Ntype.lengths = sp.arange(1., 15., 0.5) * 1e-3
+Ntype.lengths = sp.arange(1., 20., 0.5) * 1e-3
 Ntype.etas = sp.zeros(sp.size(Ntype.lengths))
 for i in sp.arange(sp.size(Ntype.lengths)):
     Ntype.length = Ntype.lengths[i]
@@ -37,7 +40,7 @@ for i in sp.arange(sp.size(Ntype.lengths)):
     Ntype.etas[i] = Ntype.eta
 print "n-type current density =", Ntype.J / 100.**2, "A/cm^2"
 
-Ptype.lengths = sp.arange(1., 15., 0.5) * 1e-3
+Ptype.lengths = sp.arange(1., 20., 0.5) * 1e-3
 Ptype.etas = sp.zeros(sp.size(Ptype.lengths))
 for i in sp.arange(sp.size(Ptype.lengths)):
     Ptype.length = Ptype.lengths[i]
@@ -56,7 +59,7 @@ mpl.rcParams['lines.linewidth'] = 1.5
 
 fig1 = mpl.figure()
 mpl.plot(Ntype.lengths * 1e3, Ntype.etas * 100.,
-         label=Ntype.material)
+         label=r'$Mg_2Si_{0.5}Sn_{0.5}$')
 mpl.plot(Ptype.lengths * 1e3, Ptype.etas * 100.,
          label=Ptype.material)
 mpl.grid()
