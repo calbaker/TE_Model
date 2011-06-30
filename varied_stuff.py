@@ -16,7 +16,7 @@ import tem
 print "Beginning execution..."
 
 area = (0.002)**2
-length = 5.e-3
+length = 2.e-3
 
 hx = hx.HX()
 hx.width = 30.e-2
@@ -41,24 +41,18 @@ hx.cool.T_inlet = 300.
 
 hx.solve_hx()
 
-hx.exh.fin_array = sp.arange(10, 32, 2)
-# array for varied exhaust duct height (m)
-array_size = sp.size(hx.exh.fin_array)
-hx.power_net_array = sp.zeros(array_size)
-hx.Wdot_pumping_array = sp.zeros(array_size)
-hx.Qdot_array = sp.zeros(array_size)
-hx.tem.power_array = sp.zeros(array_size)
-hx.exh.fin.spacings = sp.zeros(sp.size(hx.exh.fin_array)) 
+currents = sp.linspace(0.1, 5., 10)
+area_voids = sp.linspace(0.1, 2., 10) * area
 
-for i in sp.arange(sp.size(hx.exh.fin_array)):
-    hx.exh.fins = hx.exh.fin_array[i]
-    print "\nSolving for", hx.exh.fins, "fins\n"
-    hx.solve_hx()
-    hx.power_net_array[i] = hx.power_net
-    hx.Wdot_pumping_array[i] = hx.Wdot_pumping
-    hx.Qdot_array[i] = hx.Qdot
-    hx.tem.power_array[i] = hx.tem.power
-    hx.exh.fin.spacings[i] = hx.exh.fin.spacing
+hx.power_net_array = sp.zeros([sp.size(currents),
+                               sp.size(area_voids)]) 
+
+for i in sp.arange(sp.size(currents)):
+    for j in sp.arange(sp.size(area_voids)):
+        hx.tem.I = currents[i]
+        hx.tem.area_void = area_voids[j]
+        hx.solve_hx()
+        hx.power_net_array[i,j] = hx.power_net
 
 print "\nProgram finished."
 print "\nPlotting..."
@@ -72,24 +66,14 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
-plt.figure()
-plt.plot(hx.exh.fin.spacings * 100., hx.Qdot_array / 10.,
-         label=r'$\dot{Q}/10$') 
-plt.plot(hx.exh.fin.spacings * 100., hx.tem.power_array,
-         label='TEM')
-plt.plot(hx.exh.fin.spacings * 100., hx.power_net_array,
-         label='Net')  
-plt.plot(hx.exh.fin.spacings * 100., hx.Wdot_pumping_array,
-         label='Pumping')
-plt.grid()
-plt.xlabel('Fin Spacing (cm)')
-plt.ylabel('Power (kW)')
-plt.ylim(0,2.5)
-plt.ylim(ymin=0)
-plt.subplots_adjust(bottom=0.15)
-plt.title('Power v. Fin Spacing')
-plt.legend(loc='best')
-plt.savefig('Plots/power v fins.pdf')
-plt.savefig('Plots/power v fins.png')
+fig = plt.figure()
+currents2d, area_voids2d = sp.meshgrid(currents, area_voids * (1.e3)**2)
+FCS = plt.contourf(currents2d, area_voids2d, hx.power_net_array.T)
+CB = plt.colorbar(FCS, orientation='horizontal', format='%0.1f')
+plt.xlabel('Current (A)')
+plt.ylabel(r'Void Area ($mm^2$)')
+plt.title('Net Power v. Current and Void Area')
+fig.savefig('Plots/power v current and void.pdf')
+fig.savefig('Plots/power v current and void.png')
 
 plt.show()
