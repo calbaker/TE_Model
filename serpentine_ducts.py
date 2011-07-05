@@ -42,28 +42,27 @@ hx.cool.T_inlet = 300.
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
-ducts = sp.linspace(1, 15, 30)
+ducts = sp.arange(1, 15, 1)
 hx.Qdot_array = sp.zeros(sp.size(ducts))
 hx.tem.power_array = sp.zeros(sp.size(ducts)) 
 hx.power_net_array = sp.zeros(sp.size(ducts))
 hx.Wdot_pumping_array = sp.zeros(sp.size(ducts)) 
+
 hx.exh.height_array = 3.5e-2 / ducts
 hx.cool.height_array = 1.e-2 / ducts
-hx.exh.bypass_array = 1. - 1./ducts
-hx.cool.mdot_array = hx.cool.mdot / ducts
+hx.length_array = hx.length * ducts
 
 for i in sp.arange(sp.size(ducts)):
     hx.exh.height = hx.exh.height_array[i]
     hx.cool.height = hx.cool.height_array[i]
-    hx.exh.bypass = hx.exh.bypass_array[i]
-    hx.cool.mdot = hx.cool.mdot_array[i]
+    hx.length = hx.length_array[i]
 
     hx.solve_hx()
     
-    hx.Qdot_array[i] = hx.Qdot * ducts[i]
-    hx.tem.power_array[i] = hx.tem.power * ducts[i]
-    hx.power_net_array[i] = hx.power_net * ducts[i]
-    hx.Wdot_pumping_array[i] = hx.Wdot_pumping * ducts[i]
+    hx.Qdot_array[i] = hx.Qdot 
+    hx.tem.power_array[i] = hx.tem.power 
+    hx.power_net_array[i] = hx.power_net 
+    hx.Wdot_pumping_array[i] = hx.Wdot_pumping 
     
 print "\nProgram finished."
 print "\nPlotting..."
@@ -102,8 +101,8 @@ ax2 = plt.twiny(ax1)
 plt.xticks(sp.arange(len(XTICKS)), XTICKS)
 ax2.set_xlabel('Exhaust Duct Height (cm)')
 
-fig.savefig('Plots/power v || ducts.pdf')
-fig.savefig('Plots/power v || ducts.png')
+fig.savefig('Plots/power v _|_ ducts.pdf')
+fig.savefig('Plots/power v _|_ ducts.png')
 
 plt.show()
 

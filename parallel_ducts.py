@@ -42,7 +42,7 @@ hx.cool.T_inlet = 300.
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
-ducts = sp.linspace(1, 15, 30)
+ducts = sp.arange(1, 15, 1)
 hx.Qdot_array = sp.zeros(sp.size(ducts))
 hx.tem.power_array = sp.zeros(sp.size(ducts)) 
 hx.power_net_array = sp.zeros(sp.size(ducts))
