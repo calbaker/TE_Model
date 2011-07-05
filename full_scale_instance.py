@@ -31,8 +31,8 @@ hx.tem.Ptype.material = 'HMS'
 hx.tem.Ptype.area = area * 2. 
 hx.tem.area_void = 25. * area
 hx.type = 'parallel'
-hx.exh.enhancement = 'straight fins'
-hx.exh.fins = 15
+# hx.exh.enhancement = 'straight fins'
+# hx.exh.fins = 15
 
 hx.exh.T_inlet = 800.
 hx.exh.P = 100.
