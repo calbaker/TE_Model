@@ -42,7 +42,7 @@ hx.cool.T_inlet = 300.
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
-ducts = sp.linspace(1, 15, 5)
+ducts = sp.linspace(1, 15, 30)
 hx.Qdot_array = sp.zeros(sp.size(ducts))
 hx.tem.power_array = sp.zeros(sp.size(ducts)) 
 hx.power_net_array = sp.zeros(sp.size(ducts))
@@ -102,8 +102,8 @@ ax2 = plt.twiny(ax1)
 plt.xticks(sp.arange(len(XTICKS)), XTICKS)
 ax2.set_xlabel('Exhaust Duct Height (cm)')
 
-fig.savefig('Plots/power v ducts.pdf')
-fig.savefig('Plots/power v ducts.png')
+fig.savefig('Plots/power v || ducts.pdf')
+fig.savefig('Plots/power v || ducts.png')
 
 plt.show()
 
