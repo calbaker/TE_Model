@@ -21,6 +21,7 @@ hx = hx.HX()
 hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
+hx.cool.mdot = 1.
 hx.length = 1.
 hx.tem.I = 4.5
 hx.tem.length = length
