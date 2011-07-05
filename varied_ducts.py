@@ -16,20 +16,20 @@ print "Beginning execution..."
 
 # parameters for TE legs
 area = (0.002)**2
-length = 5.e-3
+length = 2.e-3
 
 hx = hx.HX()
 hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
 hx.length = 1.
-hx.tem.I = 2.
+hx.tem.I = 5.
 hx.tem.length = length
 hx.tem.Ntype.material = 'MgSi'
 hx.tem.Ntype.area = area
 hx.tem.Ptype.material = 'HMS'
 hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 50. * area
+hx.tem.area_void = 150. * area
 hx.type = 'parallel'
 hx.exh.enhancement = "straight fins"
 hx.exh.fin.thickness = 5.e-3
@@ -42,7 +42,7 @@ hx.cool.T_inlet = 300.
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
-ducts = sp.linspace(1, 15, 15)
+ducts = sp.linspace(1, 15, 30)
 hx.Qdot_array = sp.zeros(sp.size(ducts))
 hx.tem.power_array = sp.zeros(sp.size(ducts)) 
 hx.power_net_array = sp.zeros(sp.size(ducts))
@@ -77,22 +77,35 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
-plt.figure()
-plt.plot(ducts, hx.Qdot_array / 10., label=r'$\dot{Q}/10$') 
-plt.plot(ducts, hx.tem.power_array, label='TEM')
-plt.plot(ducts, hx.power_net_array, label='$P_{net}$')  
-plt.plot(ducts, hx.Wdot_pumping_array, label='Pumping')
+FIGDIM1 = ([0.12, 0.12, 0.75, 0.75])
 
-plt.grid()
-plt.xlabel('Ducts')
-plt.ylabel('Power (kW)')
-plt.ylim(0,5)
-plt.ylim(ymin=0)
-plt.subplots_adjust(bottom=0.15)
-plt.title('Power v. Number of Ducts')
-plt.legend(loc='best')
-plt.savefig('Plots/power v ducts.pdf')
-plt.savefig('Plots/power v ducts.png')
+XTICKS = list()
+
+for i in sp.arange(sp.size(hx.exh.height_array)):
+    if i % 3 == 0:
+        XTICKS.append('{:01.1f}'.format(hx.exh.height_array[i] * 1.e2))
+
+XTICKS[0] = ''
+fig = plt.figure()
+ax1 = fig.add_axes(FIGDIM1)
+ax1.plot(ducts, hx.Qdot_array / 10., label=r'$\dot{Q}/10$') 
+ax1.plot(ducts, hx.tem.power_array, label='TEM')
+ax1.plot(ducts, hx.power_net_array, label='$P_{net}$')  
+ax1.plot(ducts, hx.Wdot_pumping_array, label='Pumping')
+ax1.legend(loc='best')
+ax1.grid()
+ax1.set_xlabel('Ducts')
+ax1.set_ylabel('Power (kW)')
+ax1.set_ylim(0,7)
+ax1.set_ylim(ymin=0)
+ax2 = plt.twiny(ax1)
+plt.xticks(sp.arange(len(XTICKS)), XTICKS)
+ax2.set_xlabel('Exhaust Duct Height (cm)')
+
+#ax1.set_title('\n\nPower v. Number of Ducts')
+
+fig.savefig('Plots/power v ducts.pdf')
+fig.savefig('Plots/power v ducts.png')
 
 plt.show()
 
