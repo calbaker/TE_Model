@@ -93,8 +93,8 @@ class Exhaust(prop.ideal_gas):
 
         elif self.enhancement == 'Mancin porous':
             self.k = self.k_matrix
-            self.Nu_D = 6. # Nu for porous media parallel plates with
-                # q''= const.  Bejan Eq. 12.77
+            self.Nu_D = 4.93 # Nu for porous media parallel plates with
+                # T_w = const.  Bejan Eq. 12.77
             self.G = self.rho * self.velocity # Mass velocity from
                 # Mancin et al.
             self.D_pore = 0.0122 * self.PPI**(-0.849) # hydraulic
@@ -104,7 +104,7 @@ class Exhaust(prop.ideal_gas):
             self.Re_K = ( self.D_pore * self.G / (self.mu * self.porosity) )
             # Re of porous media from Mancin et al.
             self.F = ( (1.765 * self.Re_K**(-0.1014) * self.porosity**2 /
-            self.PPI**(0.6)) ) # friction factorb from Mancin et al. 
+            self.PPI**(0.6)) ) # friction factor from Mancin et al. 
             self.deltaP = (self.length * 2. * self.F * self.G**2 /
             (self.D_pore * self.rho)) # pressure drop from Mancin et al.
             self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
