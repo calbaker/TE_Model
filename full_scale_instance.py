@@ -60,7 +60,7 @@ plt.plot(hx.x_dim * 100., hx.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')
 plt.ylabel('Temperature (K)')
-plt.title('Temperature v. Distance, '+hx.type)
+#plt.title('Temperature v. Distance, '+hx.type)
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)

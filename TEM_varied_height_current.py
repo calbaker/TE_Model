@@ -61,8 +61,8 @@ FCS = plt.contourf(length * 1000., currents, TEM.etas.T *
 CB = plt.colorbar(FCS, orientation='horizontal', format='%0.1f')
 plt.xlabel('TE Leg Length (mm)')
 plt.ylabel('Current (A)')
-plt.title(r'Efficiency v. Leg Length and Current $T_h$=' +
-          str(TEM.T_h_goal) + ' K')
+# plt.title(r'Efficiency v. Leg Length and Current $T_h$=' +
+#           str(TEM.T_h_goal) + ' K')
 fig.savefig('Plots/eta v length and current tem ' + str(TEM.T_h_goal) +
             ' K.pdf')
 fig.savefig('Plots/eta v length and current tem ' + str(TEM.T_h_goal) +
