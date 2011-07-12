@@ -205,6 +205,7 @@ class HX():
             self.U_nodes[i] = self.U
             self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
             self.tem.eta_nodes[i] = self.tem.eta
+            self.tem.h_nodes[i] = self.tem.h
 
             # redefining outlet temperature (K) for next node
             self.exh.T_in = self.exh.T_out
