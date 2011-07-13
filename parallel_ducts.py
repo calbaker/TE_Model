@@ -2,7 +2,7 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 import os
 
@@ -42,17 +42,17 @@ hx.cool.T_inlet = 300.
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
-ducts = sp.arange(1, 15, 1)
-hx.Qdot_array = sp.zeros(sp.size(ducts))
-hx.tem.power_array = sp.zeros(sp.size(ducts)) 
-hx.power_net_array = sp.zeros(sp.size(ducts))
-hx.Wdot_pumping_array = sp.zeros(sp.size(ducts)) 
+ducts = np.arange(1, 15, 1)
+hx.Qdot_array = np.zeros(np.size(ducts))
+hx.tem.power_array = np.zeros(np.size(ducts)) 
+hx.power_net_array = np.zeros(np.size(ducts))
+hx.Wdot_pumping_array = np.zeros(np.size(ducts)) 
 hx.exh.height_array = 3.5e-2 / ducts
 hx.cool.height_array = 1.e-2 / ducts
 hx.exh.bypass_array = 1. - 1./ducts
 hx.cool.mdot_array = hx.cool.mdot / ducts
 
-for i in sp.arange(sp.size(ducts)):
+for i in np.arange(np.size(ducts)):
     hx.exh.height = hx.exh.height_array[i]
     hx.cool.height = hx.cool.height_array[i]
     hx.exh.bypass = hx.exh.bypass_array[i]
@@ -79,13 +79,16 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 FIGDIM1 = ([0.12, 0.12, 0.75, 0.75])
 
-XTICKS = list()
+XTICKS = hx.exh.height_array[0::3].copy() * 100.
+XTICKS.dtype = int
 
-for i in sp.arange(sp.size(hx.exh.height_array)):
-    if i % 3 == 0:
-        XTICKS.append('{:01.1f}'.format(hx.exh.height_array[i] * 1.e2))
+# XTICKS = list()
 
-XTICKS[0] = ''
+# for i in np.arange(np.size(hx.exh.height_array)):
+#     if i % 3 == 0:
+#         XTICKS.append('{:01.1f}'.format(hx.exh.height_array[i] * 1.e2))
+
+# XTICKS[0] = ''
 fig = plt.figure()
 ax1 = fig.add_axes(FIGDIM1)
 ax1.plot(ducts, hx.Qdot_array / 10., label=r'$\dot{Q}/10$') 
@@ -99,7 +102,7 @@ ax1.set_ylabel('Power (kW)')
 ax1.set_ylim(0,7)
 ax1.set_ylim(ymin=0)
 ax2 = plt.twiny(ax1)
-plt.xticks(sp.arange(len(XTICKS)), XTICKS)
+plt.xticks(np.arange(len(XTICKS)), XTICKS)
 ax2.set_xlabel('Exhaust Duct Height (cm)')
 
 fig.savefig('Plots/power v || ducts.pdf')
