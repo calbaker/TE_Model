@@ -11,6 +11,7 @@ os.chdir('/home/chad/Documents/UT Stuff/Research/Diesel TE/TE_Model')
 # User Defined Modules
 # In this directory
 import hx
+reload(hx)
 
 print "Beginning execution..."
 
@@ -39,7 +40,7 @@ hx.exh.T_inlet = 800.
 hx.exh.P = 100.
 hx.cool.T_inlet = 300.
 
-ducts = 8
+ducts = 7.
 hx.exh.height = 3.5e-2 / ducts
 hx.cool.height = 1.e-2 / ducts
 hx.exh.bypass = 1. - 1./ducts
