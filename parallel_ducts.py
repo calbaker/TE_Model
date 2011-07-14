@@ -47,16 +47,19 @@ hx.Qdot_array = np.zeros(np.size(ducts))
 hx.tem.power_array = np.zeros(np.size(ducts)) 
 hx.power_net_array = np.zeros(np.size(ducts))
 hx.Wdot_pumping_array = np.zeros(np.size(ducts)) 
-hx.exh.height_array = 3.5e-2 / ducts
-hx.cool.height_array = 1.e-2 / ducts
+hx.exh.height_array = 3.5e-2 / (ducts)
+hx.cool.height_array = 2.e-2 / (ducts + 1.)
 hx.exh.bypass_array = 1. - 1./ducts
 hx.cool.mdot_array = hx.cool.mdot / ducts
+hx.height_array = np.zeros(np.size(ducts))
 
 for i in np.arange(np.size(ducts)):
     hx.exh.height = hx.exh.height_array[i]
     hx.cool.height = hx.cool.height_array[i]
     hx.exh.bypass = hx.exh.bypass_array[i]
     hx.cool.mdot = hx.cool.mdot_array[i]
+    hx.height_array[i] = ( ducts[i] * hx.exh.height_array[i] +
+    (ducts[i] + 1) * hx.cool.height_array[i] )
 
     hx.solve_hx()
     
@@ -80,15 +83,12 @@ plt.rcParams['lines.linewidth'] = 1.5
 FIGDIM1 = ([0.12, 0.12, 0.75, 0.75])
 
 XTICKS = hx.exh.height_array[0::3].copy() * 100.
-XTICKS.dtype = int
+XTICKS = list(XTICKS)
 
-# XTICKS = list()
+for i in range(len(XTICKS)):
+    XTICKS[i] = ('{:01.1f}'.format(XTICKS[i])) 
 
-# for i in np.arange(np.size(hx.exh.height_array)):
-#     if i % 3 == 0:
-#         XTICKS.append('{:01.1f}'.format(hx.exh.height_array[i] * 1.e2))
-
-# XTICKS[0] = ''
+XTICKS[0] = ''
 fig = plt.figure()
 ax1 = fig.add_axes(FIGDIM1)
 ax1.plot(ducts, hx.Qdot_array / 10., label=r'$\dot{Q}/10$') 
