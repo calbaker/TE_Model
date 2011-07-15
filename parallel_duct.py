@@ -40,13 +40,20 @@ hx.exh.T_inlet = 800.
 hx.exh.P = 100.
 hx.cool.T_inlet = 300.
 
-ducts = 7.
-hx.exh.height = 3.5e-2 / ducts
-hx.cool.height = 1.e-2 / ducts
-hx.exh.bypass = 1. - 1./ducts
-hx.cool.mdot = hx.cool.mdot / ducts
+hx.ducts = 8.
+hx.exh.height = 3.5e-2 / hx.ducts
+hx.cool.height = 2.e-2 / (hx.ducts + 1.)
+hx.height = ( hx.exh.height * hx.ducts + hx.cool.height * (hx.ducts +
+                                                           1.) )
+hx.exh.bypass = 1. - 1./hx.ducts
+hx.cool.mdot = hx.cool.mdot / hx.ducts
 
 hx.solve_hx() # solving once to initialize variables that are used
+
+hx.power_net = hx.power_net * hx.ducts
+hx.tem.power = hx.tem.power * hx.ducts
+hx.Qdot = hx.Qdot * hx.ducts
+hx.Wdot_pumping = hx.Wdot_pumping * hx.ducts
     
 print "\nProgram finished."
 print "\nPlotting..."
@@ -72,8 +79,8 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/temp '+hx.type+str(ducts)+'.png')
-plt.savefig('Plots/temp '+hx.type+str(ducts)+'.pdf')
+plt.savefig('Plots/temp '+hx.type+str(hx.ducts)+'.png')
+plt.savefig('Plots/temp '+hx.type+str(hx.ducts)+'.pdf')
 
 plt.show()
 
