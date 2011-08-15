@@ -158,7 +158,6 @@ class HX():
                                      # temperature (K) in each node 
         self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node
-#        self.tem.T_nodes = sp.zeros(sp.size(self.tem.segments),sp.size(self.nodes))
         self.tem.h_nodes = ZEROS.copy()                                     
         self.tem.power_nodes = ZEROS.copy()
         self.tem.eta_nodes = ZEROS.copy()
