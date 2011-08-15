@@ -146,6 +146,6 @@ class Exhaust(prop.ideal_gas):
         self.Wdot_pumping = self.Vdot * self.deltaP # pumping power
                                         # (kW)
         if self.enhancement == 'straight fins':
-            self.fin.h = exh.h
+            self.fin.h = self.h
 
 
