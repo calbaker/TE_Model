@@ -61,9 +61,6 @@ class HX():
 
         # Exhaust stuff
         self.exh.set_flow()
-        # self.exh.h = self.exh.h * 10.
-        if self.exh.enhancement == 'straight fins':
-            self.exh.fin.h = self.exh.h
         # Coolant stuff
         self.cool.set_flow()
         # Wall stuff
@@ -132,16 +129,12 @@ class HX():
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
             print "\nSolving node", i
-            if self.type == 'parallel':
-                self.tem.T_c = self.cool.T
-                # guess at cold side tem temperature (K)
-            elif self.type == 'counter':
-                self.tem.T_c = self.cool.T
-                # guess at cold side tem temperature (K)
+            self.tem.T_c = self.cool.T
+            # guess at cold side tem temperature (K)
             self.tem.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
 
-            self.tem.h_iter = sp.empty(10)
+            self.tem.h_iter = sp.empty(5)
             # array of empty entries for while loop to check for
             # convergence 
 
@@ -208,6 +201,7 @@ class HX():
                 
         # redefining HX outlet/inlet temperatures (K)
         self.exh.T_outlet = self.exh.T
+
         if self.type == 'parallel':
             self.cool.T_outlet = self.cool.T
         elif self.type == 'counter':
