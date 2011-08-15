@@ -143,5 +143,9 @@ class Exhaust(prop.ideal_gas):
             self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
             self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
 
-        self.Wdot_pumping = self.Vdot * self.deltaP # pumping power (kW)
+        self.Wdot_pumping = self.Vdot * self.deltaP # pumping power
+                                        # (kW)
+        if self.enhancement == 'straight fins':
+            self.fin.h = exh.h
+
 
