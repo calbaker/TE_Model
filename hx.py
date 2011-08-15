@@ -77,18 +77,11 @@ class HX():
         self.cool.R_thermal = 1 / self.cool.h
 
         self.leg_pairs = int(self.area / self.tem.area) # Number of TEM leg pairs per node
-        # Heat exchanger stuff
-        if self.exh.C < self.cool.C:
-            self.C_min = self.exh.C
-            self.C_max = self.cool.C
-        else:
-            self.C_min = self.cool.C
-            self.C_max = self.exh.C
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.tem.R_thermal +
         self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
             # coefficient (kW/m^2-K)
 
-        self.Qdot = ( self.U * (self.exh.T - self.cool.T) )
+        self.Qdot = ( self.U * self.area * (self.exh.T - self.cool.T) )
         # Euler heat transfer (kW)
 
     def solve_hx(self): # solve parallel flow heat exchanger
@@ -121,8 +114,8 @@ class HX():
         ZEROS = sp.zeros(self.nodes)
         self.Qdot_nodes = ZEROS.copy() # initialize array for storing
                                     # heat transfer (kW) in each node 
-        self.exh.T_nodes = ZEROS.copy() # initializing array for storing
-                                     # temperature (K) in each node 
+        self.exh.T_nodes = ZEROS.copy()
+        # initializing array for storing temperature (K) in each node 
         self.exh.h_nodes = ZEROS.copy()
         self.cool.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
@@ -158,11 +151,15 @@ class HX():
             for j in range(2): 
                 self.solve_node()
                 self.tem.h_iter[j] = self.tem.h
-                self.tem.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
-                self.plate.h**-1)**-1 * self.area) )
-                # redefining TEM hot side temperature (K) based on known heat flux 
-                self.tem.T_c = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
-                (self.cool.h * self.area)) + self.cool.T)
+                self.tem.T_h_goal = ( self.exh.T - self.Qdot /
+                                    ((self.exh.h**-1 +
+                                      self.plate.h**-1)**-1 * 
+                                       self.area) ) 
+                # redefining TEM hot side temperature (K) based on
+                # known heat flux  
+                self.tem.T_c = ( self.Qdot * (1 / (self.plate.h *
+                                self.area) + 1 / (self.cool.h *
+                                self.area)) + self.cool.T) 
                 # redefining TEM cold side temperature (K) based on
                 # known heat flux
 
@@ -172,16 +169,18 @@ class HX():
                 j = j + 1
                 self.solve_node()
                 self.tem.h_iter[j] = self.tem.h
-                self.tem.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
-                self.plate.h**-1)**-1 * self.area) )
-                # redefining TEM hot side temperature (K) based on known heat flux 
-                self.tem.T_c = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
-                (self.cool.h * self.area)) + self.cool.T)
+                self.tem.T_h_goal = ( self.exh.T - self.Qdot /
+            ((self.exh.h**-1 + self.plate.h**-1)**-1 * self.area) ) 
+                # redefining TEM hot side temperature (K) based on
+                # known heat flux  
+                self.tem.T_c = ( self.Qdot * (1 / (self.plate.h *
+            self.area) + 1 / (self.cool.h * self.area)) + self.cool.T) 
                 # redefining TEM cold side temperature (K) based on
                 # known heat flux
                 self.iterations = j
 
-            self.Qdot_nodes[i] = self.Qdot # storing node heat transfer in array
+            self.Qdot_nodes[i] = self.Qdot
+            # storing node heat transfer in array
 
             self.exh.T_nodes[i] = self.exh.T
             self.exh.h_nodes[i] = self.exh.h
