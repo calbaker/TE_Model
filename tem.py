@@ -145,6 +145,10 @@ class TEModule():
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
         self.area_void) ) * 1.e-3
         # area averaged hot side heat flux (kW/m^2)
+        self.q_c = ( (self.Ptype.q[0] * self.Ptype.area + self.Ntype.q[0]
+        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
+        self.area_void) ) * 1.e-3
+        # area averaged hot side heat flux (kW/m^2)
         self.P = -( self.Ntype.P + self.Ptype.P ) * 1.e-3
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs

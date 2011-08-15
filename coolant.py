@@ -28,25 +28,6 @@ class Coolant(prop.flow):
 
     def set_flow(self):
         """calculates flow parameters"""
-        # If T_out is not defined, set it equal to T_in since it really
-        # doesn't matter for calculations. Also, vice versa.
-        try:
-            self.T_out
-        except AttributeError:
-            self.T_out = None
-        try:
-            self.T_in
-        except AttributeError:
-            self.T_in = None
-        if self.T_out is None:
-            self.T_out = self.T_in
-        elif self.T_in is None:
-            self.T_in = self.T_outlet
-
-        # Resume with other calculations
-        self.T = 0.5 * (self.T_in + self.T_out) # Temperature (K) used to calculate fluid
-            # properties.  This is no good if T_out is much
-            # different from T_in
         self.C = self.mdot * self.c_p # heat capacity of flow (kW/K)
         self.Vdot = self.mdot / self.rho # volume flow rate (m^3/s) of exhaust
         self.velocity = self.Vdot / (self.area * self.ducts) # velocity (m/s) of coolant

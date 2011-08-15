@@ -64,10 +64,6 @@ class Exhaust(prop.ideal_gas):
 
     def set_flow(self):
         """calculates flow parameters"""        
-        self.T = 0.5 * (self.T_in + self.T_out)
-        # Temperature (K) used to calculate fluid
-            # properties.  This is no good if T_out is much
-            # different from T_in
         self.set_alpha()
         self.c_p = self.c_p_air
 

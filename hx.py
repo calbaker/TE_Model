@@ -58,8 +58,6 @@ class HX():
 
     def solve_node(self):
         """solves for performance of streamwise slice of HX"""
-        self.exh.T_out = self.exh.T_in - 5
-        # Guess at exhaust node out temperature (K)
 
         # Exhaust stuff
         self.exh.set_flow()
@@ -86,33 +84,12 @@ class HX():
         else:
             self.C_min = self.cool.C
             self.C_max = self.exh.C
-        self.R_C = self.C_min / self.C_max 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.tem.R_thermal +
         self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
             # coefficient (kW/m^2-K)
-        self.NTU = self.U * self.area / self.C_min # number
-            # of transfer units
-#################### dependent on HX configuration  
-        if self.type == 'parallel':                                        
-            self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 + self.R_C))) / (1
-             + self.R_C) )  # NTU method for parallel flow from Mills Heat
-                # Transfer Table 8.3a  
-            self.Qdot = ( self.effectiveness * self.C_min * (self.exh.T_in -
-             self.cool.T_in)  ) # NTU heat transfer (kW)
-            self.cool.T_out = ( self.cool.T_in + self.Qdot / self.cool.C )
-            # temperature (K) at coolant outlet
 
-        elif self.type == 'counter':
-            self.effectiveness = ( (1 - sp.exp(-self.NTU * (1 - self.R_C))) /
-           (1 - self.R_C * sp.exp(-self.NTU * (1 - self.R_C))) )
-            self.Qdot = ( (self.effectiveness * self.C_min * (self.exh.T_in -
-             self.cool.T_out)) / (1 - self.effectiveness * self.C_min / self.cool.C) ) # NTU heat transfer (kW) 
-            self.cool.T_in = ( self.cool.T_out - self.Qdot / self.cool.C )
-
-#################### independent of HX configuration  
-        self.exh.T_out = ( self.exh.T_in - self.Qdot / self.exh.C )
-            # temperature (K) at exhaust outlet
-        self.exh.T = (self.exh.T_in + self.exh.T_out) / 2. 
+        self.Qdot = ( self.U * (self.exh.T - self.cool.T) )
+        # Euler heat transfer (kW)
 
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
@@ -129,14 +106,13 @@ class HX():
         self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
                                         # through which heat flux
                                         # occurs in each node
-        self.exh.T_in = self.exh.T_inlet
-        # T_in and T_out correspond to the temperatures going into and
-        # out of the node.  The suffix "let" means the temperature is
-        # referring to the HX inlet or outlet.    
+        self.exh.T = self.exh.T_inlet
+        # T_inlet and T_outlet correspond to the temperatures going
+        # into and out of the heat exchanger.
         if self.type == 'parallel':
-            self.cool.T_in = self.cool.T_inlet
+            self.cool.T = self.cool.T_inlet
         elif self.type == 'counter':
-            self.cool.T_out = self.cool.T_outlet  
+            self.cool.T = self.cool.T_outlet  
 
         self.tem.Ptype.set_prop_fit()
         self.tem.Ntype.set_prop_fit()
@@ -144,8 +120,6 @@ class HX():
         # initializing arrays for tracking variables at nodes
         ZEROS = sp.zeros(self.nodes)
         self.Qdot_nodes = ZEROS.copy() # initialize array for storing
-                                    # heat transfer (kW) in each node 
-        self.effectiveness_nodes = ZEROS.copy() # initialize array for storing
                                     # heat transfer (kW) in each node 
         self.exh.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
@@ -166,12 +140,12 @@ class HX():
         for i in sp.arange(self.nodes):
             print "\nSolving node", i
             if self.type == 'parallel':
-                self.tem.T_c = self.cool.T_in
+                self.tem.T_c = self.cool.T
                 # guess at cold side tem temperature (K)
             elif self.type == 'counter':
-                self.tem.T_c = self.cool.T_out
+                self.tem.T_c = self.cool.T
                 # guess at cold side tem temperature (K)
-            self.tem.T_h_goal = self.exh.T_in
+            self.tem.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
 
             self.tem.h_iter = sp.empty(10)
@@ -208,7 +182,6 @@ class HX():
                 self.iterations = j
 
             self.Qdot_nodes[i] = self.Qdot # storing node heat transfer in array
-            self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
 
             self.exh.T_nodes[i] = self.exh.T
             self.exh.h_nodes[i] = self.exh.h
@@ -216,7 +189,7 @@ class HX():
             self.tem.T_h_nodes[i] = self.tem.T_h # hot side
                                         # temperature (K) of TEM at
                                         # each node
-            self.cool.T_nodes[i] = (self.cool.T_in + self.cool.T_out)/2.
+            self.cool.T_nodes[i] = self.cool.T
             self.tem.T_c_nodes[i] = self.tem.T_c
             # cold side temperature (K) of TEM at each node.  
             self.U_nodes[i] = self.U
@@ -225,27 +198,30 @@ class HX():
             self.tem.h_nodes[i] = self.tem.h
 
             # redefining outlet temperature (K) for next node
-            self.exh.T_in = self.exh.T_out
+            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+            self.exh.C )  
             if self.type == 'parallel':
-                self.cool.T_in = self.cool.T_out
+                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+            / self.cool.C )  
             elif self.type == 'counter':
-                self.cool.T_out = self.cool.T_in
+                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+            / self.cool.C ) 
                 
         # redefining HX outlet/inlet temperatures (K)
-        self.exh.T_outlet = self.exh.T_out
+        self.exh.T_outlet = self.exh.T
         if self.type == 'parallel':
-            self.cool.T_outlet = self.cool.T_out
+            self.cool.T_outlet = self.cool.T
         elif self.type == 'counter':
-            self.cool.T_inlet = self.cool.T_in
+            self.cool.T_inlet = self.cool.T
 
         self.Qdot = sp.sum(self.Qdot_nodes)
-        self.available = self.exh.C * (self.exh.T_inlet - self.exh.T_ref)
-        self.effectiveness = self.Qdot / self.available # global HX effectiveness                                        
+        self.effectiveness = ( self.Qdot / (self.exh.C *
+        (self.exh.T_inlet - self.cool.T_inlet)) )
+        # heat exchanger effectiveness
         self.tem.power = sp.sum(self.tem.power_nodes)
         # total TE power output (kW)
         self.Wdot_pumping = self.exh.Wdot_pumping + self.cool.Wdot_pumping
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power - self.Wdot_pumping 
         self.eta_1st = self.power_net / self.Qdot
-        self.eta_1st_modified = self.power_net / self.available
 
