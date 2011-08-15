@@ -141,7 +141,7 @@ class TEModule():
         self.Ptype.solve_leg()
         self.T_h = self.Ntype.T[-1]
         # Everything from here on out is in kW instead of W
-        self.q = ( (self.Ptype.q[-1] * self.Ptype.area + self.Ntype.q[-1]
+        self.q_h = ( (self.Ptype.q[-1] * self.Ptype.area + self.Ntype.q[-1]
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
         self.area_void) ) * 1.e-3
         # area averaged hot side heat flux (kW/m^2)
@@ -149,6 +149,6 @@ class TEModule():
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs
         # a negative sign also.  
-        self.eta = -self.P / (self.q * self.area)
-        self.h = self.q / (self.T_c - self.T_h) 
+        self.eta = -self.P / (self.q_h * self.area)
+        self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
