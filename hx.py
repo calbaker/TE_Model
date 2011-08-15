@@ -175,12 +175,16 @@ class HX():
             self.tem.T_h_goal = self.exh.T_in
             # guess at hot side TEM temperature (K)
 
+            self.tem.h_iter = sp.empty(10)
+            # array of empty entries for while loop to check for
+            # convergence 
+
             # This loop iterates until the thermal resistance of the
             # TE device matches up with the thermal resistance assumed
             # by the heat exchanger model.   
-            for j in range(3): # check if 3 is sufficient for good
-                               # convergence ???????
+            for j in range(2): 
                 self.solve_node()
+                self.tem.h_iter[j] = self.tem.h
                 self.tem.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
                 self.plate.h**-1)**-1 * self.area) )
                 # redefining TEM hot side temperature (K) based on known heat flux 
@@ -188,8 +192,22 @@ class HX():
                 (self.cool.h * self.area)) + self.cool.T)
                 # redefining TEM cold side temperature (K) based on
                 # known heat flux
-                
-   
+
+            j = 1
+            while ( sp.absolute(self.tem.h_iter[j] -
+            self.tem.h_iter[j-1]) / self.tem.h_iter[j-1] > 0.01 ):
+                j = j + 1
+                self.solve_node()
+                self.tem.h_iter[j] = self.tem.h
+                self.tem.T_h_goal = ( self.exh.T - self.Qdot / ((self.exh.h**-1 +
+                self.plate.h**-1)**-1 * self.area) )
+                # redefining TEM hot side temperature (K) based on known heat flux 
+                self.tem.T_c = ( self.Qdot * (1 / (self.plate.h * self.area) + 1 /
+                (self.cool.h * self.area)) + self.cool.T)
+                # redefining TEM cold side temperature (K) based on
+                # known heat flux
+                self.iterations = j
+
             self.Qdot_nodes[i] = self.Qdot # storing node heat transfer in array
             self.effectiveness_nodes[i] = self.effectiveness # storing node heat transfer in array
 
