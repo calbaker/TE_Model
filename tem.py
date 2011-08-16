@@ -37,7 +37,9 @@ class Leg():
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
         side heat flux and changes that heat flux until it results in
-        the desired hot side temperature."""
+        the desired hot side temperature.  Hot side and cold side
+        temperature as well as hot side heat flux must be
+        specified.""" 
         self.T = sp.zeros(self.segments) # initial array for
                                         # temperature (K)
         self.q = sp.zeros(self.segments)
@@ -123,8 +125,8 @@ class TEModule():
         self.area_void = (1.e-3)**2 # void area (m^2)
         self.length = 1.e-2 # default leg height (m)
 
-    def solve_tem(self):
-        """solves legs and combines results of leg pair"""
+    def set_constants(self):
+        """Sets constants that are calculated."""
         self.area = self.Ntype.area + self.Ptype.area + self.area_void 
         self.Ntype.length = self.length
         self.Ptype.length = self.length
@@ -133,6 +135,9 @@ class TEModule():
         # material. Heat flux is negative because temperature gradient
         # is positive.  
         self.Ntype.I = self.I
+
+    def solve_tem(self):
+        """solves legs and combines results of leg pair"""
         self.Ptype.T_h_goal = self.T_h_goal
         self.Ntype.T_h_goal = self.T_h_goal
         self.Ptype.T_c = self.T_c
