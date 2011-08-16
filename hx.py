@@ -19,7 +19,8 @@ class _PlateWall():
     t = 0.005 # thickness (m) of HX plate
     def set_h(self):
         self.h = self.k/self.t
-
+        self.R_thermal = 1 / self.h
+        
 
 class HX():
     """class for handling HX system"""
@@ -57,7 +58,9 @@ class HX():
         self.exh.mdot = self.cummins.mdot_charge * (1. - self.exh.bypass) 
 
     def solve_node(self,i):
-        """solves for performance of streamwise slice of HX"""
+        """Solves for performance of streamwise slice of HX.  The
+        argument i is an indexing variable from a for loop within the
+        function solve_hx."""
 
         # Exhaust stuff
         self.exh.set_flow()
@@ -68,12 +71,6 @@ class HX():
         # TE stuff
         self.tem.solve_tem()
 
-        self.exh.R_thermal = 1 / self.exh.h
-        self.plate.R_thermal = 1 / self.plate.h
-        self.tem.R_thermal = 1 / self.tem.h
-        self.cool.R_thermal = 1 / self.cool.h
-
-        self.leg_pairs = int(self.area / self.tem.area) # Number of TEM leg pairs per node
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.tem.R_thermal +
         self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
             # coefficient (kW/m^2-K)
@@ -112,6 +109,11 @@ class HX():
         """solves for performance of entire HX"""
         self.node_length = self.length / self.nodes
         # length (m) of each node
+        self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
+                                        # through which heat flux
+                                        # occurs in each node
+        self.leg_pairs = int(self.area / self.tem.area)
+        # Number of TEM leg pairs per node
         self.x_dim = sp.arange(self.node_length/2, self.length +
         self.node_length/2, self.node_length)   
         # x coordinate (m)
@@ -120,9 +122,6 @@ class HX():
         self.exh.set_flow_geometry(self.exh.width) 
         self.cool.set_flow_geometry(self.cool.width)
         
-        self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
-                                        # through which heat flux
-                                        # occurs in each node
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
         # into and out of the heat exchanger.

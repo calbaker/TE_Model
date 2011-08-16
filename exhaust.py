@@ -148,4 +148,6 @@ class Exhaust(prop.ideal_gas):
         if self.enhancement == 'straight fins':
             self.fin.h = self.h
 
+        self.R_thermal = 1 / self.h
+        # thermal resistance (m^2-K/kW) of exhaust
 

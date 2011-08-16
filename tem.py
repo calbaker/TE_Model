@@ -156,3 +156,7 @@ class TEModule():
         self.eta = -self.P / (self.q_h * self.area)
         self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
+        self.R_thermal = 1 / self.h
+                
+
+        
