@@ -56,7 +56,7 @@ class HX():
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge * (1. - self.exh.bypass) 
 
-    def solve_node(self):
+    def solve_node(self,i):
         """solves for performance of streamwise slice of HX"""
 
         # Exhaust stuff
@@ -79,8 +79,35 @@ class HX():
             # coefficient (kW/m^2-K)
 
         self.Qdot = ( self.U * self.area * (self.exh.T - self.cool.T) )
-        # Euler heat transfer (kW)
 
+        # Euler heat transfer (kW)
+        self.Qdot_nodes[i] = self.Qdot
+        # storing node heat transfer in array
+
+        self.exh.T_nodes[i] = self.exh.T
+        self.exh.h_nodes[i] = self.exh.h
+        self.cool.h_nodes[i] = self.cool.h
+        self.tem.T_h_nodes[i] = self.tem.T_h # hot side
+                                        # temperature (K) of TEM at
+                                        # each node
+        self.cool.T_nodes[i] = self.cool.T
+        self.tem.T_c_nodes[i] = self.tem.T_c
+        # cold side temperature (K) of TEM at each node.  
+        self.U_nodes[i] = self.U
+        self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
+        self.tem.eta_nodes[i] = self.tem.eta
+        self.tem.h_nodes[i] = self.tem.h
+
+        # redefining temperature (K) for next node
+        self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+            self.exh.C )   
+        if self.type == 'parallel':
+            self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+                / self.cool.C )  
+        elif self.type == 'counter':
+            self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+                / self.cool.C ) 
+                
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
         self.node_length = self.length / self.nodes
@@ -134,72 +161,9 @@ class HX():
             self.tem.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
 
-            self.tem.h_iter = sp.empty(5)
-            # array of empty entries for while loop to check for
-            # convergence 
+            self.solve_node(i)
 
-            # This loop iterates until the thermal resistance of the
-            # TE device matches up with the thermal resistance assumed
-            # by the heat exchanger model.   
-            for j in range(2): 
-                self.solve_node()
-                self.tem.h_iter[j] = self.tem.h
-                self.tem.T_h_goal = ( self.exh.T - self.Qdot /
-                                    ((self.exh.h**-1 +
-                                      self.plate.h**-1)**-1 * 
-                                       self.area) ) 
-                # redefining TEM hot side temperature (K) based on
-                # known heat flux  
-                self.tem.T_c = ( self.Qdot * (1 / (self.plate.h *
-                                self.area) + 1 / (self.cool.h *
-                                self.area)) + self.cool.T) 
-                # redefining TEM cold side temperature (K) based on
-                # known heat flux
-
-            j = 1
-            while ( sp.absolute(self.tem.h_iter[j] -
-            self.tem.h_iter[j-1]) / self.tem.h_iter[j-1] > 0.01 ):
-                j = j + 1
-                self.solve_node()
-                self.tem.h_iter[j] = self.tem.h
-                self.tem.T_h_goal = ( self.exh.T - self.Qdot /
-            ((self.exh.h**-1 + self.plate.h**-1)**-1 * self.area) ) 
-                # redefining TEM hot side temperature (K) based on
-                # known heat flux  
-                self.tem.T_c = ( self.Qdot * (1 / (self.plate.h *
-            self.area) + 1 / (self.cool.h * self.area)) + self.cool.T) 
-                # redefining TEM cold side temperature (K) based on
-                # known heat flux
-                self.iterations = j
-
-            self.Qdot_nodes[i] = self.Qdot
-            # storing node heat transfer in array
-
-            self.exh.T_nodes[i] = self.exh.T
-            self.exh.h_nodes[i] = self.exh.h
-            self.cool.h_nodes[i] = self.cool.h
-            self.tem.T_h_nodes[i] = self.tem.T_h # hot side
-                                        # temperature (K) of TEM at
-                                        # each node
-            self.cool.T_nodes[i] = self.cool.T
-            self.tem.T_c_nodes[i] = self.tem.T_c
-            # cold side temperature (K) of TEM at each node.  
-            self.U_nodes[i] = self.U
-            self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
-            self.tem.eta_nodes[i] = self.tem.eta
-            self.tem.h_nodes[i] = self.tem.h
-
-            # redefining outlet temperature (K) for next node
-            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
-            self.exh.C )  
-            if self.type == 'parallel':
-                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
-            / self.cool.C )  
-            elif self.type == 'counter':
-                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
-            / self.cool.C ) 
-                
-        # redefining HX outlet/inlet temperatures (K)
+        # defining HX outlet/inlet temperatures (K)
         self.exh.T_outlet = self.exh.T
 
         if self.type == 'parallel':
