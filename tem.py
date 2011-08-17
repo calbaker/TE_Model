@@ -77,7 +77,9 @@ class Leg():
             self.solve_leg_once()
             self.T_h = sp.append(self.T_h, self.T[-1])
             i = i + 1
-        self.iterations = (i-1) 
+        self.iterations = (i-1)
+        self.P = sp.sum(self.P_flux_segment) * self.area
+        # Power for the entire leg (W)
         self.eta = self.P / (self.q[-1] * self.area)
         # Efficiency of leg
             
@@ -106,10 +108,6 @@ class Leg():
             self.T[j-1]) )
             self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
             self.J * self.rho * self.segment_length) )
-                                  
-        self.P = sp.sum(self.P_flux_segment) * self.area
-        # Power for the entire leg (W)
-
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
