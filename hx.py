@@ -68,15 +68,19 @@ class HX():
         self.cool.set_flow()
         # Wall stuff
         self.plate.set_h()
+        # The previous three commands need only execute once per
+        # node.  
         # TE stuff
         self.tem.solve_tem()
+        # this command needs to execute every time the BC's are
+        # changed.  
 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.tem.R_thermal +
         self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
             # coefficient (kW/m^2-K)
 
-        self.qdot = ( self.U * self.area * (self.exh.T - self.cool.T) )
-        # Approximation of hot side heat flux.  Error occurs because
+        self.qdot = ( self.U * (self.cool.T - self.exh.T) )
+        # Approximation of hot side heat flux (kW/m^2-K).  Error occurs because
         # heat flux is different on the cold side.  
 
         self.tem.T_c = self.cool.T - self.qdot / self.cool.h
@@ -93,17 +97,17 @@ class HX():
 
         self.qdot_iter[0] = self.qdot
         self.qdot_iter[1] = self.qdot * 1.1
-        for i in range(2):
-            self.qdot = self.qdot_iter[i]
+        for j in range(2):
+            self.qdot = self.qdot_iter[j]
             self.tem.T_h_goal = self.exh.T + self.qdot / self.exh.h
             # approximation of TE hot side temperatures
             self.tem.solve_tem()                                       
             self.tem.T_c = self.cool.T - self.tem.q_c / self.cool.h
             # approximation of TE cold side temperature (K)
             self.tem.solve_tem()
-            self.tem.q_c_conv = self.cool.h * (self.tem.T_c -
-        self.cool.T)
-            self.error_iter[i] = self.tem.q_c - self.tem.q_c_conv
+            self.tem.q_c_conv = self.cool.h * (self.cool.T -
+        self.tem.T_c) 
+            self.error_iter[j] = self.tem.q_c - self.tem.q_c_conv
 
         self.iterations = 0
         while ( -sp.absolute(self.tem.q_c_conv - self.tem.q_c) /
@@ -111,18 +115,18 @@ class HX():
             print "qdot = ", self.qdot
             print "error = ", self.tem.q_c - self.tem.q_c_conv
             self.iterations = self.iterations + 1
-            i = self.iterations + 1
-            self.qdot = ( self.qdot_iter[i-1] + (self.qdot_iter[i-1] -
-        self.qdot_iter[i-2]) / (self.error_iter[i-1] -
-        self.error_iter[i-2]) * self.error_iter[i-1] )
-            self.qdot_iter[i] = self.qdot
+            j = self.iterations + 1
+            self.qdot = ( self.qdot_iter[j-1] + (self.qdot_iter[j-1] -
+        self.qdot_iter[j-2]) / (self.error_iter[j-1] -
+        self.error_iter[j-2]) * self.error_iter[j-1] )
+            self.qdot_iter[j] = self.qdot
             self.tem.T_h_goal = self.exh.T + self.qdot / self.exh.h
             # approximation of TE hot side temperatures
             self.tem.solve_tem()                                       
             self.tem.T_c = self.cool.T - self.tem.q_c / self.cool.h
             # approximation of TE cold side temperature (K)
             self.tem.solve_tem()
-            self.error_iter[i] = self.tem.q_c - self.tem.q_c_conv            
+            self.error_iter[j] = self.tem.q_c - self.tem.q_c_conv            
             self.tem.q_c_conv = self.cool.h * (self.tem.T_c -
                 self.cool.T)
             
@@ -156,8 +160,8 @@ class HX():
             self.cool.T = ( self.cool.T + self.tem.q_c * self.area
                 / self.cool.C ) 
                 
-    def solve_hx(self): # solve parallel flow heat exchanger
-        """solves for performance of entire HX"""
+    def set_constants(self):
+        """Sets constants used at the HX level."""
         self.node_length = self.length / self.nodes
         # length (m) of each node
         self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
@@ -170,10 +174,13 @@ class HX():
         self.node_length/2, self.node_length)   
         # x coordinate (m)
         self.fix_geometry()
-        self.set_mdot_charge()
         self.exh.set_flow_geometry(self.exh.width) 
         self.cool.set_flow_geometry(self.cool.width)
-        
+
+    def solve_hx(self): # solve parallel flow heat exchanger
+        """solves for performance of entire HX"""
+        self.set_constants()
+        self.set_mdot_charge()
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
         # into and out of the heat exchanger.
@@ -211,7 +218,7 @@ class HX():
             # guess at cold side tem temperature (K)
             self.tem.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
-            self.solve_node(i)
+            self.solve_node(i=i)
 
         # defining HX outlet/inlet temperatures (K)
         self.exh.T_outlet = self.exh.T

@@ -36,7 +36,6 @@ hx.exh.fin.thickness = 5.e-3
 hx.exh.fins = 22
 
 hx.exh.T_inlet = 800.
-hx.exh.P = 100.
 hx.cool.T_inlet = 300.
 
 hx.solve_hx()

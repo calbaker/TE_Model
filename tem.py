@@ -77,8 +77,7 @@ class Leg():
             self.solve_leg_once()
             self.T_h = sp.append(self.T_h, self.T[-1])
             i = i + 1
-        self.iterations = ( "The leg required " + str(i-1) +
-        " iterations." )
+        self.iterations = (i-1) 
         self.eta = self.P / (self.q[-1] * self.area)
         # Efficiency of leg
             
