@@ -75,9 +75,60 @@ class HX():
         self.plate.R_thermal + self.cool.R_thermal )**-1 ) # overall heat transfer
             # coefficient (kW/m^2-K)
 
-        self.Qdot = ( self.U * self.area * (self.exh.T - self.cool.T) )
+        self.qdot = ( self.U * self.area * (self.exh.T - self.cool.T) )
+        # Approximation of hot side heat flux.  Error occurs because
+        # heat flux is different on the cold side.  
 
-        # Euler heat transfer (kW)
+        self.tem.T_c = self.cool.T - self.qdot / self.cool.h
+        # approximation of TE cold side temperature (K)
+        self.tem.T_h_goal = self.exh.T + self.qdot / self.exh.h
+        # approximation of TE hot side temperatures
+        self.tem.solve_tem()
+        self.tem.q_c_conv = self.cool.h * (self.tem.T_c - self.cool.T)
+
+        self.qdot_iter = sp.empty(10)
+        # array with 10 empty elements for storing values of qdot
+        # based on perturbations from intial guess.
+        self.error_iter = sp.empty(10)
+
+        self.qdot_iter[0] = self.qdot
+        self.qdot_iter[1] = self.qdot * 1.1
+        for i in range(2):
+            self.qdot = self.qdot_iter[i]
+            self.tem.T_h_goal = self.exh.T + self.qdot / self.exh.h
+            # approximation of TE hot side temperatures
+            self.tem.solve_tem()                                       
+            self.tem.T_c = self.cool.T - self.tem.q_c / self.cool.h
+            # approximation of TE cold side temperature (K)
+            self.tem.solve_tem()
+            self.tem.q_c_conv = self.cool.h * (self.tem.T_c -
+        self.cool.T)
+            self.error_iter[i] = self.tem.q_c - self.tem.q_c_conv
+
+        self.iterations = 0
+        while ( -sp.absolute(self.tem.q_c_conv - self.tem.q_c) /
+        self.tem.q_c > 0.01): 
+            print "qdot = ", self.qdot
+            print "error = ", self.tem.q_c - self.tem.q_c_conv
+            self.iterations = self.iterations + 1
+            i = self.iterations + 1
+            self.qdot = ( self.qdot_iter[i-1] + (self.qdot_iter[i-1] -
+        self.qdot_iter[i-2]) / (self.error_iter[i-1] -
+        self.error_iter[i-2]) * self.error_iter[i-1] )
+            self.qdot_iter[i] = self.qdot
+            self.tem.T_h_goal = self.exh.T + self.qdot / self.exh.h
+            # approximation of TE hot side temperatures
+            self.tem.solve_tem()                                       
+            self.tem.T_c = self.cool.T - self.tem.q_c / self.cool.h
+            # approximation of TE cold side temperature (K)
+            self.tem.solve_tem()
+            self.error_iter[i] = self.tem.q_c - self.tem.q_c_conv            
+            self.tem.q_c_conv = self.cool.h * (self.tem.T_c -
+                self.cool.T)
+            
+        self.Qdot = self.qdot * self.area
+        # heat transfer on hot side of node
+
         self.Qdot_nodes[i] = self.Qdot
         # storing node heat transfer in array
 
@@ -112,6 +163,7 @@ class HX():
         self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
                                         # through which heat flux
                                         # occurs in each node
+        self.tem.set_constants()
         self.leg_pairs = int(self.area / self.tem.area)
         # Number of TEM leg pairs per node
         self.x_dim = sp.arange(self.node_length/2, self.length +
@@ -159,7 +211,6 @@ class HX():
             # guess at cold side tem temperature (K)
             self.tem.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
-
             self.solve_node(i)
 
         # defining HX outlet/inlet temperatures (K)
