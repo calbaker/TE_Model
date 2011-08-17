@@ -91,10 +91,6 @@ class Leg():
         for j in sp.arange(1,self.segments):
             self.T_props = self.T[j-1]
             self.set_TEproperties()
-            # From Prem's code for comparison
-            # Ti = T0 + (dx/Kp0)*(J*T0*Ap0 - q0)
-            # qi = q0 + (Pp0*J*J*(1 + Ap0*Ap0*T0/(Pp0*Kp0)) - J*Ap0*q0/Kp0)*dx
-
             self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
             (self.J * self.T[j-1] * self.alpha - self.q[j-1]) )
             # determines temperature of current segment based on
