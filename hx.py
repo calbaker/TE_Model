@@ -4,6 +4,7 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as mpl
+from scipy.optimize import fsolve
 
 # User Defined Modules
 # In this directory
