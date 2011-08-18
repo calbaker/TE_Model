@@ -30,7 +30,11 @@ class HX():
         self.width = 10.e-2 # width (cm*10**-2) of HX duct. This model treats
             # duct as parallel plates for simpler modeling.
         self.length = 20.e-2 # length (m) of HX duct
-        self.nodes = 25 # number of nodes for numerical heat transfer model
+        self.nodes = 25 # number of nodes for numerical heat transfer
+                        # model
+        self.delta_T = 1. # change in temperature (K) used for
+                          # perturbation method
+        self.error_tol = 0.01 # tolerable percent error
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -56,6 +60,36 @@ class HX():
         within the exhaust module."""
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge * (1. - self.exh.bypass) 
+
+    def get_q_conv(self):
+        """Returns hot side and cold side heat flux values in an
+        array.  The first entry is hot side heat flux and the second
+        entry is cold side heat flux."""
+        q_h = self.U_hot * (self.tem.T_h - self.exh.T)
+        q_c = self.U_cold * (self.cool.T - self.tem.T_c)
+        return q_h, q_c
+
+    def perturb_q_h_conv(self):
+        """Returns derivative of hot side convection heat flux with
+        respect to hot side TE temperature."""
+        self.tem.T_h = self.tem.T_h - self.delta_T
+        q_low = self.get_q_conv()[0]
+        self.tem.T_h = self.tem.T_h + 2. * self.delta_T
+        q_high = self.get_q_conv()[0]
+        self.tem.T_h = self.tem.T_h - 1. * self.delta_T
+        dT_dq = (2. * self.delta_T) / (q_high - q_low)
+        return dT_dq
+
+    def perturb_q_c_conv(self):
+        """Returns derivative of cold side convection heat flux with
+        respect to cold side TE temperature."""
+        self.tem.T_c = self.tem.T_c - self.delta_T
+        q_low = self.get_q_conv()[1]
+        self.tem.T_c = self.tem.T_c + 2. * self.delta_T
+        q_high = self.get_q_conv()[1]
+        self.tem.T_c = self.tem.T_c - 1. * self.delta_T
+        dT_dq = (2. * self.delta_T) / (q_high - q_low) 
+        return dT_dq
 
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
@@ -87,8 +121,9 @@ class HX():
         # coolant  
         
         self.q_h = ( self.U * (self.cool.T - self.exh.T) )
-        # Approximation of hot side heat flux (kW/m^2-K).  Error
-        # occurs because heat flux is different on the cold side.
+        # Initial approximation of hot side heat flux (kW/m^2-K).
+        # Error occurs because heat flux is different on the cold
+        # side.
         self.tem.T_h_goal = self.exh.T + self.q_h / self.U_hot
         self.tem.solve_tem()
         self.error_hot = self.q_h - self.tem.q_h
@@ -98,13 +133,28 @@ class HX():
         # I think I need a perturbation method in here to rapidly
         # guess the right values for things.  I need to know
         # dT_te,c/dq_h and dq_h/dq_c.  
-        j = 0
-        k = 0
-        while ( sp.absolute(self.error_hot - self.q_h) / -self.q_h
-        > 0.01):
-            self.tem.T_c 
-            while ( sp.absolute(self.error_cold - self.q_c) / -self.q_c
-        > 0.01):
+        self.outer_loop = 0
+        while ( sp.absolute(self.error_hot) / -self.tem.q_h >
+                self.error_tol):   
+            self.dT_dq = self.perturb_q_h_conv()
+            self.tem.T_h_goal = ( self.tem.T_h_goal + self.dT_dq *
+                                  self.error_hot ) 
+            self.tem.solve_tem()
+            self.q_c = self.get_q_conv()[1]
+            self.error_cold = self.q_c - self.tem.q_c
+            self.inner_loop = 0
+            while ( sp.absolute(self.error_cold) / -self.tem.q_c >
+                    self.error_tol): 
+                self.dT_dq = self.perturb_q_c_conv()
+                self.tem.T_c = ( self.tem.T_c + self.dT_dq *
+                                 self.error_cold )
+                self.tem.solve_tem()
+                self.q_c = self.get_q_conv()[1]
+                self.error_cold = self.q_c - self.tem.q_c
+                self.inner_loop = self.inner_loop + 1
+            self.q_h = self.get_q_conv()[0]
+            self.error_hot = self.q_h - self.tem.q_h
+            self.outer_loop = self.outer_loop + 1
         
         self.Qdot = self.q_h * self.area
         # heat transfer on hot side of node
