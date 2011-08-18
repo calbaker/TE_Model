@@ -57,20 +57,6 @@ class HX():
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge * (1. - self.exh.bypass) 
 
-    def BC_iteration(self,j):
-        """Iterates inside solve_node.  Sets up boundary conditions
-        for solve_node to use."""
-        self.qdot = self.qdot_iter[j]
-        self.tem.T_h_goal = self.exh.T + self.qdot / self.exh.h
-        # approximation of TE hot side temperatures
-        self.tem.solve_tem()                                       
-        self.tem.T_c = self.cool.T - self.tem.q_c / self.cool.h
-        # approximation of TE cold side temperature (K)
-        self.tem.solve_tem()
-        self.tem.q_c_conv = self.cool.h * (self.cool.T - self.tem.T_c)  
-        self.error_iter[j] = self.tem.q_c - self.tem.q_c_conv
-        
-
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
@@ -89,53 +75,38 @@ class HX():
         # this command needs to execute every time the BC's are
         # changed.  
 
-        self.U = ( (self.exh.R_thermal + self.plate.R_thermal + self.tem.R_thermal +
-        self.plate.R_thermal + self.cool.R_thermal )**-1 )
+        self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
+        self.tem.R_thermal + self.plate.R_thermal +
+        self.cool.R_thermal )**-1 ) 
         # overall heat transfer coefficient (kW/m^2-K)
         self.U_hot = (self.exh.R_thermal + self.plate.R_thermal)**-1
+        # heat transfer coefficient (kW/m^-K) between TE hot side and
+        # exhaust  
         self.U_cold = (self.cool.R_thermal + self.plate.R_thermal)**-1
+        # heat transfer coefficient (kW/m^-K) between TE cold side and
+        # coolant  
         
-        self.qdot = ( self.U * (self.cool.T - self.exh.T) )
-        # # Approximation of hot side heat flux (kW/m^2-K).  Error occurs because
-        # # heat flux is different on the cold side.  
+        self.q_h = ( self.U * (self.cool.T - self.exh.T) )
+        # Approximation of hot side heat flux (kW/m^2-K).  Error
+        # occurs because heat flux is different on the cold side.
+        self.tem.T_h_goal = self.exh.T + self.q_h / self.U_hot
+        self.tem.solve_tem()
+        self.error_hot = self.q_h - self.tem.q_h
+        # amount by which convection model overpredicts hot side heat
+        # flux (kW/m^2-K) relative to TE model.  
 
-        # self.tem.T_c = self.cool.T - self.qdot / self.cool.h
-        # # approximation of TE cold side temperature (K)
-        # self.tem.T_h_goal = ( self.exh.T + self.qdot /
-        # ((self.exh.h**-1 = self.plate.h**-1)-1) )
-        # # approximation of TE hot side temperatures
-        # self.tem.solve_tem()
-        # self.tem.q_c_conv = self.cool.h * (self.tem.T_c - self.cool.T)
-
-        self.qdot_iter = sp.empty(10)
-        # array with 10 empty elements for storing values of qdot
-        # based on perturbations from intial guess.
-        self.error_iter = sp.empty(10)
-
-        self.qdot_iter[0] = self.qdot
-        self.qdot_iter[1] = self.qdot * 1.5
-        for j in range(2):
-            # for loop generates two data points to be used for
-            # interpolation
-            self.BC_iteration(j)
-
-        self.iterations = 0
-        j = 2
-        while ( -sp.absolute(self.error_iter[j-1]) /
-        self.tem.q_c > 0.01):
-            # while loop iterates until the cold side heat flux from
-            # the TE model is sufficiently close to the cold side heat
-            # flux from the convection model.  
-            self.iterations = self.iterations + 1
-            print self.iterations
-            j = j + 1
-            
-            self.qdot = ( self.qdot_iter[j-1] + (self.qdot_iter[j-1] -
-        self.qdot_iter[j-2]) / (self.error_iter[j-1] -
-        self.error_iter[j-2]) * self.error_iter[j-1] )
-            self.BC_iteration(j)
-
-        self.Qdot = self.qdot * self.area
+        # I think I need a perturbation method in here to rapidly
+        # guess the right values for things.  I need to know
+        # dT_te,c/dq_h and dq_h/dq_c.  
+        j = 0
+        k = 0
+        while ( sp.absolute(self.error_hot - self.q_h) / -self.q_h
+        > 0.01):
+            self.tem.T_c 
+            while ( sp.absolute(self.error_cold - self.q_c) / -self.q_c
+        > 0.01):
+        
+        self.Qdot = self.q_h * self.area
         # heat transfer on hot side of node
 
         self.Qdot_nodes[i] = self.Qdot
