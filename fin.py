@@ -11,6 +11,7 @@ os.chdir('/home/chad/Documents/UT Stuff/Research/Diesel TE/TE_Model')
 # User Defined Modules
 # In this directory
 import hx
+reload(hx)
 import tem
 
 print "Beginning execution..."
