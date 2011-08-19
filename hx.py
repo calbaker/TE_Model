@@ -35,7 +35,7 @@ class HX():
                         # model
         self.delta_T = 1. # change in temperature (K) used for
                           # perturbation method
-        self.error_tol = 0.01 # tolerable percent error
+        self.error_tol = 0.01 # tolerable error in heat flux (kW/m^2)
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -62,41 +62,28 @@ class HX():
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge * (1. - self.exh.bypass) 
 
-    def get_q_conv(self):
+    def get_error_hot(self,T_h):
         """Returns hot side and cold side heat flux values in an
         array.  The first entry is hot side heat flux and the second
         entry is cold side heat flux."""
-        q_h = self.U_hot * (self.tem.T_h - self.exh.T)
-        q_c = self.U_cold * (self.cool.T - self.tem.T_c)
-        return q_h, q_c
+        self.q_h = self.U_hot * (T_h - self.exh.T)
+        self.tem.T_h_goal = T_h
+        self.tem.solve_tem()
+        error_hot = self.q_h - self.tem.q_h
+        return error_hot
 
-    def perturb_q_h_conv(self):
-        """Returns derivative of hot side convection heat flux with
-        respect to hot side TE temperature."""
-        self.tem.T_h = self.tem.T_h - self.delta_T
-        q_low = self.get_q_conv()[0]
-        self.tem.T_h = self.tem.T_h + 2. * self.delta_T
-        q_high = self.get_q_conv()[0]
-        self.tem.T_h = self.tem.T_h - 1. * self.delta_T
-        dT_dq = (2. * self.delta_T) / (q_high - q_low)
-        return dT_dq
+    def get_error_cold(self,T_c):
+        """Returns cold side and cold side heat flux values in an
+        array.  The first entry is cold side heat flux and the second
+        entry is cold side heat flux."""
+        self.q_c = self.U_cold * (self.cool.T - T_c)
+        self.tem.T_c = T_c
+        self.tem.solve_tem()
+        error_cold = self.q_c - self.tem.q_c
+        return error_cold
 
-    def perturb_q_c_conv(self):
-        """Returns derivative of cold side convection heat flux with
-        respect to cold side TE temperature."""
-        self.tem.T_c = self.tem.T_c - self.delta_T
-        q_low = self.get_q_conv()[1]
-        self.tem.T_c = self.tem.T_c + 2. * self.delta_T
-        q_high = self.get_q_conv()[1]
-        self.tem.T_c = self.tem.T_c - 1. * self.delta_T
-        dT_dq = (2. * self.delta_T) / (q_high - q_low) 
-        return dT_dq
-
-    def solve_node(self,i):
-        """Solves for performance of streamwise slice of HX.  The
-        argument i is an indexing variable from a for loop within the
-        function solve_hx."""
-
+    def set_convection(self):
+        """Sets values for convection coefficients."""
         # Exhaust stuff
         self.exh.set_flow()
         # Coolant stuff
@@ -121,6 +108,15 @@ class HX():
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
         
+    def solve_node(self):
+        """Solves for performance of streamwise slice of HX.  The
+        argument i is an indexing variable from a for loop within the
+        function solve_hx."""
+        self.tem.T_c = self.cool.T
+        # guess at cold side tem temperature (K)
+        self.tem.T_h_goal = self.exh.T
+        # guess at hot side TEM temperature (K)
+        self.set_convection()
         self.q_h = ( self.U * (self.cool.T - self.exh.T) )
         # Initial approximation of hot side heat flux (kW/m^2-K).
         # Error occurs because heat flux is different on the cold
@@ -135,58 +131,25 @@ class HX():
         # guess the right values for things.  I need to know
         # dT_te,c/dq_h and dq_h/dq_c.  
         self.outer_loop = 0
-        while ( sp.absolute(self.error_hot) / -self.tem.q_h >
-                self.error_tol):   
-            self.dT_dq = self.perturb_q_h_conv()
-            self.tem.T_h_goal = ( self.tem.T_h_goal + self.dT_dq *
-                                  self.error_hot ) 
-            self.tem.solve_tem()
-            self.q_c = self.get_q_conv()[1]
-            self.error_cold = self.q_c - self.tem.q_c
+        while ( sp.absolute(self.error_hot) > self.error_tol):   
+            self.tem.T_h = fsolve(self.get_error_hot, self.tem.T_h)
+            self.error_cold = self.get_error_cold(self.tem.T_c)
             self.inner_loop = 0
-            while ( sp.absolute(self.error_cold) / -self.tem.q_c >
-                    self.error_tol): 
-                self.dT_dq = self.perturb_q_c_conv()
-                self.tem.T_c = ( self.tem.T_c + self.dT_dq *
-                                 self.error_cold )
-                self.tem.solve_tem()
-                self.q_c = self.get_q_conv()[1]
-                self.error_cold = self.q_c - self.tem.q_c
+            while ( sp.absolute(self.error_cold) > self.error_tol):  
+                self.tem.T_c = fsolve(self.get_error_cold,
+                                      self.tem.T_c)  
+                self.error_cold = self.get_error_cold(self.tem.T_c)
                 self.inner_loop = self.inner_loop + 1
-            self.q_h = self.get_q_conv()[0]
-            self.error_hot = self.q_h - self.tem.q_h
+                print "inner", self.inner_loop
+                print "T_c =", self.tem.T_c
+            print "T_h =", self.tem.T_h
+            self.error_hot = self.get_error_hot(self.tem.T_h_goal)
             self.outer_loop = self.outer_loop + 1
+            print "outer", self.outer_loop
         
         self.Qdot = self.q_h * self.area
         # heat transfer on hot side of node
 
-        self.Qdot_nodes[i] = self.Qdot
-        # storing node heat transfer in array
-
-        self.exh.T_nodes[i] = self.exh.T
-        self.exh.h_nodes[i] = self.exh.h
-        self.cool.h_nodes[i] = self.cool.h
-        self.tem.T_h_nodes[i] = self.tem.T_h # hot side
-                                        # temperature (K) of TEM at
-                                        # each node
-        self.cool.T_nodes[i] = self.cool.T
-        self.tem.T_c_nodes[i] = self.tem.T_c
-        # cold side temperature (K) of TEM at each node.  
-        self.U_nodes[i] = self.U
-        self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
-        self.tem.eta_nodes[i] = self.tem.eta
-        self.tem.h_nodes[i] = self.tem.h
-
-        # redefining temperature (K) for next node
-        self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
-            self.exh.C )   
-        if self.type == 'parallel':
-            self.cool.T = ( self.cool.T - self.tem.q_c * self.area
-                / self.cool.C )  
-        elif self.type == 'counter':
-            self.cool.T = ( self.cool.T + self.tem.q_c * self.area
-                / self.cool.C ) 
-                
     def set_constants(self):
         """Sets constants used at the HX level."""
         self.node_length = self.length / self.nodes
@@ -230,6 +193,12 @@ class HX():
                                      # temperature (K) in each node 
         self.cool.h_nodes = ZEROS.copy() 
         self.U_nodes = ZEROS.copy() 
+        self.U_hot_nodes = ZEROS.copy() 
+        self.U_cold_nodes = ZEROS.copy()
+        self.q_h_nodes = ZEROS.copy()
+        self.q_c_nodes = ZEROS.copy()
+        self.tem.q_h_nodes = ZEROS.copy()
+        self.tem.q_c_nodes = ZEROS.copy()
         self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
         self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
@@ -241,15 +210,41 @@ class HX():
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
             print "\nSolving node", i
-            self.tem.T_c = self.cool.T
-            # guess at cold side tem temperature (K)
-            self.tem.T_h_goal = self.exh.T
-            # guess at hot side TEM temperature (K)
-            self.solve_node(i=i)
+            self.solve_node()
 
+            self.Qdot_nodes[i] = self.Qdot
+            # storing node heat transfer in array
+            self.exh.T_nodes[i] = self.exh.T
+            self.exh.h_nodes[i] = self.exh.h
+            self.cool.h_nodes[i] = self.cool.h
+            self.q_h_nodes[i] = self.q_h
+            self.q_c_nodes[i] = self.q_c
+            self.tem.q_h_nodes[i] = self.tem.q_h
+            self.tem.q_c_nodes[i] = self.tem.q_c
+            self.tem.T_h_nodes[i] = self.tem.T_h
+            # hot side temperature (K) of TEM at each node 
+            self.cool.T_nodes[i] = self.cool.T
+            self.tem.T_c_nodes[i] = self.tem.T_c
+            # cold side temperature (K) of TEM at each node.  
+            self.U_nodes[i] = self.U
+            self.U_hot_nodes[i] = self.U_hot
+            self.U_cold_nodes[i] = self.U_cold
+            self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
+            self.tem.eta_nodes[i] = self.tem.eta
+            self.tem.h_nodes[i] = self.tem.h
+
+            # redefining temperatures (K) for next node
+            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+                self.exh.C )   
+            if self.type == 'parallel':
+                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+                    / self.cool.C )  
+            elif self.type == 'counter':
+                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+                    / self.cool.C ) 
+                
         # defining HX outlet/inlet temperatures (K)
         self.exh.T_outlet = self.exh.T
-
         if self.type == 'parallel':
             self.cool.T_outlet = self.cool.T
         elif self.type == 'counter':
@@ -266,3 +261,10 @@ class HX():
         self.power_net = self.tem.power - self.Wdot_pumping 
         self.eta_1st = self.power_net / self.Qdot
 
+    def setup(self):
+        """Sets up variables that must be defined before running
+        model.  Useful for terminal."""
+        self.exh.T = 800.
+        self.cool.T = 300. 
+        self.set_mdot_charge()
+        self.set_constants()
