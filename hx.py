@@ -35,7 +35,7 @@ class HX():
                         # model
         self.delta_T = 1. # change in temperature (K) used for
                           # perturbation method
-        self.error_tol = 0.01 # tolerable error in heat flux (kW/m^2)
+        self.error_tol = 0.01 # tolerable percent error in heat flux 
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -117,35 +117,30 @@ class HX():
         self.tem.T_h_goal = self.exh.T
         # guess at hot side TEM temperature (K)
         self.set_convection()
-        self.q_h = ( self.U * (self.cool.T - self.exh.T) )
-        # Initial approximation of hot side heat flux (kW/m^2-K).
-        # Error occurs because heat flux is different on the cold
-        # side.
-        self.tem.T_h_goal = self.exh.T + self.q_h / self.U_hot
-        self.tem.solve_tem()
-        self.error_hot = self.q_h - self.tem.q_h
+        # self.q_h = ( self.U * (self.cool.T - self.exh.T) )
+        # # Initial approximation of hot side heat flux (kW/m^2-K).
+        # # Error occurs because heat flux is different on the cold
+        # # side.
+        # self.tem.T_h_goal = self.exh.T + self.q_h / self.U_hot
+        # self.tem.solve_tem()
+        self.error_hot = 100.  
         # amount by which convection model overpredicts hot side heat
         # flux (kW/m^2-K) relative to TE model.  
 
         # I think I need a perturbation method in here to rapidly
         # guess the right values for things.  I need to know
         # dT_te,c/dq_h and dq_h/dq_c.  
-        self.outer_loop = 0
-        while ( sp.absolute(self.error_hot) > self.error_tol):   
-            self.tem.T_h = fsolve(self.get_error_hot, self.tem.T_h)
+        self.loop_count = 0
+        while ( sp.absolute(self.error_hot / self.tem.q_h) >
+        self.error_tol ):  
+            self.tem.T_h_goal = fsolve(self.get_error_hot,
+                                       self.tem.T_h) 
+            self.tem.solve_tem()
+            self.tem.T_c = fsolve(self.get_error_cold, self.tem.T_c) 
+            self.tem.solve_tem()
             self.error_cold = self.get_error_cold(self.tem.T_c)
-            self.inner_loop = 0
-            while ( sp.absolute(self.error_cold) > self.error_tol):  
-                self.tem.T_c = fsolve(self.get_error_cold,
-                                      self.tem.T_c)  
-                self.error_cold = self.get_error_cold(self.tem.T_c)
-                self.inner_loop = self.inner_loop + 1
-                print "inner", self.inner_loop
-                print "T_c =", self.tem.T_c
-            print "T_h =", self.tem.T_h
             self.error_hot = self.get_error_hot(self.tem.T_h_goal)
-            self.outer_loop = self.outer_loop + 1
-            print "outer", self.outer_loop
+            self.loop_count = self.loop_count + 1
         
         self.Qdot = self.q_h * self.area
         # heat transfer on hot side of node
