@@ -117,12 +117,15 @@ class TEModule():
         self.Ntype.material = 'ideal BiTe n-type'
         self.area_void = (1.e-3)**2 # void area (m^2)
         self.length = 1.e-2 # default leg height (m)
+        self.segments = 100
 
     def set_constants(self):
         """Sets constants that are calculated."""
         self.area = self.Ntype.area + self.Ptype.area + self.area_void 
         self.Ntype.length = self.length
         self.Ptype.length = self.length
+        self.Ptype.segments = self.segments
+        self.Ntype.segments = self.segments
         self.Ptype.I = -self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient
@@ -135,8 +138,6 @@ class TEModule():
         self.Ntype.T_h_goal = self.T_h_goal
         self.Ptype.T_c = self.T_c
         self.Ntype.T_c = self.T_c
-        self.Ptype.segments = self.segments
-        self.Ntype.segments = self.segments
         self.Ntype.solve_leg()
         self.Ptype.solve_leg()
         self.T_h = self.Ntype.T[-1]
