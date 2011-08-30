@@ -20,7 +20,7 @@ class Leg():
         """this method sets everything that is constant and
         initializes some arrays""" 
         self.I = 0.5 # current (A)
-        self.segments = 100.  
+        self.segments = 50
         # number of segments for finite difference model
         self.length = 1.e-2  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
@@ -117,7 +117,7 @@ class TEModule():
         self.Ntype.material = 'ideal BiTe n-type'
         self.area_void = (1.e-3)**2 # void area (m^2)
         self.length = 1.e-2 # default leg height (m)
-        self.segments = 100
+        self.segments = 50
 
     def set_constants(self):
         """Sets constants that are calculated."""
