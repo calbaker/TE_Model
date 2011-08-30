@@ -6,7 +6,6 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import os
 
-os.chdir('/home/chad/Documents/UT Stuff/Research/Diesel TE/TE_Model')
 
 # User Defined Modules
 # In this directory
