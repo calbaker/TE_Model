@@ -104,7 +104,6 @@ class Leg():
             self.T[j-1]) )
             self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
             self.J * self.rho * self.segment_length) )
-            print "segment",j
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
