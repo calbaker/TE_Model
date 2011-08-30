@@ -50,6 +50,7 @@ class Leg():
         # initial array for power flux in segment (W/m^2)
         self.segment_length = self.length / self.segments
         # length of each segment (m)
+        self.J = self.I / self.area # (Amps/m^2)
         self.T[0] = self.T_c
         self.T_props = self.T[0]
         self.set_TEproperties()
@@ -86,7 +87,6 @@ class Leg():
     def solve_leg_once(self):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
-        self.J = self.I / self.area # (Amps/m^2)
         # for loop for iterating over segments
         for j in sp.arange(1,self.segments):
             self.T_props = self.T[j-1]
