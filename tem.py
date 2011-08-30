@@ -104,6 +104,7 @@ class Leg():
             self.T[j-1]) )
             self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
             self.J * self.rho * self.segment_length) )
+            print "segment",j
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
@@ -135,6 +136,8 @@ class TEModule():
         self.Ntype.T_h_goal = self.T_h_goal
         self.Ptype.T_c = self.T_c
         self.Ntype.T_c = self.T_c
+        self.Ptype.segments = self.segments
+        self.Ntype.segments = self.segments
         self.Ntype.solve_leg()
         self.Ptype.solve_leg()
         self.T_h = self.Ntype.T[-1]
