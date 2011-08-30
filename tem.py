@@ -20,7 +20,7 @@ class Leg():
         """this method sets everything that is constant and
         initializes some arrays""" 
         self.I = 0.5 # current (A)
-        self.segments = 10
+        self.segments = 100.  
         # number of segments for finite difference model
         self.length = 1.e-2  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
