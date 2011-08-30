@@ -10,8 +10,11 @@ from scipy.optimize import fsolve
 # In this directory
 import engine
 import tem
+reload(tem)
 import exhaust
+reload(exhaust)
 import coolant
+reload(coolant)
 
 
 class _PlateWall():
