@@ -19,7 +19,6 @@ area = (0.002)**2
 length = 5.e-3
 
 hx = hx.HX()
-hx.tem.segments = 25
 hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
