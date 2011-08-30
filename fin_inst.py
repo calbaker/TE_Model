@@ -11,7 +11,6 @@ import os
 # In this directory
 import hx
 reload(hx)
-import tem
 
 print "Beginning execution..."
 
