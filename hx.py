@@ -257,7 +257,7 @@ class HX():
         self.Wdot_pumping = self.exh.Wdot_pumping + self.cool.Wdot_pumping
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power - self.Wdot_pumping 
-        self.eta_1st = self.power_net / self.Qdot
+        self.eta_1st = -self.power_net / self.Qdot
 
     def setup(self):
         """Sets up variables that must be defined before running
