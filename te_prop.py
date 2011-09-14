@@ -180,5 +180,5 @@ def set_TEproperties(self):
     if self.material == 'none':
         self.k = 1.e9 # really high thermal condutivity (W/m-K) so
                       # that resistance is zero
-        self.alpha = 1.e-9. # dummy value
+        self.alpha = 1.e-9 # dummy value
         self.rho = 1. # dummy value
