@@ -24,25 +24,23 @@ hx.cool.mdot = mdot_cool / 60. * 3.8
 hx.cool.height = 0.5e-2
 hx.tem.I = 4.5
 hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
+hx.tem.Ntype.material = 'none'
 hx.tem.Ntype.area = area
-hx.tem.Ptype.material = 'HMS'
+hx.tem.Ptype.material = 'none'
 hx.tem.Ptype.area = area * 2. 
 hx.tem.area_void = 25. * area
-hx.type = 'parallel'
+hx.type = 'counter'
 hx.exh.P = 100.
 
 # things that must be consistent with experimental independent
 # variables 
-hx.cool.T_inlet = 27.3 + 273.15 # nearly constant throughout
-                                # experiment 
 
+hx.cool.T_outlet = 27.3 + 273.15 
 hx.exh.T_inlet = 800.
 hx.solve_hx()
 
 print "\nProgram finished."
-print "\nPlotting..."
-
+1
 # Plot configuration
 FONTSIZE = 20
 plt.rcParams['axes.labelsize'] = FONTSIZE
