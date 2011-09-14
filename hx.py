@@ -133,8 +133,13 @@ class HX():
             self.tem.T_c = fsolve(self.get_error_cold, self.tem.T_c) 
             self.tem.solve_tem()
             self.error_cold = self.get_error_cold(self.tem.T_c)
-            self.error_hot = self.get_error_hot(self.tem.T_h_goal)
+            self.error_hot = self.get_error_hot(self.tem.T_h)
             self.loop_count = self.loop_count + 1
+
+        # these need to run out here for the pure conduction case in
+        # which the loop is not active
+        self.error_hot = self.get_error_hot(self.tem.T_h)
+        self.error_cold = self.get_error_cold(self.tem.T_c)
         
         self.Qdot = self.q_h * self.area
         # heat transfer on hot side of node
