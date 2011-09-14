@@ -164,7 +164,6 @@ class HX():
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
         self.set_constants()
-        self.set_mdot_charge()
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
         # into and out of the heat exchanger.
