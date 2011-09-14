@@ -116,7 +116,7 @@ class TEModule():
         self.Ptype.material = 'ideal BiTe p-type'
         self.Ntype.material = 'ideal BiTe n-type'
         self.area_void = (1.e-3)**2 # void area (m^2)
-        self.length = 1.e-2 # default leg height (m)
+        self.length = 2.e-3 # default leg height (m)
         self.segments = 50
 
     def set_constants(self):
