@@ -10,14 +10,19 @@ import hx
 
 print "Beginning execution..."
 
+area = (0.002)**2
+length = 2.e-3
+
 hx = hx.HX()
-hx.width = 9.5e-2
+hx.width = 9.e-2
+hx.length = 0.195
 hx.exh.bypass = 0.
 hx.exh.height = 1.e-2
 mdot_cool = 4. * hx.cool.rho # coolant flow rate (GPM) 
 hx.cool.mdot = mdot_cool / 60. * 3.8
-hx.length = 0.195
+hx.cool.height = 0.5e-2
 hx.tem.I = 4.5
+hx.tem.length = length
 hx.tem.Ntype.material = 'MgSi'
 hx.tem.Ntype.area = area
 hx.tem.Ptype.material = 'HMS'
