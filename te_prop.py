@@ -165,3 +165,20 @@ def set_TEproperties(self):
         self.rho = 8.89 * 1.e-6
         # electrical resistivity (Ohm-m)
 
+    # Alumina with pure conduction
+    if self.material == 'alumina':
+        self.k = 1.5 # Thermal conductivity (W/m-K) this needs to be
+                     # updated to what it actually is
+        self.alpha = 0. # Seebeck coefficient (V/K)
+        # I made this negative even though it's for a p-type
+        # material.  This is just for a hypothetical model.
+        self.rho = 1. # dummy value since I don't know what it
+                      # actually is and it doesn't matter.  
+        # electrical resistivity (Ohm-m)
+
+    # Direct contact between hot and cold side
+    if self.material == 'none':
+        self.k = 1.e9 # really high thermal condutivity (W/m-K) so
+                      # that resistance is zero
+        self.alpha = 0. # dummy value
+        self.rho = 1. # dummy value
