@@ -6,6 +6,7 @@ import matplotlib.pyplot as mpl
 
 # User defined modules
 import te_prop
+reload(te_prop)
 
 def set_ZT(self):
     """Sets ZT based on formula
