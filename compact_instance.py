@@ -40,7 +40,7 @@ hx.exh.T_inlet = 800.
 hx.solve_hx()
 
 print "\nProgram finished."
-1
+
 # Plot configuration
 FONTSIZE = 20
 plt.rcParams['axes.labelsize'] = FONTSIZE
