@@ -130,9 +130,6 @@ class HX():
         # amount by which convection model overpredicts hot side heat
         # flux (kW/m^2-K) relative to TE model.  
 
-        # I think I need a perturbation method in here to rapidly
-        # guess the right values for things.  I need to know
-        # dT_te,c/dq_h and dq_h/dq_c.  
         self.loop_count = 0
         while ( sp.absolute(self.error_hot / self.tem.q_h) >
         self.error_tol ):  
