@@ -257,7 +257,7 @@ class HX():
 
     def setup(self):
         """Sets up variables that must be defined before running
-        model.  Useful for terminal."""
+        model.  Useful for terminal.  Not necessary elsewhere."""
         self.exh.T = 800.
         self.cool.T = 300. 
         self.set_mdot_charge()
