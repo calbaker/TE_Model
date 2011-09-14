@@ -120,12 +120,6 @@ class HX():
         self.tem.T_h_goal = self.exh.T
         # guess at hot side TEM temperature (K)
         self.set_convection()
-        # self.q_h = ( self.U * (self.cool.T - self.exh.T) )
-        # # Initial approximation of hot side heat flux (kW/m^2-K).
-        # # Error occurs because heat flux is different on the cold
-        # # side.
-        # self.tem.T_h_goal = self.exh.T + self.q_h / self.U_hot
-        # self.tem.solve_tem()
         self.error_hot = 100.  
         # amount by which convection model overpredicts hot side heat
         # flux (kW/m^2-K) relative to TE model.  
