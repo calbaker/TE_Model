@@ -35,9 +35,15 @@ hx.exh.P = 100.
 # things that must be consistent with experimental independent
 # variables 
 
+# I need to use xlrd to import the flow and temperature data from the
+# experiment.  Then I can solve the model for all the operating
+# conditions.  Then I'll plot it to compare it to the experimental
+# data.
+
+# need a two nested for loop here
 hx.cool.T_outlet = 27.3 + 273.15 
 hx.exh.T_inlet = 800.
-hx.solve_hx()
+hx.exh.mdot = 
 
 print "\nProgram finished."
 
