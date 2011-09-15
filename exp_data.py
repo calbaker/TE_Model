@@ -15,7 +15,7 @@ import properties as prop
 p = np.poly1d([3.23, 19.0])
 air = prop.ideal_gas()
 
-FILENAME = 'empty heat exchanger.xls'
+FILENAME = 'alumina paper.xls'
 worksheet = xlrd.open_workbook(filename=FILENAME).sheet_by_index(0)
 
 H2Oin = np.array(worksheet.col_values(0, start_rowx=4, end_rowx=16))
@@ -70,6 +70,7 @@ plt.grid()
 plt.xlabel('Flow Rate (L/s)')
 plt.ylabel('Exhaust Inlet Temp (K)')
 # plt.title('Species Conversion Efficiency')
-plt.savefig('Plots/heat v T1 and Vdot.pdf')
+plt.savefig('Plots/heat v T1 and Vdot alumina.pdf')
+plt.savefig('Plots/heat v T1 and Vdot alumina.png')
 
 plt.show()
