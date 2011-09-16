@@ -141,8 +141,9 @@ class HX():
         self.error_hot = self.get_error_hot(self.tem.T_h)
         self.error_cold = self.get_error_cold(self.tem.T_c)
         
-        self.Qdot = self.q_h * self.area
-        # heat transfer on hot side of node
+        self.Qdot = -self.q_h * self.area
+        # heat transfer on hot side of node, positive values indicates
+        # heat transfer from hot to cold
 
     def set_constants(self):
         """Sets constants used at the HX level."""
