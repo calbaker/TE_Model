@@ -37,6 +37,7 @@ hx.exh.fins = 22
 hx.exh.T_inlet = 800.
 hx.cool.T_inlet = 300.
 
+hx.set_mdot_charge()
 hx.solve_hx()
 
 
