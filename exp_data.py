@@ -15,7 +15,7 @@ import properties as prop
 p = np.poly1d([3.23, 19.0])
 air = prop.ideal_gas()
 
-FILENAME = 'alumina paper.xls'
+FILENAME = 'empty heat exchanger.xls'
 worksheet = xlrd.open_workbook(filename=FILENAME).sheet_by_index(0)
 
 H2Oin = np.array(worksheet.col_values(0, start_rowx=4, end_rowx=16))
@@ -63,6 +63,7 @@ LEVELS = np.arange(0, .75, 0.05)
 FCS = plt.contourf(flow_shaped, T1_shaped, heat_exh_shaped) 
 CB = plt.colorbar(FCS, orientation='vertical')
 CB.set_label(label='Heat Transfer (kW)')
+plt.scatter(flow,T_exh_in)
 plt.grid()
 # plt.subplots_adjust(left=0.18)
 # plt.subplots_adjust(bottom=0.15)
@@ -70,7 +71,7 @@ plt.grid()
 plt.xlabel('Flow Rate (L/s)')
 plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
 # plt.title('Species Conversion Efficiency')
-plt.savefig('Plots/heat v T1 and Vdot alumina.pdf')
-plt.savefig('Plots/heat v T1 and Vdot alumina.png')
+plt.savefig('Plots/heat v T1 and Vdot.pdf')
+plt.savefig('Plots/heat v T1 and Vdot.png')
 
 plt.show()
