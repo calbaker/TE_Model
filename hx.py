@@ -40,14 +40,14 @@ class HX():
                           # perturbation method
         self.error_tol = 0.01 # tolerable percent error in heat flux 
 
-        # initialization of sub classes
-        self.cool = coolant.Coolant()
-        self.exh = exhaust.Exhaust()
-        self.tem = tem.TEModule()
-        self.plate = _PlateWall()
-        self.cummins = engine.Engine()
-
         self.fix_geometry()
+
+    # initialization of sub classes
+    cool = coolant.Coolant()
+    exh = exhaust.Exhaust()
+    tem = tem.TEModule()
+    plate = _PlateWall()
+    cummins = engine.Engine()
 
     def fix_geometry(self):
         """Makes sure that common geometry like width and length is

@@ -5,7 +5,7 @@ for use with model."""
 import matplotlib.pyplot as plt
 import xlrd
 import numpy as np
-from scipy import interpolate 
+import scipy.interpolate as interp
 
 # User Defined Modules
 # In this directory
@@ -18,8 +18,8 @@ class FlowData():
     def __init__(self):
         """Sets default file name, start row, and end row.""" 
         self.filename_flow = 'manometer calibration.xls'
-        self.start_rowx = 1
-        self.end_rowx = 10
+        self.start_rowx = 2
+        self.end_rowx = 11
 
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa        
 
@@ -34,7 +34,7 @@ class FlowData():
         self.steel = np.array(worksheet.col_values(1,
         start_rowx=self.start_rowx, end_rowx=self.end_rowx))
         # position of steel ball in rotameter controlling propane flow 
-        self.pressure_guage = np.array(worksheet.col_values(2,
+        self.pressure_C3H8 = np.array(worksheet.col_values(2,
         start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
         # pressure guage reading (psi)
         self.C3H8 = np.array(worksheet.col_values(3,
@@ -48,17 +48,30 @@ class FlowData():
         self.C3H8flow2psi = 12.303 * self.steel + 46.823
         # propane flow (mL/min) with 2 psi back pressure
         self.C3H8flow = ( self.C3H8flow0psi - (self.C3H8flow0psi -
-        self.C3H8flow2psi) / 2. * self.C3H8pressure ) 
+        self.C3H8flow2psi) / 2. * self.pressure_C3H8 ) 
         # propane flow (mL/min) based on linear interpolation for pressure
-        self.flow = ( self.C3H8flow / (self.C3H8conc * 1.e-6) /
-        1000. / 60. ) 
+        self.flow = ( self.C3H8flow / (self.C3H8 * 1.e-6) / 1000. /
+        60. )  
         # exhaust flow (L/s)
         self.pressure_drop = ( (self.reading - self.datum) * 2. *
         self.H2O_kPa )
         # pressure drop (kPa) in heat exchanger
 
+    def spline_rep(self):
+        """Determines spline parameters to fit flow to pressure drop."""
+        self.import_flow_data()
+        self.manipulate_flow_data()
+        self.flow.sort()
+        self.pressure_drop.sort()
+        self.spline = interp.splrep(self.pressure_drop, self.flow)  
+
 class HeatData(hx.HX):
     """Class for handling data from heat exchanger experiments."""
+
+    def __init__(self):
+        self.start_rowx = 4
+        self.end_rowx = 15
+        
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa
     flow_data = FlowData()
 
@@ -86,23 +99,21 @@ class HeatData(hx.HX):
 
     def manipulate_heat_data(self):
         """Gets heat exchanger data ready for doing stuff to it.""" 
-        self.import_heat_data()
         self.exh.T = ( 0.5 * (self.exh.T_inlet_array +
         self.exh.T_outlet_array) )
         self.exh.set_TempPres_dependents()
 
-    def spline_fit(self):
-        """Spline fits flow to pressure drop."""
-        self.flow_data.import_flow_data()
-        self.flow_data.manipulate_flow_data()
-        self.spline = splrep(self.flow_data.pressure_drop,
-        self.flow_data.flow) 
-        self.flow = splev(self.pressure_drop, self.spline)
+    def spline_eval(self):
+        """Evaluates spline fit parameters to fit flow to pressure
+        drop. """
+        self.flow_data.spline_rep()
+        self.flow = interp.splev(self.pressure_drop,
+        self.flow_data.spline)  
 
     def set_Qdot(self):
         """Sets heat transfer based on mdot c_p delta T."""
         self.manipulate_heat_data()
-        self.exh.Qdot_exp = ( self.flow * 1.e-3 * exh.rho *
-        exh.c_p_air * (self.exh.T_inlet_array -
-        self.exh.T_outlet_array) ) 
+        self.exh.Qdot_exp = ( self.flow * 1.e-3 *
+        self.exh.rho * self.exh.c_p_air * (self.exh.T_inlet_array -
+        self.exh.T_outlet_array) )    
 
