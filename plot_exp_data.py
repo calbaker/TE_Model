@@ -11,38 +11,12 @@ import numpy as np
 import hx
 reload(hx)
 import properties as prop
+import exp_data
 
-p = np.poly1d([3.23, 19.0])
-air = prop.ideal_gas()
-
-FILENAME = 'empty heat exchanger.xls'
-worksheet = xlrd.open_workbook(filename=FILENAME).sheet_by_index(0)
-
-H2Oin = np.array(worksheet.col_values(0, start_rowx=4, end_rowx=16))
-H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa
-datum = -11.0 # manometer datum (in)
-pressure_drop = (H2Oin - datum) * 2. * H2O_kPa
-# pressure drop across heat exchanger (kPa)
-
-flow = p(pressure_drop) # exhaust flow rate (L/s)
-
-T_exh_in = np.array(worksheet.col_values(2, start_rowx=4,
-                                         end_rowx=16))
-T_exh_out = np.array(worksheet.col_values(3, start_rowx=4,
-                                         end_rowx=16))
-T_cool_in = np.array(worksheet.col_values(5, start_rowx=4,
-                                         end_rowx=16))
-T_cool_out = np.array(worksheet.col_values(4, start_rowx=4,
-                                         end_rowx=16))
-
-air.P = 100.
-
-air.T = 0.5 * (T_exh_in + T_exh_out)
-air.set_TempPres_dependents()
-
-deltaT_exh = T_exh_in - T_exh_out
-deltaT_cool = T_cool_in - T_cool_out
-heat_exh = flow * 1.e-3 * air.rho * air.c_p_air * deltaT_exh
+hx = exp_data.HeatData()
+hx.filename_heat = 'alumina paper.xls'
+hx.spline_fit()
+hx.set_Qdot()
 
 FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
@@ -53,9 +27,9 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 8
 
-flow_shaped = flow.reshape([3,4])
-T1_shaped = T_exh_in.reshape([3,4])
-heat_exh_shaped = heat_exh.reshape([3,4])
+flow_shaped = hx.flow.reshape([3,4])
+T1_shaped = hx.exh.T_inlet_array.reshape([3,4]) 
+heat_exh_shaped = hx.Qdot_exp.reshape([3,4])
 
 fig1 = plt.figure()
 TICKS = np.arange(0,1.1,0.1)
