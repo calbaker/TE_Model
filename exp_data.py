@@ -20,6 +20,7 @@ class FlowData():
         self.filename_flow = 'manometer calibration.xls'
         self.start_rowx = 2
         self.end_rowx = 11
+        self.poly_order = 1
 
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa        
 
@@ -63,14 +64,22 @@ class FlowData():
         self.manipulate_flow_data()
         self.flow.sort()
         self.pressure_drop.sort()
-        self.spline = interp.splrep(self.pressure_drop, self.flow)  
+        self.spline = interp.splrep(self.pressure_drop, self.flow)
+
+    def poly_rep(self):
+        """Determines polynomial coefficients to produce fit for flow
+        v. pressure drop data."""
+        self.import_flow_data()
+        self.manipulate_flow_data()
+        self.poly1d = np.poly1d(np.polyfit(self.pressure_drop,
+        self.flow, self.poly_order))
 
 class HeatData(hx.HX):
     """Class for handling data from heat exchanger experiments."""
 
     def __init__(self):
         self.start_rowx = 4
-        self.end_rowx = 15
+        self.end_rowx = 16
         
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa
     flow_data = FlowData()
@@ -82,20 +91,21 @@ class HeatData(hx.HX):
     xlrd.open_workbook(filename=self.filename_heat).sheet_by_index(0)
         )  
         self.reading = np.array(worksheet.col_values(0,
-    start_rowx=self.start_rowx, end_rowx=16)) 
+    start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
         self.datum = worksheet.cell_value(2,4) # manometer datum (in) 
         self.pressure_drop = ( (self.reading - self.datum) * 2. *
         self.H2O_kPa )
         # pressure drop across heat exchanger (kPa)
-
+        self.torque = np.array(worksheet.col_values(1,
+        start_rowx=self.start_rowx,  end_rowx=self.end_rowx))
         self.exh.T_inlet_array = np.array(worksheet.col_values(2,
-            start_rowx=self.start_rowx, end_rowx=16)) 
+            start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
         self.exh.T_outlet_array = np.array(worksheet.col_values(3,
-            start_rowx=self.start_rowx, end_rowx=16)) 
+            start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
         self.cool.T_inlet = np.array(worksheet.col_values(5,
-            start_rowx=self.start_rowx, end_rowx=16)) 
+            start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
         self.cool.T_outlet = np.array(worksheet.col_values(4,
-            start_rowx=self.start_rowx, end_rowx=16))  
+            start_rowx=self.start_rowx, end_rowx=self.end_rowx))  
 
     def manipulate_heat_data(self):
         """Gets heat exchanger data ready for doing stuff to it.""" 
@@ -110,6 +120,11 @@ class HeatData(hx.HX):
         self.flow = interp.splev(self.pressure_drop,
         self.flow_data.spline)  
 
+    def poly_eval(self):
+        """Evaluates polynomial fit of flow to pressure."""
+        self.flow_data.poly_rep()
+        self.flow = self.flow_data.poly1d(self.pressure_drop) 
+
     def set_Qdot(self):
         """Sets heat transfer based on mdot c_p delta T."""
         self.manipulate_heat_data()
@@ -117,3 +132,4 @@ class HeatData(hx.HX):
         self.exh.rho * self.exh.c_p_air * (self.exh.T_inlet_array -
         self.exh.T_outlet_array) )    
 
+    
