@@ -51,4 +51,18 @@ plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
 plt.savefig('Plots/heat v T1 and Vdot.pdf')
 plt.savefig('Plots/heat v T1 and Vdot.png')
 
+fig2 = plt.figure()
+plt.plot(flow_shaped[0,:], heat_exh_shaped[0,:], '-x',
+            label=str(torque_shaped[0,0])+'ft-lbs') 
+plt.plot(flow_shaped[1,:], heat_exh_shaped[1,:], '-.s',
+            label=str(torque_shaped[1,0])+'ft-lbs') 
+plt.plot(flow_shaped[2,:], heat_exh_shaped[2,:], '--d',
+            label=str(torque_shaped[2,0])+'ft-lbs') 
+plt.xlabel('Flow Rate (L/s)')
+plt.ylabel('Heat Transfer (kW)')
+plt.grid()
+plt.legend(loc='best')
+plt.savefig('Plots/heat v Vdot.pdf')
+plt.savefig('Plots/heat v Vdot.png')
+
 plt.show()
