@@ -128,8 +128,9 @@ class HeatData(hx.HX):
     def set_Qdot(self):
         """Sets heat transfer based on mdot c_p delta T."""
         self.manipulate_heat_data()
+        self.exh.delta_T = ( self.exh.T_inlet_array -
+        self.exh.T_outlet_array ) 
         self.exh.Qdot_exp = ( self.flow * 1.e-3 *
-        self.exh.rho * self.exh.c_p_air * (self.exh.T_inlet_array -
-        self.exh.T_outlet_array) )    
+        self.exh.rho * self.exh.c_p_air * self.exh.delta_T ) 
 
     
