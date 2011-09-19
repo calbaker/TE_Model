@@ -29,10 +29,10 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 8
 
-flow_shaped = hx.flow.reshape([3,4])
+flow_shaped = hx.exh.flow.reshape([3,4])
 T1_shaped = hx.exh.T_inlet_array.reshape([3,4]) 
 heat_exh_shaped = hx.exh.Qdot_exp.reshape([3,4])
-torque_shaped = hx.torque.reshape([3,4])
+torque_shaped = hx.cummins.torque.reshape([3,4])
 delta_T_shaped = hx.exh.delta_T.reshape([3,4])
 
 fig1 = plt.figure()
@@ -41,7 +41,7 @@ LEVELS = np.arange(0, .75, 0.05)
 FCS = plt.contourf(flow_shaped, T1_shaped, heat_exh_shaped) 
 CB = plt.colorbar(FCS, orientation='vertical')
 CB.set_label(label='Heat Transfer (kW)')
-plt.scatter(hx.flow, hx.exh.T_inlet_array)
+plt.scatter(hx.exh.flow, hx.exh.T_inlet_array)
 plt.grid()
 # plt.subplots_adjust(left=0.18)
 # plt.subplots_adjust(bottom=0.15)

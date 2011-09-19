@@ -26,7 +26,7 @@ class _PlateWall():
         self.R_thermal = 1 / self.h
         
 
-class HX():
+class HX(object):
     """class for handling HX system"""
 
     def __init__(self):

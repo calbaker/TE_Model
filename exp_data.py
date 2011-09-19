@@ -80,6 +80,7 @@ class HeatData(hx.HX):
     def __init__(self):
         self.start_rowx = 4
         self.end_rowx = 16
+        super(HeatData, self).__init__()
         
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa
     flow_data = FlowData()
@@ -90,13 +91,13 @@ class HeatData(hx.HX):
         worksheet = (
     xlrd.open_workbook(filename=self.filename_heat).sheet_by_index(0)
         )  
-        self.reading = np.array(worksheet.col_values(0,
+        self.exh.reading = np.array(worksheet.col_values(0,
     start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
-        self.datum = worksheet.cell_value(2,4) # manometer datum (in) 
-        self.pressure_drop = ( (self.reading - self.datum) * 2. *
+        self.exh.datum = worksheet.cell_value(2,4) # manometer datum (in) 
+        self.exh.pressure_drop = ( (self.exh.reading - self.exh.datum) * 2. *
         self.H2O_kPa )
         # pressure drop across heat exchanger (kPa)
-        self.torque = np.array(worksheet.col_values(1,
+        self.cummins.torque = np.array(worksheet.col_values(1,
         start_rowx=self.start_rowx,  end_rowx=self.end_rowx))
         self.exh.T_inlet_array = np.array(worksheet.col_values(2,
             start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
@@ -117,20 +118,20 @@ class HeatData(hx.HX):
         """Evaluates spline fit parameters to fit flow to pressure
         drop. """
         self.flow_data.spline_rep()
-        self.flow = interp.splev(self.pressure_drop,
+        self.exh.flow = interp.splev(self.exh.pressure_drop,
         self.flow_data.spline)  
 
     def poly_eval(self):
         """Evaluates polynomial fit of flow to pressure."""
         self.flow_data.poly_rep()
-        self.flow = self.flow_data.poly1d(self.pressure_drop) 
+        self.exh.flow = self.flow_data.poly1d(self.exh.pressure_drop) 
 
     def set_Qdot(self):
         """Sets heat transfer based on mdot c_p delta T."""
         self.manipulate_heat_data()
         self.exh.delta_T = ( self.exh.T_inlet_array -
         self.exh.T_outlet_array ) 
-        self.exh.Qdot_exp = ( self.flow * 1.e-3 *
+        self.exh.Qdot_exp = ( self.exh.flow * 1.e-3 *
         self.exh.rho * self.exh.c_p_air * self.exh.delta_T ) 
 
     
