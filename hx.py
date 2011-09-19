@@ -4,7 +4,8 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as mpl
-from scipy.optimize import fsolve
+import scipy.optimize as spopt
+import time
 
 # User Defined Modules
 # In this directory
@@ -126,11 +127,11 @@ class HX(object):
 
         self.loop_count = 0
         while ( sp.absolute(self.error_hot / self.tem.q_h) >
-        self.error_tol ):  
-            self.tem.T_h_goal = fsolve(self.get_error_hot,
+        self.error_tol ):
+            self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
                                        self.tem.T_h) 
             self.tem.solve_tem()
-            self.tem.T_c = fsolve(self.get_error_cold, self.tem.T_c) 
+            self.tem.T_c = spopt.fsolve(self.get_error_cold, self.tem.T_c) 
             self.tem.solve_tem()
             self.error_cold = self.get_error_cold(self.tem.T_c)
             self.error_hot = self.get_error_hot(self.tem.T_h)
