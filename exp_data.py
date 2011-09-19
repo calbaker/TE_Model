@@ -111,7 +111,7 @@ class HeatData(hx.HX):
     def manipulate_heat_data(self):
         """Gets heat exchanger data ready for doing stuff to it.""" 
         self.exh.T = ( 0.5 * (self.exh.T_inlet_array +
-        self.exh.T_outlet_array) )
+        self.exh.T_outlet_array) + 273.15)
         self.exh.set_TempPres_dependents()
 
     def spline_eval(self):
