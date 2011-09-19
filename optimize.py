@@ -45,6 +45,7 @@ hx.exh.fins = 22
 
 hx.exh.T_inlet = 800.
 hx.cool.T_inlet = 300.
+hx.set_mdot_charge()
 
 
 # additional variables (as of 9/1/11)
@@ -82,10 +83,10 @@ def fprime():
 #  IV) hx.tem.I
 #
 # initial guess {I-IV}:
-x0 = 1.2, 13.0, .001, 5
+x0 = 1.2, 0.02, .001, 2
 
 # bounds for the parameters {I-IV}:
-xb = [(0.2,5.0),(1,100.0),(0.0005,0.01),(.1,10.0)]
+xb = [(0.2,5.0),(0.001,0.5),(0.0005,0.01),(.1,10.0)]
 
 # optimization loop
 print "Beginning optimization..."
