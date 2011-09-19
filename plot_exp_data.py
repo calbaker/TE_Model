@@ -74,7 +74,7 @@ plt.plot(flow_shaped[1,:], delta_T_shaped[1,:], '-.s',
 plt.plot(flow_shaped[2,:], delta_T_shaped[2,:], '--d',
             label=str(torque_shaped[2,0])+'ft-lbs') 
 plt.xlabel('Flow Rate (L/s)')
-plt.ylabel('Heat Transfer (kW)')
+plt.ylabel(r'$\delta T$ (K)')
 plt.grid()
 plt.legend(loc='best')
 plt.savefig('Plots/delta_T v Vdot.pdf')
