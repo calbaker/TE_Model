@@ -3,6 +3,7 @@
 import scipy as sp
 import numpy as np
 import matplotlib.pyplot as mpl
+import time
 
 # User defined modules
 import te_prop
@@ -29,6 +30,14 @@ class Leg():
         # hot side temperature (K) that matches HX BC
         self.T_c = 350. # cold side temperature (K)
         self.error = 1. # allowable hot side temperature (K) error
+        self.T = sp.zeros(self.segments) # initial array for
+                                        # temperature (K)
+        self.q = sp.zeros(self.segments)
+        # initial array for heat flux (W/m^2)
+        self.V_segment = sp.zeros(self.segments)
+        # initial array for Seebeck voltage (V)
+        self.P_flux_segment = sp.zeros(self.segments)
+        # initial array for power flux in segment (W/m^2)
 
     set_ZT = set_ZT
     set_prop_fit = te_prop.set_prop_fit
@@ -41,14 +50,6 @@ class Leg():
         the desired hot side temperature.  Hot side and cold side
         temperature as well as hot side heat flux must be
         specified.""" 
-        self.T = sp.zeros(self.segments) # initial array for
-                                        # temperature (K)
-        self.q = sp.zeros(self.segments)
-        # initial array for heat flux (W/m^2)
-        self.V_segment = sp.zeros(self.segments)
-        # initial array for Seebeck voltage (V)
-        self.P_flux_segment = sp.zeros(self.segments)
-        # initial array for power flux in segment (W/m^2)
         self.segment_length = self.length / self.segments
         # length of each segment (m)
         self.J = self.I / self.area # (Amps/m^2)
@@ -134,6 +135,7 @@ class TEModule():
 
     def solve_tem(self):
         """solves legs and combines results of leg pair"""
+        exponential = 1.e-3
         self.Ptype.T_h_goal = self.T_h_goal
         self.Ntype.T_h_goal = self.T_h_goal
         self.Ptype.T_c = self.T_c
@@ -144,13 +146,13 @@ class TEModule():
         # Everything from here on out is in kW instead of W
         self.q_h = ( (self.Ptype.q[-1] * self.Ptype.area + self.Ntype.q[-1]
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void) ) * 1.e-3
+        self.area_void) ) * exponential
         # area averaged hot side heat flux (kW/m^2)
         self.q_c = ( (self.Ptype.q[0] * self.Ptype.area + self.Ntype.q[0]
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void) ) * 1.e-3
+        self.area_void) * exponential )
         # area averaged hot side heat flux (kW/m^2)
-        self.P = -( self.Ntype.P + self.Ptype.P ) * 1.e-3
+        self.P = -( self.Ntype.P + self.Ptype.P ) * exponential
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs
         # a negative sign also.  
