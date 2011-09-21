@@ -7,6 +7,7 @@ import properties as prop
 
 # In this directory
 import functions
+reload(functions)
 
 
 class _Fin():

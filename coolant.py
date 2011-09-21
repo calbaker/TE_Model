@@ -3,6 +3,7 @@ import properties as prop
 
 # In local directory
 import functions
+reload(functions)
 
 
 class Coolant(prop.flow):
