@@ -78,9 +78,11 @@ class HeatData(hx.HX):
     """Class for handling data from heat exchanger experiments."""
 
     def __init__(self):
+        super(HeatData, self).__init__()
         self.start_rowx = 4
         self.end_rowx = 16
-        super(HeatData, self).__init__()
+        self.cool.flow = 4. * 3.8 * 1.e-3
+        # default coolant flow rate (m^3/s)
         
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa
     flow_data = FlowData()
@@ -103,9 +105,9 @@ class HeatData(hx.HX):
             start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
         self.exh.T_outlet_array = np.array(worksheet.col_values(3,
             start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
-        self.cool.T_inlet = np.array(worksheet.col_values(5,
+        self.cool.T_inlet_array = np.array(worksheet.col_values(5,
             start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
-        self.cool.T_outlet = np.array(worksheet.col_values(4,
+        self.cool.T_outlet_array = np.array(worksheet.col_values(4,
             start_rowx=self.start_rowx, end_rowx=self.end_rowx))  
 
     def manipulate_heat_data(self):
@@ -116,7 +118,12 @@ class HeatData(hx.HX):
         self.exh.delta_T = ( self.exh.T_inlet_array -
         self.exh.T_outlet_array )
         self.exh.mdot = self.exh.rho * self.exh.flow
-        self.exh.C = self.exh.mdot * self.exh.c_p_air        
+        self.exh.C = self.exh.mdot * self.exh.c_p_air
+        
+        self.cool.delta_T = ( self.cool.T_inlet_array -
+        self.cool.T_outlet_array )
+        self.cool.mdot = self.cool.rho * self.cool.flow
+        self.cool.C = self.cool.mdot * self.cool.c_p        
 
     def spline_eval(self):
         """Evaluates spline fit parameters to fit flow to pressure
@@ -128,13 +135,14 @@ class HeatData(hx.HX):
     def poly_eval(self):
         """Evaluates polynomial fit of flow to pressure."""
         self.flow_data.poly_rep()
-        self.exh.flow = self.flow_data.poly1d(self.exh.pressure_drop)
-        * 1.e-3
+        self.exh.flow = ( self.flow_data.poly1d(self.exh.pressure_drop)
+        * 1.e-3 )
 
     def set_Qdot(self):
         """Sets heat transfer based on mdot c_p delta T."""
         self.manipulate_heat_data()
-        self.exh.Qdot_exp = ( self.exh.C * self.exh.delta_T )  
+        self.exh.Qdot_exp = ( self.exh.C * self.exh.delta_T )
+        self.cool.Qdot_exp = ( self.cool.C * self.cool.delta_T )        
 
     def set_T_lm(self):
         """Sets log mean temperature difference."""
@@ -151,14 +159,13 @@ class HeatData(hx.HX):
         self.set_Qdot()
         self.U = ( self.Qdot_exp / (hx.width * hx.length * hx.Qdot) )
 
-    def get_U(self, hx.exh.h, hx.cool.h):
-        """Determines overall heat transfer coefficient based on
-        conduction resistances, exhaust heat transfer coefficient, and
-        coolant heat transfer coefficient."""
+    # def get_U(self, hx.exh.h, hx.cool.h):
+    #     """Determines overall heat transfer coefficient based on
+    #     conduction resistances, exhaust heat transfer coefficient, and
+    #     coolant heat transfer coefficient."""
                 
-    def set_Nu(self):
-        """Sets Nusselt number based on experimental data."""
-        
+    # def set_Nu(self):
+    #     """Sets Nusselt number based on experimental data."""
 
-    def get_Nu(self):
-        """Figures out Nu for both coolant
+    # def get_Nu(self):
+    #     """Figures out Nu for both coolant
