@@ -9,7 +9,7 @@ def set_flow_geometry(self,width):
 
 def set_Re_dependents(self):
     self.set_Re()
-    if self.Re_D > 2300.: # Do these correlations hold for any tube geometry?
+    if (self.Re_D > 2300.).any(): # Do these correlations hold for any tube geometry?
         self.f = 0.078*self.Re_D**(-1./4.) # friction factor for turbulent
         # flow from Bejan Eq. 8.13
         self.Nu_D = 0.023*self.Re_D**(4/5.)*self.Pr**(1/3.) # Adrian
