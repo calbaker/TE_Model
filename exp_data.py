@@ -113,6 +113,10 @@ class HeatData(hx.HX):
         self.exh.T = ( 0.5 * (self.exh.T_inlet_array +
         self.exh.T_outlet_array) + 273.15)
         self.exh.set_TempPres_dependents()
+        self.exh.delta_T = ( self.exh.T_inlet_array -
+        self.exh.T_outlet_array )
+        self.exh.mdot = self.exh.rho * self.exh.flow
+        self.exh.C = self.exh.mdot * self.exh.c_p_air        
 
     def spline_eval(self):
         """Evaluates spline fit parameters to fit flow to pressure
@@ -124,14 +128,37 @@ class HeatData(hx.HX):
     def poly_eval(self):
         """Evaluates polynomial fit of flow to pressure."""
         self.flow_data.poly_rep()
-        self.exh.flow = self.flow_data.poly1d(self.exh.pressure_drop) 
+        self.exh.flow = self.flow_data.poly1d(self.exh.pressure_drop)
+        * 1.e-3
 
     def set_Qdot(self):
         """Sets heat transfer based on mdot c_p delta T."""
         self.manipulate_heat_data()
-        self.exh.delta_T = ( self.exh.T_inlet_array -
-        self.exh.T_outlet_array ) 
-        self.exh.Qdot_exp = ( self.exh.flow * 1.e-3 *
-        self.exh.rho * self.exh.c_p_air * self.exh.delta_T ) 
+        self.exh.Qdot_exp = ( self.exh.C * self.exh.delta_T )  
 
-    
+    def set_T_lm(self):
+        """Sets log mean temperature difference."""
+        self.delta_T_lm = ( ((self.exh.T_outlet_array -
+        self.cool.T_inlet_array) - (self.exh.T_inlet_array -
+        self.cool.T_outlet_array)) / np.log((self.exh.T_outlet_array -
+        self.exh.T_inlet_array) / (self.exh.T_inlet_array -
+        self.cool.T_outlet_array)) )
+
+    def set_U(self):
+        """Sets overall heat transfer coefficient based on
+        something."""
+        self.set_T_lm()
+        self.set_Qdot()
+        self.U = ( self.Qdot_exp / (hx.width * hx.length * hx.Qdot) )
+
+    def get_U(self, hx.exh.h, hx.cool.h):
+        """Determines overall heat transfer coefficient based on
+        conduction resistances, exhaust heat transfer coefficient, and
+        coolant heat transfer coefficient."""
+                
+    def set_Nu(self):
+        """Sets Nusselt number based on experimental data."""
+        
+
+    def get_Nu(self):
+        """Figures out Nu for both coolant
