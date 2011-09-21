@@ -29,7 +29,8 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 8
 
-flow_shaped = hx.exh.flow.reshape([3,4])
+flow_shaped = hx.exh.flow.reshape([3,4]) * 1.e3
+# exponent converts back to L/s
 T1_shaped = hx.exh.T_inlet_array.reshape([3,4]) 
 heat_exh_shaped = hx.exh.Qdot_exp.reshape([3,4])
 torque_shaped = hx.cummins.torque.reshape([3,4])
