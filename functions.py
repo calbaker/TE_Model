@@ -1,4 +1,4 @@
-# functions to be used in exhaust and coolant modules
+"""functions to be used in both exhaust and coolant modules"""
 
 def set_flow_geometry(self,width):
     self.perimeter = 2.*(self.height+width) # wetted perimeter (m) of
