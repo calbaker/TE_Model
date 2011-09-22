@@ -6,12 +6,27 @@ import matplotlib.pyplot as plt
 import xlrd
 import numpy as np
 import scipy.interpolate as interp
+import scipy.optimize as spopt
 
 # User Defined Modules
 # In this directory
 import hx
 reload(hx)
 import properties as prop
+
+class Dummy_TE(object):
+    """Class for handling TE device without any TE properties."""
+
+    def __init__(self):
+        """Defaults"""
+        self.k = 1.5e-3
+        # thermal conductivity of alumina (kW/m-K)
+        self.thickness = 1.e-3
+        # thickness (m) of alumina paper
+        self.h = self.k / self.thickness
+        # effective heat transfer coefficient (kW/m^2-K)
+        self.R_thermal = 1. / self.h
+    
 
 class FlowData():
     """Class for handling flow rate and pressure drop data.""" 
@@ -79,9 +94,12 @@ class HeatData(hx.HX):
 
     def __init__(self):
         super(HeatData, self).__init__()
+        self.alumina = Dummy_TE()
         self.start_rowx = 4
         self.end_rowx = 16
-        self.cool.flow = 4. * 3.8 * 1.e-3
+        self.Nu_guess = 0.023
+        # guess for Nu = Nu_guess * Re_D**(4/5) * Pr**(1/3)
+        self.cool.flow = 4. * 3.8 * 1.e-3 / 60.
         # default coolant flow rate (m^3/s)
         
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa
@@ -149,23 +167,74 @@ class HeatData(hx.HX):
         self.delta_T_lm = ( ((self.exh.T_outlet_array -
         self.cool.T_inlet_array) - (self.exh.T_inlet_array -
         self.cool.T_outlet_array)) / np.log((self.exh.T_outlet_array -
-        self.exh.T_inlet_array) / (self.exh.T_inlet_array -
+        self.cool.T_inlet_array) / (self.exh.T_inlet_array -
         self.cool.T_outlet_array)) )
 
-    def set_U(self):
+    def set_U_empirical(self):
         """Sets overall heat transfer coefficient based on
         something."""
         self.set_T_lm()
         self.set_Qdot()
-        self.U = ( self.Qdot_exp / (hx.width * hx.length * hx.Qdot) )
+        self.exh.U_exp = ( self.exh.Qdot_exp / (self.width *
+        self.length * self.delta_T_lm) )  
+        self.cool.U_exp = ( self.cool.Qdot_exp / (self.width *
+        self.length * self.delta_T_lm) )  
 
-    # def get_U(self, hx.exh.h, hx.cool.h):
-    #     """Determines overall heat transfer coefficient based on
-    #     conduction resistances, exhaust heat transfer coefficient, and
-    #     coolant heat transfer coefficient."""
+    def get_U_error(self, Nu_coeff):
+        """Determines difference between overall heat transfer coefficient based on
+        conduction resistances, exhaust heat transfer coefficient, and
+        coolant heat transfer coefficient and that determined by
+        experiment."""
+        self.cool.Nu_exp = ( Nu_coeff * self.cool.Re_D**(4. / 5.) *
+        self.cool.Pr**(1. / 3.) ) 
+        self.cool.h = ( self.cool.Nu_exp  * self.cool.k / self.cool.D )  
+
+        self.exh.Nu_exp = ( Nu_coeff * self.exh.Re_D**(4. / 5.) *
+        self.exh.Pr**(1. / 3.) )  
+        self.exh.h = ( self.exh.Nu_exp * self.exh.k / self.exh.D ) 
+
+        self.cool.R_thermal = 1. / self.cool.h
+        self.exh.R_thermal = 1. / self.exh.h
+
+        self.U_ana = ( (self.exh.R_thermal + self.plate.R_thermal +
+        self.alumina.R_thermal + self.plate.R_thermal +
+        self.cool.R_thermal )**-1 )
+        # analytically determined U
+        error = self.U_ana - self.exh.U
+        return error
                 
-    # def set_Nu(self):
-    #     """Sets Nusselt number based on experimental data."""
+    def get_U_ana(self, exh_Re_D, Nu_coeff):
+        """Needs a doc string"""
+        self.cool.Nu_exp = ( Nu_coeff * self.cool.Re_D**(4. / 5.) *
+        self.cool.Pr**(1. / 3.) ) 
+        self.cool.h = ( self.cool.Nu_exp  * self.cool.k / self.cool.D )  
 
-    # def get_Nu(self):
-    #     """Figures out Nu for both coolant
+        self.exh.Nu_exp = ( Nu_coeff * exh_Re_D**(4. / 5.) *
+        self.exh.Pr**(1. / 3.) )  
+        self.exh.h = ( self.exh.Nu_exp * self.exh.k / self.exh.D ) 
+
+        self.cool.R_thermal = 1. / self.cool.h
+        self.exh.R_thermal = 1. / self.exh.h
+
+        U_ana = ( (self.exh.R_thermal + self.plate.R_thermal +
+        self.alumina.R_thermal + self.plate.R_thermal +
+        self.cool.R_thermal )**-1 ) 
+        # analytically determined U
+        return U_ana
+                
+    def set_Nu(self):
+        """Sets Nusselt number based on experimental data."""
+        self.set_U_empirical()
+
+        self.exh.set_flow_geometry(self.width)
+        self.exh.set_flow()
+        self.cool.set_flow_geometry(self.width)
+        self.cool.set_flow()
+        self.plate.set_h()
+
+        self.Nu_coeff = spopt.curve_fit(self.get_U_ana, self.exh.Re_D,
+        self.exh.U_exp)[0]
+
+
+        
+
