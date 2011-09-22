@@ -23,12 +23,20 @@ hx.poly_eval()
 hx.set_Qdot()
 hx.set_Nu()
 
-# FONTSIZE = 15
-# plt.rcParams['axes.labelsize'] = FONTSIZE
-# plt.rcParams['axes.titlesize'] = FONTSIZE
-# plt.rcParams['legend.fontsize'] = FONTSIZE
-# plt.rcParams['xtick.labelsize'] = FONTSIZE
-# plt.rcParams['ytick.labelsize'] = FONTSIZE
-# plt.rcParams['lines.linewidth'] = 1.5
-# plt.rcParams['lines.markersize'] = 8
+FONTSIZE = 15
+plt.rcParams['axes.labelsize'] = FONTSIZE
+plt.rcParams['axes.titlesize'] = FONTSIZE
+plt.rcParams['legend.fontsize'] = FONTSIZE
+plt.rcParams['xtick.labelsize'] = FONTSIZE
+plt.rcParams['ytick.labelsize'] = FONTSIZE
+plt.rcParams['lines.linewidth'] = 1.5
+plt.rcParams['lines.markersize'] = 8
 
+plt.plot(hx.exh.Re_D, hx.U_ana, label="empirical")
+plt.plot(hx.exh.Re_D, hx.exh.U_exp, label="experimental")
+plt.legend(loc='best')
+plt.grid()
+plt.xlabel('Reynolds Number')
+plt.ylabel('Heat Transfer Coefficient (kW/m^2-K)')
+
+plt.show()
