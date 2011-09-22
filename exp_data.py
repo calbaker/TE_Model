@@ -218,8 +218,11 @@ class HeatData(hx.HX):
 
         self.Nu_coeff = popt
 
-    def get_U_ana(self, exh_Re_D, Nu_coeff):
+    def get_U_ana(self, exh_Re_D, Nu_coeff, *args):
         """Needs a doc string"""
+        for arg in args:
+            print "another arg:", arg
+            
         self.cool.Nu_exp = ( Nu_coeff * self.cool.Re_D**(4. / 5.) *
         self.cool.Pr**(1. / 3.) ) 
         self.cool.h = ( self.cool.Nu_exp  * self.cool.k / self.cool.D )  
@@ -231,8 +234,9 @@ class HeatData(hx.HX):
         self.cool.R_thermal = 1. / self.cool.h
         self.exh.R_thermal = 1. / self.exh.h
 
-        U_ana = ( (self.exh.R_thermal + self.plate.R_thermal +
+        self.U_ana = ( (self.exh.R_thermal + self.plate.R_thermal +
         self.alumina.R_thermal + self.plate.R_thermal +
         self.cool.R_thermal )**-1 ) 
         # analytically determined U
-        return U_ana
+        return self.U_ana
+
