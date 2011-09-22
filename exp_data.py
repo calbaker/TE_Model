@@ -203,6 +203,21 @@ class HeatData(hx.HX):
         error = self.U_ana - self.exh.U
         return error
                 
+    def set_Nu(self):
+        """Sets Nusselt number based on experimental data."""
+        self.set_U_empirical()
+
+        self.exh.set_flow_geometry(self.width)
+        self.exh.set_flow()
+        self.cool.set_flow_geometry(self.width)
+        self.cool.set_flow()
+        self.plate.set_h()
+
+        popt, pcov = spopt.curve_fit(self.get_U_ana, xdata=self.exh.Re_D,
+        ydata=self.exh.U_exp, p0=self.Nu_guess)
+
+        self.Nu_coeff = popt
+
     def get_U_ana(self, exh_Re_D, Nu_coeff):
         """Needs a doc string"""
         self.cool.Nu_exp = ( Nu_coeff * self.cool.Re_D**(4. / 5.) *
@@ -221,20 +236,3 @@ class HeatData(hx.HX):
         self.cool.R_thermal )**-1 ) 
         # analytically determined U
         return U_ana
-                
-    def set_Nu(self):
-        """Sets Nusselt number based on experimental data."""
-        self.set_U_empirical()
-
-        self.exh.set_flow_geometry(self.width)
-        self.exh.set_flow()
-        self.cool.set_flow_geometry(self.width)
-        self.cool.set_flow()
-        self.plate.set_h()
-
-        self.Nu_coeff = spopt.curve_fit(self.get_U_ana, self.exh.Re_D,
-        self.exh.U_exp)[0]
-
-
-        
-
