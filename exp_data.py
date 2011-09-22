@@ -156,7 +156,7 @@ class HeatData(hx.HX):
         self.exh.flow = ( self.flow_data.poly1d(self.exh.pressure_drop)
         * 1.e-3 )
 
-    def set_Qdot(self):
+    def set_Qdot_exp(self):
         """Sets heat transfer based on mdot c_p delta T."""
         self.manipulate_heat_data()
         self.exh.Qdot_exp = ( self.exh.C * self.exh.delta_T )
@@ -170,73 +170,13 @@ class HeatData(hx.HX):
         self.cool.T_inlet_array) / (self.exh.T_inlet_array -
         self.cool.T_outlet_array)) )
 
-    def set_U_empirical(self):
+    def set_U_experimental(self):
         """Sets overall heat transfer coefficient based on
         something."""
         self.set_T_lm()
-        self.set_Qdot()
+        self.set_Qdot_exp()
         self.exh.U_exp = ( self.exh.Qdot_exp / (self.width *
         self.length * self.delta_T_lm) )  
         self.cool.U_exp = ( self.cool.Qdot_exp / (self.width *
         self.length * self.delta_T_lm) )  
-
-    def get_U_error(self, Nu_coeff):
-        """Determines difference between overall heat transfer coefficient based on
-        conduction resistances, exhaust heat transfer coefficient, and
-        coolant heat transfer coefficient and that determined by
-        experiment."""
-        self.cool.Nu_exp = ( Nu_coeff * self.cool.Re_D**(4. / 5.) *
-        self.cool.Pr**(1. / 3.) ) 
-        self.cool.h = ( self.cool.Nu_exp  * self.cool.k / self.cool.D )  
-
-        self.exh.Nu_exp = ( Nu_coeff * self.exh.Re_D**(4. / 5.) *
-        self.exh.Pr**(1. / 3.) )  
-        self.exh.h = ( self.exh.Nu_exp * self.exh.k / self.exh.D ) 
-
-        self.cool.R_thermal = 1. / self.cool.h
-        self.exh.R_thermal = 1. / self.exh.h
-
-        self.U_ana = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.alumina.R_thermal + self.plate.R_thermal +
-        self.cool.R_thermal )**-1 )
-        # analytically determined U
-        error = self.U_ana - self.exh.U
-        return error
-                
-    def set_Nu(self):
-        """Sets Nusselt number based on experimental data."""
-        self.set_U_empirical()
-
-        self.exh.set_flow_geometry(self.width)
-        self.exh.set_flow()
-        self.cool.set_flow_geometry(self.width)
-        self.cool.set_flow()
-        self.plate.set_h()
-
-        popt, pcov = spopt.curve_fit(self.get_U_ana, xdata=self.exh.Re_D,
-        ydata=self.exh.U_exp, p0=self.Nu_guess)
-
-        self.Nu_coeff = popt
-
-    def get_U_ana(self, exh_Re_D, Nu_coeff, *args):
-        """Needs a doc string"""
-        for arg in args:
-            print "another arg:", arg
-            
-        self.cool.Nu_exp = ( Nu_coeff * self.cool.Re_D**(4. / 5.) *
-        self.cool.Pr**(1. / 3.) ) 
-        self.cool.h = ( self.cool.Nu_exp  * self.cool.k / self.cool.D )  
-
-        self.exh.Nu_exp = ( Nu_coeff * exh_Re_D**(4. / 5.) *
-        self.exh.Pr**(1. / 3.) )  
-        self.exh.h = ( self.exh.Nu_exp * self.exh.k / self.exh.D ) 
-
-        self.cool.R_thermal = 1. / self.cool.h
-        self.exh.R_thermal = 1. / self.exh.h
-
-        self.U_ana = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.alumina.R_thermal + self.plate.R_thermal +
-        self.cool.R_thermal )**-1 ) 
-        # analytically determined U
-        return self.U_ana
 
