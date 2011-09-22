@@ -20,7 +20,7 @@ hx.start_rowx = 4
 hx.end_rowx = 8
 hx.import_heat_data()
 hx.poly_eval()
-hx.set_Qdot()
+hx.set_Qdot_exp()
 hx.set_Nu()
 
 FONTSIZE = 15
