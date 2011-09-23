@@ -220,7 +220,7 @@ class HX(object):
         
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
-            print "\nSolving node", i
+            # print "\nSolving node", i
             self.solve_node()
 
             self.Qdot_nodes[i] = self.Qdot
