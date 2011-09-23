@@ -115,14 +115,18 @@ class HX(object):
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
         
-    def solve_node(self):
+    def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
-        self.tem.T_c = self.cool.T
-        # guess at cold side tem temperature (K)
-        self.tem.T_h_goal = self.exh.T
-        # guess at hot side TEM temperature (K)
+        if i == 0:
+            self.tem.T_c = self.cool.T
+            # guess at cold side tem temperature (K)
+            self.tem.T_h_goal = self.exh.T
+            # guess at hot side TEM temperature (K)
+        else:
+            self.tem.T_c = self.tem.T_c_nodes[i-1]
+            self.tem.T_h_goal = self.tem.T_h_nodes[i-1]
         self.set_convection()
         self.error_hot = 100.  
         # amount by which convection model overpredicts hot side heat
@@ -140,6 +144,9 @@ class HX(object):
                 self.error_cold = self.get_error_cold(self.tem.T_c)
                 self.error_hot = self.get_error_hot(self.tem.T_h)
                 self.loop_count = self.loop_count + 1
+                self.Qdot_node = -self.q_h * self.area
+                # heat transfer on hot side of node, positive values indicates
+                # heat transfer from hot to cold
         else:
             self.tem.Ntype.set_TEproperties()
             self.tem.Ptype.set_TEproperties()
@@ -148,25 +155,24 @@ class HX(object):
             self.tem.Ptype.R_thermal = ( self.tem.Ptype.length /
             (self.tem.Ptype.k * self.tem.Ptype.area) )
             self.tem.R_thermal = ( (self.tem.Ntype.R_thermal**-1. +
-            self.tem.Ptype.R_thermal**-1.)**-1 * self.tem.area ) 
+            self.tem.Ptype.R_thermal**-1.)**-1 * (self.tem.area +
+            self.tem.area_void) )  
             
             self.set_convection()
             self.q_h = self.U * (self.cool.T - self.exh.T)
+            self.Qdot_node = -self.q_h * self.area
 
         # these need to run out here for the pure conduction case in
         # which the loop is not active
         self.error_hot = self.get_error_hot(self.tem.T_h)
         self.error_cold = self.get_error_cold(self.tem.T_c)
         
-        self.Qdot = -self.q_h * self.area
-        # heat transfer on hot side of node, positive values indicates
-        # heat transfer from hot to cold
 
     def set_constants(self):
         """Sets constants used at the HX level."""
         self.node_length = self.length / self.nodes
         # length (m) of each node
-        self.area = self.node_length*self.width*self.cool.ducts # area (m^2)
+        self.area = self.node_length * self.width * self.cool.ducts # area (m^2)
                                         # through which heat flux
                                         # occurs in each node
         self.tem.set_constants()
@@ -220,10 +226,10 @@ class HX(object):
         
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
-            # print "\nSolving node", i
-            self.solve_node()
+            print "\nSolving node", i
+            self.solve_node(i)
 
-            self.Qdot_nodes[i] = self.Qdot
+            self.Qdot_nodes[i] = self.Qdot_node
             # storing node heat transfer in array
             self.exh.T_nodes[i] = self.exh.T
             self.exh.h_nodes[i] = self.exh.h

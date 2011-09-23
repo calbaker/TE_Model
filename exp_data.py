@@ -133,12 +133,12 @@ class HeatData(hx.HX):
         self.exh.T = ( 0.5 * (self.exh.T_inlet_array +
         self.exh.T_outlet_array) + 273.15)
         self.exh.set_TempPres_dependents()
-        self.exh.delta_T = ( self.exh.T_inlet_array -
+        self.exh.delta_T_array = ( self.exh.T_inlet_array -
         self.exh.T_outlet_array )
-        self.exh.mdot = self.exh.rho * self.exh.flow
-        self.exh.C = self.exh.mdot * self.exh.c_p_air
+        self.exh.mdot_array = self.exh.rho * self.exh.flow_array
+        self.exh.C = self.exh.mdot_array * self.exh.c_p_air
         
-        self.cool.delta_T = ( self.cool.T_inlet_array -
+        self.cool.delta_T_array = ( self.cool.T_inlet_array -
         self.cool.T_outlet_array )
         self.cool.mdot = self.cool.rho * self.cool.flow
         self.cool.C = self.cool.mdot * self.cool.c_p        
@@ -147,24 +147,24 @@ class HeatData(hx.HX):
         """Evaluates spline fit parameters to fit flow to pressure
         drop. """
         self.flow_data.spline_rep()
-        self.exh.flow = interp.splev(self.exh.pressure_drop,
+        self.exh.flow_array = interp.splev(self.exh.pressure_drop,
         self.flow_data.spline)  
 
     def poly_eval(self):
         """Evaluates polynomial fit of flow to pressure."""
         self.flow_data.poly_rep()
-        self.exh.flow = ( self.flow_data.poly1d(self.exh.pressure_drop)
+        self.exh.flow_array = ( self.flow_data.poly1d(self.exh.pressure_drop)
         * 1.e-3 )
 
     def set_Qdot_exp(self):
         """Sets heat transfer based on mdot c_p delta T."""
         self.manipulate_heat_data()
-        self.exh.Qdot_exp = ( self.exh.C * self.exh.delta_T )
-        self.cool.Qdot_exp = ( self.cool.C * self.cool.delta_T )        
+        self.exh.Qdot_exp = ( self.exh.C * self.exh.delta_T_array )
+        self.cool.Qdot_exp = ( self.cool.C * self.cool.delta_T_array )        
 
     def set_T_lm(self):
         """Sets log mean temperature difference."""
-        self.delta_T_lm = ( ((self.exh.T_outlet_array -
+        self.delta_T_lm_array = ( ((self.exh.T_outlet_array -
         self.cool.T_inlet_array) - (self.exh.T_inlet_array -
         self.cool.T_outlet_array)) / np.log((self.exh.T_outlet_array -
         self.cool.T_inlet_array) / (self.exh.T_inlet_array -
@@ -176,7 +176,7 @@ class HeatData(hx.HX):
         self.set_T_lm()
         self.set_Qdot_exp()
         self.exh.U_exp = ( self.exh.Qdot_exp / (self.width *
-        self.length * self.delta_T_lm) )  
+        self.length * self.delta_T_lm_array) )  
         self.cool.U_exp = ( self.cool.Qdot_exp / (self.width *
-        self.length * self.delta_T_lm) )  
+        self.length * self.delta_T_lm_array) )  
 
