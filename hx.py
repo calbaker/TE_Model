@@ -33,6 +33,7 @@ class HX(object):
 
     def __init__(self):
         """Geometry and constants"""
+        self.loop_count = 0
         self.width = 10.e-2 # width (cm*10**-2) of HX duct. This model treats
             # duct as parallel plates for simpler modeling.
         self.length = 20.e-2 # length (m) of HX duct
@@ -101,9 +102,6 @@ class HX(object):
         # The previous three commands need only execute once per
         # node.  
         # TE stuff
-        self.tem.solve_tem()
-        # this command needs to execute every time the BC's are
-        # changed.  
 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
         self.R_thermal + self.tem.R_thermal + self.R_thermal +
@@ -128,13 +126,13 @@ class HX(object):
         else:
             self.tem.T_c = (self.tem.T_c_nodes[i-1])
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
+        self.tem.solve_tem()
         self.set_convection()
         self.error_hot = 100.  
         # amount by which convection model overpredicts hot side heat
         # flux (kW/m^2-K) relative to TE model.  
 
         if self.thermoelectrics_on == True:
-            self.loop_count = 0
             while ( sp.absolute(self.error_hot) > self.xtol ): 
                 self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
             self.tem.T_h, xtol=self.xtol)  
