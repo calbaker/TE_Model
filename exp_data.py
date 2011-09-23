@@ -170,7 +170,7 @@ class HeatData(hx.HX):
         self.cool.T_inlet_array) / (self.exh.T_inlet_array -
         self.cool.T_outlet_array)) )
 
-    def set_U_experimental(self):
+    def set_U_exp(self):
         """Sets overall heat transfer coefficient based on
         something."""
         self.set_T_lm()
