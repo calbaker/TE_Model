@@ -3,6 +3,7 @@
 
 # Distribution Modules
 import scipy as sp
+import numpy as np
 import matplotlib.pyplot as mpl
 import scipy.optimize as spopt
 import time
@@ -37,7 +38,7 @@ class HX(object):
         self.length = 20.e-2 # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
-        self.error_tol = 0.01 # tolerable percent error in heat flux
+        self.xtol = 0.01 # tolerable fractional error in heat flux
         self.R_thermal = 5.
         # thermal contact resistance (m^2*K/kW) between plates
         self.thermoelectrics_on = True
@@ -76,7 +77,7 @@ class HX(object):
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
-        error_hot = self.q_h - self.tem.q_h
+        error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
         return error_hot
 
     def get_error_cold(self,T_c):
@@ -86,7 +87,7 @@ class HX(object):
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.tem.T_c = T_c
         self.tem.solve_tem()
-        error_cold = self.q_c - self.tem.q_c
+        error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
         return error_cold
 
     def set_convection(self):
@@ -128,8 +129,8 @@ class HX(object):
             self.tem.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
         else:
-            self.tem.T_c = self.tem.T_c_nodes[i-1]
-            self.tem.T_h_goal = self.tem.T_h_nodes[i-1]
+            self.tem.T_c = (self.tem.T_c_nodes[i-1])
+            self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
         self.set_convection()
         self.error_hot = 100.  
         # amount by which convection model overpredicts hot side heat
@@ -137,12 +138,12 @@ class HX(object):
 
         if self.thermoelectrics_on == True:
             self.loop_count = 0
-            while ( sp.absolute(self.error_hot / self.tem.q_h) >
-            self.error_tol ):
+            while ( sp.absolute(self.error_hot) > self.xtol ): 
                 self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
-                                           self.tem.T_h) 
+            self.tem.T_h, xtol=self.xtol)  
                 self.tem.solve_tem()
-                self.tem.T_c = spopt.fsolve(self.get_error_cold, self.tem.T_c) 
+                self.tem.T_c = spopt.fsolve(self.get_error_cold,
+            self.tem.T_c, xtol=self.xtol) 
                 self.tem.solve_tem()
                 self.error_cold = self.get_error_cold(self.tem.T_c)
                 self.error_hot = self.get_error_hot(self.tem.T_h)
@@ -167,9 +168,16 @@ class HX(object):
 
         # these need to run out here for the pure conduction case in
         # which the loop is not active
+<<<<<<< HEAD
         self.error_hot = self.get_error_hot(self.tem.T_h)
         self.error_cold = self.get_error_cold(self.tem.T_c)
 
+=======
+        if self.loop_count == 0:
+            self.error_hot = self.get_error_hot(self.tem.T_h)
+            self.error_cold = self.get_error_cold(self.tem.T_c)
+        
+>>>>>>> speed
     def set_constants(self):
         """Sets constants used at the HX level."""
         self.node_length = self.length / self.nodes
