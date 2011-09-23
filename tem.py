@@ -23,7 +23,7 @@ class Leg():
         """this method sets everything that is constant and
         initializes some arrays""" 
         self.I = 0.5 # current (A)
-        self.segments = 25
+        self.segments = 100
         # number of segments for finite difference model
         self.length = 1.e-2  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
@@ -57,11 +57,13 @@ class Leg():
         self.T[0] = self.T_c
         self.T_props = self.T[0]
         self.set_TEproperties()
-        q_c = ( (-self.k / self.length * (self.T_h_goal - self.T_c)) )   
+        self.q_c_guess = ( (-self.k / self.length * (self.T_h_goal -
+        self.T_c)) ) 
+        print "\nq_c guess =",self.q_c_guess
         # (W/m^2) guess for q[0] (W/m^2) 
-        self.q_c = spopt.fsolve(solve_leg_once, 
+        self.q_c = spopt.fsolve(self.solve_leg_once, x0=self.q_c_guess)
+        print 'fsolve worked'
         self.solve_leg_once(self.q_c)
-        self.iterations = (i-1)
         self.P = sp.sum(self.P_flux_segment) * self.area
         # Power for the entire leg (W)
         self.eta = self.P / (self.q[-1] * self.area)
@@ -71,8 +73,9 @@ class Leg():
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
         # for loop for iterating over segments
+        self.q[0] = q_c
+        print 'q_c =',q_c
         for j in sp.arange(1,self.segments):
-            self.q[0] = q_c
             self.T_props = self.T[j-1]
             self.set_TEproperties()
             self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
@@ -87,7 +90,9 @@ class Leg():
             self.T[j-1]) )
             self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
             self.J * self.rho * self.segment_length) )
-            return self.T[-1]
+            self.T_h = self.T[-1]
+            error = self.T_h - self.T_h_goal
+            return error
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
