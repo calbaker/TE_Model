@@ -4,6 +4,7 @@ import scipy as sp
 import numpy as np
 import matplotlib.pyplot as mpl
 import time
+import scipy.optimize as spopt
 
 # User defined modules
 import te_prop
@@ -56,41 +57,22 @@ class Leg():
         self.T[0] = self.T_c
         self.T_props = self.T[0]
         self.set_TEproperties()
-        self.q_c = ( sp.array([0.9,1.1]) * (-self.k / self.length *
-        (self.T_h_goal - self.T_c)) )
-        # (W/m^2) array for storing guesses for q[0] (W/m^2) during
-        # while loop iteration 
-        self.T_h = sp.zeros(2)
-        # array for storing T_h (K) during while loop iteration.  
-        # for loop for providing two arbitrary points to use for
-        # linear interpolation 
-        for i in sp.arange(sp.size(self.q_c)):
-            self.q[0] = self.q_c[i]
-            self.solve_leg_once()
-            self.T_h[i] = self.T[-1]
-        i = 1
-        while ( sp.absolute(self.T_h[-1] - self.T_h_goal) > self.error ): 
-            self.q_c_new = ( (self.q_c[i] - self.q_c[i-1]) /
-        (self.T_h[i] - self.T_h[i-1]) * (self.T_h_goal - self.T_h[i])
-        + self.q_c[i] ) 
-            # linear interpolation for q_c based on previous q_c's
-            # and previous T_h's
-            self.q_c = sp.append(self.q_c, self.q_c_new)
-            self.q[0] = self.q_c_new
-            self.solve_leg_once()
-            self.T_h = sp.append(self.T_h, self.T[-1])
-            i = i + 1
+        q_c = ( (-self.k / self.length * (self.T_h_goal - self.T_c)) )   
+        # (W/m^2) guess for q[0] (W/m^2) 
+        self.q_c = spopt.fsolve(solve_leg_once, 
+        self.solve_leg_once(self.q_c)
         self.iterations = (i-1)
         self.P = sp.sum(self.P_flux_segment) * self.area
         # Power for the entire leg (W)
         self.eta = self.P / (self.q[-1] * self.area)
         # Efficiency of leg
             
-    def solve_leg_once(self):
+    def solve_leg_once(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
         # for loop for iterating over segments
         for j in sp.arange(1,self.segments):
+            self.q[0] = q_c
             self.T_props = self.T[j-1]
             self.set_TEproperties()
             self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
@@ -105,6 +87,7 @@ class Leg():
             self.T[j-1]) )
             self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
             self.J * self.rho * self.segment_length) )
+            return self.T[-1]
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
