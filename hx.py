@@ -40,6 +40,9 @@ class HX(object):
         self.error_tol = 0.01 # tolerable percent error in heat flux
         self.R_thermal = 5.
         # thermal contact resistance (m^2*K/kW) between plates
+        self.thermoelectrics_on = True
+        # if True, the thermoelectric model runs, if false, pure
+        # conduction 
 
         self.fix_geometry()
 
@@ -102,8 +105,8 @@ class HX(object):
         # changed.  
 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.tem.R_thermal + self.plate.R_thermal +
-        self.cool.R_thermal )**-1 ) 
+        self.R_thermal + self.tem.R_thermal + self.R_thermal +
+        self.plate.R_thermal + self.cool.R_thermal )**-1 )  
         # overall heat transfer coefficient (kW/m^2-K)
         self.U_hot = (self.exh.R_thermal + self.plate.R_thermal)**-1
         # heat transfer coefficient (kW/m^-K) between TE hot side and
@@ -125,17 +128,30 @@ class HX(object):
         # amount by which convection model overpredicts hot side heat
         # flux (kW/m^2-K) relative to TE model.  
 
-        self.loop_count = 0
-        while ( sp.absolute(self.error_hot / self.tem.q_h) >
-        self.error_tol ):
-            self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
-                                       self.tem.T_h) 
-            self.tem.solve_tem()
-            self.tem.T_c = spopt.fsolve(self.get_error_cold, self.tem.T_c) 
-            self.tem.solve_tem()
-            self.error_cold = self.get_error_cold(self.tem.T_c)
-            self.error_hot = self.get_error_hot(self.tem.T_h)
-            self.loop_count = self.loop_count + 1
+        if self.thermoelectrics_on == True:
+            self.loop_count = 0
+            while ( sp.absolute(self.error_hot / self.tem.q_h) >
+            self.error_tol ):
+                self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
+                                           self.tem.T_h) 
+                self.tem.solve_tem()
+                self.tem.T_c = spopt.fsolve(self.get_error_cold, self.tem.T_c) 
+                self.tem.solve_tem()
+                self.error_cold = self.get_error_cold(self.tem.T_c)
+                self.error_hot = self.get_error_hot(self.tem.T_h)
+                self.loop_count = self.loop_count + 1
+        else:
+            self.tem.Ntype.set_TEproperties()
+            self.tem.Ptype.set_TEproperties()
+            self.tem.Ntype.R_thermal = ( self.tem.Ntype.length /
+            (self.tem.Ntype.k * self.tem.Ntype.area) )
+            self.tem.Ptype.R_thermal = ( self.tem.Ptype.length /
+            (self.tem.Ptype.k * self.tem.Ptype.area) )
+            self.tem.R_thermal = ( (self.tem.Ntype.R_thermal**-1. +
+            self.tem.Ptype.R_thermal**-1.)**-1 * self.tem.area ) 
+            
+            self.set_convection()
+            self.q_h = self.U * (self.cool.T - self.exh.T)
 
         # these need to run out here for the pure conduction case in
         # which the loop is not active
