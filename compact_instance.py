@@ -66,7 +66,4 @@ plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
 plt.savefig('Plots/temp '+hx.type+'.png')
 plt.savefig('Plots/temp '+hx.type+'.pdf')
-<<<<<<< HEAD
 
-=======
->>>>>>> speed
