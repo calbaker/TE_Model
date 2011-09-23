@@ -119,6 +119,9 @@ class HX(object):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
+        self.delta_time = time.clock() - self.t0
+        self.t0 = time.clock()
+        print 'elapsed time =', self.delta_time
         if i == 0:
             self.tem.T_c = self.cool.T
             # guess at cold side tem temperature (K)
@@ -166,7 +169,6 @@ class HX(object):
         # which the loop is not active
         self.error_hot = self.get_error_hot(self.tem.T_h)
         self.error_cold = self.get_error_cold(self.tem.T_c)
-        
 
     def set_constants(self):
         """Sets constants used at the HX level."""
@@ -187,6 +189,7 @@ class HX(object):
 
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
+        self.t0 = time.clock()
         self.set_constants()
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
