@@ -3,6 +3,7 @@
 
 # Distribution Modules
 import scipy as sp
+import numpy as np
 import matplotlib.pyplot as mpl
 import scipy.optimize as spopt
 import time
@@ -125,8 +126,8 @@ class HX(object):
             self.tem.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
         else:
-            self.tem.T_c = self.tem.T_c_nodes[i-1]
-            self.tem.T_h_goal = self.tem.T_h_nodes[i-1]
+            self.tem.T_c = np.float32(self.tem.T_c_nodes[i-1])
+            self.tem.T_h_goal = np.float32(self.tem.T_h_nodes[i-1])
         self.set_convection()
         self.error_hot = 100.  
         # amount by which convection model overpredicts hot side heat

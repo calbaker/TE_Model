@@ -23,7 +23,7 @@ class Leg():
         """this method sets everything that is constant and
         initializes some arrays""" 
         self.I = 0.5 # current (A)
-        self.segments = 1000
+        self.segments = 25
         # number of segments for finite difference model
         self.length = 1.e-2  # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
@@ -61,7 +61,6 @@ class Leg():
         # (W/m^2) guess for q[0] (W/m^2)
         self.q_c = spopt.fsolve(self.solve_leg_once,
         x0=self.q_c_guess)
-        print 'fsolve worked'
         self.solve_leg_once(self.q_c)
         self.P = sp.sum(self.P_flux_segment) * self.area
         # Power for the entire leg (W)
@@ -71,7 +70,6 @@ class Leg():
     def solve_leg_once(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
-        print "\nRunning solve_leg_once."
         self.q[0] = q_c
         # for loop for iterating over segments
         for j in range(1,self.segments):
