@@ -146,6 +146,11 @@ class HX(object):
                 self.Qdot_node = -self.q_h * self.area
                 # heat transfer on hot side of node, positive values indicates
                 # heat transfer from hot to cold
+
+                if self.loop_count == 0:
+                    self.error_hot = self.get_error_hot(self.tem.T_h)
+                    self.error_cold = self.get_error_cold(self.tem.T_c)
+        
         else:
             self.tem.Ntype.set_TEproperties()
             self.tem.Ptype.set_TEproperties()
@@ -164,10 +169,6 @@ class HX(object):
         # these need to run out here for the pure conduction case in
         # which the loop is not active
 
-        if self.loop_count == 0:
-            self.error_hot = self.get_error_hot(self.tem.T_h)
-            self.error_cold = self.get_error_cold(self.tem.T_c)
-        
     def set_constants(self):
         """Sets constants used at the HX level."""
         self.node_length = self.length / self.nodes
@@ -226,21 +227,23 @@ class HX(object):
         
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
-            print "\nSolving node", i
+            # print "\nSolving node", i
             self.solve_node(i)
 
             self.Qdot_nodes[i] = self.Qdot_node
             # storing node heat transfer in array
+            if self.thermoelectrics_on == True:
+                self.q_h_nodes[i] = self.q_h
+                self.q_c_nodes[i] = self.q_c
+                self.tem.q_h_nodes[i] = self.tem.q_h
+                self.tem.q_c_nodes[i] = self.tem.q_c
+
             self.exh.T_nodes[i] = self.exh.T
             self.exh.h_nodes[i] = self.exh.h
             self.cool.h_nodes[i] = self.cool.h
-            self.q_h_nodes[i] = self.q_h
-            self.q_c_nodes[i] = self.q_c
-            self.tem.q_h_nodes[i] = self.tem.q_h
-            self.tem.q_c_nodes[i] = self.tem.q_c
+            self.cool.T_nodes[i] = self.cool.T
             self.tem.T_h_nodes[i] = self.tem.T_h
             # hot side temperature (K) of TEM at each node 
-            self.cool.T_nodes[i] = self.cool.T
             self.tem.T_c_nodes[i] = self.tem.T_c
             # cold side temperature (K) of TEM at each node.  
             self.U_nodes[i] = self.U
@@ -250,15 +253,25 @@ class HX(object):
             self.tem.eta_nodes[i] = self.tem.eta
             self.tem.h_nodes[i] = self.tem.h
 
-            # redefining temperatures (K) for next node
-            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
-                self.exh.C )   
-            if self.type == 'parallel':
-                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
-                    / self.cool.C )  
-            elif self.type == 'counter':
-                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
-                    / self.cool.C ) 
+            if self.thermoelectrics_on == True:
+                # redefining temperatures (K) for next node
+                self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+                    self.exh.C )   
+                if self.type == 'parallel':
+                    self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+                        / self.cool.C )  
+                elif self.type == 'counter':
+                    self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+                        / self.cool.C )
+            else:
+                self.exh.T = ( self.exh.T - self.Qdot_node / self.exh.C )
+                if self.type == 'parallel':
+                    self.cool.T = ( self.cool.T + self.Qdot_node /
+            self.cool.C )    
+                elif self.type == 'counter':
+                    self.cool.T = ( self.cool.T + self.Qdot_node /
+            self.cool.C ) 
+                
                 
         # defining HX outlet/inlet temperatures (K)
         self.exh.T_outlet = self.exh.T
