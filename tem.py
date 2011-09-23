@@ -38,6 +38,8 @@ class Leg():
         # initial array for Seebeck voltage (V)
         self.P_flux_segment = sp.zeros(self.segments)
         # initial array for power flux in segment (W/m^2)
+        self.xtol = 0.01 # tolerable fractional error in hot side
+                         # temperature  
 
     set_ZT = set_ZT
     set_prop_fit = te_prop.set_prop_fit
@@ -60,7 +62,7 @@ class Leg():
         self.T_c) )
         # (W/m^2) guess for q[0] (W/m^2)
         self.q_c = spopt.fsolve(self.solve_leg_once,
-        x0=self.q_c_guess)
+        x0=self.q_c_guess, xtol=self.xtol)
         self.solve_leg_once(self.q_c)
         self.P = sp.sum(self.P_flux_segment) * self.area
         # Power for the entire leg (W)
@@ -88,7 +90,7 @@ class Leg():
             self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
             self.J * self.rho * self.segment_length) )
             self.T_h = self.T[-1]
-            error = self.T_h - self.T_h_goal
+            error = (self.T_h - self.T_h_goal) / self.T_h_goal
         return error
 
 
@@ -100,8 +102,8 @@ class TEModule():
         self.I = 1. # electrical current (Amps)
         self.Ptype = Leg() # p-type instance of leg
         self.Ntype = Leg() # n-type instance of leg
-        self.Ptype.material = 'ideal BiTe p-type'
-        self.Ntype.material = 'ideal BiTe n-type'
+        self.Ptype.material = 'HMS'
+        self.Ntype.material = 'MgSi'
         self.area_void = (1.e-3)**2 # void area (m^2)
         self.length = 2.e-3 # default leg height (m)
         self.segments = 25
