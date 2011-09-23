@@ -18,14 +18,14 @@ import coolant
 reload(coolant)
 
 
-class _PlateWall():
+class _PlateWall(object):
     """class for modeling metal walls of heat exchanger"""
     k = 0.2 # thermal conductivity (kW/m-K) of Aluminum HX plate
     t = 0.005 # thickness (m) of HX plate
     def set_h(self):
         self.h = self.k/self.t
         self.R_thermal = 1 / self.h
-        
+
 
 class HX(object):
     """class for handling HX system"""
@@ -37,9 +37,9 @@ class HX(object):
         self.length = 20.e-2 # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
-        self.delta_T = 1. # change in temperature (K) used for
-                          # perturbation method
-        self.error_tol = 0.01 # tolerable percent error in heat flux 
+        self.error_tol = 0.01 # tolerable percent error in heat flux
+        self.R_thermal = 5.
+        # thermal contact resistance (m^2*K/kW) between plates
 
         self.fix_geometry()
 
