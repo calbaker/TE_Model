@@ -178,5 +178,18 @@ class HeatData(hx.HX):
         self.exh.U_exp = ( self.exh.Qdot_exp / (self.width *
         self.length * self.delta_T_lm_array) )  
         self.cool.U_exp = ( self.cool.Qdot_exp / (self.width *
-        self.length * self.delta_T_lm_array) )  
+        self.length * self.delta_T_lm_array) )
 
+    def set_Re_exp(self):
+        """Sets experimental Reynolds number."""
+        self.set_TempPres_dependents()
+        self.exh.velocity_array = self.exh.flow_array * self.exh.area 
+        self.Re_exp = ( self.exh.rho * self.exh.velocity_array *
+        self.exh.D / self.exh.mu )
+
+    def set_f_exp(self):
+        """Sets friction factor based on experimental data."""
+        self.set_Re_exp()
+        self.f = ( 2. * self.exh.pressure_drop / ( self.exh.length *
+        self.exh.perimeter / self.exh.area * self.exh.rho *
+        self.exh.velocity_array**2) )        
