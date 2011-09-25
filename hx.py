@@ -22,7 +22,7 @@ reload(coolant)
 class _PlateWall(object):
     """class for modeling metal walls of heat exchanger"""
     k = 0.2 # thermal conductivity (kW/m-K) of Aluminum HX plate
-    t = 0.005 # thickness (m) of HX plate
+    t = 0.00635 # thickness (m) of HX plate
     def set_h(self):
         self.h = self.k/self.t
         self.R_thermal = 1 / self.h
@@ -40,7 +40,7 @@ class HX(object):
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
         self.xtol = 0.01 # tolerable fractional error in heat flux
-        self.R_thermal = 5.
+        self.R_thermal = 0.
         # thermal contact resistance (m^2*K/kW) between plates
         self.thermoelectrics_on = True
         # if True, the thermoelectric model runs, if false, pure
