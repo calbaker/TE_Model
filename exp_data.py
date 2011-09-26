@@ -191,6 +191,6 @@ class HeatData(hx.HX):
     def set_f_exp(self):
         """Sets friction factor based on experimental data."""
         self.set_Re_exp()
-        self.exh.f_exp = ( 2. * self.exh.pressure_drop / (
-        self.exh.length * self.exh.perimeter / self.exh.area *
+        self.exh.f_exp = ( 2. * self.exh.pressure_drop * 1.e3 / (
+        self.exh.length * self.exh.perimeter / self.exh.area * 
         self.exh.rho * self.exh.velocity_array**2) )         
