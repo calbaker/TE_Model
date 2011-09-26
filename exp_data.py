@@ -147,8 +147,8 @@ class HeatData(hx.HX):
         """Evaluates spline fit parameters to fit flow to pressure
         drop. """
         self.flow_data.spline_rep()
-        self.exh.flow_array = interp.splev(self.exh.pressure_drop,
-        self.flow_data.spline * 1.e-3)  
+        self.exh.flow_array = ( interp.splev(self.exh.pressure_drop,
+        self.flow_data.spline) * 1.e-3 )
 
     def poly_eval(self):
         """Evaluates polynomial fit of flow to pressure."""
