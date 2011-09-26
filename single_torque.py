@@ -19,7 +19,7 @@ hx.filename_heat = 'alumina paper truncated.xls'
 hx.start_rowx = 4
 hx.end_rowx = 13
 hx.import_heat_data()
-hx.poly_eval()
+hx.spline_eval()
 hx.set_U_exp()
 
 area = (0.002)**2

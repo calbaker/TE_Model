@@ -15,9 +15,9 @@ import exp_data
 reload(exp_data)
 
 hx = exp_data.HeatData()
-hx.filename_heat = 'alumina paper.xls'
+hx.filename_heat = 'alumina paper truncated.xls'
 hx.import_heat_data()
-hx.poly_eval()
+hx.spline_eval()
 hx.set_Qdot_exp()
 hx.set_U_exp()
 hx.set_f_exp()
@@ -31,15 +31,15 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 8
 
-flow_shaped = hx.exh.flow_array.reshape([3,4]) * 1.e3
+flow_shaped = hx.exh.flow_array.reshape([3,3]) * 1.e3
 # exponent converts back to L/s
-T1_shaped = hx.exh.T_inlet_array.reshape([3,4]) 
-heat_exh_shaped = hx.exh.Qdot_exp.reshape([3,4])
-torque_shaped = hx.cummins.torque.reshape([3,4])
-delta_T_shaped = hx.exh.delta_T_array.reshape([3,4])
-U_exh_shaped = hx.exh.U_exp.reshape([3,4])
-f_exh_shaped = hx.exh.f_exp.reshape([3,4])
-Re_exh_shaped = hx.exh.Re_exp.reshape([3,4])
+T1_shaped = hx.exh.T_inlet_array.reshape([3,3]) 
+heat_exh_shaped = hx.exh.Qdot_exp.reshape([3,3])
+torque_shaped = hx.cummins.torque.reshape([3,3])
+delta_T_shaped = hx.exh.delta_T_array.reshape([3,3])
+U_exh_shaped = hx.exh.U_exp.reshape([3,3])
+f_exh_shaped = hx.exh.f_exp.reshape([3,3])
+Re_exh_shaped = hx.exh.Re_exp.reshape([3,3])
 
 fig1 = plt.figure()
 TICKS = np.arange(0,1.1,0.1)
