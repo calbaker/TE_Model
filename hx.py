@@ -207,8 +207,12 @@ class HX(object):
         self.exh.T_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
         self.exh.h_nodes = ZEROS.copy()
+        self.exh.f_nodes = ZEROS.copy()
+        self.exh.Nu_nodes = ZEROS.copy()
         self.cool.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
+        self.cool.f_nodes = ZEROS.copy()
+        self.cool.Nu_nodes = ZEROS.copy()
         self.cool.h_nodes = ZEROS.copy() 
         self.U_nodes = ZEROS.copy() 
         self.U_hot_nodes = ZEROS.copy() 
@@ -240,8 +244,13 @@ class HX(object):
 
             self.exh.T_nodes[i] = self.exh.T
             self.exh.h_nodes[i] = self.exh.h
+            self.exh.f_nodes = self.exh.f
+            self.exh.Nu_nodes = self.exh.Nu_D
+
             self.cool.h_nodes[i] = self.cool.h
             self.cool.T_nodes[i] = self.cool.T
+            self.cool.f_nodes = self.cool.f
+            self.cool.Nu_nodes = self.cool.Nu_D
             self.tem.T_h_nodes[i] = self.tem.T_h
             # hot side temperature (K) of TEM at each node 
             self.tem.T_c_nodes[i] = self.tem.T_c
