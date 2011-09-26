@@ -76,6 +76,7 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 8
+plt.rcParams['axes.formatter.limits'] = -3,3
 
 fig1 = plt.figure()
 fig1.canvas.set_window_title('Parameterized Qdot')
@@ -94,20 +95,20 @@ fig1.savefig('Plots/heat v Vdot parameterized.png')
 
 fig8 = plt.figure()
 fig8.canvas.set_window_title('Friction Factor')
-plt.plot(Re_exh_shaped[0,:] * 1.e-3, f_exh_shaped[0,:] * 1.e6, '--rx',
+plt.plot(Re_exh_shaped[0,:], f_exh_shaped[0,:], '--rx',
             label='32 ft-lbs exp') 
-plt.plot(Re_exh_shaped[1,:] * 1.e-3, f_exh_shaped[1,:] * 1.e6, '--gs',
+plt.plot(Re_exh_shaped[1,:], f_exh_shaped[1,:], '--gs',
             label='90 ft-lbs exp') 
-plt.plot(Re_exh_shaped[2,:] * 1.e-3, f_exh_shaped[2,:] * 1.e6, '--bd',
+plt.plot(Re_exh_shaped[2,:], f_exh_shaped[2,:], '--bd',
             label='214 ft-lbs exp') 
-plt.plot(Re_exh_shaped[0,:] * 1.e-3, f_model_shaped[0,:] * 1.e6, '-rx',
+plt.plot(Re_exh_shaped[0,:], f_model_shaped[0,:], '-rx',
             label='32 ft-lbs model') 
-plt.plot(Re_exh_shaped[1,:] * 1.e-3, f_model_shaped[1,:] * 1.e6, '-gs',
+plt.plot(Re_exh_shaped[1,:], f_model_shaped[1,:], '-gs',
             label='90 ft-lbs model') 
-plt.plot(Re_exh_shaped[2,:] * 1.e-3, f_model_shaped[2,:] * 1.e6, '-bd',
+plt.plot(Re_exh_shaped[2,:], f_model_shaped[2,:], '-bd',
             label='214 ft-lbs model') 
-plt.xlabel('Exhaust Reynolds Number * 1e-3')
-plt.ylabel('Exhaust Friction Factor * 1e6')
+plt.xlabel('Exhaust Reynolds Number')
+plt.ylabel('Exhaust Friction Factor')
 plt.grid()
 plt.legend(loc='best')
 plt.savefig('Plots/f v Re.pdf')
