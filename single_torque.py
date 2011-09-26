@@ -7,7 +7,6 @@ import xlrd
 import numpy as np
 
 # User Defined Modules
-# In this directory
 import hx
 reload(hx)
 import properties as prop
