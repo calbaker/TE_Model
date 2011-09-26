@@ -32,7 +32,7 @@ class FlowData():
     """Class for handling flow rate and pressure drop data.""" 
     def __init__(self):
         """Sets default file name, start row, and end row.""" 
-        self.filename_flow = 'manometer calibration.xls'
+        self.filename_flow = 'manometer calibration2.xls'
         self.start_rowx = 2
         self.end_rowx = 11
         self.poly_order = 1
@@ -191,6 +191,6 @@ class HeatData(hx.HX):
     def set_f_exp(self):
         """Sets friction factor based on experimental data."""
         self.set_Re_exp()
-        self.exh.f_exp = ( 2. * self.exh.pressure_drop * 1.e3 / (
+        self.exh.f_exp = ( 0.25 * 2. * self.exh.pressure_drop * 1.e3 / (
         self.exh.length * self.exh.perimeter / self.exh.area * 
         self.exh.rho * self.exh.velocity_array**2) )         
