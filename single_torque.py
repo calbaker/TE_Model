@@ -45,6 +45,9 @@ hx.type = 'counter'
 hx.exh.P = 100.
 hx.set_f_exp()
 
+hx.exh.f_model = np.empty(np.size(hx.Qdot2d))
+hx.exh.Nu_model = np.empty(np.size(hx.Qdot2d))
+
 for i in range(np.size(hx.Qdot2d)):
     hx.cool.T_outlet = hx.cool.T_outlet_array[i] + 273.15
     hx.exh.T_inlet = hx.exh.T_inlet_array[i] + 273.15
@@ -52,7 +55,8 @@ for i in range(np.size(hx.Qdot2d)):
     hx.exh.set_TempPres_dependents()
     hx.exh.mdot = hx.exh.flow_array[i] * hx.exh.rho 
     hx.solve_hx()
-#    hx.exh.f_model = hx.exh.
+    hx.exh.f_model[i] = hx.exh.f_nodes.mean()
+    hx.exh.Nu_model[i] = hx.exh.Nu_nodes.mean()
     hx.Qdot2d[i] = hx.Qdot
 
 hx.exh.Qdot_exp.reshape([3,3])
@@ -62,6 +66,7 @@ hx.exh.Qdot_exp = hx.exh.Qdot_exp.reshape([3,3])
 hx.exh.T_inlet_array = hx.exh.T_inlet_array.reshape([3,3]) 
 f_exh_shaped = hx.exh.f_exp.reshape([3,3]) 
 Re_exh_shaped = hx.exh.Re_exp.reshape([3,3])
+f_model_shaped = hx.exh.f_model.reshape([3,3])
 
 FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
@@ -89,12 +94,18 @@ fig1.savefig('Plots/heat v Vdot parameterized.png')
 
 fig8 = plt.figure()
 fig8.canvas.set_window_title('Friction Factor')
-plt.plot(Re_exh_shaped[0,:] * 1.e-3, f_exh_shaped[0,:] * 1.e6, '-x',
-            label='32 ft-lbs') 
-plt.plot(Re_exh_shaped[1,:] * 1.e-3, f_exh_shaped[1,:] * 1.e6, '-.s',
-            label='90 ft-lbs') 
-plt.plot(Re_exh_shaped[2,:] * 1.e-3, f_exh_shaped[2,:] * 1.e6, '--d',
-            label='214 ft-lbs') 
+plt.plot(Re_exh_shaped[0,:] * 1.e-3, f_exh_shaped[0,:] * 1.e6, '--rx',
+            label='32 ft-lbs exp') 
+plt.plot(Re_exh_shaped[1,:] * 1.e-3, f_exh_shaped[1,:] * 1.e6, '--gs',
+            label='90 ft-lbs exp') 
+plt.plot(Re_exh_shaped[2,:] * 1.e-3, f_exh_shaped[2,:] * 1.e6, '--bd',
+            label='214 ft-lbs exp') 
+plt.plot(Re_exh_shaped[0,:] * 1.e-3, f_model_shaped[0,:] * 1.e6, '-rx',
+            label='32 ft-lbs model') 
+plt.plot(Re_exh_shaped[1,:] * 1.e-3, f_model_shaped[1,:] * 1.e6, '-gs',
+            label='90 ft-lbs model') 
+plt.plot(Re_exh_shaped[2,:] * 1.e-3, f_model_shaped[2,:] * 1.e6, '-bd',
+            label='214 ft-lbs model') 
 plt.xlabel('Exhaust Reynolds Number * 1e-3')
 plt.ylabel('Exhaust Friction Factor * 1e6')
 plt.grid()
