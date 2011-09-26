@@ -20,6 +20,7 @@ hx.import_heat_data()
 hx.poly_eval()
 hx.set_Qdot_exp()
 hx.set_U_exp()
+hx.set_f_exp()
 
 FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
@@ -37,6 +38,8 @@ heat_exh_shaped = hx.exh.Qdot_exp.reshape([3,4])
 torque_shaped = hx.cummins.torque.reshape([3,4])
 delta_T_shaped = hx.exh.delta_T_array.reshape([3,4])
 U_exh_shaped = hx.exh.U_exp.reshape([3,4])
+f_exh_shaped = hx.exh.f_exp.reshape([3,4])
+Re_exh_shaped = hx.exh.Re_exp.reshape([3,4])
 
 fig1 = plt.figure()
 TICKS = np.arange(0,1.1,0.1)

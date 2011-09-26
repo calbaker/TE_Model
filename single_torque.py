@@ -43,7 +43,7 @@ hx.tem.Ptype.area = area * 2.
 hx.tem.area_void = 25. * area
 hx.type = 'counter'
 hx.exh.P = 100.
-
+hx.set_f_exp()
 
 for i in range(np.size(hx.Qdot2d)):
     hx.cool.T_outlet = hx.cool.T_outlet_array[i] + 273.15
@@ -52,6 +52,7 @@ for i in range(np.size(hx.Qdot2d)):
     hx.exh.set_TempPres_dependents()
     hx.exh.mdot = hx.exh.flow_array[i] * hx.exh.rho 
     hx.solve_hx()
+#    hx.exh.f_model = hx.exh.
     hx.Qdot2d[i] = hx.Qdot
 
 hx.exh.Qdot_exp.reshape([3,3])
@@ -59,6 +60,8 @@ hx.exh.flow_array = hx.exh.flow_array.reshape([3,3])
 hx.Qdot2d = hx.Qdot2d.reshape([3,3])
 hx.exh.Qdot_exp = hx.exh.Qdot_exp.reshape([3,3])
 hx.exh.T_inlet_array = hx.exh.T_inlet_array.reshape([3,3]) 
+f_exh_shaped = hx.exh.f_exp.reshape([3,3]) 
+Re_exh_shaped = hx.exh.Re_exp.reshape([3,3])
 
 FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
@@ -70,14 +73,13 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 8
 
 fig1 = plt.figure()
-fig1.canvas.set_window_title('Parameterized')
+fig1.canvas.set_window_title('Parameterized Qdot')
 plt.plot(hx.exh.flow_array[0,:] * 1.e3, hx.exh.Qdot_exp[0,:], 'xr', label='exp 32 ft-lbs') 
 plt.plot(hx.exh.flow_array[1,:] * 1.e3, hx.exh.Qdot_exp[1,:], 'sg', label='exp 90 ft-lbs') 
 plt.plot(hx.exh.flow_array[2,:] * 1.e3, hx.exh.Qdot_exp[2,:], 'ob', label='exp 214 ft-lbs') 
 plt.plot(hx.exh.flow_array[0,:] * 1.e3, hx.Qdot2d[0,:], '-r', label='model 32 ft-lbs') 
 plt.plot(hx.exh.flow_array[1,:] * 1.e3, hx.Qdot2d[1,:], '--g', label='model 90 ft-lbs') 
 plt.plot(hx.exh.flow_array[2,:] * 1.e3, hx.Qdot2d[2,:], '-.b', label='model 214 ft-lbs') 
-
 plt.legend(loc='upper left')
 plt.grid()
 plt.xlabel('Flow Rate (L/s)')
@@ -85,8 +87,23 @@ plt.ylabel('Heat Transfer (kW)')
 fig1.savefig('Plots/heat v Vdot parameterized.pdf')
 fig1.savefig('Plots/heat v Vdot parameterized.png')
 
+fig8 = plt.figure()
+fig8.canvas.set_window_title('Friction Factor')
+plt.plot(Re_exh_shaped[0,:] * 1.e-3, f_exh_shaped[0,:] * 1.e6, '-x',
+            label='32 ft-lbs') 
+plt.plot(Re_exh_shaped[1,:] * 1.e-3, f_exh_shaped[1,:] * 1.e6, '-.s',
+            label='90 ft-lbs') 
+plt.plot(Re_exh_shaped[2,:] * 1.e-3, f_exh_shaped[2,:] * 1.e6, '--d',
+            label='214 ft-lbs') 
+plt.xlabel('Exhaust Reynolds Number * 1e-3')
+plt.ylabel('Exhaust Friction Factor * 1e6')
+plt.grid()
+plt.legend(loc='best')
+plt.savefig('Plots/f v Re.pdf')
+plt.savefig('Plots/f v Re.png')
+
 fig2 = plt.figure()
-fig2.canvas.set_window_title('Experimental') 
+fig2.canvas.set_window_title('Experimental Qdot2d') 
 TICKS = np.arange(0.2,1.6,0.2)
 LEVELS = np.arange(0.2, 1.6, 0.1)
 FCS = plt.contourf(hx.exh.flow_array * 1.e3, hx.exh.T_inlet_array,
@@ -105,7 +122,7 @@ plt.savefig('Plots/heat v T1 and Vdot exp.pdf')
 plt.savefig('Plots/heat v T1 and Vdot exp.png')
 
 fig3 = plt.figure()
-fig3.canvas.set_window_title('Model') 
+fig3.canvas.set_window_title('Model Qdot2d') 
 FCS = plt.contourf(hx.exh.flow_array * 1.e3, hx.exh.T_inlet_array,
                    hx.Qdot2d, levels=LEVELS)  
 CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS)
