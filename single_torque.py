@@ -70,7 +70,7 @@ f_model_shaped = hx.exh.f_model.reshape([3,3])
 FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
-plt.rcParams['legend.fontsize'] = FONTSIZE
+plt.rcParams['legend.fontsize'] = FONTSIZE - 5
 plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
@@ -149,5 +149,5 @@ plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
 plt.savefig('Plots/heat v T1 and Vdot mod.pdf')
 plt.savefig('Plots/heat v T1 and Vdot mod.png')
 
-# plt.show()
+plt.show()
 

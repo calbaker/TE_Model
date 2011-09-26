@@ -43,14 +43,24 @@ def get_flow(steel,C3H8_pressure,C3H8conc):
 
 flow, C3H8flow, C3H8flow0psi, C3H8flow2psi = (
 get_flow(steel,C3H8pressure,C3H8conc) )
+flow_min = C3H8flow / ((C3H8conc + 50.) * 1.e-6) / 1000. / 60. 
+flow_max = C3H8flow / ((C3H8conc - 50.) * 1.e-6) / 1000. / 60.
+flow_error1 = flow_max - flow
+flow_error2 = flow_min - flow
+flow_error = np.sqrt((flow_error1**2 + flow_error2**2) / 2.)
+omega_C3H8 = 15.
+omega_flow = ( np.sqrt((omega_C3H8 * -(C3H8flow / (1.e-6 * 60.e3) *
+                               C3H8conc**-2))**2) )
 
 pressure_drop.sort()
 flow.sort()
 
 ORDER = 3
+SMOOTHING = np.size(flow) - 10.
 
 pressure_fit = np.linspace(0,14.,100)
-flow_spline = interp.splrep(pressure_drop, flow)
+flow_spline = interp.splrep(pressure_drop, flow, w=1./omega_flow,
+                            s=SMOOTHING) 
 flow_spline_fit = interp.splev(pressure_fit, flow_spline)
 
 flow_poly = np.poly1d(np.polyfit(pressure_drop, flow, ORDER))
@@ -67,9 +77,9 @@ plt.rcParams['lines.markersize'] = 8
 
 plt.figure()
 plt.plot(pressure_drop, flow, 'sk',label='experimental')
-plt.plot(pressure_fit, flow_spline_fit, '-.r',label='spline fit')
-plt.plot(pressure_fit, flow_poly_fit, '-k',
-         label='order '+str(ORDER)+' polynomial')
+plt.plot(pressure_fit, flow_spline_fit, '-k',label='spline fit')
+# plt.plot(pressure_fit, flow_poly_fit, '-k',
+#          label='order '+str(ORDER)+' polynomial')
 plt.xlabel('Pressure Drop (kPa)')
 plt.ylabel('Exhaust Flow Rate (L/s)')
 plt.grid()

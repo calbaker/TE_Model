@@ -36,7 +36,10 @@ class FlowData():
         self.start_rowx = 2
         self.end_rowx = 11
         self.poly_order = 1
-
+        self.omega_C3H8 = 15. # estimate of uncertainty in hydrocarbon
+                              # concentration (PPM)
+        self.smooth_offset = -10.
+        # used for s parameter in splrep
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa        
 
     def import_flow_data(self):
@@ -69,6 +72,8 @@ class FlowData():
         self.flow = ( self.C3H8flow / (self.C3H8 * 1.e-6) / 1000. /
         60. )  
         # exhaust flow (L/s)
+        self.omega = ( np.sqrt((self.omega_C3H8 * -(self.C3H8flow /
+        (1.e-6 * 60.e3) * self.C3H8**-2))**2) ) 
         self.pressure_drop = ( (self.reading - self.datum) * 2. *
         self.H2O_kPa )
         # pressure drop (kPa) in heat exchanger
@@ -79,7 +84,9 @@ class FlowData():
         self.manipulate_flow_data()
         self.flow.sort()
         self.pressure_drop.sort()
-        self.spline = interp.splrep(self.pressure_drop, self.flow)
+        SMOOTHING = np.size(self.pressure_drop) - self.smooth_offset 
+        self.spline = interp.splrep(self.pressure_drop, self.flow,
+        w=1./self.omega, s=SMOOTHING)
 
     def poly_rep(self):
         """Determines polynomial coefficients to produce fit for flow
