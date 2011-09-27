@@ -34,7 +34,7 @@ class FlowData():
         """Sets default file name, start row, and end row.""" 
         self.filename_flow = 'manometer calibration2.xls'
         self.start_rowx = 2
-        self.end_rowx = 11
+        self.end_rowx = 16
         self.poly_order = 1
         self.omega_C3H8 = 15. # estimate of uncertainty in hydrocarbon
                               # concentration (PPM)
@@ -190,14 +190,25 @@ class HeatData(hx.HX):
     def set_Re_exp(self):
         """Sets experimental Reynolds number."""
         self.exh.set_flow_geometry(self.width)
-        self.exh.set_TempPres_dependents()
+        self.exh.rho_array = self.exh.rho
+        self.exh.mu_array = self.exh.mu
+        # self.set_properties()
         self.exh.velocity_array = self.exh.flow_array / self.exh.area 
-        self.exh.Re_exp = ( self.exh.rho * self.exh.velocity_array *
-        self.exh.D / self.exh.mu )
+        self.exh.Re_exp = ( self.exh.rho_array * self.exh.velocity_array *
+        self.exh.D / self.exh.mu_array )
 
     def set_f_exp(self):
         """Sets friction factor based on experimental data."""
         self.set_Re_exp()
         self.exh.f_exp = ( 0.25 * 2. * self.exh.pressure_drop * 1.e3 / (
         self.exh.length * self.exh.perimeter / self.exh.area * 
-        self.exh.rho * self.exh.velocity_array**2) )         
+        self.exh.rho_array * self.exh.velocity_array**2) )         
+
+    def set_properties(self):
+        self.exh.rho_array = np.empty(np.size(self.exh.flow_array))
+        self.exh.mu_array = np.empty(np.size(self.exh.flow_array))
+        for i in range(np.size(self.exh.flow_array)):
+            self.exh.T = self.exh.T_inlet_array[i]
+            self.exh.set_TempPres_dependents()
+            self.exh.rho_array[i] = self.exh.rho
+            self.exh.mu_array[i] = self.exh.mu
