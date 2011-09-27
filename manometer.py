@@ -4,6 +4,12 @@ import xlrd
 import scipy.interpolate as interp
 import scipy.optimize as spopt
 
+import exp_data
+
+hx = exp_data.HeatData()
+hx.flow_data.spline_rep()
+
+
 FILENAME = 'manometer calibration2.xls'
 worksheet = xlrd.open_workbook(filename=FILENAME).sheet_by_index(0)
 
@@ -43,19 +49,15 @@ def get_flow(steel,C3H8_pressure,C3H8conc):
 
 flow, C3H8flow, C3H8flow0psi, C3H8flow2psi = (
 get_flow(steel,C3H8pressure,C3H8conc) )
-flow_min = C3H8flow / ((C3H8conc + 50.) * 1.e-6) / 1000. / 60. 
-flow_max = C3H8flow / ((C3H8conc - 50.) * 1.e-6) / 1000. / 60.
-flow_error1 = flow_max - flow
-flow_error2 = flow_min - flow
-flow_error = np.sqrt((flow_error1**2 + flow_error2**2) / 2.)
 omega_C3H8 = 15.
 omega_flow = ( np.sqrt((omega_C3H8 * -(C3H8flow / (1.e-6 * 60.e3) *
                                C3H8conc**-2))**2) )
 
 pressure_drop.sort()
 flow.sort()
+f = pressure_drop / flow**2
 
-ORDER = 3
+ORDER = 2
 SMOOTHING = np.size(flow) - 10.
 
 pressure_fit = np.linspace(0,14.,100)
@@ -78,13 +80,22 @@ plt.rcParams['lines.markersize'] = 8
 plt.figure()
 plt.plot(pressure_drop, flow, 'sk',label='experimental')
 plt.plot(pressure_fit, flow_spline_fit, '-k',label='spline fit')
-# plt.plot(pressure_fit, flow_poly_fit, '-k',
-#          label='order '+str(ORDER)+' polynomial')
+plt.plot(pressure_fit, flow_poly_fit, '-r',
+         label='order '+str(ORDER)+' polynomial')
 plt.xlabel('Pressure Drop (kPa)')
 plt.ylabel('Exhaust Flow Rate (L/s)')
+plt.ylim(ymin=0)
 plt.grid()
 plt.legend(loc='upper left')
 plt.savefig('Plots/flow_v_deltaP.pdf')
 plt.savefig('Plots/flow_v_deltaP.png')
+
+plt.figure()
+plt.plot(pressure_drop, f, 'sk')
+plt.grid()
+plt.xlabel('Pressure Drop (kPa)')
+plt.ylabel('Friction Factor Estimate')
+plt.savefig('Plots/friction estimate.pdf')
+plt.savefig('Plots/friction estimate.png')
 
 plt.show()

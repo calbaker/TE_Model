@@ -108,6 +108,7 @@ plt.plot(Re_exh_shaped[2,:], f_model_shaped[2,:], '-bd',
             label='214 ft-lbs model') 
 plt.xlabel('Exhaust Reynolds Number')
 plt.ylabel('Exhaust Friction Factor')
+plt.ylim(ymin=0)
 plt.grid()
 plt.legend(loc='best')
 plt.savefig('Plots/f v Re.pdf')
