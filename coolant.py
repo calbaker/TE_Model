@@ -6,11 +6,11 @@ import functions
 reload(functions)
 
 
-class Coolant(prop.flow):
+class Coolant(prop.flow, functions.Functions):
     """class for coolant flow"""
 
     def __init__(self):
-        """sets constants and initiates class instances"""        
+        """sets constants and initiates class instances"""
         self.height = 1.e-2 # height (m) of coolant duct
         self.mdot = 1.0 # mass flow rate (kg/s) of coolant
         self.ducts = 2 # number of coolant ducts per hot duct
@@ -23,9 +23,6 @@ class Coolant(prop.flow):
         # Toolbox
         self.rho = 1000. # density (kg/m**3) of water
         self.k = 0.646e-3 # thermal conductivity of water at 325K (kW/m*K)
-
-    set_flow_geometry = functions.set_flow_geometry
-    set_Re_dependents = functions.set_Re_dependents
 
     def set_flow(self):
         """calculates flow parameters"""

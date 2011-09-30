@@ -37,7 +37,7 @@ class _Fin(object):
         self.thickness )
 
 
-class Exhaust(prop.ideal_gas):
+class Exhaust(prop.ideal_gas, functions.Functions):
     """class for exhaust flow"""
 
     def __init__(self):
@@ -61,9 +61,6 @@ class Exhaust(prop.ideal_gas):
         # fraction of exhaust flow bypassing heat exchanger
         self.fin = _Fin() # workaround to be able to change fin from
                           # instance
-
-        self.set_flow_geometry = functions.set_flow_geometry()
-        self.set_Re_dependents = functions.set_Re_dependents()
 
     def set_flow(self):
         """calculates flow parameters"""        
