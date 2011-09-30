@@ -14,16 +14,22 @@ import exp_data
 reload(exp_data)
 
 hx = exp_data.HeatData()
-hx.filename_heat = 'alumina paper truncated.xls'
-hx.start_rowx = 4
-hx.end_rowx = 13
+hx.flow_data.import_flow_data()
 hx.import_heat_data()
-hx.spline_eval()
+hx.manipulate_heat_data()
+hx.set_flow_corrected()
+hx.set_flow_array()
+hx.set_properties()
+mdot_cool = 4. / 60. * 3.8 / 1000. * hx.cool.rho  
+hx.cool.mdot = mdot_cool 
+hx.set_mass_flow()
 hx.set_U_exp()
+hx.set_f_exp()
 
+# model stuff
 area = (0.002)**2
 length = 2.e-3
-hx.Qdot2d = np.empty(np.size(hx.exh.flow_array))
+hx.Qdot2d = np.empty(np.size(hx.exh.T_array))
 hx.tem.Ntype.material = 'alumina'
 hx.tem.Ptype.material = 'alumina'
 hx.thermoelectrics_on = False
@@ -32,8 +38,6 @@ hx.length = 0.195
 hx.exh.bypass = 0.
 hx.exh.height = 1.e-2
 Vdot_cool = 4. # coolant flow rate (GPM) 
-mdot_cool = 4. / 60. * 3.8 / 1000. * hx.cool.rho  
-hx.cool.mdot = mdot_cool / 60. * 3.8
 hx.cool.height = 0.5e-2
 hx.tem.I = 1.5
 hx.tem.length = length
@@ -58,14 +62,14 @@ for i in range(np.size(hx.Qdot2d)):
     hx.exh.Nu_model[i] = hx.exh.Nu_nodes.mean()
     hx.Qdot2d[i] = hx.Qdot
 
-hx.exh.Qdot_exp.reshape([3,3])
-hx.exh.flow_shaped = hx.exh.flow_array.reshape([3,3])
-hx.Qdot2d = hx.Qdot2d.reshape([3,3])
-hx.exh.Qdot_exp = hx.exh.Qdot_exp.reshape([3,3])
-hx.exh.T_inlet_array = hx.exh.T_inlet_array.reshape([3,3]) 
-f_exh_shaped = hx.exh.f_exp.reshape([3,3]) 
-Re_exh_shaped = hx.exh.Re_exp.reshape([3,3])
-f_model_shaped = hx.exh.f_model.reshape([3,3])
+hx.exh.delta_T_array = hx.exh.delta_T_array.reshape([3,4])
+hx.exh.flow_shaped = hx.exh.flow_array.reshape([3,4])
+hx.Qdot2d = hx.Qdot2d.reshape([3,4])
+hx.exh.Qdot_exp = hx.exh.Qdot_exp.reshape([3,4])
+hx.exh.T_inlet_array = hx.exh.T_inlet_array.reshape([3,4]) 
+f_exh_shaped = hx.exh.f_exp.reshape([3,4]) 
+Re_exh_shaped = hx.exh.Re_exp.reshape([3,4])
+f_model_shaped = hx.exh.f_model.reshape([3,4])
 
 FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
@@ -76,6 +80,18 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 8
 plt.rcParams['axes.formatter.limits'] = -3,3
+
+fig44 = plt.figure()
+fig44.canvas.set_window_title('Parameterized Delta T')
+plt.plot(hx.exh.flow_shaped[0,:] * 1.e3, hx.exh.delta_T_array[0,:], '--xr', label='exp 32 ft-lbs') 
+plt.plot(hx.exh.flow_shaped[1,:] * 1.e3, hx.exh.delta_T_array[1,:], '--sg', label='exp 90 ft-lbs') 
+plt.plot(hx.exh.flow_shaped[2,:] * 1.e3, hx.exh.delta_T_array[2,:], '--ob', label='exp 214 ft-lbs') 
+plt.legend(loc='upper left')
+plt.grid()
+plt.xlabel('Flow Rate (L/s)')
+plt.ylabel('Heat Transfer (kW)')
+fig44.savefig('Plots/delta T v Vdot parameterized.pdf')
+fig44.savefig('Plots/delta T v Vdot parameterized.png')
 
 fig1 = plt.figure()
 fig1.canvas.set_window_title('Parameterized Qdot')
@@ -116,8 +132,8 @@ plt.savefig('Plots/f v Re.png')
 
 fig2 = plt.figure()
 fig2.canvas.set_window_title('Experimental Qdot2d') 
-TICKS = np.arange(0.2,1.6,0.2)
-LEVELS = np.arange(0.2, 1.6, 0.1)
+TICKS = np.linspace(0.2, 2, 10)
+LEVELS = np.linspace(0.2, 2, 10)
 FCS = plt.contourf(hx.exh.flow_shaped * 1.e3, hx.exh.T_inlet_array,
                    hx.exh.Qdot_exp, levels=LEVELS)  
 CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS)
@@ -150,5 +166,5 @@ plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
 plt.savefig('Plots/heat v T1 and Vdot mod.pdf')
 plt.savefig('Plots/heat v T1 and Vdot mod.png')
 
-plt.show()
+# plt.show()
 
