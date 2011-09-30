@@ -20,10 +20,17 @@ hx.manipulate_heat_data()
 hx.set_flow_corrected()
 hx.set_flow_array()
 hx.set_properties()
-mdot_cool = 4. / 60. * 3.8 / 1000. * hx.cool.rho  
+hx.width = 9.e-2
+hx.length = 0.195
+hx.exh.bypass = 0.
+hx.exh.height = 1.e-2
+Vdot_cool = 4. # coolant flow rate (GPM) 
+hx.cool.height = 0.5e-2
+mdot_cool = Vdot_cool / 60. * 3.8 / 1000. * hx.cool.rho   
 hx.cool.mdot = mdot_cool 
 hx.set_mass_flow()
 hx.set_U_exp()
+hx.exh.set_flow_geometry(hx.width)
 hx.set_f_exp()
 
 # model stuff
@@ -33,12 +40,6 @@ hx.Qdot2d = np.empty(np.size(hx.exh.T_array))
 hx.tem.Ntype.material = 'alumina'
 hx.tem.Ptype.material = 'alumina'
 hx.thermoelectrics_on = False
-hx.width = 9.e-2
-hx.length = 0.195
-hx.exh.bypass = 0.
-hx.exh.height = 1.e-2
-Vdot_cool = 4. # coolant flow rate (GPM) 
-hx.cool.height = 0.5e-2
 hx.tem.I = 1.5
 hx.tem.length = length
 hx.tem.Ntype.area = area
@@ -47,6 +48,7 @@ hx.tem.area_void = 25. * area
 hx.type = 'counter'
 hx.exh.P = 100.
 hx.set_f_exp()
+hx.set_Re_exp()
 
 hx.exh.f_model = np.empty(np.size(hx.Qdot2d))
 hx.exh.Nu_model = np.empty(np.size(hx.Qdot2d))
@@ -67,14 +69,13 @@ hx.exh.flow_shaped = hx.exh.flow_array.reshape([3,4])
 hx.Qdot2d = hx.Qdot2d.reshape([3,4])
 hx.exh.Qdot_exp = hx.exh.Qdot_exp.reshape([3,4])
 hx.exh.T_inlet_array = hx.exh.T_inlet_array.reshape([3,4]) 
-f_exh_shaped = hx.exh.f_exp.reshape([3,4]) 
 Re_exh_shaped = hx.exh.Re_exp.reshape([3,4])
 f_model_shaped = hx.exh.f_model.reshape([3,4])
 
 FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
-plt.rcParams['legend.fontsize'] = FONTSIZE - 5
+plt.rcParams['legend.fontsize'] = FONTSIZE 
 plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
@@ -110,12 +111,8 @@ fig1.savefig('Plots/heat v Vdot parameterized.png')
 
 fig8 = plt.figure()
 fig8.canvas.set_window_title('Friction Factor')
-plt.plot(Re_exh_shaped[0,:], f_exh_shaped[0,:], '--rx',
+plt.plot(hx.flow_data.Re_D, hx.flow_data.f_exp, 'kx',
             label='32 ft-lbs exp') 
-plt.plot(Re_exh_shaped[1,:], f_exh_shaped[1,:], '--gs',
-            label='90 ft-lbs exp') 
-plt.plot(Re_exh_shaped[2,:], f_exh_shaped[2,:], '--bd',
-            label='214 ft-lbs exp') 
 plt.plot(Re_exh_shaped[0,:], f_model_shaped[0,:], '-rx',
             label='32 ft-lbs model') 
 plt.plot(Re_exh_shaped[1,:], f_model_shaped[1,:], '-gs',
@@ -126,7 +123,7 @@ plt.xlabel('Exhaust Reynolds Number')
 plt.ylabel('Exhaust Friction Factor')
 plt.ylim(ymin=0)
 plt.grid()
-plt.legend(loc='best')
+plt.legend(loc='lower left')
 plt.savefig('Plots/f v Re.pdf')
 plt.savefig('Plots/f v Re.png')
 

@@ -33,10 +33,11 @@ class Dummy_TE(object):
         self.R_thermal = 1. / self.h
     
 
-class FlowData(prop.ideal_gas()):
+class FlowData(prop.ideal_gas):
     """Class for handling flow rate and pressure drop data.""" 
     def __init__(self):
-        """Sets default file name, start row, and end row.""" 
+        """Sets default file name, start row, and end row."""
+        super(FlowData, self).__init__()
         self.filename_flow = 'trash can flow meter.xls'
         self.start_rowx = 2
         self.end_rowx = 17
@@ -176,8 +177,11 @@ class HeatData(hx.HX):
         self.flow_data.velocity = self.flow_data.flow / self.exh.area
         self.flow_data.set_TempPres_dependents()
         self.flow_data.Re_D = ( self.flow_data.velocity *
-        self.flow_data.rho * self.exh.D / self.flow_data.mu_array )
-        self.f = 
+        self.flow_data.rho * self.exh.D / self.flow_data.mu )
+        self.flow_data.f_exp = ( 0.25 * 2. *
+        self.flow_data.pressure_drop * 1.e3 / (self.exh.length *
+        self.exh.perimeter / self.exh.area * self.flow_data.rho *
+        self.flow_data.velocity**2) )          
 
     def set_properties(self):
         """Sets array of temperature and pressure dependent properties
