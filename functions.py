@@ -4,7 +4,12 @@ import numpy as np
 
 
 class Functions(object):
-    """Class containing functions used in both Coolant and Exhaust classes."""
+    """Class containing functions used in both Coolant and Exhaust
+    classes."""
+
+    def __init__(self):
+        """initializes Nu_coeff for when curve_fit is not used."""
+        self.Nu_coeff = 0.023
 
     def set_flow_geometry(self,width):
         """Given heat exchanger width, this function sets some
@@ -22,7 +27,7 @@ class Functions(object):
             if (self.Re_D > 2300.).any(): # Do these correlations hold for any tube geometry?
                 self.f = 0.316 * self.Re_D**(-1. / 4.) # friction factor for turbulent
                 # flow from FMP 4th Eq. 8.35 
-                self.Nu_D = 0.023 * self.Re_D**(4. / 5.) * self.Pr**(1. / 3.) # Adrian
+                self.Nu_D = self.Nu_coeff * self.Re_D**(4. / 5.) * self.Pr**(1. / 3.) # Adrian
                 # Bejan, Convection Heat Transfer, 3rd ed., Equation 8.30
             else:
                 self.Nu_D = 7.54 # Bejan, Convection Heat Transfer, Table 3.2
@@ -32,7 +37,7 @@ class Functions(object):
             if (self.Re_D > 2300.): # Do these correlations hold for any tube geometry?
                 self.f = 0.316 * self.Re_D**(-1. / 4.) # friction factor for turbulent
                 # flow from FMP 4th Eq. 8.35 
-                self.Nu_D = 0.023 * self.Re_D**(4. / 5.)*self.Pr**(1. / 3.) # Adrian
+                self.Nu_D = self.Nu_coeff * self.Re_D**(4. / 5.)*self.Pr**(1. / 3.) # Adrian
                 # Bejan, Convection Heat Transfer, 3rd ed., Equation 8.30
             else:
                 self.Nu_D = 7.54 # Bejan, Convection Heat Transfer, Table 3.2
