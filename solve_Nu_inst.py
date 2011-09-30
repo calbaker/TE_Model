@@ -40,7 +40,7 @@ mdot_cool = Vdot_cool / 60. * 3.8 / 1000. * hx_exp.cool.rho
 hx_exp.cool.mdot = mdot_cool 
 hx_exp.set_mass_flow()
 hx_exp.set_U_exp()
-hx_exp.exh.functions.set_flow_geometry(hx_exp.width)
+hx_exp.exh.set_flow_geometry(hx_exp.width)
 hx_exp.set_f_exp()
 hx_exp.set_Re_exp()
 hx_exp.set_params()
