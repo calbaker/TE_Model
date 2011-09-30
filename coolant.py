@@ -12,6 +12,7 @@ class Coolant(prop.flow, functions.Functions):
     def __init__(self):
         """sets constants and initiates class instances"""
         super(Coolant, self).__init__()
+        super(Coolant, self).set_Nu_coeff()
         self.height = 1.e-2 # height (m) of coolant duct
         self.mdot = 1.0 # mass flow rate (kg/s) of coolant
         self.ducts = 2 # number of coolant ducts per hot duct

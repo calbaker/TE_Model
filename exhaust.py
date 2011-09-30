@@ -43,6 +43,7 @@ class Exhaust(prop.ideal_gas, functions.Functions):
     def __init__(self):
         """sets constants and initiates class instances"""
         super(Exhaust, self).__init__()
+        super(Exhaust, self).set_Nu_coeff()
         self.porous = 'no' # is there porous media?
         self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
             # corrugate metal, etc.)
