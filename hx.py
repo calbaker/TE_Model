@@ -48,12 +48,12 @@ class HX(object):
 
         self.fix_geometry()
 
-    # initialization of sub classes
-    cool = coolant.Coolant()
-    exh = exhaust.Exhaust()
-    tem = tem.TEModule()
-    plate = _PlateWall()
-    cummins = engine.Engine()
+        # initialization of sub classes
+        self.cool = coolant.Coolant()
+        self.exh = exhaust.Exhaust()
+        self.tem = tem.TEModule()
+        self.plate = _PlateWall()
+        self.cummins = engine.Engine()
 
     def fix_geometry(self):
         """Makes sure that common geometry like width and length is
