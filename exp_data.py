@@ -19,24 +19,6 @@ def get_flow(pressure_drop, coeff):
     flow = coeff * pressure_drop**0.5
     return flow
 
-class Dummy_TE(object):
-    """Class for handling TE device without any TE properties."""
-
-    def __init__(self):
-        """Defaults"""
-        self.k = 1.5e-3
-        # thermal conductivity of alumina (kW/m-K)
-        self.thickness = 1.e-3
-        # thickness (m) of alumina paper
-        self.set_h()
-
-    def set_h(self):
-        """Sets effective heat transfer coefficient and thermal
-        resistance.""" 
-        self.h = self.k / self.thickness
-        # effective heat transfer coefficient (kW/m^2-K)
-        self.R_thermal = 1. / self.h
-    
 
 class FlowData(prop.ideal_gas):
     """Class for handling flow rate and pressure drop data.""" 
@@ -79,7 +61,6 @@ class HeatData(hx.HX):
 
     def __init__(self):
         super(HeatData, self).__init__()
-        self.alumina = Dummy_TE()
         self.filename_heat = 'alumina paper.xls'
         self.start_rowx = 4
         self.end_rowx = 16
