@@ -44,13 +44,12 @@ hx_exp.exh.print_on = True
 
 # model stuff
 area = (0.002)**2
-length = 2.e-3
+length = 1.e-3
 
 hx_mod = hx.HX()
 hx_mod.Qdot2d = np.empty(np.size(hx_exp.exh.T_array))
 hx_mod.tem.Ntype.material = 'alumina'
 hx_mod.tem.Ptype.material = 'alumina'
-hx_mod.tem.length = 0.001
 hx_mod.thermoelectrics_on = False
 hx_mod.tem.I = 1.5
 hx_mod.tem.length = length
