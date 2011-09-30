@@ -5,65 +5,37 @@ import scipy.interpolate as interp
 import scipy.optimize as spopt
 
 import exp_data
+import properties as prop
 
-hx = exp_data.HeatData()
-hx.flow_data.spline_rep()
-
-
-FILENAME = 'manometer calibration2.xls'
+FILENAME = 'trash can flow meter.xls'
 worksheet = xlrd.open_workbook(filename=FILENAME).sheet_by_index(0)
 
+START_ROW = 2
+END_ROW = 17
 H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa
-H2Oin = np.array(worksheet.col_values(0, start_rowx=2, end_rowx=16)) 
+H2Oin = np.array(worksheet.col_values(1, start_rowx=START_ROW, end_rowx=END_ROW)) 
 # manometer reading (inches of single column from datum)
-datum = -10.1 # manometer datum (in)
-pressure_drop = (H2Oin - datum) * 2. * H2O_kPa
+pressure_drop = H2Oin * 2. * H2O_kPa
 # pressure drop across heat exchanger (kPa)
 
-steel = np.array(worksheet.col_values(1, start_rowx=2, end_rowx=16))
-# rotameter steel ball setting for propane flow rate
+trash_volume = 77.6
+# volume (L) of trash can
 
-C3H8pressure = ( np.array(worksheet.col_values(2, start_rowx=2,
-    end_rowx=16)) )
-# pressure (kPa) measured by dial gauge in flow manifold
+time = np.array(worksheet.col_values(3, start_rowx=START_ROW,
+                                     end_rowx=END_ROW)) 
 
-C3H8conc = np.array(worksheet.col_values(3, start_rowx=2,
-    end_rowx=16)) 
-# propane concentration (ppm) downstream of heat exchanger
+T = np.array(worksheet.col_values(5, start_rowx=START_ROW,
+                                  end_rowx=END_ROW))
 
-T1 = np.array(worksheet.col_values(5, start_rowx=2, end_rowx=16))
-
-# Section for doing stuff to the raw data
-def get_flow(steel,C3H8_pressure,C3H8conc):
-    """Function for determing flow rate through the heat exchanger.""" 
-    C3H8flow0psi = 11.276 * steel + 62.102
-    # propane flow (mL/min) with no back pressure
-    C3H8flow2psi = 12.303 * steel + 46.823
-    # propane flow (mL/min) with 2 psi back pressure
-    C3H8flow = ( C3H8flow0psi - (C3H8flow0psi - C3H8flow2psi) / 2. *
-    C3H8pressure )
-    # propane flow (mL/min) based on linear interpolation for pressure
-    flow = C3H8flow / (C3H8conc * 1.e-6) / 1000. / 60. 
-    # exhaust flow (L/s)
-    return flow, C3H8flow, C3H8flow0psi, C3H8flow2psi
-
-flow, C3H8flow, C3H8flow0psi, C3H8flow2psi = (
-get_flow(steel,C3H8pressure,C3H8conc) )
-omega_C3H8 = 15.
-omega_flow = ( np.sqrt((omega_C3H8 * -(C3H8flow / (1.e-6 * 60.e3) *
-                               C3H8conc**-2))**2) )
+flow = trash_volume / time 
 
 pressure_drop.sort()
 flow.sort()
 f = pressure_drop / flow**2
 
 ORDER = 2
-SMOOTHING = np.size(flow) - 10.
 
 pressure_fit = np.linspace(0,14.,100)
-flow_spline = interp.splrep(pressure_drop, flow, w=1./omega_flow,
-                            s=SMOOTHING) 
-flow_spline_fit = interp.splev(pressure_fit, flow_spline)
 
 flow_poly = np.poly1d(np.polyfit(pressure_drop, flow, ORDER))
 flow_poly_fit = flow_poly(pressure_fit)
@@ -79,7 +51,6 @@ plt.rcParams['lines.markersize'] = 8
 
 plt.figure()
 plt.plot(pressure_drop, flow, 'sk',label='experimental')
-plt.plot(pressure_fit, flow_spline_fit, '-k',label='spline fit')
 plt.plot(pressure_fit, flow_poly_fit, '-r',
          label='order '+str(ORDER)+' polynomial')
 plt.xlabel('Pressure Drop (kPa)')
