@@ -204,6 +204,7 @@ class HeatData(hx.HX):
         """Sets mass flow based on other stuff"""
         self.exh.mdot_exp = self.exh.flow_array * self.exh.rho_array
         self.exh.C = self.exh.mdot_exp * self.exh.c_p_air
+        self.exh.enthalpy_flow = self.exh.C * self.exh.T_inlet_array
 
 #    def set_Nu_exp(self):
         
