@@ -7,7 +7,7 @@ class Functions(object):
     """Class containing functions used in both Coolant and Exhaust
     classes."""
 
-    def __init__(self):
+    def set_Nu_coeff(self):
         """initializes Nu_coeff for when curve_fit is not used."""
         self.Nu_coeff = 0.023
 
