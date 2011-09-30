@@ -40,6 +40,7 @@ class Dummy_TE(object):
 
 class FlowData(prop.ideal_gas):
     """Class for handling flow rate and pressure drop data.""" 
+
     def __init__(self):
         """Sets default file name, start row, and end row."""
         super(FlowData, self).__init__()
@@ -86,9 +87,9 @@ class HeatData(hx.HX):
         # guess for Nu = Nu_guess * Re_D**(4/5) * Pr**(1/3)
         self.cool.flow = 4. * 3.8 * 1.e-3 / 60.
         # default coolant flow rate (m^3/s)
+        self.flow_data = FlowData()
         
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa
-    flow_data = FlowData()
 
     def import_heat_data(self):
         """Function for importing data from heat exchanger experiment
