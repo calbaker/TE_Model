@@ -33,7 +33,7 @@ class Dummy_TE(object):
         self.R_thermal = 1. / self.h
     
 
-class FlowData():
+class FlowData(prop.ideal_gas()):
     """Class for handling flow rate and pressure drop data.""" 
     def __init__(self):
         """Sets default file name, start row, and end row.""" 
@@ -41,7 +41,8 @@ class FlowData():
         self.start_rowx = 2
         self.end_rowx = 17
         self.poly_order = 2
-        self.trash_volume = 77.6e-3 # trash can volume (m^3) 
+        self.trash_volume = 77.6e-3 # trash can volume (m^3)
+        self.P = 100.
 
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa        
 
@@ -172,10 +173,11 @@ class HeatData(hx.HX):
 
     def set_f_exp(self):
         """Sets friction factor based on experimental data."""
-        self.set_Re_exp()
-        self.exh.f_exp = ( 0.25 * 2. * self.exh.pressure_drop * 1.e3 / (
-        self.exh.length * self.exh.perimeter / self.exh.area * 
-        self.exh.rho_array * self.exh.velocity_array**2) )         
+        self.flow_data.velocity = self.flow_data.flow / self.exh.area
+        self.flow_data.set_TempPres_dependents()
+        self.flow_data.Re_D = ( self.flow_data.velocity *
+        self.flow_data.rho * self.exh.D / self.flow_data.mu_array )
+        self.f = 
 
     def set_properties(self):
         """Sets array of temperature and pressure dependent properties
