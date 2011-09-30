@@ -82,6 +82,7 @@ Re_exh_shaped = hx_exp.exh.Re_exp.reshape([3,4])
 f_model_shaped = hx_mod.exh.f_model.reshape([3,4])
 
 ############ Plots!
+plt.close('all')
 
 FONTSIZE = 18
 plt.rcParams['axes.labelsize'] = FONTSIZE
@@ -179,6 +180,7 @@ plt.plot(pressure_drop, flow * 1e3, '--sk',
          label='model')
 plt.ylabel('Flow Rate (L/s)')
 plt.xlabel('Pressure Drop (kPa)')
+plt.ylim(ymin=0)
 plt.grid()
 plt.legend(loc='lower right')
 plt.savefig('Plots/SAE Paper/flow v press.pdf')
