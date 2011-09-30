@@ -317,9 +317,11 @@ class HX(object):
         self.exh.Nu_coeff = popt[0]
         self.R_contact = popt[1]
 
-    def get_Qdot(self, Nu_coeff, *args):
+    def get_Qdot(self, Nu_coeff, R_contact):
         """Returns heat transfer as a function of fit parameters Nu_coeff
         and R_contact."""
+        self.exh.Nu_coeff = Nu_coeff
+        self.R_contact = R_contact
         Qdot_array = np.empty(np.size(self.exh.T_array))
         for i in range(np.size(self.exh.T_array)):
             self.cool.T_outlet = self.cool.T_outlet_array[i] + 273.15
