@@ -104,9 +104,8 @@ class HX(object):
         # TE stuff
 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.R_contact + self.plate.R_thermal + self.tem.R_thermal +
-        self.plate.R_thermal + self.R_contact + self.plate.R_thermal +
-        self.cool.R_thermal )**-1 )   
+        self.R_contact + self.tem.R_thermal + self.R_contact +
+        self.plate.R_thermal + self.cool.R_thermal )**-1 )    
         # overall heat transfer coefficient (kW/m^2-K)
         self.U_hot = ( (self.exh.R_thermal + self.plate.R_thermal +
         self.R_contact)**-1 )
