@@ -22,6 +22,7 @@ Vdot_cool = 4. # coolant flow rate (GPM)
 # experimental stuff
 hx_exp = exp_data.HeatData()
 hx_exp.type = 'counter'
+hx_exp.thermoelectrics_on = False
 hx_exp.flow_data.import_flow_data()
 hx_exp.start_rowx = 8
 hx_exp.end_rowx = 12
