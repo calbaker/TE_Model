@@ -336,6 +336,18 @@ class HX(object):
             Qdot_array[i] = self.Qdot
 
         return Qdot_array
-        
+### Something like this should work:
+# def set_flow_array(self):
+#         """Sets experimental flow rate through heat exchanger"""
+#         flow = self.flow_data.flow
+#         pressure_drop = self.flow_data.pressure_drop
+#         def get_flow((pressure_drop, coeff):
+#            """Sets flow based on coefficient and pressure drop.""" 
+#            #here you can use self.what_you_need
+#            flow = coeff * pressure_drop**0.5
+#            return flow
+#         popt, pcov = spopt.curve_fit(get_flow, pressure_drop, flow)
+#         self.exh.flow_coeff = popt
+#         self.exh.flow_array = ( self.exh.flow_coeff * self.exh.pressure_drop**0.5 )     
         
 
