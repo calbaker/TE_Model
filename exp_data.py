@@ -181,14 +181,11 @@ class HeatData(hx.HX):
         """Sets array of temperature and pressure dependent properties
         based on average temperature in HX."""
         self.exh.rho_array = np.empty(np.size(self.exh.T_array))
-        print self.exh.rho_array
         self.exh.mu_array = np.empty(np.size(self.exh.T_array))
         for i in range(np.size(self.exh.T_array)):
             self.exh.T = self.exh.T_array[i]
             self.exh.set_TempPres_dependents()
-            print "setting properties"
             self.exh.rho_array[i] = self.exh.rho
-            print self.exh.rho_array
             self.exh.mu_array[i] = self.exh.mu
 
     def set_mass_flow(self):
