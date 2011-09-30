@@ -14,11 +14,6 @@ import hx
 reload(hx)
 import properties as prop
 
-def get_flow(pressure_drop, coeff):
-    """Sets flow based on coefficient and pressure drop.""" 
-    flow = coeff * pressure_drop**0.5
-    return flow
-
 
 class FlowData(prop.ideal_gas):
     """Class for handling flow rate and pressure drop data.""" 
@@ -121,8 +116,8 @@ class HeatData(hx.HX):
         """Sets experimental flow rate through heat exchanger"""
         flow = self.flow_data.flow
         pressure_drop = self.flow_data.pressure_drop
-        popt, pcov = spopt.curve_fit(get_flow, pressure_drop,
-        flow)
+        popt, pcov = spopt.curve_fit(self.get_flow, pressure_drop,
+        flow) 
         self.exh.flow_coeff = popt
         self.exh.flow_array = ( self.exh.flow_coeff *
         self.exh.pressure_drop**0.5 )
@@ -191,3 +186,8 @@ class HeatData(hx.HX):
         """Sets exhaust Nusselt number based on exmperimental data."""
         self.Nu = 44444444.
         
+    @staticmethod
+    def get_flow(pressure_drop, coeff):
+        """Sets flow based on coefficient and pressure drop.""" 
+        flow = coeff * pressure_drop**0.5
+        return flow
