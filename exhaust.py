@@ -10,7 +10,7 @@ import functions
 reload(functions)
 
 
-class _Fin():
+class _Fin(object):
     """Class for modeling fin.  This class finds the necessary fin
     parameters such that the efficiency is near unity, and therefore
     the fin is isothermal."""
@@ -42,7 +42,7 @@ class Exhaust(prop.ideal_gas):
 
     def __init__(self):
         """sets constants and initiates class instances"""
-        prop.ideal_gas.__init__(self)
+        super(Exhaust, self).__init__()
         self.porous = 'no' # is there porous media?
         self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
             # corrugate metal, etc.)
