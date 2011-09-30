@@ -40,13 +40,14 @@ hx_exp.set_U_exp()
 hx_exp.exh.set_flow_geometry(hx_exp.width)
 hx_exp.set_f_exp()
 hx_exp.set_Re_exp()
+hx_exp.exh.print_on = True
 
 # model stuff
 area = (0.002)**2
 length = 2.e-3
 
 hx_mod = hx.HX()
-hx_mod.Qdot2d = np.empty(np.size(hx_mod.exh.T_array))
+hx_mod.Qdot2d = np.empty(np.size(hx_exp.exh.T_array))
 hx_mod.tem.Ntype.material = 'alumina'
 hx_mod.tem.Ptype.material = 'alumina'
 hx_mod.thermoelectrics_on = False
@@ -62,22 +63,22 @@ hx_mod.exh.f_model = np.empty(np.size(hx_mod.Qdot2d))
 hx_mod.exh.Nu_model = np.empty(np.size(hx_mod.Qdot2d))
 
 for i in range(np.size(hx_mod.Qdot2d)):
-    hx_mod.cool.T_outlet = hx_mod.cool.T_outlet_array[i] + 273.15
-    hx_mod.exh.T_inlet = hx_mod.exh.T_inlet_array[i] + 273.15
+    hx_mod.cool.T_outlet = hx_exp.cool.T_outlet_array[i] + 273.15
+    hx_mod.exh.T_inlet = hx_exp.exh.T_inlet_array[i] + 273.15
     hx_mod.exh.T = hx_mod.exh.T_inlet
     hx_mod.exh.set_TempPres_dependents()
-    hx_mod.exh.mdot = hx_mod.exh.flow_array[i] * hx_mod.exh.rho 
+    hx_mod.exh.mdot = hx_exp.exh.flow_array[i] * hx_mod.exh.rho 
     hx_mod.solve_hx()
     hx_mod.exh.f_model[i] = hx_mod.exh.f_nodes.mean()
     hx_mod.exh.Nu_model[i] = hx_mod.exh.Nu_nodes.mean()
     hx_mod.Qdot2d[i] = hx_mod.Qdot
 
-hx_mod.exh.delta_T_array = hx_mod.exh.delta_T_array.reshape([3,4])
-hx_mod.exh.flow_shaped = hx_mod.exh.flow_array.reshape([3,4])
+hx_exp.exh.delta_T_array = hx_exp.exh.delta_T_array.reshape([3,4])
+hx_exp.exh.flow_shaped = hx_exp.exh.flow_array.reshape([3,4])
 hx_mod.Qdot2d = hx_mod.Qdot2d.reshape([3,4])
-hx_mod.exh.Qdot_exp = hx_mod.exh.Qdot_exp.reshape([3,4])
-hx_mod.exh.T_inlet_array = hx_mod.exh.T_inlet_array.reshape([3,4]) 
-Re_exh_shaped = hx_mod.exh.Re_exp.reshape([3,4])
+hx_exp.exh.Qdot_exp = hx_exp.exh.Qdot_exp.reshape([3,4])
+hx_exp.exh.T_inlet_array = hx_exp.exh.T_inlet_array.reshape([3,4]) 
+Re_exh_shaped = hx_exp.exh.Re_exp.reshape([3,4])
 f_model_shaped = hx_mod.exh.f_model.reshape([3,4])
 
 ############ Plots!
@@ -110,9 +111,9 @@ fig02.canvas.set_window_title('Parameterized Qdot')
 plt.plot(hx_exp.exh.flow_shaped[0,:] * 1.e3, hx_exp.exh.Qdot_exp[0,:], 'xr', label='exp 43.4 Nm') 
 plt.plot(hx_exp.exh.flow_shaped[1,:] * 1.e3, hx_exp.exh.Qdot_exp[1,:], 'sg', label='exp 122 Nm') 
 plt.plot(hx_exp.exh.flow_shaped[2,:] * 1.e3, hx_exp.exh.Qdot_exp[2,:], 'ob', label='exp 290 Nm') 
-plt.plot(hx_mod.exh.flow_shaped[0,:] * 1.e3, hx_mod.Qdot2d[0,:], '-r', label='model 43.4 Nm') 
-plt.plot(hx_mod.exh.flow_shaped[1,:] * 1.e3, hx_mod.Qdot2d[1,:], '--g', label='model 122 Nm') 
-plt.plot(hx_mod.exh.flow_shaped[2,:] * 1.e3, hx_mod.Qdot2d[2,:], '-.b', label='model 290 Nm') 
+plt.plot(hx_exp.exh.flow_shaped[0,:] * 1.e3, hx_mod.Qdot2d[0,:], '-r', label='model 43.4 Nm') 
+plt.plot(hx_exp.exh.flow_shaped[1,:] * 1.e3, hx_mod.Qdot2d[1,:], '--g', label='model 122 Nm') 
+plt.plot(hx_exp.exh.flow_shaped[2,:] * 1.e3, hx_mod.Qdot2d[2,:], '-.b', label='model 290 Nm') 
 plt.legend(loc='upper left')
 plt.grid()
 plt.xlabel('Flow Rate (L/s)')
@@ -140,8 +141,8 @@ plt.savefig('Plots/SAE Paper/f v Re.png')
 
 fig04 = plt.figure()
 fig04.canvas.set_window_title('Experimental Qdot2d') 
-TICKS = np.linspace(0.2, 2, 10)
-LEVELS = np.linspace(0.2, 2, 10)
+TICKS = np.arange(0., 1.8, 0.2)
+LEVELS = np.arange(0., 1.7, 0.1)
 FCS = plt.contourf(hx_exp.exh.flow_shaped * 1.e3, hx_exp.exh.T_inlet_array,
                    hx_exp.exh.Qdot_exp, levels=LEVELS)  
 CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS)
@@ -155,19 +156,19 @@ plt.savefig('Plots/SAE Paper/heat v T1 and Vdot exp.png')
 
 fig05 = plt.figure()
 fig05.canvas.set_window_title('Model Qdot2d') 
-FCS = plt.contourf(hx_mod.exh.flow_shaped * 1.e3, hx_mod.exh.T_inlet_array,
+FCS = plt.contourf(hx_exp.exh.flow_shaped * 1.e3, hx_exp.exh.T_inlet_array,
                    hx_mod.Qdot2d, levels=LEVELS)  
 CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS)
 CB.set_label(label='Heat Transfer Rate (kW)')
-plt.scatter(hx_mod.exh.flow_shaped * 1.e3, hx_mod.exh.T_inlet_array) 
+plt.scatter(hx_exp.exh.flow_shaped * 1.e3, hx_exp.exh.T_inlet_array) 
 plt.grid()
 plt.xlabel('Flow Rate (L/s)')
 plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
 plt.savefig('Plots/SAE Paper/heat v T1 and Vdot mod.pdf')
 plt.savefig('Plots/SAE Paper/heat v T1 and Vdot mod.png')
 
-pressure_drop = hx_mod.exh.pressure_drop.copy()
-flow = hx_mod.exh.flow_array.copy()
+pressure_drop = hx_exp.exh.pressure_drop.copy()
+flow = hx_exp.exh.flow_array.copy()
 pressure_drop.sort()
 flow.sort()
 fig06 = plt.figure()
@@ -180,5 +181,5 @@ plt.xlabel('Flow Rate (L/s)')
 plt.ylabel('Pressure Drop (kPa)')
 plt.grid()
 plt.legend(loc='lower right')
-plt.savefig('Plots/SAE Paper/press v flow.pdf')
-plt.savefig('Plots/SAE Paper/press v flow.png')
+plt.savefig('Plots/SAE Paper/flow v press.pdf')
+plt.savefig('Plots/SAE Paper/flow v press.png')
