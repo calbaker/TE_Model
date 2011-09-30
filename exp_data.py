@@ -5,7 +5,7 @@ for use with model."""
 import matplotlib.pyplot as plt
 import xlrd
 import numpy as np
-import scipy.interpolate as interp
+import scipy.interpolate as spint 
 import scipy.optimize as spopt
 
 # User Defined Modules
@@ -13,6 +13,11 @@ import scipy.optimize as spopt
 import hx
 reload(hx)
 import properties as prop
+
+def get_flow(pressure_drop, coeff):
+    """Sets flow based on coefficient and pressure drop.""" 
+    flow = coeff * pressure_drop**0.5
+    return flow
 
 class Dummy_TE(object):
     """Class for handling TE device without any TE properties."""
@@ -32,69 +37,34 @@ class FlowData():
     """Class for handling flow rate and pressure drop data.""" 
     def __init__(self):
         """Sets default file name, start row, and end row.""" 
-        self.filename_flow = 'manometer calibration2.xls'
+        self.filename_flow = 'trash can flow meter.xls'
         self.start_rowx = 2
-        self.end_rowx = 16
-        self.poly_order = 1
-        self.omega_C3H8 = 15. # estimate of uncertainty in hydrocarbon
-                              # concentration (PPM)
-        self.smooth_offset = -10.
-        # used for s parameter in splrep
+        self.end_rowx = 17
+        self.poly_order = 2
+        self.trash_volume = 77.6e-3 # trash can volume (m^3) 
+
     H2O_kPa = 0.249 # 1 in H2O = 0.249 kPa        
 
     def import_flow_data(self):
         """Imports data and stores it in numpy arrays."""
         worksheet = (
         xlrd.open_workbook(filename=self.filename_flow).sheet_by_index(0) )
-        self.datum = worksheet.cell_value(0,1)
-        self.reading = np.array(worksheet.col_values(0,
+        self.corrected_reading = np.array(worksheet.col_values(1,
         start_rowx=self.start_rowx, end_rowx=self.end_rowx))
-        # manometer reading (in) for downstream side only 
-        self.steel = np.array(worksheet.col_values(1,
+        # corrected manometer reading (in) for downstream side only
+        self.time = np.array(worksheet.col_values(3,
         start_rowx=self.start_rowx, end_rowx=self.end_rowx))
-        # position of steel ball in rotameter controlling propane flow 
-        self.pressure_C3H8 = np.array(worksheet.col_values(2,
-        start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
-        # pressure guage reading (psi)
-        self.C3H8 = np.array(worksheet.col_values(3,
-        start_rowx=self.start_rowx, end_rowx=self.end_rowx))
-        # propane concentration (ppm) with propane flow
+        # time (s) for trash can to fill with exhaust
+        self.T = ( np.array(worksheet.col_values(5,
+        start_rowx=self.start_rowx, end_rowx=self.end_rowx)) + 273.15
+        ) # temperature (K) of gas in trash can flow meter
 
-    def manipulate_flow_data(self):
-        """Converts imported data into convenient units and such."""
-        self.C3H8flow0psi = 11.276 * self.steel + 62.102
-        # propane flow (mL/min) with no back pressure
-        self.C3H8flow2psi = 12.303 * self.steel + 46.823
-        # propane flow (mL/min) with 2 psi back pressure
-        self.C3H8flow = ( self.C3H8flow0psi - (self.C3H8flow0psi -
-        self.C3H8flow2psi) / 2. * self.pressure_C3H8 ) 
-        # propane flow (mL/min) based on linear interpolation for pressure
-        self.flow = ( self.C3H8flow / (self.C3H8 * 1.e-6) / 1000. /
-        60. )  
-        # exhaust flow (L/s)
-        self.omega = ( np.sqrt((self.omega_C3H8 * -(self.C3H8flow /
-        (1.e-6 * 60.e3) * self.C3H8**-2))**2) ) 
-        self.pressure_drop = ( (self.reading - self.datum) * 2. *
-        self.H2O_kPa )
-        # pressure drop (kPa) in heat exchanger
+        self.flow_trash = self.trash_volume / self.time
+        # exhaust flow (m^3/s) into trash can
 
-    def spline_rep(self):
-        """Determines spline parameters to fit flow to pressure drop."""
-        self.import_flow_data()
-        self.manipulate_flow_data()
-        self.flow.sort()
-        self.pressure_drop.sort()
-        SMOOTHING = np.size(self.pressure_drop) - self.smooth_offset 
-        self.spline = interp.splrep(self.pressure_drop, self.flow,
-        w=1./self.omega, s=SMOOTHING)
+        self.pressure_drop = self.corrected_reading * self.H2O_kPa
+        # pressure drop (kPa) through HX
 
-    def poly_rep(self):
-        """Determines polynomial coefficients to produce fit for flow
-        v. pressure drop data."""
-        self.import_flow_data()
-        self.manipulate_flow_data()
-        self.poly1d = np.poly1d(np.polyfit(self.pressure_drop,
-        self.flow, self.poly_order))
 
 class HeatData(hx.HX):
     """Class for handling data from heat exchanger experiments."""
@@ -102,6 +72,7 @@ class HeatData(hx.HX):
     def __init__(self):
         super(HeatData, self).__init__()
         self.alumina = Dummy_TE()
+        self.filename_heat = 'alumina paper.xls'
         self.start_rowx = 4
         self.end_rowx = 16
         self.Nu_guess = 0.023
@@ -118,11 +89,11 @@ class HeatData(hx.HX):
         worksheet = (
     xlrd.open_workbook(filename=self.filename_heat).sheet_by_index(0)
         )  
-        self.exh.reading = np.array(worksheet.col_values(0,
+        self.exh.corrected_reading = np.array(worksheet.col_values(0,
     start_rowx=self.start_rowx, end_rowx=self.end_rowx)) 
         self.exh.datum = worksheet.cell_value(2,4) # manometer datum (in) 
-        self.exh.pressure_drop = ( (self.exh.reading - self.exh.datum) * 2. *
-        self.H2O_kPa )
+        self.exh.pressure_drop = ( (self.exh.corrected_reading -
+        self.exh.datum) * 2. * self.H2O_kPa ) 
         # pressure drop across heat exchanger (kPa)
         self.cummins.torque = np.array(worksheet.col_values(1,
         start_rowx=self.start_rowx,  end_rowx=self.end_rowx))
@@ -137,31 +108,34 @@ class HeatData(hx.HX):
 
     def manipulate_heat_data(self):
         """Gets heat exchanger data ready for doing stuff to it.""" 
-        self.exh.T = ( 0.5 * (self.exh.T_inlet_array +
+        self.exh.T_array = ( 0.5 * (self.exh.T_inlet_array +
         self.exh.T_outlet_array) + 273.15)
-        self.exh.set_TempPres_dependents()
         self.exh.delta_T_array = ( self.exh.T_inlet_array -
         self.exh.T_outlet_array )
-        self.exh.mdot_array = self.exh.rho * self.exh.flow_array
-        self.exh.C = self.exh.mdot_array * self.exh.c_p_air
-        
+                
         self.cool.delta_T_array = ( self.cool.T_inlet_array -
         self.cool.T_outlet_array )
-        self.cool.mdot = self.cool.rho * self.cool.flow
-        self.cool.C = self.cool.mdot * self.cool.c_p        
 
-    def spline_eval(self):
-        """Evaluates spline fit parameters to fit flow to pressure
-        drop. """
-        self.flow_data.spline_rep()
-        self.exh.flow_array = ( interp.splev(self.exh.pressure_drop,
-        self.flow_data.spline) * 1.e-3 )
+    def set_flow_corrected(self):
+        """Sets fit parameters for flow through the heat exchanger
+        based on temperature correction."""
+        self.exh.temp_v_press_fit = (
+        np.polyfit(self.exh.pressure_drop[0:4],
+        self.exh.T_array[0:4], 2) ) 
+        self.flow_data.T_hx = np.polyval(self.exh.temp_v_press_fit,
+        self.flow_data.pressure_drop) 
+        self.flow_data.flow = ( self.flow_data.flow_trash *
+        self.flow_data.T_hx / self.flow_data.T )
 
-    def poly_eval(self):
-        """Evaluates polynomial fit of flow to pressure."""
-        self.flow_data.poly_rep()
-        self.exh.flow_array = ( self.flow_data.poly1d(self.exh.pressure_drop)
-        * 1.e-3 )
+    def set_flow_exp(self):
+        """Sets experimental flow rate through heat exchanger"""
+        flow = self.flow_data.flow
+        pressure_drop = self.flow_data.pressure_drop
+        popt, pcov = spopt.curve_fit(get_flow, pressure_drop,
+        flow)
+        self.exh.flow_coeff = popt
+        self.exh.flow_exp = ( self.exh.flow_coeff *
+        self.exh.pressure_drop**0.5 )
 
     def set_Qdot_exp(self):
         """Sets heat transfer based on mdot c_p delta T."""
@@ -205,10 +179,12 @@ class HeatData(hx.HX):
         self.exh.rho_array * self.exh.velocity_array**2) )         
 
     def set_properties(self):
-        self.exh.rho_array = np.empty(np.size(self.exh.flow_array))
-        self.exh.mu_array = np.empty(np.size(self.exh.flow_array))
-        for i in range(np.size(self.exh.flow_array)):
-            self.exh.T = self.exh.T_inlet_array[i]
+        """Sets array of temperature and pressure dependent properties
+        based on average temperature in HX."""
+        self.exh.rho_array = np.empty(np.size(self.exh.T_array))
+        self.exh.mu_array = np.empty(np.size(self.exh.T_array))
+        for i in range(np.size(self.exh.T_array)):
+            self.exh.T = self.exh.T_array[i]
             self.exh.set_TempPres_dependents()
             self.exh.rho_array[i] = self.exh.rho
             self.exh.mu_array[i] = self.exh.mu
