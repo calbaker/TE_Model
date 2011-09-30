@@ -83,7 +83,7 @@ f_model_shaped = hx_mod.exh.f_model.reshape([3,4])
 
 ############ Plots!
 
-FONTSIZE = 15
+FONTSIZE = 18
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE 
@@ -108,7 +108,7 @@ fig01.savefig('Plots/SAE Paper/delta T v Vdot parameterized.png')
 
 fig02 = plt.figure()
 fig02.canvas.set_window_title('Parameterized Qdot')
-plt.plot(hx_exp.exh.flow_shaped[0,:] * 1.e3, hx_exp.exh.Qdot_exp[0,:], 'xr', label='exp 43.4 Nm') 
+plt.plot(hx_exp.exh.flow_shaped[0,:] * 1.e3, hx_exp.exh.Qdot_exp[0,:], 'dr', label='exp 43.4 Nm') 
 plt.plot(hx_exp.exh.flow_shaped[1,:] * 1.e3, hx_exp.exh.Qdot_exp[1,:], 'sg', label='exp 122 Nm') 
 plt.plot(hx_exp.exh.flow_shaped[2,:] * 1.e3, hx_exp.exh.Qdot_exp[2,:], 'ob', label='exp 290 Nm') 
 plt.plot(hx_exp.exh.flow_shaped[0,:] * 1.e3, hx_mod.Qdot2d[0,:], '-r', label='model 43.4 Nm') 
@@ -123,7 +123,7 @@ fig02.savefig('Plots/SAE Paper/heat v Vdot parameterized.png')
 
 fig03 = plt.figure()
 fig03.canvas.set_window_title('Friction Factor')
-plt.plot(hx_exp.flow_data.Re_D, hx_exp.flow_data.f_exp, 'kx',
+plt.plot(hx_exp.flow_data.Re_D, hx_exp.flow_data.f_exp, 'dk',
             label='43.4 Nm exp') 
 plt.plot(Re_exh_shaped[0,:], f_model_shaped[0,:], '-r',
             label='43.4 Nm model') 
@@ -177,9 +177,60 @@ plt.plot(hx_exp.flow_data.pressure_drop, hx_exp.flow_data.flow *1e3, 'or',
          label='experiment')
 plt.plot(pressure_drop, flow * 1e3, '--sk', 
          label='model')
-plt.xlabel('Flow Rate (L/s)')
-plt.ylabel('Pressure Drop (kPa)')
+plt.ylabel('Flow Rate (L/s)')
+plt.xlabel('Pressure Drop (kPa)')
 plt.grid()
 plt.legend(loc='lower right')
 plt.savefig('Plots/SAE Paper/flow v press.pdf')
 plt.savefig('Plots/SAE Paper/flow v press.png')
+
+fig07 = plt.figure()
+fig07.canvas.set_window_title('Non-dim Parameterized Heat')
+displacement = 6.7e-3
+rpm = 1400.
+engine_flow = displacement / 2. * rpm / 60.
+flow_dimless = hx_exp.exh.flow_shaped / engine_flow
+enthalpy_flow = hx_exp.exh.enthalpy_flow.reshape([3,4])
+Qdot_exp = hx_exp.exh.Qdot_exp / enthalpy_flow
+Qdot2d = hx_mod.Qdot2d / enthalpy_flow
+plt.plot(flow_dimless[0,:], Qdot_exp[0,:], 'dr', label='exp 43.4 Nm') 
+plt.plot(flow_dimless[1,:], Qdot_exp[1,:], 'sg', label='exp 122 Nm') 
+plt.plot(flow_dimless[2,:], Qdot_exp[2,:], 'ob', label='exp 290 Nm') 
+plt.plot(flow_dimless[0,:], Qdot2d[0,:], '-r', label='model 43.4 Nm') 
+plt.plot(flow_dimless[1,:], Qdot2d[1,:], '--g', label='model 122 Nm') 
+plt.plot(flow_dimless[2,:], Qdot2d[2,:], '-.b', label='model 290 Nm') 
+plt.legend(loc='upper right')
+plt.grid()
+plt.xlabel('Scaled Flow Rate')
+plt.ylabel('Scaled Heat Transfer Rate')
+plt.savefig('Plots/SAE Paper/non-dim parameter heat.pdf')
+plt.savefig('Plots/SAE Paper/non-dim parameter heat.png')
+
+fig08 = plt.figure()
+fig08.canvas.set_window_title('Experimental Qdot2d non-dim') 
+TICKS = np.arange(0., 1.8, 0.2)
+LEVELS = np.arange(0., 1.7, 0.1)
+FCS = plt.contourf(flow_dimless, hx_exp.exh.T_inlet_array,
+                   Qdot_exp)  
+CB = plt.colorbar(FCS, orientation='vertical')
+CB.set_label(label='Scaled Heat Transfer Rate')
+plt.scatter(flow_dimless, hx_exp.exh.T_inlet_array)
+plt.grid()
+plt.xlabel('Scaled Flow Rate')
+plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
+plt.savefig('Plots/SAE Paper/heat exp non-dim.pdf')
+plt.savefig('Plots/SAE Paper/heat exp non-dim.png')
+
+fig09 = plt.figure()
+fig09.canvas.set_window_title('Model Qdot2d non-dim') 
+FCS = plt.contourf(flow_dimless, hx_exp.exh.T_inlet_array,
+                   Qdot2d)  
+CB = plt.colorbar(FCS, orientation='vertical')
+CB.set_label(label='Scaled Heat Transfer Rate')
+plt.scatter(flow_dimless, hx_exp.exh.T_inlet_array) 
+plt.grid()
+plt.xlabel('Scaled Flow Rate')
+plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
+plt.savefig('Plots/SAE Paper/heat mod non-dim.pdf')
+plt.savefig('Plots/SAE Paper/heat mod non-dim.png')
+
