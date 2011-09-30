@@ -115,6 +115,7 @@ class HeatData(hx.HX):
                 
         self.cool.delta_T_array = ( self.cool.T_inlet_array -
         self.cool.T_outlet_array )
+        self.cool.C = self.cool.mdot * self.cool.c_p
 
     def set_flow_corrected(self):
         """Sets fit parameters for flow through the heat exchanger
@@ -127,14 +128,14 @@ class HeatData(hx.HX):
         self.flow_data.flow = ( self.flow_data.flow_trash *
         self.flow_data.T_hx / self.flow_data.T )
 
-    def set_flow_exp(self):
+    def set_flow_array(self):
         """Sets experimental flow rate through heat exchanger"""
         flow = self.flow_data.flow
         pressure_drop = self.flow_data.pressure_drop
         popt, pcov = spopt.curve_fit(get_flow, pressure_drop,
         flow)
         self.exh.flow_coeff = popt
-        self.exh.flow_exp = ( self.exh.flow_coeff *
+        self.exh.flow_array = ( self.exh.flow_coeff *
         self.exh.pressure_drop**0.5 )
 
     def set_Qdot_exp(self):
@@ -164,9 +165,7 @@ class HeatData(hx.HX):
     def set_Re_exp(self):
         """Sets experimental Reynolds number."""
         self.exh.set_flow_geometry(self.width)
-        self.exh.rho_array = self.exh.rho
-        self.exh.mu_array = self.exh.mu
-        # self.set_properties()
+        self.set_properties()
         self.exh.velocity_array = self.exh.flow_array / self.exh.area 
         self.exh.Re_exp = ( self.exh.rho_array * self.exh.velocity_array *
         self.exh.D / self.exh.mu_array )
@@ -182,9 +181,17 @@ class HeatData(hx.HX):
         """Sets array of temperature and pressure dependent properties
         based on average temperature in HX."""
         self.exh.rho_array = np.empty(np.size(self.exh.T_array))
+        print self.exh.rho_array
         self.exh.mu_array = np.empty(np.size(self.exh.T_array))
         for i in range(np.size(self.exh.T_array)):
             self.exh.T = self.exh.T_array[i]
             self.exh.set_TempPres_dependents()
+            print "setting properties"
             self.exh.rho_array[i] = self.exh.rho
+            print self.exh.rho_array
             self.exh.mu_array[i] = self.exh.mu
+
+    def set_mass_flow(self):
+        """Sets mass flow based on other stuff"""
+        self.exh.mdot_exp = self.exh.flow_array * self.exh.rho_array
+        self.exh.C = self.exh.mdot_exp * self.exh.c_p_air
