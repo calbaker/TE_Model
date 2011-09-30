@@ -40,7 +40,7 @@ class HX(object):
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
         self.xtol = 0.01 # tolerable fractional error in heat flux
-        self.R_thermal = 0.
+        self.R_contact = 0.
         # thermal contact resistance (m^2*K/kW) between plates
         self.thermoelectrics_on = True
         # if True, the thermoelectric model runs, if false, pure
@@ -104,16 +104,16 @@ class HX(object):
         # TE stuff
 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.R_thermal + self.plate.R_thermal + self.tem.R_thermal +
-        self.plate.R_thermal + self.R_thermal + self.plate.R_thermal +
+        self.R_contact + self.plate.R_thermal + self.tem.R_thermal +
+        self.plate.R_thermal + self.R_contact + self.plate.R_thermal +
         self.cool.R_thermal )**-1 )   
         # overall heat transfer coefficient (kW/m^2-K)
         self.U_hot = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.R_thermal)**-1 )
+        self.R_contact)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE hot side and
         # exhaust  
         self.U_cold = ( (self.cool.R_thermal +
-        self.plate.R_thermal + self.R_thermal)**-1 )
+        self.plate.R_thermal + self.R_contact)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
         
