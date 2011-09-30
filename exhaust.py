@@ -62,8 +62,8 @@ class Exhaust(prop.ideal_gas):
         self.fin = _Fin() # workaround to be able to change fin from
                           # instance
 
-    set_flow_geometry = functions.set_flow_geometry
-    set_Re_dependents = functions.set_Re_dependents
+        self.set_flow_geometry = functions.set_flow_geometry()
+        self.set_Re_dependents = functions.set_Re_dependents()
 
     def set_flow(self):
         """calculates flow parameters"""        
