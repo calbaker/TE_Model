@@ -28,6 +28,11 @@ class Dummy_TE(object):
         # thermal conductivity of alumina (kW/m-K)
         self.thickness = 1.e-3
         # thickness (m) of alumina paper
+        self.set_h()
+
+    def set_h(self):
+        """Sets effective heat transfer coefficient and thermal
+        resistance.""" 
         self.h = self.k / self.thickness
         # effective heat transfer coefficient (kW/m^2-K)
         self.R_thermal = 1. / self.h
@@ -198,3 +203,6 @@ class HeatData(hx.HX):
         """Sets mass flow based on other stuff"""
         self.exh.mdot_exp = self.exh.flow_array * self.exh.rho_array
         self.exh.C = self.exh.mdot_exp * self.exh.c_p_air
+
+#    def set_Nu_exp(self):
+        
