@@ -46,14 +46,14 @@ class HX(object):
         # if True, the thermoelectric model runs, if false, pure
         # conduction 
 
-        self.fix_geometry()
-
         # initialization of sub classes
         self.cool = coolant.Coolant()
         self.exh = exhaust.Exhaust()
         self.tem = tem.TEModule()
         self.plate = _PlateWall()
         self.cummins = engine.Engine()
+
+        self.fix_geometry()
 
     def fix_geometry(self):
         """Makes sure that common geometry like width and length is
