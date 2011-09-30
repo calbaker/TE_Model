@@ -309,3 +309,15 @@ class HX(object):
         self.cool.T = 300. 
         self.set_mdot_charge()
         self.set_constants()
+
+    def set_params(self):
+        """Uses scipy optimize curve_fit to R_contact and Nu_coeff."""
+        # popt, pcov = spopt.curve_fit(self.get_?, Nu_coeff, R_contact) 
+        # self.exh.Nu_coeff = popt[0]
+        # self.R_contact = popt[1]
+
+    def get_Qdot(self):
+        """Returns heat transfer as a function of fit parameters Nu_coeff
+        and R_contact."""
+        
+
