@@ -9,7 +9,7 @@ def set_prop_fit(self):
     if self.material == "HMS":
         # Raw data taken from Luo et al.
         poly_deg = 3
-        print "Curve fitting for HMS"
+        # print "Curve fitting for HMS"
 
         alpha_raw = sp.array([[296.89119171, 138.265544041], 
                               [380.829015544, 140.620466321],
@@ -38,7 +38,7 @@ def set_prop_fit(self):
     if self.material == "MgSi":
         # Raw data comes from Gao et al.  
         poly_deg = 2
-        print "Curve fitting for MgSi"
+        # print "Curve fitting for MgSi"
         
         alpha_raw = sp.array([[311.289993567, -111.872146119],
                               [464.006967001, -141.552511416],
