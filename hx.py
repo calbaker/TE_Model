@@ -312,30 +312,31 @@ class HX(object):
 
     def set_params(self):
         """Uses scipy optimize curve_fit to R_contact and Nu_coeff."""
-        popt, pcov = spopt.curve_fit(self.get_Qdot,
-        self.exh.flow_array, self.exh.Qdot_exp, p0=[0.023]) 
+
+        def get_Qdot(flow_array, Nu_coeff, R_contact):
+            """Returns heat transfer as a function of fit parameters Nu_coeff
+            and R_contact."""
+            self.exh.Nu_coeff = Nu_coeff
+            self.R_contact = R_contact
+            Qdot_array = np.empty(np.size(self.exh.T_array))
+            for i in range(np.size(self.exh.T_array)):
+                self.cool.T_outlet = self.cool.T_outlet_array[i] + 273.15
+                self.exh.T_inlet = self.exh.T_inlet_array[i] + 273.15
+                self.exh.T = self.exh.T_inlet
+                self.exh.set_TempPres_dependents()
+                self.exh.mdot = flow_array[i] * self.exh.rho 
+
+                self.solve_hx()
+            print Qdot_array
+            return Qdot_array
+        
+
+        popt, pcov = spopt.curve_fit(get_Qdot, self.exh.flow_array,
+        self.exh.Qdot_exp, p0=[0.023,1.])  
         self.exh.Nu_coeff = popt[0]
         self.R_contact = popt[1]
 
-    def get_Qdot(self,*args):
-        """Returns heat transfer as a function of fit parameters Nu_coeff
-        and R_contact."""
-        Nu_coeff = args[-2]
-        R_contact = args[-1]
-        self.exh.Nu_coeff = Nu_coeff
-        self.R_contact = R_contact
-        Qdot_array = np.empty(np.size(self.exh.T_array))
-        for i in range(np.size(self.exh.T_array)):
-            self.cool.T_outlet = self.cool.T_outlet_array[i] + 273.15
-            self.exh.T_inlet = self.exh.T_inlet_array[i] + 273.15
-            self.exh.T = self.exh.T_inlet
-            self.exh.set_TempPres_dependents()
-            self.exh.mdot = self.exh.flow_array[i] * self.exh.rho 
-
-            self.solve_hx()
-            Qdot_array[i] = self.Qdot
-
-        return Qdot_array
+        
 ### Something like this should work:
 # def set_flow_array(self):
 #         """Sets experimental flow rate through heat exchanger"""
