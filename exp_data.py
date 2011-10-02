@@ -182,12 +182,9 @@ class HeatData(hx.HX):
         self.exh.C = self.exh.mdot_exp * self.exh.c_p_air
         self.exh.enthalpy_flow = self.exh.C * self.exh.T_inlet_array
 
-    def set_Nu_exp(self):
-        """Sets exhaust Nusselt number based on exmperimental data."""
-        self.Nu = 44444444.
-        
     @staticmethod
     def get_flow(pressure_drop, coeff):
         """Sets flow based on coefficient and pressure drop.""" 
         flow = coeff * pressure_drop**0.5
         return flow
+
