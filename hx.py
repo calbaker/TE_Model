@@ -317,7 +317,9 @@ class HX(object):
             """Returns heat transfer as a function of fit parameters Nu_coeff
             and R_contact."""
             self.exh.Nu_coeff = Nu_coeff
+            print self.exh.Nu_coeff 
             self.R_contact = R_contact
+            print self.R_contact
             Qdot_array = np.empty(np.size(self.exh.T_array))
             for i in range(np.size(self.exh.T_array)):
                 self.cool.T_outlet = self.cool.T_outlet_array[i] + 273.15
@@ -327,12 +329,10 @@ class HX(object):
                 self.exh.mdot = flow_array[i] * self.exh.rho 
 
                 self.solve_hx()
-            print Qdot_array
             return Qdot_array
         
-
         popt, pcov = spopt.curve_fit(get_Qdot, self.exh.flow_array,
-        self.exh.Qdot_exp, p0=[0.023,1.])  
+        self.exh.Qdot_exp, p0=[0.023,0.1])  
         self.exh.Nu_coeff = popt[0]
         self.R_contact = popt[1]
 
