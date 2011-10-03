@@ -312,7 +312,6 @@ class HX(object):
 
     def set_params(self):
         """Uses scipy optimize curve_fit to R_contact and Nu_coeff."""
-
         def get_Qdot(flow_array, Nu_coeff, R_contact):
             """Returns heat transfer as a function of fit parameters Nu_coeff
             and R_contact."""
@@ -330,7 +329,6 @@ class HX(object):
 
                 self.solve_hx()
             return Qdot_array
-        
         popt, pcov = spopt.curve_fit(get_Qdot, self.exh.flow_array,
         self.exh.Qdot_exp, p0=[0.023,0.1])  
         self.exh.Nu_coeff = popt[0]
