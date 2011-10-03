@@ -61,6 +61,10 @@ hx_mod.exh.P = 100.
 
 hx_mod.exh.f_model = np.empty(np.size(hx_mod.Qdot2d))
 hx_mod.exh.Nu_model = np.empty(np.size(hx_mod.Qdot2d))
+hx_mod.U_model = np.empty(np.size(hx_mod.Qdot2d))
+hx_mod.exh.h_model = np.empty(np.size(hx_mod.Qdot2d))
+hx_exp.exh.Nu_exp = np.empty(np.size(hx_mod.Qdot2d))
+hx_exp.exh.k = np.empty(np.size(hx_mod.Qdot2d))
 
 for i in range(np.size(hx_mod.Qdot2d)):
     hx_mod.cool.T_outlet = hx_exp.cool.T_outlet_array[i] + 273.15
@@ -71,7 +75,10 @@ for i in range(np.size(hx_mod.Qdot2d)):
     hx_mod.solve_hx()
     hx_mod.exh.f_model[i] = hx_mod.exh.f_nodes.mean()
     hx_mod.exh.Nu_model[i] = hx_mod.exh.Nu_nodes.mean()
+    hx_mod.U_model[i] = hx_mod.U_nodes.mean()
+    hx_mod.exh.h_model[i] = hx_mod.exh.h_nodes.mean()
     hx_mod.Qdot2d[i] = hx_mod.Qdot
+    hx_exp.exh.k[i] = hx_mod.exh.k
 
 hx_exp.exh.delta_T_array = hx_exp.exh.delta_T_array.reshape([3,4])
 hx_exp.exh.flow_shaped = hx_exp.exh.flow_array.reshape([3,4])
@@ -80,6 +87,14 @@ hx_exp.exh.Qdot_exp = hx_exp.exh.Qdot_exp.reshape([3,4])
 hx_exp.exh.T_inlet_array = hx_exp.exh.T_inlet_array.reshape([3,4]) 
 Re_exh_shaped = hx_exp.exh.Re_exp.reshape([3,4])
 f_model_shaped = hx_mod.exh.f_model.reshape([3,4])
+
+# getting the experimental exhaust Nu
+hx_exp.exh.R_thermal = ( hx_exp.exh.U_exp**-1 - ( 2. *
+    hx_mod.plate.R_thermal + 2. * hx_mod.R_contact +
+    hx_mod.cool.R_thermal) )
+hx_exp.exh.h = 1. / hx_exp.exh.R_thermal
+hx_exp.exh.Nu_exp = hx_exp.exh.h * hx_mod.exh.D / hx_exp.exh.k 
+
 
 ############ Plots!
 plt.close('all')
@@ -105,8 +120,8 @@ plt.ylim(0,60)
 plt.xlim(xmin=0)
 plt.xlabel('Flow Rate (L/s)')
 plt.ylabel(r'$\Delta$ T (K)')
-fig01.savefig('Plots/SAE Paper/delta T v Vdot parameterized.pdf')
-fig01.savefig('Plots/SAE Paper/delta T v Vdot parameterized.png')
+fig01.savefig('Plots/SAE Paper/parameterized Delta T.pdf')
+fig01.savefig('Plots/SAE Paper/parameterized Delta T.png')
 
 fig02 = plt.figure()
 fig02.canvas.set_window_title('Parameterized Qdot')
@@ -122,8 +137,8 @@ plt.xlabel('Flow Rate (L/s)')
 plt.ylabel('Heat Transfer Rate (kW)')
 plt.xlim(xmin=0)
 plt.ylim(ymax=3)
-fig02.savefig('Plots/SAE Paper/heat v Vdot parameterized.pdf')
-fig02.savefig('Plots/SAE Paper/heat v Vdot parameterized.png')
+fig02.savefig('Plots/SAE Paper/Parameterized Qdot.pdf')
+fig02.savefig('Plots/SAE Paper/Parameterized Qdot.png')
 
 fig03 = plt.figure()
 fig03.canvas.set_window_title('Friction Factor')
@@ -137,13 +152,13 @@ plt.plot(Re_exh_shaped[2,:], f_model_shaped[2,:], '-b',
             label='290 Nm model') 
 plt.xlabel('Exhaust Reynolds Number')
 plt.ylabel('Exhaust Friction Factor')
-plt.ylim(ymin=0)
+plt.ylim(0,0.04)
 plt.xlim(xmin=0)
 plt.subplots_adjust(left=0.14)
 plt.grid()
 plt.legend(loc='lower left')
-plt.savefig('Plots/SAE Paper/f v Re.pdf')
-plt.savefig('Plots/SAE Paper/f v Re.png')
+plt.savefig('Plots/SAE Paper/Friction Factor.pdf')
+plt.savefig('Plots/SAE Paper/Friction Factor.png')
 
 fig04 = plt.figure()
 fig04.canvas.set_window_title('Experimental Qdot2d') 
@@ -157,8 +172,8 @@ plt.scatter(hx_exp.exh.flow_shaped * 1.e3, hx_exp.exh.T_inlet_array)
 plt.grid()
 plt.xlabel('Flow Rate (L/s)')
 plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
-plt.savefig('Plots/SAE Paper/heat v T1 and Vdot exp.pdf')
-plt.savefig('Plots/SAE Paper/heat v T1 and Vdot exp.png')
+plt.savefig('Plots/SAE Paper/Experimental Qdot2d.pdf')
+plt.savefig('Plots/SAE Paper/Experimental Qdot2d.png')
 
 fig05 = plt.figure()
 fig05.canvas.set_window_title('Model Qdot2d') 
@@ -170,8 +185,8 @@ plt.scatter(hx_exp.exh.flow_shaped * 1.e3, hx_exp.exh.T_inlet_array)
 plt.grid()
 plt.xlabel('Flow Rate (L/s)')
 plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
-plt.savefig('Plots/SAE Paper/heat v T1 and Vdot mod.pdf')
-plt.savefig('Plots/SAE Paper/heat v T1 and Vdot mod.png')
+plt.savefig('Plots/SAE Paper/Model Qdot2d.pdf')
+plt.savefig('Plots/SAE Paper/Model Qdot2d.png')
 
 pressure_drop = hx_exp.exh.pressure_drop.copy()
 flow = hx_exp.exh.flow_array.copy()
@@ -189,8 +204,8 @@ plt.ylim(ymin=0)
 plt.xlim(xmin=0)
 plt.grid()
 plt.legend(loc='lower right')
-plt.savefig('Plots/SAE Paper/flow v press.pdf')
-plt.savefig('Plots/SAE Paper/flow v press.png')
+plt.savefig('Plots/SAE Paper/Flow v Pressure.pdf')
+plt.savefig('Plots/SAE Paper/Flow v Pressure.png')
 
 fig07 = plt.figure()
 fig07.canvas.set_window_title('Non-dim Parameterized Heat')
@@ -213,8 +228,8 @@ plt.xlabel('Scaled Flow Rate')
 plt.ylabel('Scaled Heat Transfer Rate')
 plt.ylim(0, 0.25)
 plt.xlim(xmin=0)
-plt.savefig('Plots/SAE Paper/non-dim parameter heat.pdf')
-plt.savefig('Plots/SAE Paper/non-dim parameter heat.png')
+plt.savefig('Plots/SAE Paper/Non-dim Parameterized Heat.pdf')
+plt.savefig('Plots/SAE Paper/Non-dim Parameterized Heat.png')
 
 fig08 = plt.figure()
 fig08.canvas.set_window_title('Experimental Qdot2d non-dim') 
@@ -228,8 +243,8 @@ plt.scatter(flow_dimless, hx_exp.exh.T_inlet_array)
 plt.grid()
 plt.xlabel('Scaled Flow Rate')
 plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
-plt.savefig('Plots/SAE Paper/heat exp non-dim.pdf')
-plt.savefig('Plots/SAE Paper/heat exp non-dim.png')
+plt.savefig('Plots/SAE Paper/Experimental Qdot2d non-dim.pdf')
+plt.savefig('Plots/SAE Paper/Experimental Qdot2d non-dim.png')
 
 fig09 = plt.figure()
 fig09.canvas.set_window_title('Model Qdot2d non-dim') 
@@ -241,6 +256,28 @@ plt.scatter(flow_dimless, hx_exp.exh.T_inlet_array)
 plt.grid()
 plt.xlabel('Scaled Flow Rate')
 plt.ylabel(r'Exhaust Inlet Temp ($^\circ$C)')
-plt.savefig('Plots/SAE Paper/heat mod non-dim.pdf')
-plt.savefig('Plots/SAE Paper/heat mod non-dim.png')
+plt.savefig('Plots/SAE Paper/Model Qdot2d non-dim.pdf')
+plt.savefig('Plots/SAE Paper/Model Qdot2d non-dim.png')
 
+fig10 = plt.figure()
+fig10.canvas.set_window_title('Nu v Re')
+plt.plot(hx_exp.exh.Re_exp[0:4] , hx_exp.exh.Nu_exp[0:4], '--sr',
+         label='43.4 Nm exp')
+plt.plot(hx_exp.exh.Re_exp[4:8] , hx_exp.exh.Nu_exp[4:8], '--sg',
+         label='122 Nm exp')
+plt.plot(hx_exp.exh.Re_exp[8:12], hx_exp.exh.Nu_exp[8:12], '--sb',
+         label='290 Nm exp')
+plt.plot(hx_exp.exh.Re_exp[0:4] , hx_mod.exh.Nu_model[0:4], '-dr',
+         label='43.4 Nm model')
+plt.plot(hx_exp.exh.Re_exp[4:8] , hx_mod.exh.Nu_model[4:8], '-dg',
+         label='122 Nm model')
+plt.plot(hx_exp.exh.Re_exp[8:12], hx_mod.exh.Nu_model[8:12], '-db',
+         label='290 Nm model')
+plt.xlabel('Reynolds Number')
+plt.ylabel('Nusselt Number')
+plt.xlim(0,6e4)
+plt.ylim(ymin=0)
+plt.grid()
+plt.legend(loc='lower right')
+fig10.savefig('Plots/SAE Paper/Nu v Re.pdf')
+fig10.savefig('Plots/SAE Paper/Nu v Re.png')

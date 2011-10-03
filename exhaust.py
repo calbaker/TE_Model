@@ -134,13 +134,13 @@ class Exhaust(prop.ideal_gas, functions.Functions):
             self.h = ( (self.h * (self.width - self.fins *
         self.fin.thickness) + self.fin.h_base * self.fins *
         self.fin.thickness) / self.width ) 
-            self.deltaP = (self.f * 4. * self.flow_perimeter * self.length /
+            self.deltaP = (self.f * self.flow_perimeter * self.length /
         self.flow_area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
 
         elif self.enhancement == 'none':            
             self.k = self.k_air
             self.set_Re_dependents()
-            self.deltaP = (self.f * 4. * self.perimeter * self.length /
+            self.deltaP = (self.f * self.perimeter * self.length /
             self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
             self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
 

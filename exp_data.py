@@ -142,9 +142,9 @@ class HeatData(hx.HX):
         self.set_T_lm()
         self.set_Qdot_exp()
         self.exh.U_exp = ( self.exh.Qdot_exp / (self.width *
-        self.length * self.delta_T_lm_array) )  
+        self.length * self.cool.ducts * self.delta_T_lm_array) )  
         self.cool.U_exp = ( self.cool.Qdot_exp / (self.width *
-        self.length * self.delta_T_lm_array) )
+        self.length * self.cool.ducts * self.delta_T_lm_array) )
 
     def set_Re_exp(self):
         """Sets experimental Reynolds number."""
@@ -160,10 +160,9 @@ class HeatData(hx.HX):
         self.flow_data.set_TempPres_dependents()
         self.flow_data.Re_D = ( self.flow_data.velocity *
         self.flow_data.rho * self.exh.D / self.flow_data.mu )
-        self.flow_data.f_exp = ( 0.25 * 2. *
-        self.flow_data.pressure_drop * 1.e3 / (self.exh.length *
-        self.exh.perimeter / self.exh.area * self.flow_data.rho *
-        self.flow_data.velocity**2) )          
+        self.flow_data.f_exp = ( self.flow_data.pressure_drop * 1.e3 /
+        (0.5 * self.exh.length * self.exh.perimeter / self.exh.area *
+        self.flow_data.rho * self.flow_data.velocity**2) )          
 
     def set_properties(self):
         """Sets array of temperature and pressure dependent properties

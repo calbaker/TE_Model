@@ -25,8 +25,8 @@ class Functions(object):
         self.set_Re()
         if np.size(self.Re_D) > 1:
             if (self.Re_D > 2300.).any(): # Do these correlations hold for any tube geometry?
-                self.f = 0.316 * self.Re_D**(-1. / 4.) # friction factor for turbulent
-                # flow from FMP 4th Eq. 8.35 
+                self.f = 0.078 * self.Re_D**(-1. / 4.) # friction factor for turbulent
+                # flow from Bejan
                 self.Nu_D = self.Nu_coeff * self.Re_D**(4. / 5.) * self.Pr**(1. / 3.) # Adrian
                 # Bejan, Convection Heat Transfer, 3rd ed., Equation 8.30
             else:
@@ -35,8 +35,8 @@ class Functions(object):
                 self.f = 24. / self.Re_D
         else:
             if (self.Re_D > 2300.): # Do these correlations hold for any tube geometry?
-                self.f = 0.316 * self.Re_D**(-1. / 4.) # friction factor for turbulent
-                # flow from FMP 4th Eq. 8.35 
+                self.f = 0.078 * self.Re_D**(-1. / 4.) # friction factor for turbulent
+                # flow from Bejan
                 self.Nu_D = self.Nu_coeff * self.Re_D**(4. / 5.)*self.Pr**(1. / 3.) # Adrian
                 # Bejan, Convection Heat Transfer, 3rd ed., Equation 8.30
             else:
