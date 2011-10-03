@@ -152,7 +152,7 @@ plt.plot(Re_exh_shaped[2,:], f_model_shaped[2,:], '-b',
             label='290 Nm model') 
 plt.xlabel('Exhaust Reynolds Number')
 plt.ylabel('Exhaust Friction Factor')
-plt.ylim(0,0.04)
+plt.ylim(ymin=0)
 plt.xlim(xmin=0)
 plt.subplots_adjust(left=0.14)
 plt.grid()
