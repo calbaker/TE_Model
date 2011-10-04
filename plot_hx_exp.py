@@ -16,7 +16,7 @@ reload(exp_data)
 width = 9.e-2
 length = 0.195
 height_exh = 1.e-2
-height_cool = 0.005
+height_cool = 0.01
 Vdot_cool = 4. # coolant flow rate (GPM) 
 
 # experimental stuff
@@ -47,6 +47,10 @@ area = (0.002)**2
 length = 1.e-3
 
 hx_mod = hx.HX()
+hx_mod.exh.bypass = 0.
+hx_mod.cool.height = height_cool 
+hx_mod.exh.height = height_exh
+hx_mod.cool.mdot = mdot_cool
 hx_mod.Qdot2d = np.empty(np.size(hx_exp.exh.T_array))
 hx_mod.tem.Ntype.material = 'alumina'
 hx_mod.tem.Ptype.material = 'alumina'
@@ -152,18 +156,18 @@ plt.plot(Re_exh_shaped[2,:], f_model_shaped[2,:], '-b',
             label='290 Nm model') 
 plt.xlabel('Exhaust Reynolds Number')
 plt.ylabel('Exhaust Friction Factor')
-plt.ylim(ymin=0)
+plt.ylim(0, .15)
 plt.xlim(xmin=0)
 plt.subplots_adjust(left=0.14)
 plt.grid()
-plt.legend(loc='lower left')
+plt.legend(loc='center left')
 plt.savefig('Plots/SAE Paper/Friction Factor.pdf')
 plt.savefig('Plots/SAE Paper/Friction Factor.png')
 
 fig04 = plt.figure()
 fig04.canvas.set_window_title('Experimental Qdot2d') 
-TICKS = np.arange(0., 1.8, 0.2)
-LEVELS = np.arange(0., 1.7, 0.1)
+TICKS = np.arange(0.1, 2.2, 0.2)
+LEVELS = np.arange(0.1, 2.2, 0.2)
 FCS = plt.contourf(hx_exp.exh.flow_shaped * 1.e3, hx_exp.exh.T_inlet_array,
                    hx_exp.exh.Qdot_exp, levels=LEVELS)  
 CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS)
@@ -281,3 +285,16 @@ plt.grid()
 plt.legend(loc='lower right')
 fig10.savefig('Plots/SAE Paper/Nu v Re.pdf')
 fig10.savefig('Plots/SAE Paper/Nu v Re.png')
+
+fig11 = plt.figure()
+fig11.canvas.set_window_title('Parameterized T_inlet')
+plt.plot(hx_exp.exh.flow_shaped[0,:] * 1.e3, hx_exp.exh.T_inlet_array[0,:], '--xr', label='exp 43.4 Nm') 
+plt.plot(hx_exp.exh.flow_shaped[1,:] * 1.e3, hx_exp.exh.T_inlet_array[1,:], '--sg', label='exp 122 Nm') 
+plt.plot(hx_exp.exh.flow_shaped[2,:] * 1.e3, hx_exp.exh.T_inlet_array[2,:], '--ob', label='exp 290 Nm') 
+plt.legend(loc='upper left')
+plt.grid()
+plt.xlim(xmin=0)
+plt.xlabel('Flow Rate (L/s)')
+plt.ylabel(r'Hot Side $T_{inlet}$ (K)')
+fig11.savefig('Plots/SAE Paper/parameterized T_inlet.pdf')
+fig11.savefig('Plots/SAE Paper/parameterized T_inlet.png')
