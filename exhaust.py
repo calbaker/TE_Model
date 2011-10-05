@@ -37,13 +37,12 @@ class _Fin(object):
         self.thickness )
 
 
-class Exhaust(prop.ideal_gas, functions.Functions):
+class Exhaust(prop.ideal_gas):
     """class for exhaust flow"""
 
     def __init__(self):
         """sets constants and initiates class instances"""
         super(Exhaust, self).__init__()
-        super(Exhaust, self).set_Nu_coeff()
         self.porous = 'no' # is there porous media?
         self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
             # corrugate metal, etc.)
@@ -62,6 +61,10 @@ class Exhaust(prop.ideal_gas, functions.Functions):
         # fraction of exhaust flow bypassing heat exchanger
         self.fin = _Fin() # workaround to be able to change fin from
                           # instance
+        self.Nu_coeff = 0.023
+
+    set_flow_geometry = functions.set_flow_geometry
+    set_Re_dependents = functions.set_Re_dependents
 
     def set_flow(self):
         """calculates flow parameters"""        
