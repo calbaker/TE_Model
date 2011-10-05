@@ -112,6 +112,12 @@ class HeatData(hx.HX):
         self.flow_data.flow = ( self.flow_data.flow_trash *
         self.flow_data.T_hx / self.flow_data.T )
 
+    @staticmethod
+    def get_flow(pressure_drop, coeff):
+        """Sets flow based on coefficient and pressure drop.""" 
+        flow = coeff * pressure_drop**0.5
+        return flow
+
     def set_flow_array(self):
         """Sets experimental flow rate through heat exchanger"""
         flow = self.flow_data.flow
@@ -180,10 +186,4 @@ class HeatData(hx.HX):
         self.exh.mdot_exp = self.exh.flow_array * self.exh.rho_array
         self.exh.C = self.exh.mdot_exp * self.exh.c_p_air
         self.exh.enthalpy_flow = self.exh.C * self.exh.T_inlet_array
-
-    @staticmethod
-    def get_flow(pressure_drop, coeff):
-        """Sets flow based on coefficient and pressure drop.""" 
-        flow = coeff * pressure_drop**0.5
-        return flow
 
