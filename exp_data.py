@@ -59,6 +59,7 @@ class HeatData(hx.HX):
         self.filename_heat = 'alumina paper.xls'
         self.start_rowx = 4
         self.end_rowx = 16
+        self.exh.flow_coeff = 0.1
         self.Nu_guess = 0.023
         # guess for Nu = Nu_guess * Re_D**(4/5) * Pr**(1/3)
         self.cool.flow = 4. * 3.8 * 1.e-3 / 60.
@@ -112,8 +113,7 @@ class HeatData(hx.HX):
         self.flow_data.flow = ( self.flow_data.flow_trash *
         self.flow_data.T_hx / self.flow_data.T )
 
-    @staticmethod
-    def get_flow(pressure_drop, coeff):
+    def get_flow(self, pressure_drop, coeff):
         """Sets flow based on coefficient and pressure drop.""" 
         flow = coeff * pressure_drop**0.5
         return flow
@@ -123,7 +123,7 @@ class HeatData(hx.HX):
         flow = self.flow_data.flow
         pressure_drop = self.flow_data.pressure_drop
         popt, pcov = spopt.curve_fit(self.get_flow, pressure_drop,
-        flow) 
+        flow, p0=np.array([self.exh.flow_coeff])) 
         self.exh.flow_coeff = popt
         self.exh.flow_array = ( self.exh.flow_coeff *
         self.exh.pressure_drop**0.5 )
