@@ -45,6 +45,14 @@ class Leg():
     set_prop_fit = te_prop.set_prop_fit
     set_TEproperties = te_prop.set_TEproperties
     
+    def set_q_c_guess(self):
+        if self.node == 0:
+            self.q_c_guess = ( -self.k / self.length * (self.T_h_goal -
+                                                        self.T_c) )
+            # (W/m^2) guess for q[0] (W/m^2)
+        else:
+            self.q_c_guess = self.q_c        
+
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
@@ -58,9 +66,7 @@ class Leg():
         self.T[0] = self.T_c
         self.T_props = self.T[0]
         self.set_TEproperties()
-        self.q_c_guess = ( -self.k / self.length * (self.T_h_goal -
-        self.T_c) )
-        # (W/m^2) guess for q[0] (W/m^2)
+        self.set_q_c_guess()
         self.q_c = spopt.fsolve(self.solve_leg_once,
         x0=self.q_c_guess, xtol=self.xtol)
         self.solve_leg_once(self.q_c)
