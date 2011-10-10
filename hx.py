@@ -145,6 +145,7 @@ class HX(object):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
+        self.t = time.clock()
         self.tem.Ntype.node = i # used within tem.py
         self.tem.Ptype.node = i
         
@@ -194,6 +195,9 @@ class HX(object):
             self.Qdot_node = -self.q_h * self.area
 
         self.error_cold = self.get_error_cold(self.tem.T_c)
+
+        self.elapsed = time.clock() - self.t
+        print "elapsed time:", self.elapsed
         
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
