@@ -60,7 +60,6 @@ class Leg():
         the desired hot side temperature.  Hot side and cold side
         temperature as well as hot side heat flux must be
         specified.""" 
-        self.count = 0
         self.segment_length = self.length / self.segments
         # length of each segment (m)
         self.J = self.I / self.area # (Amps/m^2)
@@ -75,13 +74,11 @@ class Leg():
         # Power for the entire leg (W)
         self.eta = self.P / (self.q[-1] * self.area)
         # Efficiency of leg
-        print 'solve_leg runs =', self.count
             
     def get_T_h_error(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
         self.q[0] = q_c
-        self.count = self.count + 1.
         # for loop for iterating over segments
         for j in range(1,self.segments):
             self.T_props = self.T[j-1]
