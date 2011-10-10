@@ -145,13 +145,6 @@ class HX(object):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
-        self.tem.count = 0.
-        self.elapsed = time.clock() - self.t
-        self.t = time.clock()
-        print "\nelapsed time =", self.elapsed
-        if i % 5 == 0:
-            print "solving node", i
-
         self.tem.Ntype.node = i # used within tem.py
         self.tem.Ptype.node = i
         
@@ -185,8 +178,6 @@ class HX(object):
                 # heat transfer on hot side of node, positive values indicates
                 # heat transfer from hot to cold
 
-            print "solve_tem runs =", self.tem.count
-        
         else:
             self.tem.Ntype.set_TEproperties()
             self.tem.Ptype.set_TEproperties()
@@ -206,7 +197,6 @@ class HX(object):
         
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
-        self.t = time.clock()
         self.set_constants()
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
@@ -250,7 +240,6 @@ class HX(object):
         
         # for loop iterates of nodes of HX in streamwise direction
         for i in sp.arange(self.nodes):
-            # print "\nSolving node", i
             self.solve_node(i)
 
             self.Qdot_nodes[i] = self.Qdot_node
