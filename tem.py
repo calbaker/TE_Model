@@ -51,7 +51,7 @@ class Leg():
                                                         self.T_c) )
             # (W/m^2) guess for q[0] (W/m^2)
         else:
-            self.q_c_guess = self.q_c        
+            self.q_c_guess = self.q_c
 
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
