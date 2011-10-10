@@ -120,6 +120,9 @@ class HX(object):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
+        if i%5 == 0:
+            print "solving node", i
+
         if i == 0:
             self.tem.T_c = self.cool.T
             # guess at cold side tem temperature (K)
