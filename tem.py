@@ -75,7 +75,7 @@ class Leg():
         # Power for the entire leg (W)
         self.eta = self.P / (self.q[-1] * self.area)
         # Efficiency of leg
-        print 'count =', self.count
+        print 'solve_leg runs =', self.count
             
     def get_T_h_error(self,q_c):
         """Solves leg once with no attempt to match hot side
