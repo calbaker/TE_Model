@@ -123,7 +123,7 @@ class HeatData(hx.HX):
         flow = self.flow_data.flow
         pressure_drop = self.flow_data.pressure_drop
         popt, pcov = spopt.curve_fit(self.get_flow, pressure_drop,
-        flow, p0=np.array([self.exh.flow_coeff])) 
+        flow, p0=self.exh.flow_coeff) 
         self.exh.flow_coeff = popt
         self.exh.flow_array = ( self.exh.flow_coeff *
         self.exh.pressure_drop**0.5 )
