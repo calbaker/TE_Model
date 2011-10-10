@@ -33,6 +33,7 @@ class HX(object):
 
     def __init__(self):
         """Geometry and constants"""
+        self.loop_count = 0
         self.width = 10.e-2 # width (cm*10**-2) of HX duct. This model treats
             # duct as parallel plates for simpler modeling.
         self.length = 20.e-2 # length (m) of HX duct
@@ -178,6 +179,7 @@ class HX(object):
                 self.tem.solve_tem()
                 self.error_cold = self.get_error_cold(self.tem.T_c)
                 self.error_hot = self.get_error_hot(self.tem.T_h)
+                self.loop_count = self.loop_count + 1
                 self.Qdot_node = -self.q_h * self.area
                 # heat transfer on hot side of node, positive values indicates
                 # heat transfer from hot to cold
