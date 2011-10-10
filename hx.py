@@ -197,7 +197,7 @@ class HX(object):
         self.error_cold = self.get_error_cold(self.tem.T_c)
 
         self.elapsed = time.clock() - self.t
-        print "elapsed time:", self.elapsed
+        # print "elapsed time:", self.elapsed
         
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
