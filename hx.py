@@ -184,9 +184,6 @@ class HX(object):
                 # heat transfer on hot side of node, positive values indicates
                 # heat transfer from hot to cold
 
-                if self.loop_count == 0:
-                    self.error_hot = self.get_error_hot(self.tem.T_h)
-                    # self.error_cold = self.get_error_cold(self.tem.T_c)
             print "solve_tem runs =", self.tem.count
         
         else:
@@ -204,9 +201,8 @@ class HX(object):
             self.q_h = self.U * (self.cool.T - self.exh.T)
             self.Qdot_node = -self.q_h * self.area
 
-        # these need to run out here for the pure conduction case in
-        # which the loop is not active
-
+        self.error_cold = self.get_error_cold(self.tem.T_c)
+        
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
         self.t = time.clock()
