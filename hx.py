@@ -170,7 +170,7 @@ class HX(object):
                 # self.tem.solve_tem()
                 self.tem.T_c = spopt.fsolve(self.get_error_cold,
             self.tem.T_c, xtol=self.xtol) 
-                self.tem.solve_tem()
+                # self.tem.solve_tem()
                 # self.error_cold = self.get_error_cold(self.tem.T_c)
                 self.error_hot = self.get_error_hot(self.tem.T_h)
                 self.loop_count = self.loop_count + 1
