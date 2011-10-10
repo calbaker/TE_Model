@@ -129,7 +129,6 @@ class TEModule():
 
     def solve_tem(self):
         """solves legs and combines results of leg pair"""
-        self.count = self.count + 1
         exponential = 1.e-3
         self.Ptype.T_h_goal = self.T_h_goal
         self.Ntype.T_h_goal = self.T_h_goal
