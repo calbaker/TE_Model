@@ -68,16 +68,16 @@ class Leg():
         self.T_props = self.T[0]
         self.set_TEproperties()
         self.set_q_c_guess()
-        self.q_c = spopt.fsolve(self.solve_leg_once,
+        self.q_c = spopt.fsolve(self.get_T_h_error,
         x0=self.q_c_guess, xtol=self.xtol)
-        self.solve_leg_once(self.q_c)
+        self.get_T_h_error(self.q_c)
         self.P = sp.sum(self.P_flux_segment) * self.area
         # Power for the entire leg (W)
         self.eta = self.P / (self.q[-1] * self.area)
         # Efficiency of leg
         print 'count =', self.count
             
-    def solve_leg_once(self,q_c):
+    def get_T_h_error(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
         self.q[0] = q_c
@@ -132,6 +132,7 @@ class TEModule():
 
     def solve_tem(self):
         """solves legs and combines results of leg pair"""
+        self.count = self.count + 1
         exponential = 1.e-3
         self.Ptype.T_h_goal = self.T_h_goal
         self.Ntype.T_h_goal = self.T_h_goal
