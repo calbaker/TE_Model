@@ -10,6 +10,7 @@ import os
 # User Defined Modules
 # In this directory
 import hx
+reload(hx)
 
 print "Beginning execution..."
 
