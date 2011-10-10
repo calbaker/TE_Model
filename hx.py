@@ -55,6 +55,31 @@ class HX(object):
 
         self.fix_geometry()
 
+    def setup(self):
+        """Sets up variables that must be defined before running
+        model.  Useful for terminal.  Not necessary elsewhere."""
+        self.exh.T = 800.
+        self.cool.T = 300. 
+        self.set_mdot_charge()
+        self.set_constants()
+
+    def set_constants(self):
+        """Sets constants used at the HX level."""
+        self.node_length = self.length / self.nodes
+        # length (m) of each node
+        self.area = self.node_length * self.width * self.cool.ducts # area (m^2)
+                                        # through which heat flux
+                                        # occurs in each node
+        self.tem.set_constants()
+        self.leg_pairs = int(self.area / self.tem.area)
+        # Number of TEM leg pairs per node
+        self.x_dim = sp.arange(self.node_length/2, self.length +
+        self.node_length/2, self.node_length)   
+        # x coordinate (m)
+        self.fix_geometry()
+        self.exh.set_flow_geometry(self.exh.width) 
+        self.cool.set_flow_geometry(self.cool.width)
+
     def fix_geometry(self):
         """Makes sure that common geometry like width and length is
         the same between exh, cool, and the overal heat exchanger."""
@@ -70,26 +95,6 @@ class HX(object):
         within the exhaust module."""
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge * (1. - self.exh.bypass) 
-
-    def get_error_hot(self,T_h):
-        """Returns hot side and cold side heat flux values in an
-        array.  The first entry is hot side heat flux and the second
-        entry is cold side heat flux."""
-        self.q_h = self.U_hot * (T_h - self.exh.T)
-        self.tem.T_h_goal = T_h
-        self.tem.solve_tem()
-        error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
-        return error_hot
-
-    def get_error_cold(self,T_c):
-        """Returns cold side and cold side heat flux values in an
-        array.  The first entry is cold side heat flux and the second
-        entry is cold side heat flux."""
-        self.q_c = self.U_cold * (self.cool.T - T_c)
-        self.tem.T_c = T_c
-        self.tem.solve_tem()
-        error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
-        return error_cold
 
     def set_convection(self):
         """Sets values for convection coefficients."""
@@ -116,6 +121,26 @@ class HX(object):
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
         
+    def get_error_hot(self,T_h):
+        """Returns hot side and cold side heat flux values in an
+        array.  The first entry is hot side heat flux and the second
+        entry is cold side heat flux."""
+        self.q_h = self.U_hot * (T_h - self.exh.T)
+        self.tem.T_h_goal = T_h
+        self.tem.solve_tem()
+        error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
+        return error_hot
+
+    def get_error_cold(self,T_c):
+        """Returns cold side and cold side heat flux values in an
+        array.  The first entry is cold side heat flux and the second
+        entry is cold side heat flux."""
+        self.q_c = self.U_cold * (self.cool.T - T_c)
+        self.tem.T_c = T_c
+        self.tem.solve_tem()
+        error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
+        return error_cold
+
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
@@ -181,23 +206,6 @@ class HX(object):
 
         # these need to run out here for the pure conduction case in
         # which the loop is not active
-
-    def set_constants(self):
-        """Sets constants used at the HX level."""
-        self.node_length = self.length / self.nodes
-        # length (m) of each node
-        self.area = self.node_length * self.width * self.cool.ducts # area (m^2)
-                                        # through which heat flux
-                                        # occurs in each node
-        self.tem.set_constants()
-        self.leg_pairs = int(self.area / self.tem.area)
-        # Number of TEM leg pairs per node
-        self.x_dim = sp.arange(self.node_length/2, self.length +
-        self.node_length/2, self.node_length)   
-        # x coordinate (m)
-        self.fix_geometry()
-        self.exh.set_flow_geometry(self.exh.width) 
-        self.cool.set_flow_geometry(self.cool.width)
 
     def solve_hx(self): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
@@ -313,14 +321,6 @@ class HX(object):
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power - self.Wdot_pumping 
         self.eta_1st = -self.power_net / self.Qdot
-
-    def setup(self):
-        """Sets up variables that must be defined before running
-        model.  Useful for terminal.  Not necessary elsewhere."""
-        self.exh.T = 800.
-        self.cool.T = 300. 
-        self.set_mdot_charge()
-        self.set_constants()
 
     def set_params(self):
         """Uses scipy optimize curve_fit to R_contact and Nu_coeff."""
