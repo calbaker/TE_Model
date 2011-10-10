@@ -120,10 +120,11 @@ class HX(object):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
+        self.tem.count = 0.
         self.elapsed = time.clock() - self.t
         self.t = time.clock()
         print "\nelapsed time =", self.elapsed
-        if i%5 == 0:
+        if i % 5 == 0:
             print "solving node", i
 
         self.tem.Ntype.node = i # used within tem.py
@@ -161,6 +162,7 @@ class HX(object):
                 if self.loop_count == 0:
                     self.error_hot = self.get_error_hot(self.tem.T_h)
                     self.error_cold = self.get_error_cold(self.tem.T_c)
+            print "outer count", self.tem.count
         
         else:
             self.tem.Ntype.set_TEproperties()
