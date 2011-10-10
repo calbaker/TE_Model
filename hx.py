@@ -160,11 +160,12 @@ class HX(object):
             # guess at cold side tem temperature (K)
             self.tem.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
+            self.tem.solve_tem()
+            self.set_convection()
         else:
             self.tem.T_c = (self.tem.T_c_nodes[i-1])
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
-        self.tem.solve_tem()
-        self.set_convection()
+
         self.error_hot = 100.  
         # amount by which convection model overpredicts hot side heat
         # flux (kW/m^2-K) relative to TE model.  
