@@ -7,7 +7,7 @@ def set_prop_fit(self):
     """Sets temperature fit curves for thermoelectric properties."""
 
     if self.material == "HMS":
-        # Raw data taken from Luo et al.
+        # Raw data taken from Luo et al. HMS is p-type
         poly_deg = 3
         # print "Curve fitting for HMS"
 
@@ -36,7 +36,7 @@ def set_prop_fit(self):
         self.sigma_params = sp.polyfit(sigma_raw[:,0], sigma_raw[:,1], poly_deg)
 
     if self.material == "MgSi":
-        # Raw data comes from Gao et al.  
+        # Raw data comes from Gao et al. MgSi is n-type
         poly_deg = 2
         # print "Curve fitting for MgSi"
         
