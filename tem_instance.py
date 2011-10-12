@@ -8,10 +8,10 @@ import tem
 
 t0 = time.clock()
 
-length = 0.002
-current = 1.
+length = 1 / 1000.
+current = 4.5
 area = (0.002)**2
-area_ratio = 2 # p-type area per n-type area
+area_ratio = 1.25 # p-type area per n-type area
 
 tem = tem.TEModule()
 tem.I = current
@@ -30,9 +30,9 @@ tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
 
-length1d = np.linspace(0.5, 3, 25) / 1000.
-current1d = np.linspace(1, 5, 25)
-area_ratio1d = np.linspace(0.5, 4, 25)
+length1d = np.linspace(0.01, 3, 25) / 1000.
+current1d = np.linspace(0.01, 8, 25)
+area_ratio1d = np.linspace(0.5, 3, 25)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -102,8 +102,8 @@ CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
 plt.ylabel("Current (A)")
-fig1.savefig('Plots/TE Optimization/length_current guess.pdf')
-fig1.savefig('Plots/TE Optimization/length_current guess.png')
+fig1.savefig('Plots/TE Optimization/length_current.pdf')
+fig1.savefig('Plots/TE Optimization/length_current.png')
 
 fig2 = plt.figure()
 FCS = plt.contourf(length_area * 1000., area_length, P_length_area.T) 
@@ -111,8 +111,8 @@ CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
 plt.ylabel("P-type to N-type Area Ratio")
-fig2.savefig('Plots/TE Optimization/length_area guess.pdf')
-fig2.savefig('Plots/TE Optimization/length_area guess.png')
+fig2.savefig('Plots/TE Optimization/length_area.pdf')
+fig2.savefig('Plots/TE Optimization/length_area.png')
 
 fig3 = plt.figure()
 FCS = plt.contourf(current_area, area_current, P_current_area.T) 
@@ -120,10 +120,10 @@ CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Current (A)")
 plt.ylabel("P-type to N-type Area Ratio")
-fig3.savefig('Plots/TE Optimization/current_area guess.pdf')
-fig3.savefig('Plots/TE Optimization/current_area guess.png')
+fig3.savefig('Plots/TE Optimization/current_area.pdf')
+fig3.savefig('Plots/TE Optimization/current_area.png')
 
-print "elapsed time:", time.clock()
+print "elapsed time:", time.clock() - t0
 
-plt.show()
+# plt.show()
 
