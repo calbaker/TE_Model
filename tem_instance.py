@@ -30,9 +30,9 @@ tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
 
-length1d = np.linspace(0.5, 5, 25) / 1000.
-current1d = np.linspace(0.1, 5, 25)
-area_ratio1d = np.linspace(0.5, 5, 25)
+length1d = np.linspace(0.5, 3, 25) / 1000.
+current1d = np.linspace(1, 5, 25)
+area_ratio1d = np.linspace(0.5, 4, 25)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -86,7 +86,7 @@ print "finished third for loop."
 print "plotting"
 
 # Plot configuration
-FONTSIZE = 20
+FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
@@ -102,8 +102,8 @@ CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
 plt.ylabel("Current (A)")
-fig1.savefig('Plots/TE Optimization/length_current.pdf')
-fig1.savefig('Plots/TE Optimization/length_current.png')
+fig1.savefig('Plots/TE Optimization/length_current guess.pdf')
+fig1.savefig('Plots/TE Optimization/length_current guess.png')
 
 fig2 = plt.figure()
 FCS = plt.contourf(length_area * 1000., area_length, P_length_area.T) 
@@ -111,8 +111,8 @@ CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
 plt.ylabel("P-type to N-type Area Ratio")
-fig2.savefig('Plots/TE Optimization/length_area.pdf')
-fig2.savefig('Plots/TE Optimization/length_area.png')
+fig2.savefig('Plots/TE Optimization/length_area guess.pdf')
+fig2.savefig('Plots/TE Optimization/length_area guess.png')
 
 fig3 = plt.figure()
 FCS = plt.contourf(current_area, area_current, P_current_area.T) 
@@ -120,8 +120,8 @@ CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Current (A)")
 plt.ylabel("P-type to N-type Area Ratio")
-fig3.savefig('Plots/TE Optimization/current_area.pdf')
-fig3.savefig('Plots/TE Optimization/current_area.png')
+fig3.savefig('Plots/TE Optimization/current_area guess.pdf')
+fig3.savefig('Plots/TE Optimization/current_area guess.png')
 
 print "elapsed time:", time.clock()
 
