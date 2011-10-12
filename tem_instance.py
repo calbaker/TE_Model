@@ -1,77 +1,127 @@
 # distribution modules
-import scipy as sp
-import matplotlib.pyplot as mpl
+import numpy as np
+import matplotlib.pyplot as plt
+import time
 
 # local user modules
 import tem
 
+t0 = time.clock()
+
+length = 0.002
+current = 1.
+area = (0.002)**2
+area_ratio = 2 # p-type area per n-type area
+
 tem = tem.TEModule()
-tem.I = 1.
+tem.I = current
 tem.Ntype.material = 'MgSi'
 tem.Ptype.material = 'HMS'
 tem.T_h_goal = 550.
 tem.T_c = 350.
 tem.Ptype.node = 0
 tem.Ntype.node = 0
-tem.Ntype.area = (0.002)**2
-tem.Ptype.area = tem.Ntype.area * 2.
-tem.length = 2.e-3
+tem.Ntype.area = area
+tem.Ptype.area = tem.Ntype.area * area_ratio
+tem.length = length
 tem.area_void = 0.
 tem.set_constants()
 tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
 
+length1d = np.linspace(0.5, 10, 25) / 1000.
+current1d = np.linspace(0.1, 5, 25)
+area_ratio1d = np.linspace(0.2, 5, 25)
+
+length_current, current_length = np.meshgrid(length1d, current1d)
+current_area, area_current = np.meshgrid(current1d, area_ratio1d)
+length_area, area_length = np.meshgrid(length1d, area_ratio1d)
+
+P_length_current = np.empty([np.size(length1d), np.size(current1d)]) 
+P_current_area = np.empty([np.size(current1d), np.size(area_ratio1d)]) 
+P_length_area = np.empty([np.size(length1d), np.size(area_ratio1d)]) 
+
+for i in range(np.size(length1d)):
+    tem.length = length1d[i]
+    for j in range(np.size(current1d)):
+        tem.I = current1d[j]
+        tem.set_constants()
+        tem.solve_tem()
+        P_length_current[i,j] = tem.P
+
+tem.length = length
+tem.current = current
+print "finished first for loop."
+
+for i in range(np.size(current1d)):
+    tem.I = current1d[i]
+    for j in range(np.size(area_ratio1d)):
+        tem.Ntype.area = tem.area / (1. + area_ratio1d[j])
+        tem.Ptype.area = tem.area - tem.Ntype.area 
+        tem.set_constants()
+        tem.solve_tem()
+        P_current_area[i,j] = tem.P
+
+tem.current = current
+tem.area_ratio = area_ratio
+tem.Ntype.area = tem.area / (1. + area_ratio)
+tem.Ptype.area = tem.area - tem.Ntype.area 
+print "finished second for loop."
+
+for i in range(np.size(length1d)):
+    tem.length = length1d[i]
+    for j in range(np.size(current1d)):
+        tem.I = current1d[j]
+        tem.set_constants()
+        tem.solve_tem()
+        P_length_current[i,j] = tem.P
+
+tem.length = length
+tem.current = current
+tem.set_constants()
+tem.solve_tem()
+print "finished third for loop."
+print "plotting"
+
 # Plot configuration
 FONTSIZE = 20
-mpl.rcParams['axes.labelsize'] = FONTSIZE
-mpl.rcParams['axes.titlesize'] = FONTSIZE
-mpl.rcParams['legend.fontsize'] = FONTSIZE
-mpl.rcParams['xtick.labelsize'] = FONTSIZE
-mpl.rcParams['ytick.labelsize'] = FONTSIZE
-mpl.rcParams['lines.linewidth'] = 1.5
-mpl.rcParams['lines.markersize'] = 10
+plt.rcParams['axes.labelsize'] = FONTSIZE
+plt.rcParams['axes.titlesize'] = FONTSIZE
+plt.rcParams['legend.fontsize'] = FONTSIZE
+plt.rcParams['xtick.labelsize'] = FONTSIZE
+plt.rcParams['ytick.labelsize'] = FONTSIZE
+plt.rcParams['lines.linewidth'] = 1.5
+plt.rcParams['lines.markersize'] = 10
 
-x = sp.arange(tem.Ntype.segments) * tem.Ntype.segment_length * 1.e6
-# x position (micron)
+fig1 = plt.figure()
+FCS = plt.contourf(length_current * 1000., current_length, P_length_current.T) 
+CB = plt.colorbar(FCS, orientation='vertical', format='%.2f')
+plt.grid()
+plt.xlabel("Leg Height (mm)")
+plt.ylabel("Current (A)")
+fig1.savefig('Plots/TE Optimization/length_current.pdf')
+fig1.savefig('Plots/TE Optimization/length_current.png')
 
-fig1 = mpl.figure()
-mpl.plot(x*1e-3, tem.Ntype.T, label=tem.Ntype.material)
-mpl.plot(x*1e-3, tem.Ptype.T, label=tem.Ptype.material)
-mpl.title('TEM Temperature v Position')
-mpl.ylabel('Temperature (K)')
-mpl.xlabel('Position (mm)')
-mpl.grid()
-fig1.subplots_adjust(bottom=0.12)
-fig1.subplots_adjust(left=0.18)
-mpl.legend(loc='best')
-mpl.savefig('Plots/TEM temp v position.pdf')
-mpl.savefig('Plots/TEM temp v position.png')
+fig2 = plt.figure()
+FCS = plt.contourf(length_area * 1000., area_length, P_length_area.T) 
+CB = plt.colorbar(FCS, orientation='vertical', format='%.2f')
+plt.grid()
+plt.xlabel("Leg Height (mm)")
+plt.ylabel("P-type to N-type Area Ratio")
+fig2.savefig('Plots/TE Optimization/length_area.pdf')
+fig2.savefig('Plots/TE Optimization/length_area.png')
 
-fig2 = mpl.figure()
-mpl.plot(tem.Ntype.T, tem.Ntype.q * 1e-3, label=tem.Ntype.material)
-mpl.plot(tem.Ptype.T, tem.Ptype.q * 1e-3, label=tem.Ptype.material)
-mpl.grid()
-mpl.xlabel('T (K)')
-mpl.ylabel(r'q $\frac{kW}{m^2K}$')
-mpl.title('TEM Heat Flux v Temperature')
-fig2.subplots_adjust(bottom=0.12)
-fig2.subplots_adjust(left=0.22)
-mpl.legend(loc='best')
-mpl.savefig('Plots/TEM heat v temp.pdf')
-mpl.savefig('Plots/TEM heat v temp.png')
+fig3 = plt.figure()
+FCS = plt.contourf(current_area, area_current, P_current_area.T) 
+CB = plt.colorbar(FCS, orientation='vertical', format='%.2f')
+plt.grid()
+plt.xlabel("Current (A)")
+plt.ylabel("P-type to N-type Area Ratio")
+fig3.savefig('Plots/TE Optimization/current_area.pdf')
+fig3.savefig('Plots/TE Optimization/current_area.png')
 
-fig3 = mpl.figure()
-mpl.plot(x*1e-3, tem.Ntype.q * 1e-3, label=tem.Ntype.material)
-mpl.plot(x*1e-3, tem.Ptype.q * 1e-3, label=tem.Ptype.material)
-mpl.xlabel('x (mm)')
-mpl.ylabel(r'q $\frac{kW}{m^2K}$')
-mpl.title('TEM Heat Flux v Position')
-fig3.subplots_adjust(bottom=0.12)
-fig3.subplots_adjust(left=0.22)
-mpl.grid()
-mpl.legend(loc='best')
-mpl.savefig('Plots/TEM heat v position.pdf')
-mpl.savefig('Plots/TEM heat v position.png')
+print "elapsed time:", time.clock()
 
-mpl.show()
+plt.show()
+
