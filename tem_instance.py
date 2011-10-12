@@ -30,9 +30,9 @@ tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
 
-length1d = np.linspace(0.5, 10, 25) / 1000.
+length1d = np.linspace(0.5, 5, 25) / 1000.
 current1d = np.linspace(0.1, 5, 25)
-area_ratio1d = np.linspace(0.2, 5, 25)
+area_ratio1d = np.linspace(0.5, 5, 25)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -71,11 +71,12 @@ print "finished second for loop."
 
 for i in range(np.size(length1d)):
     tem.length = length1d[i]
-    for j in range(np.size(current1d)):
-        tem.I = current1d[j]
+    for j in range(np.size(area_ratio1d)):
+        tem.Ntype.area = tem.area / (1. + area_ratio1d[j])
+        tem.Ptype.area = tem.area - tem.Ntype.area 
         tem.set_constants()
         tem.solve_tem()
-        P_length_current[i,j] = tem.P
+        P_length_area[i,j] = tem.P
 
 tem.length = length
 tem.current = current
@@ -93,10 +94,11 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 10
+plt.rcParams['axes.formatter.limits'] = -3,3
 
 fig1 = plt.figure()
 FCS = plt.contourf(length_current * 1000., current_length, P_length_current.T) 
-CB = plt.colorbar(FCS, orientation='vertical', format='%.2f')
+CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
 plt.ylabel("Current (A)")
@@ -105,7 +107,7 @@ fig1.savefig('Plots/TE Optimization/length_current.png')
 
 fig2 = plt.figure()
 FCS = plt.contourf(length_area * 1000., area_length, P_length_area.T) 
-CB = plt.colorbar(FCS, orientation='vertical', format='%.2f')
+CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
 plt.ylabel("P-type to N-type Area Ratio")
@@ -114,7 +116,7 @@ fig2.savefig('Plots/TE Optimization/length_area.png')
 
 fig3 = plt.figure()
 FCS = plt.contourf(current_area, area_current, P_current_area.T) 
-CB = plt.colorbar(FCS, orientation='vertical', format='%.2f')
+CB = plt.colorbar(FCS, orientation='vertical')
 plt.grid()
 plt.xlabel("Current (A)")
 plt.ylabel("P-type to N-type Area Ratio")
