@@ -42,6 +42,9 @@ hx.set_mdot_charge()
 
 hx.solve_hx()
 
+fill_fraction = ( (hx.tem.Ptype.area + hx.tem.Ntype.area) /
+hx.tem.area_void ) 
+
 length1d = np.linspace(0.01, 3, 25) / 1000.
 current1d = np.linspace(0.01, 8, 25)
 fill_fraction1d = np.linspace(0.5, 3, 25)
@@ -56,14 +59,18 @@ P_length_fill = np.empty([np.size(length1d), np.size(fill_fraction1d)])
 
 for i in range(np.size(length1d)):
     hx.tem.length = length1d[i]
+    print "\n***************\n"
+    print "length =", hx.tem.length
     for j in range(np.size(current1d)):
         hx.tem.I = current1d[j]
+        print "current =", hx.tem.I
         hx.tem.set_constants()
-        hx.tem.solve_tem()
+        hx.solve_hx()
+        print "power =", hx.tem.power
         P_length_current[i,j] = hx.tem.power
 
-tem.length = length
-tem.current = current
+hx.tem.length = length
+hx.tem.current = current
 print "finished first for loop."
 
 for i in range(np.size(current1d)):
@@ -72,16 +79,17 @@ for i in range(np.size(current1d)):
         hx.tem.area_void = hx.tem.area * (1. - fill_fraction1d[j]) 
         hx.tem.Ntype.area = ( hx.tem.area * fill_fraction1d[j] / (1. +
     area_ratio) ) 
-        hx.tem.powertype.area = ( hx.tem.area - fill_fraction1d[j] -
+        hx.tem.Ptype.area = ( hx.tem.area - fill_fraction1d[j] -
     hx.tem.Ntype.area )
         hx.tem.set_constants()
-        hx.tem.solve_tem()
-        P_current_area[i,j] = hx.tem.power
+        hx.solve_hx()
+        P_current_fill[i,j] = hx.tem.power
 
-tem.current = current
-tem.fill_fraction = fill_fraction
-tem.Ntype.area = hx.tem.area / (1. + fill_fraction)
-tem.Ptype.area = hx.tem.area - hx.tem.Ntype.area 
+hx.tem.current = current
+hx.tem.fill_fraction = fill_fraction
+hx.tem.area_void = hx.tem.area * (1. - fill_fraction1d[j])
+hx.tem.Ntype.area = ( hx.tem.area * fill_fraction1d[j] / (1. + area_ratio) ) 
+hx.tem.Ptype.area = ( hx.tem.area - fill_fraction1d[j] - hx.tem.Ntype.area )
 print "finished second for loop."
 
 for i in range(np.size(length1d)):
@@ -90,16 +98,20 @@ for i in range(np.size(length1d)):
         hx.tem.area_void = hx.tem.area * (1. - fill_fraction1d[j]) 
         hx.tem.Ntype.area = ( hx.tem.area * fill_fraction1d[j] / (1. +
     area_ratio) ) 
-        hx.tem.powertype.area = ( hx.tem.area - fill_fraction1d[j] -
+        hx.tem.Ptype.area = ( hx.tem.area - fill_fraction1d[j] -
     hx.tem.Ntype.area )
         hx.tem.set_constants()
-        hx.tem.solve_tem()
-        P_length_area[i,j] = hx.tem.power 
+        hx.solve_hx()
+        P_length_fill[i,j] = hx.tem.power 
 
-tem.length = length
-tem.current = current
-tem.set_constants()
-tem.solve_tem()
+hx.tem.length = length
+hx.tem.current = current
+hx.tem.fill_fraction = fill_fraction
+hx.tem.area_void = hx.tem.area * (1. - fill_fraction1d[j])
+hx.tem.Ntype.area = ( hx.tem.area * fill_fraction1d[j] / (1. + area_ratio) ) 
+hx.tem.Ptype.area = ( hx.tem.area - fill_fraction1d[j] - hx.tem.Ntype.area )
+hx.tem.set_constants()
+hx.solve_hx()
 print "finished third for loop."
 print "plotting"
 
