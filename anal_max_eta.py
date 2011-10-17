@@ -16,6 +16,8 @@ rho_p = 1. / sigma_p
 rho_n = 1. / sigma_n
 R = 1.
 
+# Need to vary R and solve for I. 
+
 def get_eta(x):
     """Return thermoelectric device efficiency assuming average
     material properties.
