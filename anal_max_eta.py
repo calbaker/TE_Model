@@ -28,7 +28,17 @@ def get_eta(x):
     eta = ( I**2 * R / (alpha_pn * T_h * I + delta_T / L * (k_p + A
     * k_n) - I**2 * L * 0.5 * (rho_p + rho_n / A)) )  
 
-    return eta
+    return eta, R
+
+def get_eta_max(L):
+    A_opt = (rho_n * k_p / (rho_p * k_n))**0.5
+    R_opt = ( (1. + Z * T_bar)**0.5 * (rho_p + rho_n / A_opt) * L)
+    I_opt = alpha_pn * delta_T / (R_opt + (rho_p + rho_n / A_opt) * L)  
+    x = [A_opt, I_opt, L]
+    eta_max_check = get_eta(x)[0] 
+    eta_max = ( delta_T / T_h * ((1. + T_bar * Z)**0.5 - 1.) / ((1. +
+    T_bar * Z)**0.5 + T_c / T_h) )
+    return A_opt, R_opt, I_opt, eta_max_check, eta_max
 
 A = np.linspace(0.1,1.5,50)
 I = np.linspace(60,110,51) * 1000.
@@ -49,21 +59,22 @@ eta_ik = np.empty([np.size(A), np.size(L)])
 for i in range(np.size(A)):
     for j in range(np.size(I)):
         x = np.array([A[i], I[j], L0])
-        eta_ij[i,j] = get_eta(x)
+        eta_ij[i,j] = get_eta(x)[0]
 
 for j in range(np.size(I)):
     for k in range(np.size(L)):
         x = np.array([A0, I[j], L[k]])
-        eta_jk[j,k] = get_eta(x)
+        eta_jk[j,k] = get_eta(x)[0]
 
 for i in range(np.size(A)):
     for k in range(np.size(L)):
         x = np.array([A[i], I0, L[k]])
-        eta_ik[i,k] = get_eta(x)
+        eta_ik[i,k] = get_eta(x)[0]
 
 Z = ( (alpha_pn / ((rho_p * k_p)**0.5 + (rho_n * k_n)**0.5))**2. ) 
 T_bar = 0.5 * (T_h + T_c)
-eta_max = ( delta_T / T_h * ((1. + T_bar * Z)**0.5 - 1.) / ((1. + T_bar * Z)**0.5 + T_c / T_h) )
+
+eta_max = get_eta_max(L0)[-1]
 
 plt.close('all')
 
