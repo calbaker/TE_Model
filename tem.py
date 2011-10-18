@@ -39,7 +39,8 @@ class Leg():
         self.P_flux_segment = sp.zeros(self.segments)
         # initial array for power flux in segment (W/m^2)
         self.xtol = 0.01 # tolerable fractional error in hot side
-                         # temperature  
+                         # temperature
+        self.method = "numerical"
 
     set_ZT = set_ZT
     set_prop_fit = te_prop.set_prop_fit
@@ -67,15 +68,21 @@ class Leg():
         self.T_props = self.T[0]
         self.set_TEproperties()
         self.set_q_c_guess()
-        self.q_c = spopt.fsolve(self.get_T_h_error,
-        x0=self.q_c_guess, xtol=self.xtol)
-        self.error = self.get_T_h_error(self.q_c)
-        self.P = sp.sum(self.P_flux_segment) * self.area
-        # Power for the entire leg (W)
-        self.eta = self.P / (self.q[-1] * self.area)
+        if self.method == "numerical":
+            self.q_c = spopt.fsolve(self.get_T_h_error_numerical,
+        x0=self.q_c_guess, xtol=self.xtol)  
+            self.error = self.get_T_h_error_numerical(self.q_c) 
+            self.P = sp.sum(self.P_flux_segment) * self.area
+            # Power for the entire leg (W)
+        if self.method == "analytical":
+            self.q_c = spopt.fsolve(self.get_T_h_error_analytical,
+        x0=self.q_c_guess, xtol=self.xtol)  
+            self.error = self.get_T_h_error_analytical(self.q_c) 
+
+        self.eta = self.P / (self.q_h * self.area)
         # Efficiency of leg
             
-    def get_T_h_error(self,q_c):
+    def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
         self.q[0] = q_c
@@ -95,8 +102,33 @@ class Leg():
             self.T[j-1]) )
             self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
             self.J * self.rho * self.segment_length) )
+            # check this formula *****************************************
             self.T_h = self.T[-1]
+            self.q_h = self.q[-1]
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
+        return error
+
+    def get_T_h_error_analytical(self,q_c):
+        """Solves leg once with no attempt to match hot side
+        temperature BC. Used by solve_leg."""
+        self.q[0] = q_c
+        self.T_h = self.T_h_goal
+        self.T_props = (self.T_h + self.T_c) / 2.
+        self.set_TEproperties()
+        delta_T = self.T_h - self.T_c
+        self.R_load = ( self.alpha * delta_T / self.I - self.rho /
+        self.area * self.length ) 
+        self.eta = ( self.I**2 * self.R_load / (self.alpha * self.T_h
+        * self.I + delta_T / self.length * self.k * self.area -
+        self.I**2 * self.L * self.rho / self.area / 2.) )
+
+        self.P = self.eta * self.q_c / (1. - self.et)
+        self.q_cond = -self.k * delta_T / self.length
+        
+        # Maybe q_cond = 0.5 * (q_c + q_h)
+
+
+        error = (self.T_h - self.T_h_goal) / self.T_h_goal
         return error
 
 
@@ -140,13 +172,15 @@ class TEModule():
 
         # Renaming stuff for use elsewhere
         # Everything from here on out is in kW instead of W
-        self.q_h = ( (self.Ptype.q[-1] * self.Ptype.area + self.Ntype.q[-1]
-        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void) ) * exponential
+        self.q_h = ( (self.Ptype.q_h * self.Ptype.area +
+                      self.Ntype.q_h * self.Ntype.area) /
+                     (self.Ptype.area + self.Ntype.area +
+                      self.area_void) ) * exponential 
         # area averaged hot side heat flux (kW/m^2)
-        self.q_c = ( (self.Ptype.q[0] * self.Ptype.area + self.Ntype.q[0]
-        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void) * exponential )
+        self.q_c = ( (self.Ptype.q_c * self.Ptype.area +
+                      self.Ntype.q_c * self.Ntype.area) /
+                     (self.Ptype.area + self.Ntype.area +
+                      self.area_void) * exponential ) 
         # area averaged hot side heat flux (kW/m^2)
         self.P = -( self.Ntype.P + self.Ptype.P ) * exponential
         # power for the entire leg pair(kW). Negative sign makes this
