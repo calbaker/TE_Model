@@ -77,7 +77,7 @@ plt.grid()
 plt.xlabel("N:P Area Ratio")
 plt.ylabel(r"Current * 10$^{-3}$ (A)")
 fig1.savefig('Plots/Analytical/nparea_current.pdf')
-fig1.savefig('Plots/Analytical/nparea_current anal.png')
+fig1.savefig('Plots/Analytical/nparea_current.png')
 
 fig2 = plt.figure()
 FCS = plt.contourf(I2d_L, L2d_I, eta_jk.T, levels=LEVELS) 
