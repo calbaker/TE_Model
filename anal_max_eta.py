@@ -20,19 +20,7 @@ R = 1.
 
 def get_eta(x):
     """Return thermoelectric device efficiency assuming average
-    material properties.
-
-    Parameters
-    ----------
-    x = (R_a,I,L)
-    R_a: area ratio of p-type to n-type leg
-    I: current (A)
-    L: TE leg length (m)
-
-    Returns
-    _________
-    eta_t: negative efficiency of TE"""
-
+    material properties."""
     R_a = x[0]
     I = x[1]
     L = x[2]
