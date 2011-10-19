@@ -105,13 +105,6 @@ class Leg():
             self.T[j-1]) )
             self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
             self.J * self.rho * self.segment_length) )
-            # check this formula
-            # *****************************************
-            # seriously, it's probably wrong.  It should look like
-            # this
-        #     self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
-        # self.J * self.J * self.rho * self.segment_length) )
-        # check sign of P_flux_segment
             self.T_h = self.T[-1]
             self.q_h = self.q[-1]
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
