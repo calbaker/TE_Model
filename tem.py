@@ -1,5 +1,6 @@
 # Distribution modules
 
+import types
 import scipy as sp
 import numpy as np
 import matplotlib.pyplot as mpl
@@ -42,9 +43,11 @@ class Leg():
                          # temperature
         self.method = "numerical"
 
-    set_ZT = set_ZT
-    set_prop_fit = te_prop.set_prop_fit
-    set_TEproperties = te_prop.set_TEproperties
+        self.set_ZT = type.MethodType(set_ZT, self)
+        self.set_prop_fit = type.MethodType(te_prop.set_prop_fit,
+        self) 
+        self.set_TEproperties = (
+        type.MethodType(te_prop.set_TEproperties, self) )
     
     def set_q_c_guess(self):
         if self.node == 0:
