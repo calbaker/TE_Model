@@ -1,0 +1,48 @@
+optimize.curve_fit gives too many arguments to instance methods calling curve_fit with scalar p0
+
+I use the following code for curve fitting:
+
+{{{
+    def get_flow(self, pressure_drop, coeff):
+        """Sets flow based on coefficient and pressure drop.""" 
+        flow = coeff * pressure_drop**0.5
+        return flow
+
+    def set_flow_array(self):
+        """Sets experimental flow rate through heat exchanger"""
+        flow = self.flow_data.flow
+        pressure_drop = self.flow_data.pressure_drop
+        popt, pcov = spopt.curve_fit(self.get_flow, pressure_drop,
+        flow, p0=np.array([self.exh.flow_coeff])) 
+        self.exh.flow_coeff = popt
+        self.exh.flow_array = ( self.exh.flow_coeff *
+        self.exh.pressure_drop**0.5 )
+}}}
+
+and this code works, but if I try to run it with 
+
+{{{
+p0=self.exh.flow_coeff
+}}}
+
+where self.exh.flow_coeff is a scalar, I get this error:
+
+{{{
+get_flow() takes exactly 3 arguments (4 given)
+}}}
+
+because of this block of code:
+{{{
+    if p0 is None or isscalar(p0):
+        # determine number of parameters by inspecting the function
+        import inspect
+        args, varargs, varkw, defaults = inspect.getargspec(f)
+        if len(args) < 2:
+            msg = "Unable to determine number of fit parameters."
+            raise ValueError(msg)
+        if p0 is None:
+            p0 = 1.0
+        p0 = [p0]*(len(args)-1)
+}}}
+
+Even if isscalar(p0) is True, the number of fit parameters should be given by the size of p0.  
