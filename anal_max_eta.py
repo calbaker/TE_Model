@@ -3,8 +3,24 @@ import scipy.optimize as spopt
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
+import tem
+
+Ptype = tem.Leg()
+Ntype = tem.Leg()
+
+Ntype.material = 'MgSi'
+Ptype.material = 'HMS'
+Ptype.set_prop_fit()
+Ntype.set_prop_fit()
+
 T_h = 500.
 T_c = 300.
+
+Ptype.T_props = 0.5 * (T_h + T_c)
+Ptype.set_TEproperties()
+Ntype.T_props = 0.5 * (T_h + T_c)
+Ntype.set_TEproperties()
+
 delta_T = T_h - T_c
 
 alpha_p = 150.e-6
@@ -24,17 +40,20 @@ def get_eta(x):
     J = x[1]
     L = x[2]
 
-    R = ( alpha_pn * delta_T / J - (rho_p + rho_n / A) * L ) 
+    R = ( alpha_pn * delta_T / J - (rho_p / A + rho_n) * L ) 
     
-    eta = ( J**2 * R / (alpha_pn * T_h * J + delta_T / L * (k_p + A
-    * k_n) - J**2 * L * 0.5 * (rho_p + rho_n / A)) )  
+    eta = ( J**2 * R / (alpha_pn * T_h * J + delta_T / L * (A * k_p +
+    k_n) - J**2 * L * 0.5 * (rho_p / A + rho_n)) )  
 
     return eta, R
 
 def get_eta_max(L):
-    A_opt = (rho_n * k_p / (rho_p * k_n))**0.5
-    R_opt = ( (1. + Z * T_bar)**0.5 * (rho_p + rho_n / A_opt) * L)
-    J_opt = alpha_pn * delta_T / (R_opt + (rho_p + rho_n / A_opt) * L)  
+    A_opt = (rho_p * k_n / (rho_n * k_p))**0.5
+
+    R_opt = ( (1. + Z * T_bar)**0.5 * (rho_p / A_opt + rho_n) * L)
+
+    J_opt = alpha_pn * delta_T / (R_opt + (rho_p / A_opt + rho_n) * L)  
+
     x = [A_opt, J_opt, L]
     eta_max_check = get_eta(x)[0] 
     eta_max = ( delta_T / T_h * ((1. + T_bar * Z)**0.5 - 1.) / ((1. +
@@ -99,7 +118,7 @@ FCS = plt.contourf(A2d_I, I2d_A, eta_ij.T * 100., levels=LEVELS)
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
-plt.xlabel("N:P Area Ratio")
+plt.xlabel("P:N Area Ratio")
 plt.ylabel("Current (A)")
 fig1.savefig('Plots/Analytical/nparea_current.pdf')
 fig1.savefig('Plots/Analytical/nparea_current.png')
@@ -119,7 +138,7 @@ FCS = plt.contourf(A2d_L, L2d_A, eta_ik.T * 100., levels=LEVELS)
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
-plt.xlabel("N:P Area Ratio")
+plt.xlabel("P:N Area Ratio")
 plt.ylabel("Leg Length (mm)")
 fig3.savefig('Plots/Analytical/nparea_length.pdf')
 fig3.savefig('Plots/Analytical/nparea_length.png')

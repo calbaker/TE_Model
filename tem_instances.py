@@ -109,7 +109,7 @@ plt.xlabel("Current (A)")
 fig1.savefig('Plots/TE Optimization/length_current.pdf')
 fig1.savefig('Plots/TE Optimization/length_current.png')
 
-LEVELS2 = np.linspace(0, eta_length_area.max(), 15)
+LEVELS2 = np.linspace(0, eta_length_area.max() * 100., 15)
 fig2 = plt.figure()
 FCS = plt.contourf(area_length, length_area * 1000., 
                    eta_length_area.T * 100., levels=LEVELS2)   
@@ -121,7 +121,7 @@ plt.xlabel("P-type to N-type Area Ratio")
 fig2.savefig('Plots/TE Optimization/length_area.pdf')
 fig2.savefig('Plots/TE Optimization/length_area.png')
 
-LEVELS3 = np.linspace(0, eta_current_area.max(), 15)
+LEVELS3 = np.linspace(0, eta_current_area.max() * 100., 15)
 fig3 = plt.figure()
 FCS = plt.contourf(area_current, current_area, eta_current_area.T * 100.,
                    levels=LEVELS3) 
