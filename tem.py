@@ -47,7 +47,7 @@ class Leg():
         self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
         self) 
         self.set_TEproperties = (
-        type.sMethodType(te_prop.set_TEproperties, self) )
+        types.MethodType(te_prop.set_TEproperties, self) )
     
     def set_q_c_guess(self):
         if self.node == 0:
@@ -109,8 +109,9 @@ class Leg():
             # *****************************************
             # seriously, it's probably wrong.  It should look like
             # this
-        #     self.P_flux_segment[j] = ( self.J * (self.V_segment[j] -
-        # self.J * self.J * self.rho * self.segment_length) ) 
+        #     self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
+        # self.J * self.J * self.rho * self.segment_length) )
+        # check sign of P_flux_segment
             self.T_h = self.T[-1]
             self.q_h = self.q[-1]
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
