@@ -9,10 +9,10 @@ reload(tem)
 
 t0 = time.clock()
 
-length = 1 / 1000.
-current = 4.5
+length = 1. * 0.001
+current = 5.76
 area = (0.002)**2
-area_ratio = 1.25 # p-type area per n-type area
+area_ratio = 1.73 # p-type area per n-type area
 
 tem = tem.TEModule()
 tem.I = current
@@ -31,9 +31,9 @@ tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
 
-length1d = np.linspace(0.01, 3, 25) / 1000.
-current1d = np.linspace(0.01, 8, 26)
-area_ratio1d = np.linspace(0.5, 3, 27)
+length1d = np.linspace(0.01, 5, 25) * 0.001
+current1d = np.linspace(0.01, 10, 26)
+area_ratio1d = np.linspace(0.1, 3, 27)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -65,9 +65,7 @@ for i in range(np.size(current1d)):
         eta_current_area[i,j] = tem.eta
 
 tem.current = current
-tem.area_ratio = area_ratio
-tem.Ntype.area = tem.area / (1. + area_ratio)
-tem.Ptype.area = tem.area - tem.Ntype.area 
+tem.length = length
 print "finished second for loop."
 
 for i in range(np.size(length1d)):
@@ -79,10 +77,6 @@ for i in range(np.size(length1d)):
         tem.solve_tem()
         eta_length_area[i,j] = tem.eta
 
-tem.length = length
-tem.current = current
-tem.set_constants()
-tem.solve_tem()
 print "finished third for loop."
 print "plotting"
 
@@ -109,7 +103,8 @@ plt.xlabel("Current (A)")
 fig1.savefig('Plots/TE Optimization/length_current.pdf')
 fig1.savefig('Plots/TE Optimization/length_current.png')
 
-LEVELS2 = np.linspace(0, eta_length_area.max() * 100., 15)
+LEVELS2 = np.linspace(0, 2.7, 15) # for some weird ass reason, this
+                                  # won't work like the others.  
 fig2 = plt.figure()
 FCS = plt.contourf(area_length, length_area * 1000., 
                    eta_length_area.T * 100., levels=LEVELS2)   

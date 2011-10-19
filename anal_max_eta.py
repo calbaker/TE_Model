@@ -60,15 +60,17 @@ def get_eta_max(L):
     T_bar * Z)**0.5 + T_c / T_h) )
     return A_opt, R_opt, J_opt, eta_max_check, eta_max
 
-A = np.linspace(0.1,1.5,50)
-J = np.linspace(60,110,51) * 1000.
-L = np.linspace(5,25,52) * 0.001
-
-A0 = 0.577
-J0 = 83.e3
-L0 = 1. * 0.01
 area = (0.002)**2
-I = J * area
+
+A = np.linspace(0.1,3,50)
+I = np.linspace(0.1,10,51)
+J = I / area
+L = np.linspace(0.1,5,52) * 0.001
+
+A0 = 1.73
+I0 = 5.76
+J0 = I0 / area
+L0 = 1. * 0.001
 
 A2d_I, I2d_A = np.meshgrid(A,I)
 A2d_L, L2d_A = np.meshgrid(A,L * 1000.)
