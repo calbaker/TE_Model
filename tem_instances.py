@@ -97,12 +97,12 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
-LEVELS1 = np.linspace(0, eta_length_current.max(), 15)
+LEVELS1 = np.linspace(0, eta_length_current.max() * 100., 15)
 fig1 = plt.figure()
 FCS = plt.contourf(current_length, length_current * 1000.,
-                   eta_length_current, levels = LEVELS1)
+                   eta_length_current.T * 100., levels = LEVELS1)
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
-CB.set_label('TE Thermal Efficiency')
+CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("Current (A)")
@@ -112,9 +112,9 @@ fig1.savefig('Plots/TE Optimization/length_current.png')
 LEVELS2 = np.linspace(0, eta_length_area.max(), 15)
 fig2 = plt.figure()
 FCS = plt.contourf(area_length, length_area * 1000., 
-                   eta_length_area.T, levels=LEVELS2)   
+                   eta_length_area.T * 100., levels=LEVELS2)   
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
-CB.set_label('TE Thermal Efficiency')
+CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("P-type to N-type Area Ratio")
@@ -123,10 +123,10 @@ fig2.savefig('Plots/TE Optimization/length_area.png')
 
 LEVELS3 = np.linspace(0, eta_current_area.max(), 15)
 fig3 = plt.figure()
-FCS = plt.contourf(area_current, current_area, eta_current_area,
+FCS = plt.contourf(area_current, current_area, eta_current_area.T * 100.,
                    levels=LEVELS3) 
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
-CB.set_label('TE Thermal Efficiency')
+CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
 plt.ylabel("Current (A)")
 plt.xlabel("P-type to N-type Area Ratio")
