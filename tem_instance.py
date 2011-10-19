@@ -18,8 +18,8 @@ tem = tem.TEModule()
 tem.I = current
 tem.Ntype.material = 'MgSi'
 tem.Ptype.material = 'HMS'
-tem.T_h_goal = 550.
-tem.T_c = 350.
+tem.T_h_goal = 500.
+tem.T_c = 300.
 tem.Ptype.node = 0
 tem.Ntype.node = 0
 tem.Ntype.area = area
@@ -112,8 +112,8 @@ fig1.savefig('Plots/TE Optimization/length_current.png')
 
 LEVELS2 = np.linspace(0, eta_length_area.max(), 15)
 fig2 = plt.figure()
-FCS = plt.contourf(length_area * 1000., area_length, eta_length_area.T,
-                   levels=LEVELS2)  
+FCS = plt.contourf(length_area * 1000., area_length,
+                   eta_length_area.T, levels=LEVELS2)   
 CB = plt.colorbar(FCS, orientation='vertical')
 CB.set_label('TE Thermal Efficiency')
 plt.grid()
@@ -124,7 +124,8 @@ fig2.savefig('Plots/TE Optimization/length_area.png')
 
 LEVELS3 = np.linspace(0, eta_current_area.max(), 15)
 fig3 = plt.figure()
-FCS = plt.contourf(current_area, area_current, eta_current_area.T) 
+FCS = plt.contourf(current_area, area_current, eta_current_area.T,
+                   levels=LEVELS3) 
 CB = plt.colorbar(FCS, orientation='vertical')
 CB.set_label('TE Thermal Efficiency')
 plt.grid()
