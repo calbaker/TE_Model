@@ -12,7 +12,8 @@ t0 = time.clock()
 length = 1. * 0.001
 current = 5.76
 area = (0.002)**2
-area_ratio = 1.73 # p-type area per n-type area
+area_ratio = 1.73 # n-type area per p-type area, consistent with
+                  # Sherman.  Value might be bad.  
 
 tem = tem.TEModule()
 tem.I = current
@@ -22,8 +23,8 @@ tem.T_h_goal = 500.
 tem.T_c = 300.
 tem.Ptype.node = 0
 tem.Ntype.node = 0
-tem.Ntype.area = area
-tem.Ptype.area = tem.Ntype.area * area_ratio
+tem.Ptype.area = area
+tem.Ntype.area = tem.Ptype.area * area_ratio
 tem.length = length
 tem.area_void = 0.
 tem.set_constants()
@@ -58,8 +59,8 @@ print "finished first for loop."
 for i in range(np.size(current1d)):
     tem.I = current1d[i]
     for j in range(np.size(area_ratio1d)):
-        tem.Ntype.area = tem.area / (1. + area_ratio1d[j])
-        tem.Ptype.area = tem.area - tem.Ntype.area 
+        tem.Ptype.area = tem.area / (1. + area_ratio1d[j])
+        tem.Ntype.area = tem.area - tem.Ntype.area 
         tem.set_constants()
         tem.solve_tem()
         eta_current_area[i,j] = tem.eta
@@ -71,8 +72,8 @@ print "finished second for loop."
 for i in range(np.size(length1d)):
     tem.length = length1d[i]
     for j in range(np.size(area_ratio1d)):
-        tem.Ntype.area = tem.area / (1. + area_ratio1d[j])
-        tem.Ptype.area = tem.area - tem.Ntype.area 
+        tem.Ptype.area = tem.area / (1. + area_ratio1d[j])
+        tem.Ntype.area = tem.area - tem.Ntype.area 
         tem.set_constants()
         tem.solve_tem()
         eta_length_area[i,j] = tem.eta
