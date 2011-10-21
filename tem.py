@@ -82,20 +82,23 @@ class Leg():
             
 
         if self.method == "analytical":
-            q_h_guess = self.q_c_guess * 1.1
-            q_guess = np.array[q_c_guess, q_h_guess]
+            self.q_h_guess = self.q_c_guess * 5.
+            q_guess = np.array([self.q_c_guess, self.q_h_guess])
             q_solved = spopt.fsolve(self.get_T_h_error_analytical,
             x0=q_guess, xtol=self.xtol)
             self.q_h = q_solved[0]
             self.q_c = q_solved[1]
-            delta_T = self.T_h - self.T_c 
-            q = np.array(self.q_h, self.q_c)
+            q = np.array([self.q_h, self.q_c])
             self.error = self.get_T_h_error_analytical(q)
-            self.eta = ( self.J**2. * (self.alpha * delta_T / self.J -
-            self.rho * self.length) / (self.alpha * self.T_h * self.J +
+            self.T_h = 0.5 * (self.T_h1 + self.T_h2)
+            delta_T = self.T_h - self.T_c
+
+            self.eta = ( (-self.J * self.alpha * delta_T - self.rho *
+            self.J**2. * self.length) / (-self.alpha * self.T_h * self.J +
             delta_T / self.length * self.k - self.J**2 * self.length *
             self.rho / 2.) )
-            self.P = self.eta * self.q_h
+
+            self.P = self.eta * self.q_h * self.area
             
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
@@ -131,23 +134,19 @@ class Leg():
         q_h = q[0]
         q_c = q[1]
 
-        def get_T_h_self_error(q_h):
-            """Given a presumably guess at cold side heat flux, this
-            function finds a hot side heat flux to get the two
-            equations for temperature to agree."""
-            T_h1 = ( (q_h + self.T_c / self.length * self.k +
-            self.J**2. * self.length * self.rho / 2.) / (self.alpha *
-            self.J + self.k / self.length) )
-            T_h2 = ( (self.alpha * self.T_c * self.J + self.T_c /
+        self.T_h1 = ( (q_h + self.T_c / self.length * self.k + self.J**2. *
+            self.length * self.rho / 2.) / (self.alpha * self.J +
+            self.k / self.length) ) 
+        self.T_h2 = ( (self.alpha * self.T_c * self.J + self.T_c /
             self.length * self.k + self.J**2 * self.length * self.rho
             / 2. + q_h - q_c) / (self.alpha * self.J + self.k /
             self.length) )
-            error = (T_h2 - T_h1) / T_h1
-            return error
+        error1 = (self.T_h2 - self.T_h1) / self.T_h1
+        error2 = (self.T_h1 - self.T_h_goal) / self.T_h_goal
         self.q_h = q_h
         self.q_c = q_c
-        self.T_h = spopt.fsolve(get_T_h_self_error)
-        error = (self.T_h - self.T_h_goal) / self.T_h_goal
+
+        error = np.array([error1, error2])
         return error
 
 
@@ -212,6 +211,17 @@ class TEModule():
         self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
+
+    def set_eta_max(self):
+        """Sets theoretical maximum efficiency based on Sherman's
+        analysis."""
+        self.Ntype.T_props = 0.5 * (self.T_h_goal + self.T_c)
+        self.Ptype.T_props = self.Ntype.T_props
+        self.set_ZT()
+        self.eta_max = ( (self.T_h_goal - self.T_c) / self.T_h_goal *
+        (np.sqrt(1. + self.ZT) - 1.) / (np.sqrt(1. + self.ZT) -
+        self.T_c / self.T_h_goal) )
                 
 
+        
         
