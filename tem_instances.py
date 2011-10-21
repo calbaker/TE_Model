@@ -37,9 +37,9 @@ tem.solve_tem()
 tem.set_eta_max()
 tem.set_A_opt()
 
-length1d = np.linspace(0.01, 5, 55) * 0.001
-current1d = np.linspace(0.01, 10, 56)
-area_ratio1d = np.linspace(0.1, 2, 57)
+length1d = np.linspace(0.01, 3, 25) * 0.001
+current1d = np.linspace(0.01, 10, 26)
+area_ratio1d = np.linspace(0.1, 2, 27)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -84,6 +84,12 @@ for i in range(np.size(length1d)):
         eta_length_area[i,j] = tem.eta
 
 print "finished third for loop."
+
+tem.set_xi()
+area_xi = (tem.Ntype.area**-1 + tem.Ptype.area**-1)**-1 # what area do
+                                        # I use?  
+L_opt = tem.xi / current1d * area_xi * 1000.
+
 print "plotting"
 
 plt.close('all')
@@ -99,20 +105,22 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
-LEVELS1 = np.linspace(0, tem.eta_max * 100., 15)
+LEVELS1 = ( tem.eta_max * 105. - np.logspace(np.log10(tem.eta_max *
+                                                      100), -1, 10) )
 fig1 = plt.figure()
 FCS = plt.contourf(current_length, length_current * 1000.,
                    eta_length_current.T * 100., levels = LEVELS1)
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
+plt.plot(current1d, L_opt, '-b')
+plt.ylim(ymax=tem.length.max()*1000.)
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("Current (A)")
 fig1.savefig('Plots/TE Optimization/length_current.pdf')
 fig1.savefig('Plots/TE Optimization/length_current.png')
 
-LEVELS2 = np.linspace(0, tem.eta_max * 100., 15) # for some weird ass reason, this
-                                  # won't work like the others.  
+LEVELS2 = LEVELS1
 fig2 = plt.figure()
 FCS = plt.contourf(area_length, length_area * 1000., 
                    eta_length_area.T * 100., levels=LEVELS2)   
@@ -124,7 +132,7 @@ plt.xlabel("P-type to N-type Area Ratio")
 fig2.savefig('Plots/TE Optimization/length_area.pdf')
 fig2.savefig('Plots/TE Optimization/length_area.png')
 
-LEVELS3 = np.linspace(0, tem.eta_max * 100., 15)
+LEVELS3 = LEVELS1
 fig3 = plt.figure()
 FCS = plt.contourf(area_current, current_area, eta_current_area.T * 100.,
                    levels=LEVELS3) 
