@@ -301,16 +301,17 @@ class HX(object):
         elif self.type == 'counter':
             self.cool.T_inlet = self.cool.T
 
-        self.Qdot = sp.sum(self.Qdot_nodes)
+        self.Qdot = self.Qdot_nodes.sum()
         self.effectiveness = ( self.Qdot / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
-        self.tem.power = sp.sum(self.tem.power_nodes)
+        self.tem.power = self.tem.power_nodes.sum()
         # total TE power output (kW)
-        self.Wdot_pumping = self.exh.Wdot_pumping + self.cool.Wdot_pumping
+        self.Wdot_pumping = ( self.exh.Wdot_pumping +
+        self.cool.Wdot_pumping ) 
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power - self.Wdot_pumping 
-        self.eta_1st = -self.power_net / self.Qdot
+        self.eta_1st = self.power_net / self.Qdot
 
     def set_params(self):
         """Uses scipy optimize curve_fit to R_contact and Nu_coeff."""
