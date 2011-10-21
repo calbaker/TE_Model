@@ -235,7 +235,7 @@ class TEModule():
         alpha_pn = self.Ptype.alpha - self.Ntype.alpha
         delta_T = self.T_h - self.T_c
 
-        self.xi = ( (-(self.eta_max * alpha_pn * T_h - alpha_pn *
+        self.xi = ( (-(self.eta_max * alpha_pn * self.T_h - alpha_pn *
         delta_T) + np.sqrt((self.eta_max * alpha_pn * self.T_h -
         alpha_pn * delta_T)**2. - 4. * ((self.Ptype.rho +
         self.Ntype.rho / self.A_opt) - self.eta_max * (self.Ptype.rho
