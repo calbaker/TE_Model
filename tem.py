@@ -216,9 +216,10 @@ class TEModule():
         self.T_props = 0.5 * (self.T_h_goal + self.T_c)
         self.set_TEproperties()
         self.set_ZT()
-        self.eta_max = ( (self.T_h_goal - self.T_c) / self.T_h_goal *
-        (np.sqrt(1. + self.ZT) - 1.) / (np.sqrt(1. + self.ZT) -
-        self.T_c / self.T_h_goal) )
+        delta_T = self.T_h_goal - self.T_c
+        self.eta_max = ( delta_T / self.T_h_goal * ((1. +
+        self.ZT)**0.5 - 1.) / ((1. + self.ZT)**0.5 + self.T_c /
+        self.T_h_goal) )
                 
     def set_A_opt(self):
         """Sets area that results in maximum efficiency based on
