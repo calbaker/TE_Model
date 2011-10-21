@@ -23,13 +23,13 @@ Ntype.set_TEproperties()
 
 delta_T = T_h - T_c
 
-alpha_p = 150.e-6
-alpha_n = -125.e-6
+alpha_p = Ptype.alpha
+alpha_n = Ntype.alpha
 alpha_pn = alpha_p - alpha_n
-k_p = 3.
-k_n = 3. 
-sigma_p = 5.e4
-sigma_n = 15.e4
+k_p = Ptype.k
+k_n = Ntype.k 
+sigma_p = Ptype.sigma
+sigma_n = Ntype.sigma
 rho_p = 1. / sigma_p
 rho_n = 1. / sigma_n
 
@@ -67,8 +67,8 @@ I = np.linspace(0.1,10,51)
 J = I / area
 L = np.linspace(0.1,5,52) * 0.001
 
-A0 = 1.73
-I0 = 5.76
+A0 = 1.44
+I0 = 5.07
 J0 = I0 / area
 L0 = 1. * 0.001
 
@@ -99,6 +99,21 @@ Z = ( (alpha_pn / ((rho_p * k_p)**0.5 + (rho_n * k_n)**0.5))**2. )
 T_bar = 0.5 * (T_h + T_c)
 
 eta_max = get_eta_max(L0)[-1]
+A_opt = 1. / get_eta_max(L0)[0]
+
+xi = ( (-alpha_pn * (eta_max * T_h - delta_T) + np.sqrt((alpha_pn *
+    (eta_max * T_h - delta_T))**2. - 4. * (rho_p / A_opt + rho_n) * (1. -
+    eta_max / 2.) * (-eta_max * delta_T * (k_p * A_opt + k_n)))) /
+    (2. * (rho_p / A_opt + rho_n) * (1. - eta_max / 2.)) )
+
+xi = ( (-(eta_max * alpha_pn * T_h - alpha_pn * delta_T) +
+       np.sqrt((eta_max * alpha_pn * T_h - alpha_pn * delta_T)**2. -
+       4. * ((rho_p + rho_n / A_opt) - eta_max * (rho_p + rho_n /
+       A_opt) / 2. ) * eta_max * delta_T * (k_p + k_n * A_opt))) /
+       (2. * ((rho_p + rho_n / A_opt) - eta_max * (rho_p + rho_n /
+       A_opt) / 2.)) ) 
+
+L_opt = xi / I * area * 1000.
 
 plt.close('all')
 
@@ -129,6 +144,8 @@ fig2 = plt.figure()
 FCS = plt.contourf(I2d_L, L2d_I, eta_jk.T * 100., levels=LEVELS) 
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
+plt.plot(I, L_opt, '-b')
+plt.ylim(ymax=L.max()*1000.)
 plt.grid()
 plt.xlabel("Current (A)")
 plt.ylabel("Leg Length (mm)")
@@ -145,4 +162,4 @@ plt.ylabel("Leg Length (mm)")
 fig3.savefig('Plots/Analytical/nparea_length.pdf')
 fig3.savefig('Plots/Analytical/nparea_length.png')
 
-plt.show()
+# plt.show()
