@@ -12,8 +12,8 @@ t0 = time.clock()
 length = 1. * 0.001
 current = 3.4
 area = (0.002)**2
-area_ratio = 0.57 # n-type area per p-type area, consistent with
-                  # Sherman.  Value might be bad.  
+area_ratio = 0.69 # n-type area per p-type area, consistent with
+                  # Sherman.  
 
 tem = tem.TEModule()
 tem.I = current
@@ -34,11 +34,12 @@ tem.Ntype.area = tem.area - tem.Ptype.area
 tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
-# tem.set_eta_max()
+tem.set_eta_max()
+tem.set_A_opt()
 
-length1d = np.linspace(0.01, 5, 25) * 0.001
-current1d = np.linspace(0.01, 5, 26)
-area_ratio1d = np.linspace(0.1, 1., 27)
+length1d = np.linspace(0.01, 5, 55) * 0.001
+current1d = np.linspace(0.01, 10, 56)
+area_ratio1d = np.linspace(0.1, 2, 57)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -98,7 +99,7 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
-LEVELS1 = np.linspace(0, 2.7, 15)
+LEVELS1 = np.linspace(0, tem.eta_max * 100., 15)
 fig1 = plt.figure()
 FCS = plt.contourf(current_length, length_current * 1000.,
                    eta_length_current.T * 100., levels = LEVELS1)
@@ -110,7 +111,7 @@ plt.xlabel("Current (A)")
 fig1.savefig('Plots/TE Optimization/length_current.pdf')
 fig1.savefig('Plots/TE Optimization/length_current.png')
 
-LEVELS2 = np.linspace(0, 2.7, 15) # for some weird ass reason, this
+LEVELS2 = np.linspace(0, tem.eta_max * 100., 15) # for some weird ass reason, this
                                   # won't work like the others.  
 fig2 = plt.figure()
 FCS = plt.contourf(area_length, length_area * 1000., 
@@ -123,7 +124,7 @@ plt.xlabel("P-type to N-type Area Ratio")
 fig2.savefig('Plots/TE Optimization/length_area.pdf')
 fig2.savefig('Plots/TE Optimization/length_area.png')
 
-LEVELS3 = np.linspace(0, 2.7, 15)
+LEVELS3 = np.linspace(0, tem.eta_max * 100., 15)
 fig3 = plt.figure()
 FCS = plt.contourf(area_current, current_area, eta_current_area.T * 100.,
                    levels=LEVELS3) 
