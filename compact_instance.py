@@ -17,7 +17,7 @@ area = (0.002)**2
 length = 2.e-3
 
 hx = hx.HX()
-# hx.tem.method = 'analytical'
+hx.tem.method = 'analytical'
 hx.thermoelectrics_on = True
 hx.width = 9.e-2
 hx.length = 0.195
@@ -38,8 +38,9 @@ hx.type = 'counter'
 hx.exh.P = 100.
 
 hx.cool.T_outlet = 300.
-hx.exh.T_inlet = 500.
+hx.exh.T_inlet = 700.
 hx.set_mdot_charge()
+hx.exh.mdot = hx.exh.mdot * 0.1
 hx.solve_hx()
 
 print "\nProgram finished."
