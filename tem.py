@@ -41,7 +41,6 @@ class Leg():
         # initial array for power flux in segment (W/m^2)
         self.xtol = 0.01 # tolerable fractional error in hot side
                          # temperature
-        self.method = "numerical"
 
         self.set_ZT = types.MethodType(set_ZT, self)
         self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
@@ -165,6 +164,7 @@ class TEModule():
         self.area_void = (1.e-3)**2 # void area (m^2)
         self.length = 2.e-3 # default leg height (m)
         self.segments = 25
+        self.method = "numerical"
 
     def set_constants(self):
         """Sets constants that are calculated."""
@@ -178,6 +178,8 @@ class TEModule():
         # material. Heat flux is negative because temperature gradient
         # is positive.  
         self.Ntype.I = self.I
+        self.Ntype.method = self.method
+        self.Ptype.method = self.method
 
     def solve_tem(self):
         """solves legs and combines results of leg pair"""
