@@ -11,11 +11,6 @@ import scipy.optimize as spopt
 import te_prop
 reload(te_prop)
 
-def set_ZT(self):
-    """Sets ZT based on formula
-    self.ZT = self.sigma * self.alpha**2. / self.k""" 
-    self.ZT = self.alpha**2. * self.T_props / (self.k * self.rho)
-
 
 class Leg():
     """class for individual p-type or n-type TE leg"""
@@ -42,7 +37,6 @@ class Leg():
         self.xtol = 0.01 # tolerable fractional error in hot side
                          # temperature
 
-        self.set_ZT = types.MethodType(set_ZT, self)
         self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
         self) 
         self.set_TEproperties = (
@@ -132,6 +126,11 @@ class Leg():
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
         return error
 
+    def set_ZT(self):
+        """Sets ZT based on formula
+        self.ZT = self.sigma * self.alpha**2. / self.k""" 
+        self.ZT = self.alpha**2. * self.T_props / (self.k * self.rho)
+
 
 class TEModule():
     """class for TEModule that includes a pair of legs"""
@@ -195,16 +194,33 @@ class TEModule():
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
 
+    def set_ZT(self):
+        """Sets ZT based on whatever properties were used last."""
+        self.ZT = ( ((self.Ptype.alpha - self.Ntype.alpha) /
+        ((self.Ptype.rho * self.Ptype.k)**0.5 + (self.Ntype.rho *
+        self.Ntype.k)**0.5))**2 )
+
     def set_eta_max(self):
-        """Sets theoretical maximum efficiency based on Sherman's
-        analysis."""
+        """Sets theoretical maximum efficiency with material
+        properties evaluated at the average temperature based on
+        Sherman's analysis."""
         self.Ntype.T_props = 0.5 * (self.T_h_goal + self.T_c)
         self.Ptype.T_props = self.Ntype.T_props
+        self.Ntype.set_TEproperties()
+        self.Ptype.set_TEproperties()
         self.set_ZT()
         self.eta_max = ( (self.T_h_goal - self.T_c) / self.T_h_goal *
         (np.sqrt(1. + self.ZT) - 1.) / (np.sqrt(1. + self.ZT) -
         self.T_c / self.T_h_goal) )
                 
+    def set_A_opt(self):
+        """Sets area that results in maximum efficiency based on
+        material properties evaluated at the average temperature."""
+        self.Ntype.T_props = 0.5 * (self.T_h_goal + self.T_c)
+        self.Ptype.T_props = self.Ntype.T_props
+        self.Ntype.set_TEproperties()
+        self.Ptype.set_TEproperties()
+        self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
+        (self.Ptype.rho * self.Ntype.k))
 
-        
         
