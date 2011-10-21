@@ -10,9 +10,9 @@ reload(tem)
 t0 = time.clock()
 
 length = 1. * 0.001
-current = 5.76
+current = 3.4
 area = (0.002)**2
-area_ratio = 1.73 # n-type area per p-type area, consistent with
+area_ratio = 0.57 # n-type area per p-type area, consistent with
                   # Sherman.  Value might be bad.  
 
 tem = tem.TEModule()
@@ -27,14 +27,18 @@ tem.Ptype.area = area
 tem.Ntype.area = tem.Ptype.area * area_ratio
 tem.length = length
 tem.area_void = 0.
+tem.method = 'analytical'
 tem.set_constants()
+tem.Ptype.area = tem.area / (1. + area_ratio)
+tem.Ntype.area = tem.area - tem.Ptype.area 
 tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
+# tem.set_eta_max()
 
 length1d = np.linspace(0.01, 5, 25) * 0.001
-current1d = np.linspace(0.01, 10, 26)
-area_ratio1d = np.linspace(0.1, 3, 27)
+current1d = np.linspace(0.01, 5, 26)
+area_ratio1d = np.linspace(0.1, 1., 27)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -60,7 +64,7 @@ for i in range(np.size(current1d)):
     tem.I = current1d[i]
     for j in range(np.size(area_ratio1d)):
         tem.Ptype.area = tem.area / (1. + area_ratio1d[j])
-        tem.Ntype.area = tem.area - tem.Ntype.area 
+        tem.Ntype.area = tem.area - tem.Ptype.area 
         tem.set_constants()
         tem.solve_tem()
         eta_current_area[i,j] = tem.eta
@@ -73,13 +77,15 @@ for i in range(np.size(length1d)):
     tem.length = length1d[i]
     for j in range(np.size(area_ratio1d)):
         tem.Ptype.area = tem.area / (1. + area_ratio1d[j])
-        tem.Ntype.area = tem.area - tem.Ntype.area 
+        tem.Ntype.area = tem.area - tem.Ptype.area 
         tem.set_constants()
         tem.solve_tem()
         eta_length_area[i,j] = tem.eta
 
 print "finished third for loop."
 print "plotting"
+
+plt.close('all')
 
 # Plot configuration
 FONTSIZE = 15
@@ -92,7 +98,7 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
-LEVELS1 = np.linspace(0, eta_length_current.max() * 100., 15)
+LEVELS1 = np.linspace(0, 2.7, 15)
 fig1 = plt.figure()
 FCS = plt.contourf(current_length, length_current * 1000.,
                    eta_length_current.T * 100., levels = LEVELS1)
@@ -117,7 +123,7 @@ plt.xlabel("P-type to N-type Area Ratio")
 fig2.savefig('Plots/TE Optimization/length_area.pdf')
 fig2.savefig('Plots/TE Optimization/length_area.png')
 
-LEVELS3 = np.linspace(0, eta_current_area.max() * 100., 15)
+LEVELS3 = np.linspace(0, 2.7, 15)
 fig3 = plt.figure()
 FCS = plt.contourf(area_current, current_area, eta_current_area.T * 100.,
                    levels=LEVELS3) 
@@ -131,5 +137,5 @@ fig3.savefig('Plots/TE Optimization/current_area.png')
 
 print "elapsed time:", time.clock() - t0
 
-# plt.show()
+plt.show()
 
