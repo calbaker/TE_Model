@@ -17,6 +17,7 @@ area = (0.002)**2
 length = 2.e-3
 
 hx = hx.HX()
+hx.tem.method = 'analytical'
 hx.thermoelectrics_on = True
 hx.width = 9.e-2
 hx.length = 0.195
