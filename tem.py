@@ -66,12 +66,12 @@ class Leg():
         self.segment_length = self.length / self.segments
         # length of each segment (m)
         self.J = self.I / self.area # (Amps/m^2)
-        self.T[0] = self.T_c
-        self.T_props = self.T[0]
-        self.set_TEproperties()
-        self.set_q_c_guess()
 
         if self.method == "numerical":
+            self.T[0] = self.T_c
+            self.T_props = self.T[0]
+            self.set_TEproperties()
+            self.set_q_c_guess()
             self.q_c = spopt.fsolve(self.get_T_h_error_numerical,
         x0=self.q_c_guess, xtol=self.xtol)  
             self.error = self.get_T_h_error_numerical(self.q_c) 
@@ -79,21 +79,28 @@ class Leg():
             # Power for the entire leg (W)
             self.eta = self.P / (self.q_h * self.area)
             # Efficiency of leg
-            
 
         if self.method == "analytical":
-            self.q_h_guess = self.q_c_guess * 5.
-            q_guess = np.array([self.q_c_guess, self.q_h_guess])
-            q_solved = spopt.fsolve(self.get_T_h_error_analytical,
-            x0=q_guess, xtol=self.xtol)
-            self.q_h = q_solved[0]
-            self.q_c = q_solved[1]
-            q = np.array([self.q_h, self.q_c])
-            self.error = self.get_T_h_error_analytical(q)
-            self.T_h = 0.5 * (self.T_h1 + self.T_h2)
+            self.T_h = self.T_h_goal
+            self.T_props = 0.5 * (self.T_h + self.T_c)
+            self.set_TEproperties()
             delta_T = self.T_h - self.T_c
 
-            self.eta = ( (-self.J * self.alpha * delta_T - self.rho *
+            self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
+            self.length * self.k + self.J**2. * self.length * self.rho
+            / 2. ) 
+
+            self.delta_q = ( self.alpha * delta_T * self.J + self.J**2
+            * self.length * self.rho / 2. ) 
+
+            self.q_c = self.q_h - self.delta_q
+
+            self.P = ( (self.alpha * delta_T * self.J + self.rho *
+            self.J**2 * self.length) * self.area )  
+
+            self.eta = self.P / (self.q_h * self.area)
+
+            self.eta_check = ( (-self.J * self.alpha * delta_T - self.rho *
             self.J**2. * self.length) / (-self.alpha * self.T_h * self.J +
             delta_T / self.length * self.k - self.J**2 * self.length *
             self.rho / 2.) )
@@ -123,30 +130,6 @@ class Leg():
             self.T_h = self.T[-1]
             self.q_h = self.q[-1]
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
-        return error
-
-    def get_T_h_error_analytical(self,q):
-        """Given a guess at cold side heat flux and hot side heat
-        flux, this function finds the correct hot side and cold side
-        heat flux to match up with the temperature boundary
-        conditions."""
-        self.T_props = 0.5 * (self.T_c + self.T_h_goal)
-        q_h = q[0]
-        q_c = q[1]
-
-        self.T_h1 = ( (q_h + self.T_c / self.length * self.k + self.J**2. *
-            self.length * self.rho / 2.) / (self.alpha * self.J +
-            self.k / self.length) ) 
-        self.T_h2 = ( (self.alpha * self.T_c * self.J + self.T_c /
-            self.length * self.k + self.J**2 * self.length * self.rho
-            / 2. + q_h - q_c) / (self.alpha * self.J + self.k /
-            self.length) )
-        error1 = (self.T_h2 - self.T_h1) / self.T_h1
-        error2 = (self.T_h1 - self.T_h_goal) / self.T_h_goal
-        self.q_h = q_h
-        self.q_c = q_c
-
-        error = np.array([error1, error2])
         return error
 
 
