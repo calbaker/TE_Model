@@ -71,20 +71,28 @@ class Leg():
         self.T_props = self.T[0]
         self.set_TEproperties()
         self.set_q_c_guess()
+
         if self.method == "numerical":
             self.q_c = spopt.fsolve(self.get_T_h_error_numerical,
         x0=self.q_c_guess, xtol=self.xtol)  
             self.error = self.get_T_h_error_numerical(self.q_c) 
             self.P = sp.sum(self.P_flux_segment) * self.area
             # Power for the entire leg (W)
-        if self.method == "analytical":
-            self.q_c = spopt.fsolve(self.get_T_h_error_analytical,
-        x0=self.q_c_guess, xtol=self.xtol)  
-            self.error = self.get_T_h_error_analytical(self.q_c) 
-
-        self.eta = self.P / (self.q_h * self.area)
-        # Efficiency of leg
+            self.eta = self.P / (self.q_h * self.area)
+            # Efficiency of leg
             
+
+        if self.method == "analytical":
+            q_h_guess = self.q_c_guess * 1.1
+            q_guess = np.array[q_c_guess, q_h_guess]
+            q_solved = spopt.fsolve(self.get_T_h_error_analytical,
+            x0=q_guess, xtol=self.xtol)
+            self.q_h = q_solved[0]
+            self.q_c = q_solved[1]
+            q = np.array(self.q_h, self.q_c)
+            self.error = self.get_T_h_error_analytical(q)
+            self.eta = 
+
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
@@ -110,26 +118,31 @@ class Leg():
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
         return error
 
-    def get_T_h_error_analytical(self,q_c):
-        """Solves leg once with no attempt to match hot side
-        temperature BC. Used by solve_leg."""
-        self.q[0] = q_c
-        self.T_h = self.T_h_goal
-        self.T_props = (self.T_h + self.T_c) / 2.
-        self.set_TEproperties()
-        delta_T = self.T_h - self.T_c
-        self.R_load = ( self.alpha * delta_T / self.I - self.rho /
-        self.area * self.length ) 
-        self.eta = ( self.I**2 * self.R_load / (self.alpha * self.T_h
-        * self.I + delta_T / self.length * self.k * self.area -
-        self.I**2 * self.L * self.rho / self.area / 2.) )
+    def get_T_h_error_analytical(self,q):
+        """Given a guess at cold side heat flux and hot side heat
+        flux, this function finds the correct hot side and cold side
+        heat flux to match up with the temperature boundary
+        conditions."""
+        self.T_props = 0.5 * (self.T_c + self.T_h_goal)
+        q_h = q[0]
+        q_c = q[1]
 
-        self.P = self.eta * self.q_c / (1. - self.et)
-        self.q_cond = -self.k * delta_T / self.length
-        
-        # Maybe q_cond = 0.5 * (q_c + q_h)
-
-
+        def get_T_h_self_error(q_h):
+            """Given a presumably guess at cold side heat flux, this
+            function finds a hot side heat flux to get the two
+            equations for temperature to agree."""
+            T_h1 = ( (q_h + self.T_c / self.length * self.k +
+            self.J**2. * self.length * self.rho / 2.) / (self.alpha *
+            self.J + self.k / self.length) )
+            T_h2 = ( (self.alpha * self.T_c * self.J + self.T_c /
+            self.length * self.k + self.J**2 * self.length * self.rho
+            / 2. + q_h - q_c) / (self.alpha * self.J + self.k /
+            self.length) )
+            error = (T_h2 - T_h1) / T_h1
+            return error
+        self.q_h = q_h
+        self.q_c = q_c
+        self.T_h = spopt.fsolve(get_T_h_self_error)
         error = (self.T_h - self.T_h_goal) / self.T_h_goal
         return error
 
@@ -170,7 +183,7 @@ class TEModule():
         self.Ntype.T_c = self.T_c
         self.Ntype.solve_leg()
         self.Ptype.solve_leg()
-        self.T_h = self.Ntype.T[-1]
+        self.T_h = self.Ntype.T_h
 
         # Renaming stuff for use elsewhere
         # Everything from here on out is in kW instead of W
@@ -191,7 +204,7 @@ class TEModule():
         self.eta = -self.P / (self.q_h * self.area)
         self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
-        self.R_thermal = 1 / self.h
+        self.R_thermal = 1. / self.h
                 
 
         
