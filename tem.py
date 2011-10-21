@@ -89,10 +89,15 @@ class Leg():
             x0=q_guess, xtol=self.xtol)
             self.q_h = q_solved[0]
             self.q_c = q_solved[1]
+            delta_T = self.T_h - self.T_c 
             q = np.array(self.q_h, self.q_c)
             self.error = self.get_T_h_error_analytical(q)
-            self.eta = 
-
+            self.eta = ( self.J**2. * (self.alpha * delta_T / self.J -
+            self.rho * self.length) / (self.alpha * self.T_h * self.J +
+            delta_T / self.length * self.k - self.J**2 * self.length *
+            self.rho / 2.) )
+            self.P = self.eta * self.q_h
+            
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
