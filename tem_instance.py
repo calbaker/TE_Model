@@ -9,10 +9,11 @@ reload(tem)
 
 t0 = time.clock()
 
-length = 1. / 1000.
-current = 5.
+length = 1. * 0.001
+current = 3.
 area = (0.002)**2
-area_ratio = 1.25 # p-type area per n-type area
+area_ratio = 0.69 # n-type area per p-type area, consistent with
+                  # Sherman.  
 
 tem = tem.TEModule()
 tem.I = current
@@ -31,5 +32,6 @@ tem.set_constants()
 tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
-
+tem.set_eta_max()
+tem.set_A_opt()
 
