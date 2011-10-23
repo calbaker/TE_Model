@@ -37,9 +37,9 @@ tem.solve_tem()
 tem.set_eta_max()
 tem.set_A_opt()
 
-length1d = np.linspace(0.01, 3, 25) * 0.001
-current1d = np.linspace(0.01, 10, 26)
-area_ratio1d = np.linspace(0.1, 2, 27)
+length1d = np.linspace(0.01, 3, 55) * 0.001
+current1d = np.linspace(0.01, 10, 56)
+area_ratio1d = np.linspace(0.1, 2, 57)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -48,6 +48,10 @@ length_area, area_length = np.meshgrid(length1d, area_ratio1d)
 eta_length_current = np.empty([np.size(length1d), np.size(current1d)]) 
 eta_current_area = np.empty([np.size(current1d), np.size(area_ratio1d)]) 
 eta_length_area = np.empty([np.size(length1d), np.size(area_ratio1d)]) 
+
+tem.set_xi()
+area_xi = tem.area * tem.A_opt
+L_opt = tem.xi / current1d * area_xi * 1000.
 
 for i in range(np.size(length1d)):
     tem.length = length1d[i]
@@ -84,11 +88,6 @@ for i in range(np.size(length1d)):
         eta_length_area[i,j] = tem.eta
 
 print "finished third for loop."
-
-tem.set_xi()
-area_xi = (tem.Ntype.area**-1 + tem.Ptype.area**-1)**-1 # what area do
-                                        # I use?  
-L_opt = tem.xi / current1d * area_xi * 1000.
 
 print "plotting"
 
