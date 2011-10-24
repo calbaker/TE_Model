@@ -235,7 +235,7 @@ class TEModule():
         self.set_A_opt()
         delta_T = self.T_h - self.T_c
         a = ( (self.Ptype.rho + self.Ntype.rho / self.A_opt) * (1. -
-        self.eta_max) / self.Ptype.area )
+        self.eta_max / 2.) / self.Ptype.area )
         b = ( (self.Ptype.alpha - self.Ntype.alpha / self.A_opt) *
         (self.eta_max * self.T_h - delta_T) / self.Ptype.area )
         c = ( self.eta_max * delta_T * (self.Ptype.k + self.Ntype.k *
