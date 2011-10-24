@@ -10,7 +10,7 @@ reload(tem)
 t0 = time.clock()
 
 length = 1. * 0.001
-current = 3.4
+current = 3.5
 area = (0.002)**2
 area_ratio = 0.69 # n-type area per p-type area, consistent with
                   # Sherman.  
@@ -37,9 +37,9 @@ tem.solve_tem()
 tem.set_eta_max()
 tem.set_A_opt()
 
-length1d = np.linspace(0.01, 3, 55) * 0.001
-current1d = np.linspace(0.01, 10, 56)
-area_ratio1d = np.linspace(0.1, 2, 57)
+length1d = np.linspace(0.01, 3, 95) * 0.001
+current1d = np.linspace(0.01, 10, 96)
+area_ratio1d = np.linspace(0.1, 2, 97)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -50,7 +50,7 @@ eta_current_area = np.empty([np.size(current1d), np.size(area_ratio1d)])
 eta_length_area = np.empty([np.size(length1d), np.size(area_ratio1d)]) 
 
 tem.set_xi()
-area_xi = tem.area * tem.A_opt
+area_xi = (tem.Ntype.area**-1 + tem.Ptype.area**-1)**-1
 L_opt = tem.xi / current1d * area_xi * 1000.
 
 for i in range(np.size(length1d)):
@@ -62,7 +62,7 @@ for i in range(np.size(length1d)):
         eta_length_current[i,j] = tem.eta
 
 tem.length = length
-tem.current = current
+tem.I = current
 print "finished first for loop."
 
 for i in range(np.size(current1d)):
@@ -74,8 +74,10 @@ for i in range(np.size(current1d)):
         tem.solve_tem()
         eta_current_area[i,j] = tem.eta
 
-tem.current = current
 tem.length = length
+tem.I = current
+tem.Ptype.area = tem.area / (1. + area_ratio)
+tem.Ntype.area = tem.area - tem.Ptype.area 
 print "finished second for loop."
 
 for i in range(np.size(length1d)):
@@ -87,7 +89,13 @@ for i in range(np.size(length1d)):
         tem.solve_tem()
         eta_length_area[i,j] = tem.eta
 
+tem.length = length
+tem.I = current
+tem.Ptype.area = tem.area / (1. + area_ratio)
+tem.Ntype.area = tem.area - tem.Ptype.area 
 print "finished third for loop."
+
+print "elapsed time:", time.clock() - t0
 
 print "plotting"
 
@@ -100,7 +108,7 @@ plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
 plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 1.5
+plt.rcParams['lines.linewidth'] = 2.5
 plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
@@ -111,8 +119,9 @@ FCS = plt.contourf(current_length, length_current * 1000.,
                    eta_length_current.T * 100., levels = LEVELS1)
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
-plt.plot(current1d, L_opt, '-b')
-plt.ylim(ymax=tem.length.max()*1000.)
+plt.plot(current1d, L_opt, '-c',label=r'Optimal $\xi$')
+plt.legend(loc='upper right')
+plt.ylim(ymax=length1d.max()*1000.)
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("Current (A)")
@@ -142,8 +151,6 @@ plt.ylabel("Current (A)")
 plt.xlabel("P-type to N-type Area Ratio")
 fig3.savefig('Plots/TE Optimization/current_area.pdf')
 fig3.savefig('Plots/TE Optimization/current_area.png')
-
-print "elapsed time:", time.clock() - t0
 
 plt.show()
 
