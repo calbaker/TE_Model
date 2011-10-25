@@ -64,35 +64,35 @@ tem.length = length
 tem.I = current
 print "finished first for loop."
 
-# for i in range(np.size(current1d)):
-#     tem.I = current1d[i]
-#     for j in range(np.size(area_ratio1d)):
-#         tem.Ptype.area = tem.area / (1. + area_ratio1d[j])
-#         tem.Ntype.area = tem.area - tem.Ptype.area 
-#         tem.set_constants()
-#         tem.solve_tem()
-#         eta_current_area[i,j] = tem.eta
+for i in range(np.size(current1d)):
+    tem.I = current1d[i]
+    for j in range(np.size(area_ratio1d)):
+        tem.Ptype.area = tem.area / (1. + area_ratio1d[j])
+        tem.Ntype.area = tem.area - tem.Ptype.area 
+        tem.set_constants()
+        tem.solve_tem()
+        eta_current_area[i,j] = tem.eta
 
-# tem.length = length
-# tem.I = current
-# tem.Ptype.area = tem.area / (1. + area_ratio)
-# tem.Ntype.area = tem.area - tem.Ptype.area 
-# print "finished second for loop."
+tem.length = length
+tem.I = current
+tem.Ptype.area = tem.area / (1. + area_ratio)
+tem.Ntype.area = tem.area - tem.Ptype.area 
+print "finished second for loop."
 
-# for i in range(np.size(length1d)):
-#     tem.length = length1d[i]
-#     for j in range(np.size(area_ratio1d)):
-#         tem.Ptype.area = tem.area / (1. + area_ratio1d[j])
-#         tem.Ntype.area = tem.area - tem.Ptype.area 
-#         tem.set_constants()
-#         tem.solve_tem()
-#         eta_length_area[i,j] = tem.eta
+for i in range(np.size(length1d)):
+    tem.length = length1d[i]
+    for j in range(np.size(area_ratio1d)):
+        tem.Ptype.area = tem.area / (1. + area_ratio1d[j])
+        tem.Ntype.area = tem.area - tem.Ptype.area 
+        tem.set_constants()
+        tem.solve_tem()
+        eta_length_area[i,j] = tem.eta
 
-# tem.length = length
-# tem.I = current
-# tem.Ptype.area = tem.area / (1. + area_ratio)
-# tem.Ntype.area = tem.area - tem.Ptype.area 
-# print "finished third for loop."
+tem.length = length
+tem.I = current
+tem.Ptype.area = tem.area / (1. + area_ratio)
+tem.Ntype.area = tem.area - tem.Ptype.area 
+print "finished third for loop."
 
 print "elapsed time:", time.clock() - t0
 
@@ -127,29 +127,29 @@ plt.xlabel("Current (A)")
 fig1.savefig('Plots/TE Optimization/length_current.pdf')
 fig1.savefig('Plots/TE Optimization/length_current.png')
 
-# LEVELS2 = LEVELS1
-# fig2 = plt.figure()
-# FCS = plt.contourf(area_length, length_area * 1000., 
-#                    eta_length_area.T * 100., levels=LEVELS2)   
-# CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
-# CB.set_label('TE Thermal Efficiency (%)')
-# plt.grid()
-# plt.ylabel("Leg Height (mm)")
-# plt.xlabel("P-type to N-type Area Ratio")
-# fig2.savefig('Plots/TE Optimization/length_area.pdf')
-# fig2.savefig('Plots/TE Optimization/length_area.png')
+LEVELS2 = LEVELS1
+fig2 = plt.figure()
+FCS = plt.contourf(area_length, length_area * 1000., 
+                   eta_length_area.T * 100., levels=LEVELS2)   
+CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
+CB.set_label('TE Thermal Efficiency (%)')
+plt.grid()
+plt.ylabel("Leg Height (mm)")
+plt.xlabel("P-type to N-type Area Ratio")
+fig2.savefig('Plots/TE Optimization/length_area.pdf')
+fig2.savefig('Plots/TE Optimization/length_area.png')
 
-# LEVELS3 = LEVELS1
-# fig3 = plt.figure()
-# FCS = plt.contourf(area_current, current_area, eta_current_area.T * 100.,
-#                    levels=LEVELS3) 
-# CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
-# CB.set_label('TE Thermal Efficiency (%)')
-# plt.grid()
-# plt.ylabel("Current (A)")
-# plt.xlabel("P-type to N-type Area Ratio")
-# fig3.savefig('Plots/TE Optimization/current_area.pdf')
-# fig3.savefig('Plots/TE Optimization/current_area.png')
+LEVELS3 = LEVELS1
+fig3 = plt.figure()
+FCS = plt.contourf(area_current, current_area, eta_current_area.T * 100.,
+                   levels=LEVELS3) 
+CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
+CB.set_label('TE Thermal Efficiency (%)')
+plt.grid()
+plt.ylabel("Current (A)")
+plt.xlabel("P-type to N-type Area Ratio")
+fig3.savefig('Plots/TE Optimization/current_area.pdf')
+fig3.savefig('Plots/TE Optimization/current_area.png')
 
 plt.show()
 
