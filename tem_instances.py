@@ -27,7 +27,7 @@ tem.Ptype.area = area
 tem.Ntype.area = tem.Ptype.area * area_ratio
 tem.length = length
 tem.area_void = 0.
-tem.method = 'analytical'
+# tem.method = 'analytical'
 tem.set_constants()
 tem.Ptype.area = tem.area / (1. + area_ratio)
 tem.Ntype.area = tem.area - tem.Ptype.area 
@@ -37,9 +37,9 @@ tem.solve_tem()
 tem.set_eta_max()
 tem.set_A_opt()
 
-length1d = np.linspace(0.01, 3, 95) * 0.001
-current1d = np.linspace(0.01, 10, 96)
-area_ratio1d = np.linspace(0.1, 2, 97)
+length1d = np.linspace(0.01, 3, 25) * 0.001
+current1d = np.linspace(0.01, 10, 26)
+area_ratio1d = np.linspace(0.1, 2, 27)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
