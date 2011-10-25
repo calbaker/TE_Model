@@ -234,12 +234,11 @@ class TEModule():
         self.set_eta_max()
         self.set_A_opt()
         delta_T = self.T_h - self.T_c
-
-        a = ( (self.Ptype.rho + self.Ntype.rho / self.A_opt) * (1. -
-        self.eta_max / 2.) / self.Ptype.area )
-        b = ( (self.Ptype.alpha - self.Ntype.alpha / self.A_opt) *
-        (self.eta_max * self.T_h - delta_T) / self.Ptype.area )
+        alpha_pn = self.Ptype.alpha - self.Ntype.alpha
+        a = ( 1. / self.Ptype.area**2. * (self.Ptype.rho + self.Ntype.rho /
+        self.A_opt) * (1. - self.eta_max / 2.) )
+        b = ( alpha_pn / self.Ptype.area * (self.eta_max * self.T_h_goal
+        - delta_T) )
         c = ( self.eta_max * delta_T * (self.Ptype.k + self.Ntype.k *
-        self.A_opt) * self.Ptype.area )
-
+        self.A_opt) )
         self.xi = ( (-b + np.sqrt(b**2 - 4. * a * c)) / (2. * a) )
