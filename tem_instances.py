@@ -124,8 +124,8 @@ plt.ylim(ymax=length1d.max()*1000.)
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("Current (A)")
-fig1.savefig('Plots/TE Optimization/length_current.pdf')
-fig1.savefig('Plots/TE Optimization/length_current.png')
+fig1.savefig('Plots/' + tem.method + '/length_current.pdf')
+fig1.savefig('Plots/' + tem.method + '/length_current.png')
 
 LEVELS2 = LEVELS1
 fig2 = plt.figure()
@@ -136,8 +136,8 @@ CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("P-type to N-type Area Ratio")
-fig2.savefig('Plots/TE Optimization/length_area.pdf')
-fig2.savefig('Plots/TE Optimization/length_area.png')
+fig2.savefig('Plots/' + tem.method + '/length_area.pdf')
+fig2.savefig('Plots/' + tem.method + '/length_area.png')
 
 LEVELS3 = LEVELS1
 fig3 = plt.figure()
@@ -148,8 +148,8 @@ CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
 plt.ylabel("Current (A)")
 plt.xlabel("P-type to N-type Area Ratio")
-fig3.savefig('Plots/TE Optimization/current_area.pdf')
-fig3.savefig('Plots/TE Optimization/current_area.png')
+fig3.savefig('Plots/' + tem.method + '/current_area.pdf')
+fig3.savefig('Plots/' + tem.method + '/current_area.png')
 
-plt.show()
+# plt.show()
 

@@ -10,7 +10,7 @@ reload(tem)
 t0 = time.clock()
 
 length = 1. * 0.001
-current = 3.
+current = 3.5
 area = (0.002)**2
 area_ratio = 0.69 # n-type area per p-type area, consistent with
                   # Sherman.  
