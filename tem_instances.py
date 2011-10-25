@@ -49,7 +49,7 @@ eta_length_current = np.empty([np.size(length1d), np.size(current1d)])
 eta_current_area = np.empty([np.size(current1d), np.size(area_ratio1d)]) 
 eta_length_area = np.empty([np.size(length1d), np.size(area_ratio1d)]) 
 
-a, b, c = tem.set_xi()
+tem.set_xi()
 L_opt = tem.xi / current1d * 1000.
 
 for i in range(np.size(length1d)):
