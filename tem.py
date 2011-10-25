@@ -232,6 +232,8 @@ class TEModule():
 
     def set_xi(self):
         """Sets xi = J * L"""
+        self.T_props = 0.5 * (self.T_h_goal + self.T_c)
+        self.set_TEproperties()
         self.set_eta_max()
         self.set_A_opt()
         delta_T = self.T_h - self.T_c
