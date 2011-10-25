@@ -94,9 +94,9 @@ class Leg():
 
             self.eta = self.P / (self.q_h * self.area)
 
-            self.eta_check = ( (-self.J * self.alpha * delta_T - self.rho *
-            self.J**2. * self.length) / (-self.alpha * self.T_h * self.J +
-            delta_T / self.length * self.k - self.J**2 * self.length *
+            self.eta_check = ( (self.J * self.alpha * delta_T + self.rho *
+            self.J**2. * self.length) / (self.alpha * self.T_h * self.J -
+            delta_T / self.length * self.k + self.J**2 * self.length *
             self.rho / 2.) )
 
             self.P = self.eta * self.q_h * self.area
