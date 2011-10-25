@@ -222,8 +222,9 @@ class TEModule():
         self.T_h_goal) )
                 
     def set_A_opt(self):
-        """Sets area that results in maximum efficiency based on
-        material properties evaluated at the average temperature."""
+        """Sets Ntype / Ptype area that results in maximum efficiency
+        based on material properties evaluated at the average
+        temperature."""
         self.T_props = 0.5 * (self.T_h_goal + self.T_c)
         self.set_TEproperties()
         self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
