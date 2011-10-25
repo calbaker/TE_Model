@@ -15,9 +15,10 @@ reload(hx)
 print "Beginning execution..."
 
 area = (0.002)**2
-length = 2.e-3
+length = 1.e-3
 
 hx = hx.HX()
+hx.tem.method = 'analytical'
 hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
@@ -25,10 +26,10 @@ hx.cool.mdot = 1.
 hx.length = 1.
 hx.tem.I = 4.5
 hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area
 hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 2. 
+hx.tem.Ptype.area = area
+hx.tem.Ntype.material = 'MgSi'
+hx.tem.Ntype.area = area / 0.69
 hx.tem.area_void = 25. * area
 hx.type = 'parallel'
 # hx.exh.enhancement = 'straight fins'
@@ -65,17 +66,19 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/temp '+hx.type+'.png')
-plt.savefig('Plots/temp '+hx.type+'.pdf')
+plt.savefig('Plots/' + hx.tem.method + '/' + 'temp.png')
+plt.savefig('Plots/' + hx.tem.method + '/' + 'temp.pdf')
 
-# plt.figure()
-# plt.plot(hx.tem.Ntype.T, hx.tem.Ntype.q, label=hx.tem.Ntype.material)
-# plt.plot(hx.tem.Ptype.T, hx.tem.Ptype.q, label=hx.tem.Ptype.material)
-# plt.xlabel('Temperature (K)')
-# plt.ylabel(r'Heat Flux ($\frac{W}{m^2K}$)')
-# plt.title('Heat Flux v Temperature')
-# plt.grid()
-# plt.legend()
+plt.figure()
+plt.plot(hx.x_dim * 100., hx.tem.power_nodes * 1000., '-r', label='Exhaust')
+
+plt.xlabel('Distance Along HX (cm)')
+plt.ylabel('TEG Power (W)')
+plt.grid()
+plt.legend(loc='best')
+plt.subplots_adjust(bottom=0.15)
+plt.savefig('Plots/' + hx.tem.method + '/' + 'TEG power.png')
+plt.savefig('Plots/' + hx.tem.method + '/' + 'TEG power.pdf')
 
 plt.show()
 
