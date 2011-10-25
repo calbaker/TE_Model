@@ -18,7 +18,7 @@ area = (0.002)**2
 length = 1.e-3
 
 hx = hx.HX()
-hx.tem.method = 'analytical'
+# hx.tem.method = 'analytical'
 hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
