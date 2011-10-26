@@ -235,7 +235,7 @@ class TEModule():
         self.set_TEproperties()
         self.set_eta_max()
         self.set_A_opt()
-        delta_T = self.T_h - self.T_c
+        delta_T = self.T_h_goal - self.T_c
         alpha_pn = self.Ptype.alpha - self.Ntype.alpha
         a = ( 1. / self.Ptype.area**2. * (self.Ptype.rho + self.Ntype.rho /
         self.A_opt) * (1. - self.eta_max / 2.) )
