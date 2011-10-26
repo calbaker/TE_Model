@@ -27,13 +27,14 @@ tem.Ptype.area = area
 tem.Ntype.area = tem.Ptype.area * area_ratio
 tem.length = length
 tem.area_void = 0.
-# tem.method = 'analytical'
+tem.method = 'analytical'
 tem.set_constants()
 tem.Ptype.area = tem.area / (1. + area_ratio)
 tem.Ntype.area = tem.area - tem.Ptype.area 
 tem.Ptype.set_prop_fit()
 tem.Ntype.set_prop_fit()
 tem.solve_tem()
+tem.T_props = 0.5 * (tem.T_h + tem.T_c)
 tem.set_eta_max()
 tem.set_A_opt()
 
