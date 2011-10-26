@@ -213,6 +213,7 @@ class TEModule():
         """Sets theoretical maximum efficiency with material
         properties evaluated at the average temperature based on
         Sherman's analysis."""
+        self.T_props = 0.5 * (self.T_h_goal + self.T_c)
         self.set_TEproperties()
         self.set_ZT()
         delta_T = self.T_h_goal - self.T_c
@@ -230,6 +231,7 @@ class TEModule():
 
     def set_xi(self):
         """Sets xi = J * L"""
+        self.T_props = 0.5 * (self.T_h_goal + self.T_c)
         self.set_TEproperties()
         self.set_eta_max()
         self.set_A_opt()
