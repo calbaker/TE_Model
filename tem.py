@@ -213,7 +213,6 @@ class TEModule():
         """Sets theoretical maximum efficiency with material
         properties evaluated at the average temperature based on
         Sherman's analysis."""
-        self.T_props = 0.5 * (self.T_h_goal + self.T_c)
         self.set_TEproperties()
         self.set_ZT()
         delta_T = self.T_h_goal - self.T_c
@@ -225,14 +224,12 @@ class TEModule():
         """Sets Ntype / Ptype area that results in maximum efficiency
         based on material properties evaluated at the average
         temperature."""
-        self.T_props = 0.5 * (self.T_h_goal + self.T_c)
         self.set_TEproperties()
         self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
         (self.Ptype.rho * self.Ntype.k))
 
     def set_xi(self):
         """Sets xi = J * L"""
-        self.T_props = 0.5 * (self.T_h_goal + self.T_c)
         self.set_TEproperties()
         self.set_eta_max()
         self.set_A_opt()
