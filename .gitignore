@@ -2,8 +2,9 @@
 *.pdf
 *.pyc
 *.py~
+*.xls
+*~
+/.ropeproject
 /HXcounter.py
 /HXcounter.py
 /Plots
-*.xls
-*~
