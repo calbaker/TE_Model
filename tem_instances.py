@@ -39,7 +39,7 @@ tem.set_eta_max()
 tem.set_power_max()
 tem.set_A_opt()
 
-res = 30
+res = 80
 length1d = np.linspace(0.01, 2, res) * 0.001
 current1d = np.linspace(0.01, 30, res+1)
 
