@@ -27,7 +27,7 @@ tem.Ptype.area = area
 tem.Ntype.area = tem.Ptype.area * area_ratio
 tem.length = length
 tem.area_void = 0.
-# tem.method = 'analytical'
+tem.method = 'analytical'
 tem.set_constants()
 tem.Ptype.area = tem.area / (1. + area_ratio)
 tem.Ntype.area = tem.area - tem.Ptype.area 
