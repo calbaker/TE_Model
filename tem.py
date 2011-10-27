@@ -83,7 +83,7 @@ class Leg():
             self.length * self.k + self.J**2. * self.length * self.rho
             / 2. ) 
             self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
-            self.length * self.k - self.J**2 * self.length * self.rho 
+            self.length * self.k - self.J**2 * self.length * self.rho )
             self.P = ( (self.alpha * delta_T * self.J + self.rho *
             self.J**2 * self.length) * self.area )  
             self.eta = self.P / (self.q_h * self.area)
