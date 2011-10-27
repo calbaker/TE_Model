@@ -38,9 +38,9 @@ tem.T_props = 0.5 * (tem.T_h + tem.T_c)
 tem.set_eta_max()
 tem.set_A_opt()
 
-length1d = np.linspace(0.01, 3, 25) * 0.001
-current1d = np.linspace(0.01, 10, 26)
-area_ratio1d = np.linspace(0.1, 2, 27)
+length1d = np.linspace(0.01, 3, 95) * 0.001
+current1d = np.linspace(0.01, 10, 96)
+area_ratio1d = np.linspace(0.1, 2, 97)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -49,9 +49,6 @@ length_area, area_length = np.meshgrid(length1d, area_ratio1d)
 eta_length_current = np.empty([np.size(length1d), np.size(current1d)]) 
 eta_current_area = np.empty([np.size(current1d), np.size(area_ratio1d)]) 
 eta_length_area = np.empty([np.size(length1d), np.size(area_ratio1d)]) 
-
-tem.set_xi()
-L_opt = tem.xi / current1d * 1000.
 
 for i in range(np.size(length1d)):
     tem.length = length1d[i]
@@ -119,8 +116,6 @@ FCS = plt.contourf(current_length, length_current * 1000.,
                    eta_length_current.T * 100., levels = LEVELS1)
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
-plt.plot(current1d, L_opt, '-c',label=r'Optimal $\xi$')
-plt.legend(loc='upper right')
 plt.ylim(ymax=length1d.max()*1000.)
 plt.grid()
 plt.ylabel("Leg Height (mm)")
