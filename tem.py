@@ -84,8 +84,9 @@ class Leg():
             / 2. ) 
             self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
             self.length * self.k - self.J**2 * self.length * self.rho )
-            self.P = ( (self.alpha * delta_T * self.J + self.rho *
-            self.J**2 * self.length) * self.area )  
+            self.P_flux = ( (self.alpha * delta_T * self.J + self.rho *
+            self.J**2 * self.length) ) 
+            self.P = self.P_flux  * self.area
             self.eta = self.P / (self.q_h * self.area)
             self.eta_check = ( (self.J * self.alpha * delta_T + self.rho *
             self.J**2. * self.length) / (self.alpha * self.T_h * self.J -
@@ -123,6 +124,11 @@ class Leg():
         """Sets ZT based on formula
         self.ZT = self.sigma * self.alpha**2. / self.k""" 
         self.ZT = self.alpha**2. * self.T_props / (self.k * self.rho)
+
+    def set_power_factor(self):
+        """Sets power factor and maximum theoretical power for leg."""
+        self.power_factor = self.alpha**2 * self.sigma
+        self.power_max = self.power_factor / self.length * self.area
 
 
 class TEModule():
@@ -191,10 +197,9 @@ class TEModule():
         """Sets properties for both legs based on temperature of
         module."""
         self.Ntype.T_props = self.T_props
-        self.Ptype.T_props = self.Ntype.T_props
+        self.Ptype.T_props = self.T_props
         self.Ntype.set_TEproperties()
         self.Ptype.set_TEproperties()
-        
 
     def set_ZT(self):
         """Sets ZT based on whatever properties were used last."""
@@ -222,3 +227,8 @@ class TEModule():
         self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
         (self.Ptype.rho * self.Ntype.k))
 
+    def set_power_max(self):
+        """Sets power factor and maximum theoretical power."""
+        self.Ntype.set_power_factor()
+        self.Ptype.set_power_factor()
+        self.power_max = self.Ntype.power_max + self.Ptype.power_max 
