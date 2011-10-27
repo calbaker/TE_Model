@@ -54,6 +54,8 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
+plt.close()
+
 plt.figure()
 plt.plot(hx.x_dim * 100., hx.exh.T_nodes, '-r', label='Exhaust')
 plt.plot(hx.x_dim * 100., hx.tem.T_h_nodes, '-g', label='TEM Hot Side')
@@ -80,5 +82,5 @@ plt.subplots_adjust(bottom=0.15)
 plt.savefig('Plots/' + hx.tem.method + '/' + 'TEG power.png')
 plt.savefig('Plots/' + hx.tem.method + '/' + 'TEG power.pdf')
 
-plt.show()
+# plt.show()
 
