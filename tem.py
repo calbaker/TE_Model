@@ -164,7 +164,6 @@ class TEModule():
 
     def solve_tem(self):
         """solves legs and combines results of leg pair"""
-        exponential = 1.e-3
         self.Ptype.T_h_goal = self.T_h_goal
         self.Ntype.T_h_goal = self.T_h_goal
         self.Ptype.T_c = self.T_c
@@ -178,14 +177,14 @@ class TEModule():
         self.q_h = ( (self.Ptype.q_h * self.Ptype.area +
                       self.Ntype.q_h * self.Ntype.area) /
                      (self.Ptype.area + self.Ntype.area +
-                      self.area_void) ) * exponential 
+                      self.area_void) ) * 0.001
         # area averaged hot side heat flux (kW/m^2)
         self.q_c = ( (self.Ptype.q_c * self.Ptype.area +
                       self.Ntype.q_c * self.Ntype.area) /
                      (self.Ptype.area + self.Ntype.area +
-                      self.area_void) * exponential ) 
+                      self.area_void) * 0.001 ) 
         # area averaged hot side heat flux (kW/m^2)
-        self.P = -( self.Ntype.P + self.Ptype.P ) * exponential
+        self.P = -( self.Ntype.P + self.Ptype.P ) * 0.001
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs
         # a negative sign also.  
