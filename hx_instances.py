@@ -14,8 +14,12 @@ reload(hx)
 
 print "Beginning execution..."
 
+length = 1. * 0.001
+current = 3.5
 area = (0.002)**2
-length = 1.e-3
+area_ratio = 0.69 # n-type area per p-type area, consistent with
+                  # Sherman.
+fill_fraction = 50.                  
 
 hx = hx.HX()
 hx.tem.method = 'analytical'
@@ -27,9 +31,9 @@ hx.length = 1.
 hx.tem.I = 4.5
 hx.tem.length = length
 hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area
 hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area / 0.69
+hx.tem.Ptype.area = area
+hx.tem.Ntype.area = hx.tem.Ptype.area * area_ratio
 hx.tem.area_void = 25. * area
 hx.type = 'parallel'
 # hx.exh.enhancement = 'straight fins'
@@ -56,31 +60,7 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close()
 
-plt.figure()
-plt.plot(hx.x_dim * 100., hx.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx.x_dim * 100., hx.tem.T_h_nodes, '-g', label='TEM Hot Side')
-plt.plot(hx.x_dim * 100., hx.tem.T_c_nodes, '-k', label='TEM Cold Side')
-plt.plot(hx.x_dim * 100., hx.cool.T_nodes, '-b', label='Coolant')
 
-plt.xlabel('Distance Along HX (cm)')
-plt.ylabel('Temperature (K)')
-#plt.title('Temperature v. Distance, '+hx.type)
-plt.grid()
-plt.legend(loc='best')
-plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/' + hx.tem.method + '/' + 'temp.png')
-plt.savefig('Plots/' + hx.tem.method + '/' + 'temp.pdf')
-
-plt.figure()
-plt.plot(hx.x_dim * 100., hx.tem.power_nodes * 1000., 's', label='Exhaust')
-
-plt.xlabel('Distance Along HX (cm)')
-plt.ylabel('TEG Power (W)')
-plt.grid()
-plt.legend(loc='best')
-plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/' + hx.tem.method + '/' + 'TEG power.png')
-plt.savefig('Plots/' + hx.tem.method + '/' + 'TEG power.pdf')
 
 # plt.show()
 
