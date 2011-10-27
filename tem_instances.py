@@ -38,9 +38,10 @@ tem.T_props = 0.5 * (tem.T_h + tem.T_c)
 tem.set_eta_max()
 tem.set_A_opt()
 
-length1d = np.linspace(0.01, 3, 95) * 0.001
-current1d = np.linspace(0.01, 10, 96)
-area_ratio1d = np.linspace(0.1, 2, 97)
+res = 40
+length1d = np.linspace(0.01, 3, res) * 0.001
+current1d = np.linspace(0.01, 10, res+1)
+area_ratio1d = np.linspace(0.1, 2, res+2)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_area, area_current = np.meshgrid(current1d, area_ratio1d)
@@ -109,11 +110,15 @@ plt.rcParams['lines.linewidth'] = 2.5
 plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
-LEVELS1 = ( tem.eta_max * 105. - np.logspace(np.log10(tem.eta_max *
+dummy = ( tem.eta_max * 100. - np.logspace(np.log10(tem.eta_max *
                                                       100), -1, 10) )
+LEVELS_eta = np.empty(np.size(dummy)+1)
+LEVELS_eta[-1] = tem.eta_max * 100.
+LEVELS_eta[0:-1] = dummy
+
 fig1 = plt.figure()
 FCS = plt.contourf(current_length, length_current * 1000.,
-                   eta_length_current.T * 100., levels = LEVELS1)
+                   eta_length_current.T * 100., levels=LEVELS_eta)
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
 plt.ylim(ymax=length1d.max()*1000.)
@@ -123,10 +128,9 @@ plt.xlabel("Current (A)")
 fig1.savefig('Plots/' + tem.method + '/length_current.pdf')
 fig1.savefig('Plots/' + tem.method + '/length_current.png')
 
-LEVELS2 = LEVELS1
 fig2 = plt.figure()
 FCS = plt.contourf(area_length, length_area * 1000., 
-                   eta_length_area.T * 100., levels=LEVELS2)   
+                   eta_length_area.T * 100., levels=LEVELS_eta)   
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
@@ -135,10 +139,9 @@ plt.xlabel("P-type to N-type Area Ratio")
 fig2.savefig('Plots/' + tem.method + '/length_area.pdf')
 fig2.savefig('Plots/' + tem.method + '/length_area.png')
 
-LEVELS3 = LEVELS1
 fig3 = plt.figure()
 FCS = plt.contourf(area_current, current_area, eta_current_area.T * 100.,
-                   levels=LEVELS3) 
+                   levels=LEVELS_eta) 
 CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
 CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
