@@ -128,7 +128,8 @@ class Leg():
     def set_power_factor(self):
         """Sets power factor and maximum theoretical power for leg."""
         self.power_factor = self.alpha**2 * self.sigma
-        self.power_max = self.power_factor / self.length * self.area
+        self.power_max = ( self.power_factor self.T_props**2 /
+        self.length * self.area )
 
 
 class TEModule():
