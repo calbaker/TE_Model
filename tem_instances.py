@@ -10,7 +10,7 @@ reload(tem)
 t0 = time.clock()
 
 length = 1. * 0.001
-current = 3.5
+current_eta = 3.5
 area = (0.002)**2
 area_ratio = 0.69 # n-type area per p-type area, consistent with
                   # Sherman.  
@@ -41,7 +41,7 @@ tem.set_A_opt()
 
 res = 40
 length1d = np.linspace(0.01, 3, res) * 0.001
-current1d = np.linspace(0.01, 10, res+1)
+current1d = np.linspace(0.01, 20, res+1)
 area_ratio1d = np.linspace(0.1, 2, res+2)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
@@ -63,6 +63,13 @@ for i in range(np.size(length1d)):
         tem.set_constants()
         tem.solve_tem()
         eta_length_current[i,j] = tem.eta
+
+for i in range(np.size(length1d)):
+    tem.length = length1d[i]
+    for j in range(np.size(current1d)):
+        tem.I = current1d[j]
+        tem.set_constants()
+        tem.solve_tem()
         p_length_current[i,j] = tem.P
 
 tem.length = length
@@ -121,13 +128,13 @@ plt.rcParams['axes.formatter.limits'] = -3,3
 high = tem.eta_max * 100.
 dummy = ( high - np.logspace(np.log10(high), -1, 10) )
 LEVELS_eta = np.empty(np.size(dummy)+1)
-LEVELS_eta[-1] = tem.eta_max * 100.
+LEVELS_eta[-1] = high
 LEVELS_eta[0:-1] = dummy
 
-high = 0.1
+high = 0.2
 dummy = ( high - np.logspace(np.log10(high), -1, 10) )
 LEVELS_p = np.empty(np.size(dummy)+1)
-LEVELS_p[-1] = tem.power_max * 1000.
+LEVELS_p[-1] = high
 LEVELS_p[0:-1] = dummy
 
 fig1 = plt.figure()
