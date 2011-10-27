@@ -79,21 +79,14 @@ class Leg():
             self.T_props = 0.5 * (self.T_h + self.T_c)
             self.set_TEproperties()
             delta_T = self.T_h - self.T_c
-
             self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
             self.length * self.k + self.J**2. * self.length * self.rho
             / 2. ) 
-
-            self.delta_q = ( self.alpha * delta_T * self.J + self.J**2
-            * self.length * self.rho / 2. ) 
-
-            self.q_c = self.q_h - self.delta_q
-
+            self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
+            self.length * self.k - self.J**2 * self.length * self.rho 
             self.P = ( (self.alpha * delta_T * self.J + self.rho *
             self.J**2 * self.length) * self.area )  
-
             self.eta = self.P / (self.q_h * self.area)
-
             self.eta_check = ( (self.J * self.alpha * delta_T + self.rho *
             self.J**2. * self.length) / (self.alpha * self.T_h * self.J -
             delta_T / self.length * self.k + self.J**2 * self.length *
@@ -241,4 +234,5 @@ class TEModule():
         - delta_T) )
         c = ( self.eta_max * delta_T * (self.Ptype.k + self.Ntype.k *
         self.A_opt) )
-        self.xi = ( (-b + np.sqrt(np.abs(b**2 - 4. * a * c))) / (2. * a) )
+        self.xi = ( (-b / (2. * a)) )
+        return a,b,c
