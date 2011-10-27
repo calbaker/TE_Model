@@ -222,17 +222,3 @@ class TEModule():
         self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
         (self.Ptype.rho * self.Ntype.k))
 
-    def set_xi(self):
-        """Sets xi = J * L"""
-        self.set_eta_max()
-        self.set_A_opt()
-        delta_T = self.T_h_goal - self.T_c
-        alpha_pn = self.Ptype.alpha - self.Ntype.alpha
-        a = ( 1. / self.Ptype.area**2. * (self.Ptype.rho + self.Ntype.rho /
-        self.A_opt) * (1. - self.eta_max / 2.) )
-        b = ( alpha_pn / self.Ptype.area * (self.eta_max * self.T_h_goal
-        - delta_T) )
-        c = ( self.eta_max * delta_T * (self.Ptype.k + self.Ntype.k *
-        self.A_opt) )
-        self.xi = ( (-b / (2. * a)) )
-        return a,b,c
