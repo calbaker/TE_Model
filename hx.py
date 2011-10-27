@@ -305,12 +305,12 @@ class HX(object):
         self.effectiveness = ( self.Qdot / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
-        self.tem.power = self.tem.power_nodes.sum()
+        self.tem.power_total = self.tem.power_nodes.sum()
         # total TE power output (kW)
         self.Wdot_pumping = ( self.exh.Wdot_pumping +
         self.cool.Wdot_pumping ) 
         # total pumping power requirement (kW) 
-        self.power_net = self.tem.power - self.Wdot_pumping 
+        self.power_net = self.tem.power_total - self.Wdot_pumping 
         self.eta_1st = self.power_net / self.Qdot
 
     def set_params(self):
