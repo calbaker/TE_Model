@@ -1,0 +1,9 @@
+*.lyx*
+*.pdf
+*.pyc
+*.py~
+/HXcounter.py
+/HXcounter.py
+/Plots
+*.xls
+*~
