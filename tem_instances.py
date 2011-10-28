@@ -41,13 +41,12 @@ tem.set_A_opt()
 
 res = 80
 length1d = np.linspace(0.01, 2, res) * 0.001
-current1d = np.linspace(0.01, 30, res+1)
+current1d = np.linspace(0.01, 10, res+1)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
-
 eta_length_current = np.empty([np.size(length1d), np.size(current1d)]) 
-
-p_length_current = np.empty([np.size(length1d), np.size(current1d)]) 
+p_length_current = np.empty([np.size(length1d), np.size(current1d)])
+R_load = np.empty([np.size(length1d), np.size(current1d)])
 
 for i in range(np.size(length1d)):
     tem.length = length1d[i]
@@ -56,14 +55,11 @@ for i in range(np.size(length1d)):
         tem.set_constants()
         tem.solve_tem()
         eta_length_current[i,j] = tem.eta
-
-for i in range(np.size(length1d)):
-    tem.length = length1d[i]
-    for j in range(np.size(current1d)):
-        tem.I = current1d[j]
-        tem.set_constants()
-        tem.solve_tem()
         p_length_current[i,j] = tem.P
+        R_load[i,j] = tem.R_load
+
+eta_length_R_load = eta_length_current[:,::-1]
+p_length_R_load = p_length_current[:,::-1]
 
 print "elapsed time:", time.clock() - t0
 
@@ -87,7 +83,7 @@ LEVELS_eta[-1] = high
 LEVELS_eta[0:-1] = dummy
 
 high = p_length_current.max() * 1000.
-high = 1.6
+# high = 1.6
 dummy = ( high - np.logspace(np.log10(high), -1, 10) )
 LEVELS_p = np.empty(np.size(dummy)+1)
 LEVELS_p[-1] = high
@@ -115,6 +111,28 @@ plt.ylabel("Leg Height (mm)")
 plt.xlabel("Current (A)")
 fig1p.savefig('Plots/' + tem.method + '/p_length_current.pdf')
 fig1p.savefig('Plots/' + tem.method + '/p_length_current.png')
+
+fig1r = plt.figure()
+FCS = plt.contourf(R_load.T, length_current * 1000.,
+                   eta_length_R_load.T * 100., levels=LEVELS_eta)
+CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
+CB.set_label('TE Thermal Efficiency (%)')
+plt.grid()
+plt.ylabel("Leg Height (mm)")
+plt.xlabel(r"R_load ($\Omega$)")
+fig1r.savefig('Plots/' + tem.method + '/eta_length_R_load.pdf')
+fig1r.savefig('Plots/' + tem.method + '/eta_length_R_load.png')
+
+fig1pr = plt.figure()
+FCS = plt.contourf(R_load.T, length_current * 1000.,
+                   p_length_R_load.T * 1000., levels=LEVELS_p)
+CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
+CB.set_label('TE Power (W)')
+plt.grid()
+plt.ylabel("Leg Height (mm)")
+plt.xlabel("R_load ($\Omega$)")
+fig1pr.savefig('Plots/' + tem.method + '/p_length_R_load.pdf')
+fig1pr.savefig('Plots/' + tem.method + '/p_length_R_load.png')
 
 # plt.show()
 
