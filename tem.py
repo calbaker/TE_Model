@@ -94,6 +94,7 @@ class Leg():
             delta_T / self.length * self.k + self.J**2 * self.length *
             self.rho / 2.) )
             self.V = -self.P / np.abs(self.I)
+            self.R_internal = self.rho * self.length / self.area
 
         self.R_load = self.V / np.abs(self.I)
             
@@ -114,9 +115,10 @@ class Leg():
         self.alpha * self.q[j-1] / self.k) ) 
             self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
             self.V_segment[j] = ( self.alpha * (self.T[j] -
-            self.T[j-1]) )
-            self.P_flux_segment[j] = ( self.J * (self.V_segment[j] +
-            self.J * self.rho * self.segment_length) )
+        self.T[j-1]) + self.J * self.rho * self.segment_length))
+            self.R_int_seg = ( self.rho * self.segment_length /
+        self.area )
+            self.P_flux_segment[j] = self.J * self.V_segment[j]
             self.T_h = self.T[-1]
             self.q_h = self.q[-1]
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
