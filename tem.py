@@ -115,7 +115,7 @@ class Leg():
         self.alpha * self.q[j-1] / self.k) ) 
             self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
             self.V_segment[j] = ( self.alpha * (self.T[j] -
-        self.T[j-1]) + self.J * self.rho * self.segment_length))
+        self.T[j-1]) + self.J * self.rho * self.segment_length )
             self.R_int_seg = ( self.rho * self.segment_length /
         self.area )
             self.P_flux_segment[j] = self.J * self.V_segment[j]
