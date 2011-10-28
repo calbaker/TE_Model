@@ -69,7 +69,8 @@ class Leg():
             self.q_c = spopt.fsolve(self.get_T_h_error_numerical,
         x0=self.q_c_guess, xtol=self.xtol)  
             self.error = self.get_T_h_error_numerical(self.q_c) 
-            self.P = sp.sum(self.P_flux_segment) * self.area
+            self.V = self.V_segment.sum()
+            self.P = self.P_flux_segment.sum() * self.area
             # Power for the entire leg (W)
             self.eta = self.P / (self.q_h * self.area)
             # Efficiency of leg
@@ -92,8 +93,11 @@ class Leg():
             self.J**2. * self.length) / (self.alpha * self.T_h * self.J -
             delta_T / self.length * self.k + self.J**2 * self.length *
             self.rho / 2.) )
+            self.V = self.alpha * delta_T
 
             self.P = self.eta * self.q_h * self.area
+ 
+        self.R_load = self.V / self.I
             
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
@@ -192,6 +196,8 @@ class TEModule():
         self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
+        self.V = self.Ntype.V + self.Ptype.V
+        self.R_load = self.V / self.I
 
     def set_TEproperties(self):
         """Sets properties for both legs based on temperature of
