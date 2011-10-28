@@ -93,7 +93,7 @@ class Leg():
             self.J**2. * self.length) / (self.alpha * self.T_h * self.J -
             delta_T / self.length * self.k + self.J**2 * self.length *
             self.rho / 2.) )
-            self.V = self.P / self.I
+            self.V = -self.P / np.abs(self.I)
 
         self.R_load = self.V / np.abs(self.I)
             

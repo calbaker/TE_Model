@@ -41,7 +41,7 @@ tem.set_A_opt()
 
 res = 80
 length1d = np.linspace(0.01, 2, res) * 0.001
-current1d = np.linspace(0.01, 10, res+1)
+current1d = np.linspace(0.5, 10, res+1)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 eta_length_current = np.empty([np.size(length1d), np.size(current1d)]) 
@@ -133,6 +133,17 @@ plt.ylabel("Leg Height (mm)")
 plt.xlabel("R_load ($\Omega$)")
 fig1pr.savefig('Plots/' + tem.method + '/p_length_R_load.pdf')
 fig1pr.savefig('Plots/' + tem.method + '/p_length_R_load.png')
+
+fig_R_load = plt.figure()
+FCS = plt.contourf(current_length, length_current * 1000.,
+                   R_load.T)
+CB = plt.colorbar(FCS, orientation='vertical', format="%.2f")
+CB.set_label(r'Load Resistance ($\Omega$)')
+plt.grid()
+plt.ylabel("Leg Height (mm)")
+plt.xlabel("Current (A)")
+plt.savefig('Plots/' + tem.method + '/p_length_R_load.pdf')
+plt.savefig('Plots/' + tem.method + '/p_length_R_load.png')
 
 # plt.show()
 
