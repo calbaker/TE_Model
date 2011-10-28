@@ -197,7 +197,9 @@ class TEModule():
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
         self.V = self.Ntype.V + self.Ptype.V
-        self.R_load = self.V / self.I
+        self.R_load = self.Ntype.R_load + self.Ptype.R_load
+        self.R_internal = ( self.Ntype.R_internal +
+        self.Ptype.R_internal )
 
     def set_TEproperties(self):
         """Sets properties for both legs based on temperature of
