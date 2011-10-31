@@ -29,6 +29,7 @@ hx.tem.Ntype.area = area
 hx.tem.Ptype.material = 'HMS'
 hx.tem.Ptype.area = area * 2. 
 hx.tem.area_void = 25. * area
+hx.tem.method = "analytical"
 hx.type = 'parallel'
 hx.exh.enhancement = "straight fins"
 hx.exh.fin.thickness = 5.e-3
@@ -57,7 +58,7 @@ for i in sp.arange(sp.size(hx.exh.fin_array)):
     hx.power_net_array[i] = hx.power_net
     hx.Wdot_pumping_array[i] = hx.Wdot_pumping
     hx.Qdot_array[i] = hx.Qdot
-    hx.tem.power_array[i] = hx.tem.power
+    hx.tem.power_array[i] = hx.tem.power_total
     hx.exh.fin.spacings[i] = hx.exh.fin.spacing
 
 print "\nProgram finished."
