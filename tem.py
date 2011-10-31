@@ -74,6 +74,7 @@ class Leg():
             # Power for the entire leg (W)
             self.eta = self.P / (self.q_h * self.area)
             # Efficiency of leg
+            self.R_internal = self.R_int_seg.sum()
 
         if self.method == "analytical":
             self.T_h = self.T_h_goal
