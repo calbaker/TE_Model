@@ -10,7 +10,7 @@ import os
 # User Defined Modules
 # In this directory
 import hx
-import tem
+reload(hx)
 
 print "Beginning execution..."
 
@@ -38,6 +38,7 @@ hx.exh.T_inlet = 800.
 hx.exh.P = 100.
 hx.cool.T_inlet = 300.
 
+hx.set_mdot_charge()
 hx.solve_hx()
 
 hx.exh.fin_array = sp.arange(10, 32, 2)
