@@ -159,7 +159,7 @@ class HX(object):
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
 
         if self.thermoelectrics_on == True:
-            while ( sp.absolute(self.error_hot) > self.xtol ): 
+            while ( np.absolute(self.error_hot) > self.xtol ): 
                 self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
             self.tem.T_h, xtol=self.xtol)  
                 # self.tem.solve_tem()
