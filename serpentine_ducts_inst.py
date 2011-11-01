@@ -58,7 +58,7 @@ for i in sp.arange(sp.size(ducts)):
     hx.solve_hx()
     
     hx.Qdot_array[i] = hx.Qdot 
-    hx.tem.power_array[i] = hx.tem.power 
+    hx.tem.power_array[i] = hx.tem.power_total
     hx.power_net_array[i] = hx.power_net 
     hx.Wdot_pumping_array[i] = hx.Wdot_pumping 
     
