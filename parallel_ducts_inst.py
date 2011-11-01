@@ -117,8 +117,8 @@ ax2 = plt.twiny(ax1)
 plt.xticks(np.arange(len(XTICKS)), XTICKS)
 ax2.set_xlabel('Exhaust Duct Height (cm)')
 
-fig.savefig('Plots/power v || ducts.pdf')
-fig.savefig('Plots/power v || ducts.png')
+fig.savefig('Plots/power v stacked ducts.pdf')
+fig.savefig('Plots/power v stacked ducts.pdf')
 
 # plt.show()
 
