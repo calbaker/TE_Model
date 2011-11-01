@@ -14,8 +14,9 @@ reload(hx)
 
 area = (0.002)**2
 length = 1.e-3
-current = 3.4
+current = 5.5 # this is really close to max for these params
 area_ratio = 0.69
+fill_fraction = 1. / 20.
 
 hx_fins0 = hx.HX()
 hx_fins0.width = 30.e-2
@@ -28,15 +29,17 @@ hx_fins0.tem.length = length
 hx_fins0.tem.Ntype.material = 'MgSi'
 hx_fins0.tem.Ptype.material = 'HMS'
 
-hx_fins0.tem.Ptype.area = area
-hx_fins0.tem.Ntype.area = hx_fins0.tem.Ptype.area * area_ratio 
-hx_fins0.tem.area_void = 25. * area                      
+hx_fins0.tem.Ptype.area = area                           
+hx_fins0.tem.Ntype.area = hx_fins0.tem.Ptype.area * area_ratio
+hx_fins0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_fins0.tem.Ptype.area +
+                            hx_fins0.tem.Ntype.area) )  
 
-# hx_fins0.tem.method = 'analytical'
+hx_fins0.tem.method = 'analytical'
 hx_fins0.type = 'parallel'
 hx_fins0.exh.enhancement = "straight fins"
 hx_fins0.exh.fin.thickness = 5.e-3
-hx_fins0.exh.fins = 28
+hx_fins0.exh.fins = 30
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet = 300.
@@ -73,3 +76,5 @@ plt.savefig('Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.png')
 plt.savefig('Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.pdf')
 
 # plt.show()
+
+print hx_fins0.power_net
