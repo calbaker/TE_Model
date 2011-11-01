@@ -38,6 +38,7 @@ class HX(object):
         self.length = 20.e-2 # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
+        self.xtol = 0.01
         self.R_contact = 0.
         # thermal contact resistance (m^2*K/kW) between plates
         self.thermoelectrics_on = True
@@ -126,8 +127,8 @@ class HX(object):
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
-        error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
-        return error_hot
+        self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
+        return self.error_hot
 
     def get_error_cold(self,T_c):
         """Returns cold side and cold side heat flux values in an
@@ -136,8 +137,8 @@ class HX(object):
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.tem.T_c = T_c
         self.tem.solve_tem()
-        error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
-        return error_cold
+        self.error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
+        return self.error_cold
 
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
@@ -157,6 +158,8 @@ class HX(object):
         else:
             self.tem.T_c = (self.tem.T_c_nodes[i-1])
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
+
+        self.error_hot = 100. # really big number to start while loop
 
         if self.thermoelectrics_on == True:
             while ( np.absolute(self.error_hot) > self.xtol ): 
