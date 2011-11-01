@@ -14,9 +14,9 @@ reload(hx)
 
 area = (0.002)**2
 length = 1.e-3
-current = 3.4
+current = 5.5 # this is really close to max for these params
 area_ratio = 0.69
-fill_fraction = 1. / 25.
+fill_fraction = 1. / 20.
 
 hx_fins = hx.HX()
 hx_fins.width = 30.e-2
@@ -35,7 +35,7 @@ hx_fins.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_fins.tem.Ptype.area +
                             hx_fins.tem.Ntype.area) )  
 
-hx_fins.tem.method = "analytical"
+# hx_fins.tem.method = "analytical"
 hx_fins.type = 'parallel'
 hx_fins.exh.enhancement = "straight fins"
 hx_fins.exh.fin.thickness = 5.e-3
@@ -48,7 +48,7 @@ hx_fins.cool.T_inlet = 300.
 hx_fins.set_mdot_charge()
 hx_fins.solve_hx()
 
-hx_fins.exh.fin_array = np.arange(10, 37, 2)
+hx_fins.exh.fin_array = np.arange(20, 42, 2)
 # array for varied exhaust duct height (m)
 array_size = np.size(hx_fins.exh.fin_array)
 hx_fins.power_net_array = np.zeros(array_size)
