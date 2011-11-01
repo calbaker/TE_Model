@@ -126,8 +126,18 @@ class HX(object):
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
-        self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
-        return self.error_hot
+        error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
+        return error_hot
+
+    def get_error_cold(self,T_c):
+        """Returns cold side and cold side heat flux values in an
+        array.  The first entry is cold side heat flux and the second
+        entry is cold side heat flux."""
+        self.q_c = self.U_cold * (self.cool.T - T_c)
+        self.tem.T_c = T_c
+        self.tem.solve_tem()
+        error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
+        return error_cold
 
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
@@ -149,11 +159,17 @@ class HX(object):
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
 
         if self.thermoelectrics_on == True:
-            T = np.array([self.tem.T_h_goal, self.tem.T_c]) 
-            self.error_hot = 1. # big number to start while loop
-            while self.error_hot > 0.001:
-                T_h_goal, T_c = spopt.leastsq(self.get_flux_error,
-            x0=np.array([self.tem.T_h,self.tem.T_c]), ftol=0.001)     
+            while ( sp.absolute(self.error_hot) > self.xtol ): 
+                self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
+            self.tem.T_h, xtol=self.xtol)  
+                # self.tem.solve_tem()
+                self.tem.T_c = spopt.fsolve(self.get_error_cold,
+            self.tem.T_c, xtol=self.xtol) 
+                # self.tem.solve_tem()
+                # self.error_cold = self.get_error_cold(self.tem.T_c)
+                self.error_hot = self.get_error_hot(self.tem.T_h)
+                self.loop_count = self.loop_count + 1
+                self.Qdot_node = -self.q_h * self.area
                 # heat transfer on hot side of node, positive values indicates
                 # heat transfer from hot to cold
 
