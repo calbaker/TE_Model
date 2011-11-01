@@ -14,7 +14,7 @@ reload(hx)
 
 area = (0.002)**2
 length = 1.e-3
-current = 5. # this is close to max for these params
+current = 5. # this is really close to max for these params
 area_ratio = 0.69
 fill_fraction = 1. / 75. # this is still about right so fill_fraction
                          # may be independent of current.  
@@ -127,3 +127,8 @@ fig.savefig('Plots/power v || ducts.pdf')
 fig.savefig('Plots/power v || ducts.png')
 
 # plt.show()
+
+print "\nCurrent =", current
+print "Length =", length
+print "Fill Fraction", fill_fraction
+print "power =", hx_ducts.power_net_array.max()
