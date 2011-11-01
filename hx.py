@@ -129,22 +129,6 @@ class HX(object):
         self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
         return self.error_hot
 
-    def get_flux_error(self,T):
-        """Returns hot side and cold side heat flux values in an
-        array.  The first entry is hot side heat flux and the second
-        entry is cold side heat flux."""
-        T_h = T[0]
-        T_c = T[1]
-        self.q_h = self.U_hot * (T_h - self.exh.T)
-        self.tem.T_h_goal = T_h
-        self.tem.solve_tem()
-        self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
-        self.q_c = self.U_cold * (self.cool.T - T_c)
-        self.tem.T_c = T_c
-        self.tem.solve_tem()
-        self.error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
-        return self.error_hot, self.error_cold
-
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
