@@ -2,7 +2,6 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import scipy as sp
 import numpy as np
 import matplotlib.pyplot as mpl
 import scipy.optimize as spopt
@@ -39,7 +38,6 @@ class HX(object):
         self.length = 20.e-2 # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
-        self.xtol = 0.01 # tolerable fractional error in heat flux
         self.R_contact = 0.
         # thermal contact resistance (m^2*K/kW) between plates
         self.thermoelectrics_on = True
@@ -73,7 +71,7 @@ class HX(object):
         self.tem.set_constants()
         self.leg_pairs = int(self.area / self.tem.area)
         # Number of TEM leg pairs per node
-        self.x_dim = sp.arange(self.node_length/2, self.length +
+        self.x_dim = np.arange(self.node_length/2, self.length +
         self.node_length/2, self.node_length)   
         # x coordinate (m)
         self.fix_geometry()
@@ -128,18 +126,24 @@ class HX(object):
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
-        error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
-        return error_hot
+        self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
+        return self.error_hot
 
-    def get_error_cold(self,T_c):
-        """Returns cold side and cold side heat flux values in an
-        array.  The first entry is cold side heat flux and the second
+    def get_flux_error(self,T):
+        """Returns hot side and cold side heat flux values in an
+        array.  The first entry is hot side heat flux and the second
         entry is cold side heat flux."""
+        T_h = T[0]
+        T_c = T[1]
+        self.q_h = self.U_hot * (T_h - self.exh.T)
+        self.tem.T_h_goal = T_h
+        self.tem.solve_tem()
+        self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.tem.T_c = T_c
         self.tem.solve_tem()
-        error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
-        return error_cold
+        self.error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
+        return self.error_hot, self.error_cold
 
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
@@ -160,22 +164,12 @@ class HX(object):
             self.tem.T_c = (self.tem.T_c_nodes[i-1])
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
 
-        self.error_hot = 100.  
-        # amount by which convection model overpredicts hot side heat
-        # flux (kW/m^2-K) relative to TE model.  
-
         if self.thermoelectrics_on == True:
-            while ( sp.absolute(self.error_hot) > self.xtol ): 
-                self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
-            self.tem.T_h, xtol=self.xtol)  
-                # self.tem.solve_tem()
-                self.tem.T_c = spopt.fsolve(self.get_error_cold,
-            self.tem.T_c, xtol=self.xtol) 
-                # self.tem.solve_tem()
-                # self.error_cold = self.get_error_cold(self.tem.T_c)
-                self.error_hot = self.get_error_hot(self.tem.T_h)
-                self.loop_count = self.loop_count + 1
-                self.Qdot_node = -self.q_h * self.area
+            T = np.array([self.tem.T_h_goal, self.tem.T_c]) 
+            self.error_hot = 1. # big number to start while loop
+            while self.error_hot > 0.001:
+                T_h_goal, T_c = spopt.leastsq(self.get_flux_error,
+            x0=np.array([self.tem.T_h,self.tem.T_c]), ftol=0.001)     
                 # heat transfer on hot side of node, positive values indicates
                 # heat transfer from hot to cold
 
@@ -192,15 +186,17 @@ class HX(object):
             
             self.set_convection()
             self.q_h = self.U * (self.cool.T - self.exh.T)
-            self.Qdot_node = -self.q_h * self.area
-
-        self.error_cold = self.get_error_cold(self.tem.T_c)
-
+        self.Qdot_node = -self.q_h * self.area
+            
         self.elapsed = time.clock() - self.t
         # print "elapsed time:", self.elapsed
         
-    def solve_hx(self): # solve parallel flow heat exchanger
+    def solve_hx(self,**kwargs): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
+        if 'verbose' in kwargs:
+            self.verbose = kwargs['verbose']
+        else:
+            self.verbose = False
         self.set_constants()
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
@@ -214,7 +210,7 @@ class HX(object):
         self.tem.Ntype.set_prop_fit()
 
         # initializing arrays for tracking variables at nodes
-        ZEROS = sp.zeros(self.nodes)
+        ZEROS = np.zeros(self.nodes)
         self.Qdot_nodes = ZEROS.copy() # initialize array for storing
                                     # heat transfer (kW) in each node 
         self.exh.T_nodes = ZEROS.copy()
@@ -234,6 +230,8 @@ class HX(object):
         self.q_c_nodes = ZEROS.copy()
         self.tem.q_h_nodes = ZEROS.copy()
         self.tem.q_c_nodes = ZEROS.copy()
+        self.error_hot_nodes = ZEROS.copy()
+        self.error_cold_nodes = ZEROS.copy()
         self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
         self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
@@ -243,7 +241,9 @@ class HX(object):
         self.tem.eta_nodes = ZEROS.copy()
         
         # for loop iterates of nodes of HX in streamwise direction
-        for i in sp.arange(self.nodes):
+        for i in np.arange(self.nodes):
+            if self.verbose == True:
+                print "Solving node", i
             self.solve_node(i)
 
             self.Qdot_nodes[i] = self.Qdot_node
@@ -253,6 +253,8 @@ class HX(object):
                 self.q_c_nodes[i] = self.q_c
                 self.tem.q_h_nodes[i] = self.tem.q_h
                 self.tem.q_c_nodes[i] = self.tem.q_c
+                self.error_hot_nodes[i] = self.error_hot
+                self.error_cold_nodes[i] = self.error_cold
 
             self.exh.T_nodes[i] = self.exh.T
             self.exh.h_nodes[i] = self.exh.h

@@ -11,8 +11,6 @@ import os
 # In this directory
 import hx
 
-print "Beginning execution..."
-
 hx_parallel = hx.HX()
 hx_parallel.tem.Ntype.material = 'ideal BiTe n-type'
 hx_parallel.tem.Ptype.material = 'ideal BiTe p-type'

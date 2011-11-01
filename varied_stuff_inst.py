@@ -12,8 +12,6 @@ import os
 import hx
 import tem
 
-print "Beginning execution..."
-
 area = (0.002)**2
 length = 2.e-3
 

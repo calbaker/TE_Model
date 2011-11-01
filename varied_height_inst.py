@@ -13,8 +13,6 @@ os.chdir('/home/chad/Documents/UT Stuff/Research/Diesel TE/TE_Model')
 import hx
 import tem
 
-print "Beginning execution..."
-
 area = (0.002)**2
 length = 5.e-3
 

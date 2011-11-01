@@ -13,8 +13,6 @@ os.chdir('/home/chad/Documents/UT Stuff/Research/Diesel TE/TE_Model')
 import hx
 import tem
 
-print "Beginning execution..."
-
 hx = hx.HX()
 hx.tem.I = 0.02
 hx.tem.Ntype.material = 'MgSi'

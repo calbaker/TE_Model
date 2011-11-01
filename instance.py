@@ -11,8 +11,6 @@ import os
 # In this directory
 import hx
 
-print "Beginning execution..."
-
 area = (0.002)**2
 length = 5.e-3
 

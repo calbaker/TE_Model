@@ -12,8 +12,6 @@ import os
 import hx
 reload(hx)
 
-print "Beginning execution..."
-
 length = 1. * 0.001
 current = 3.5
 area = (0.002)**2

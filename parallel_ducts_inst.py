@@ -10,62 +10,81 @@ import os
 # User Defined Modules
 # In this directory
 import hx
+reload(hx)
 
-print "Beginning execution..."
-
-# parameters for TE legs
 area = (0.002)**2
-length = 2.e-3
+length = 1.e-3
+current = 5. # this is close to max for these params
+area_ratio = 0.69
+fill_fraction = 1. / 75. # this is still about right so fill_fraction
+                         # may be independent of current.  
 
-hx = hx.HX()
-hx.width = 30.e-2
-hx.exh.bypass = 0.
-hx.exh.height = 3.5e-2
-hx.length = 1.
-hx.tem.I = 5.
-hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area
-hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 150. * area
-hx.type = 'parallel'
-hx.exh.enhancement = "straight fins"
-hx.exh.fin.thickness = 5.e-3
-hx.exh.fins = 22 # 22 fins seems to be best.  
+# area = (0.002)**2
+# length = 1.e-3
+# current = 3.4
+# area_ratio = 0.69
+# fill_fraction = 1. / 75. # This is maximum for the other specified
+# parameters. 
 
-hx.exh.T_inlet = 800.
-hx.exh.P = 100.
-hx.cool.T_inlet = 300.
+hx_ducts = hx.HX()
+hx_ducts.width = 30.e-2
+hx_ducts.exh.bypass = 0.
+hx_ducts.exh.height = 3.5e-2
+hx_ducts.length = 1.
+hx_ducts.tem.I = current
+hx_ducts.tem.length = length
 
-hx.solve_hx() # solving once to initialize variables that are used
+hx_ducts.tem.Ntype.material = 'MgSi'
+hx_ducts.tem.Ptype.material = 'HMS'
+
+hx_ducts.tem.Ptype.area = area                           
+hx_ducts.tem.Ntype.area = hx_ducts.tem.Ptype.area * area_ratio
+hx_ducts.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_ducts.tem.Ptype.area +
+                            hx_ducts.tem.Ntype.area) )  
+
+hx_ducts.tem.method = 'analytical'
+hx_ducts.type = 'parallel'
+hx_ducts.exh.enhancement = "straight fins"
+hx_ducts.exh.fin.thickness = 5.e-3
+hx_ducts.exh.fins = 22 # 22 fins seems to be best.  
+
+hx_ducts.exh.T_inlet = 800.
+hx_ducts.exh.P = 100.
+hx_ducts.cool.T_inlet = 300.
+
+hx_ducts.set_mdot_charge()
+hx_ducts.solve_hx() # solving once to initialize variables that are used
               # later 
 
-ducts = np.arange(1, 15, 1)
-hx.Qdot_array = np.zeros(np.size(ducts))
-hx.tem.power_array = np.zeros(np.size(ducts)) 
-hx.power_net_array = np.zeros(np.size(ducts))
-hx.Wdot_pumping_array = np.zeros(np.size(ducts)) 
-hx.exh.height_array = 3.5e-2 / (ducts)
-hx.cool.height_array = 2.e-2 / (ducts + 1.)
-hx.exh.bypass_array = 1. - 1./ducts
-hx.cool.mdot_array = hx.cool.mdot / ducts
-hx.height_array = np.zeros(np.size(ducts))
+ducts = np.arange(2, 20, 1)
+hx_ducts.Qdot_array = np.zeros(np.size(ducts))
+hx_ducts.tem.power_array = np.zeros(np.size(ducts)) 
+hx_ducts.power_net_array = np.zeros(np.size(ducts))
+hx_ducts.Wdot_pumping_array = np.zeros(np.size(ducts)) 
+hx_ducts.exh.height_array = 3.5e-2 / (ducts)
+hx_ducts.cool.height_array = 2.e-2 / (ducts + 1.)
+hx_ducts.exh.bypass_array = 1. - 1./ducts
+hx_ducts.cool.mdot_array = hx_ducts.cool.mdot / ducts
+hx_ducts.height_array = np.zeros(np.size(ducts))
+
+hx_ducts.exh.mdot0 = hx_ducts.exh.mdot
 
 for i in np.arange(np.size(ducts)):
-    hx.exh.height = hx.exh.height_array[i]
-    hx.cool.height = hx.cool.height_array[i]
-    hx.exh.bypass = hx.exh.bypass_array[i]
-    hx.cool.mdot = hx.cool.mdot_array[i]
-    hx.height_array[i] = ( ducts[i] * hx.exh.height_array[i] +
-    (ducts[i] + 1) * hx.cool.height_array[i] )
+    hx_ducts.exh.height = hx_ducts.exh.height_array[i]
+    hx_ducts.cool.height = hx_ducts.cool.height_array[i]
+    hx_ducts.exh.mdot = hx_ducts.exh.mdot0 / ducts[i]
+    hx_ducts.cool.mdot = hx_ducts.cool.mdot_array[i]
+    hx_ducts.height_array[i] = ( ducts[i] * hx_ducts.exh.height_array[i] +
+    (ducts[i] + 1) * hx_ducts.cool.height_array[i] )
 
-    hx.solve_hx()
+    hx_ducts.solve_hx()
+#    print "Finished solving for", ducts[i], "ducts\n"
     
-    hx.Qdot_array[i] = hx.Qdot * ducts[i]
-    hx.tem.power_array[i] = hx.tem.power * ducts[i]
-    hx.power_net_array[i] = hx.power_net * ducts[i]
-    hx.Wdot_pumping_array[i] = hx.Wdot_pumping * ducts[i]
+    hx_ducts.Qdot_array[i] = hx_ducts.Qdot * ducts[i]
+    hx_ducts.tem.power_array[i] = hx_ducts.tem.power_total * ducts[i]
+    hx_ducts.power_net_array[i] = hx_ducts.power_net * ducts[i]
+    hx_ducts.Wdot_pumping_array[i] = hx_ducts.Wdot_pumping * ducts[i]
     
 print "\nProgram finished."
 print "\nPlotting..."
@@ -81,7 +100,7 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 FIGDIM1 = ([0.12, 0.12, 0.75, 0.75])
 
-XTICKS = hx.exh.height_array[0::3].copy() * 100.
+XTICKS = hx_ducts.exh.height_array[0::3].copy() * 100.
 XTICKS = list(XTICKS)
 
 for i in range(len(XTICKS)):
@@ -90,10 +109,10 @@ for i in range(len(XTICKS)):
 XTICKS[0] = ''
 fig = plt.figure()
 ax1 = fig.add_axes(FIGDIM1)
-ax1.plot(ducts, hx.Qdot_array / 10., label=r'$\dot{Q}/10$') 
-ax1.plot(ducts, hx.tem.power_array, label='TEM')
-ax1.plot(ducts, hx.power_net_array, label='$P_{net}$')  
-ax1.plot(ducts, hx.Wdot_pumping_array, label='Pumping')
+ax1.plot(ducts, hx_ducts.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
+ax1.plot(ducts, hx_ducts.tem.power_array, 'og', label='TEM')
+ax1.plot(ducts, hx_ducts.power_net_array, 'sr', label='$P_{net}$')  
+ax1.plot(ducts, hx_ducts.Wdot_pumping_array, '*k', label='Pumping')
 ax1.legend(loc='best')
 ax1.grid()
 ax1.set_xlabel('Ducts')
@@ -107,5 +126,4 @@ ax2.set_xlabel('Exhaust Duct Height (cm)')
 fig.savefig('Plots/power v || ducts.pdf')
 fig.savefig('Plots/power v || ducts.png')
 
-plt.show()
-
+# plt.show()

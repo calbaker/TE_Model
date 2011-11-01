@@ -12,33 +12,37 @@ import os
 import hx
 reload(hx)
 
-print "Beginning execution..."
-
 area = (0.002)**2
-length = 5.e-3
+length = 1.e-3
+current = 3.4
+area_ratio = 0.69
 
-hx = hx.HX()
-hx.width = 30.e-2
-hx.exh.bypass = 0.
-hx.exh.height = 3.5e-2
-hx.length = 1.
-hx.tem.I = 2.
-hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area
-hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 25. * area
-hx.type = 'parallel'
-hx.exh.enhancement = "straight fins"
-hx.exh.fin.thickness = 5.e-3
-hx.exh.fins = 22
+hx_fins0 = hx.HX()
+hx_fins0.width = 30.e-2
+hx_fins0.exh.bypass = 0.
+hx_fins0.exh.height = 3.5e-2
+hx_fins0.length = 1.
+hx_fins0.tem.I = current
+hx_fins0.tem.length = length
 
-hx.exh.T_inlet = 800.
-hx.cool.T_inlet = 300.
+hx_fins0.tem.Ntype.material = 'MgSi'
+hx_fins0.tem.Ptype.material = 'HMS'
 
-hx.set_mdot_charge()
-hx.solve_hx()
+hx_fins0.tem.Ptype.area = area
+hx_fins0.tem.Ntype.area = hx_fins0.tem.Ptype.area * area_ratio 
+hx_fins0.tem.area_void = 25. * area                      
+
+# hx_fins0.tem.method = 'analytical'
+hx_fins0.type = 'parallel'
+hx_fins0.exh.enhancement = "straight fins"
+hx_fins0.exh.fin.thickness = 5.e-3
+hx_fins0.exh.fins = 28
+
+hx_fins0.exh.T_inlet = 800.
+hx_fins0.cool.T_inlet = 300.
+
+hx_fins0.set_mdot_charge()
+hx_fins0.solve_hx()
 
 
 print "\nProgram finished."
@@ -54,18 +58,18 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
 plt.figure()
-plt.plot(hx.x_dim * 100., hx.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx.x_dim * 100., hx.tem.T_h_nodes, '-g', label='TEM Hot Side')
-plt.plot(hx.x_dim * 100., hx.tem.T_c_nodes, '-k', label='TEM Cold Side')
-plt.plot(hx.x_dim * 100., hx.cool.T_nodes, '-b', label='Coolant')
+plt.plot(hx_fins0.x_dim * 100., hx_fins0.exh.T_nodes, '-r', label='Exhaust')
+plt.plot(hx_fins0.x_dim * 100., hx_fins0.tem.T_h_nodes, '-g', label='TEM Hot Side')
+plt.plot(hx_fins0.x_dim * 100., hx_fins0.tem.T_c_nodes, '-k', label='TEM Cold Side')
+plt.plot(hx_fins0.x_dim * 100., hx_fins0.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')
 plt.ylabel('Temperature (K)')
-#plt.title('Temperature v. Distance, '+hx.type)
+#plt.title('Temperature v. Distance, '+hx_fins0.type)
 plt.grid()
-plt.legend(loc='best')
+plt.legend(loc='center left')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/temp '+hx.type+str(hx.exh.fins)+'.png')
-plt.savefig('Plots/temp '+hx.type+str(hx.exh.fins)+'.pdf')
+plt.savefig('Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.png')
+plt.savefig('Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.pdf')
 
-plt.show()
+# plt.show()

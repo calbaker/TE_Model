@@ -12,47 +12,54 @@ import os
 import hx
 reload(hx)
 
-print "Beginning execution..."
-
 # parameters for TE legs
 area = (0.002)**2
-length = 2.e-3
+length = 1.e-3
+current = 3.4
+area_ratio = 0.69
+fill_fraction = 1. / 25.
 
-hx = hx.HX()
-hx.width = 30.e-2
-hx.exh.bypass = 0.
-hx.exh.height = 3.5e-2
-hx.length = 1.
-hx.tem.I = 5.
-hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area
-hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 150. * area
-hx.type = 'parallel'
-hx.exh.enhancement = "straight fins"
-hx.exh.fin.thickness = 5.e-3
-hx.exh.fins = 22 # 22 fins seems to be best.  
+hx_ducts0 = hx.HX()
+hx_ducts0.width = 30.e-2
+hx_ducts0.exh.bypass = 0.
+hx_ducts0.exh.height = 3.5e-2
+hx_ducts0.length = 1.
+hx_ducts0.tem.I = current
+hx_ducts0.tem.length = length
 
-hx.exh.T_inlet = 800.
-hx.exh.P = 100.
-hx.cool.T_inlet = 300.
+hx_ducts0.tem.Ntype.material = 'MgSi'
+hx_ducts0.tem.Ptype.material = 'HMS'
 
-hx.ducts = 8.
-hx.exh.height = 3.5e-2 / hx.ducts
-hx.cool.height = 2.e-2 / (hx.ducts + 1.)
-hx.height = ( hx.exh.height * hx.ducts + hx.cool.height * (hx.ducts +
+hx_ducts0.tem.Ptype.area = area                           
+hx_ducts0.tem.Ntype.area = hx_ducts0.tem.Ptype.area * area_ratio
+hx_ducts0.tem.area_void = (1. - fill_fraction) * area                      
+
+hx_ducts0.tem.method = 'analytical'
+hx_ducts0.type = 'parallel'
+hx_ducts0.exh.enhancement = "straight fins"
+hx_ducts0.exh.fin.thickness = 5.e-3
+hx_ducts0.exh.fins = 22 # 22 fins seems to be best.  
+
+hx_ducts0.exh.T_inlet = 800.
+hx_ducts0.exh.P = 100.
+hx_ducts0.cool.T_inlet = 300.
+
+hx_ducts0.ducts = 3.
+hx_ducts0.exh.height = 3.5e-2 / hx_ducts0.ducts
+hx_ducts0.cool.height = 2.e-2 / (hx_ducts0.ducts + 1.)
+hx_ducts0.height = ( hx_ducts0.exh.height * hx_ducts0.ducts + hx_ducts0.cool.height * (hx_ducts0.ducts +
                                                            1.) )
-hx.exh.bypass = 1. - 1./hx.ducts
-hx.cool.mdot = hx.cool.mdot / hx.ducts
+hx_ducts0.set_mdot_charge()
+hx_ducts0.exh.mdot0 = hx_ducts0.exh.mdot
+hx_ducts0.exh.bypass = 1. - 1./hx_ducts0.ducts
+hx_ducts0.cool.mdot = hx_ducts0.cool.mdot / hx_ducts0.ducts
 
-hx.solve_hx() # solving once to initialize variables that are used
+hx_ducts0.solve_hx() # solving once to initialize variables that are used
 
-hx.power_net = hx.power_net * hx.ducts
-hx.tem.power = hx.tem.power * hx.ducts
-hx.Qdot = hx.Qdot * hx.ducts
-hx.Wdot_pumping = hx.Wdot_pumping * hx.ducts
+hx_ducts0.power_net = hx_ducts0.power_net * hx_ducts0.ducts
+hx_ducts0.tem.power = hx_ducts0.tem.power_total * hx_ducts0.ducts
+hx_ducts0.Qdot = hx_ducts0.Qdot * hx_ducts0.ducts
+hx_ducts0.Wdot_pumping = hx_ducts0.Wdot_pumping * hx_ducts0.ducts
     
 print "\nProgram finished."
 print "\nPlotting..."
@@ -67,19 +74,19 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
 plt.figure()
-plt.plot(hx.x_dim * 100., hx.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx.x_dim * 100., hx.tem.T_h_nodes, '-g', label='TEM Hot Side')
-plt.plot(hx.x_dim * 100., hx.tem.T_c_nodes, '-k', label='TEM Cold Side')
-plt.plot(hx.x_dim * 100., hx.cool.T_nodes, '-b', label='Coolant')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.exh.T_nodes, '-r', label='Exhaust')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.tem.T_h_nodes, '-g', label='TEM Hot Side')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.tem.T_c_nodes, '-k', label='TEM Cold Side')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')
 plt.ylabel('Temperature (K)')
-#plt.title('Temperature v. Distance, '+hx.type)
+#plt.title('Temperature v. Distance, '+hx_ducts0.type)
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/temp '+hx.type+str(hx.ducts)+'.png')
-plt.savefig('Plots/temp '+hx.type+str(hx.ducts)+'.pdf')
+plt.savefig('Plots/temp '+hx_ducts0.type+str(hx_ducts0.ducts)+'.png')
+plt.savefig('Plots/temp '+hx_ducts0.type+str(hx_ducts0.ducts)+'.pdf')
 
-plt.show()
+# plt.show()
 

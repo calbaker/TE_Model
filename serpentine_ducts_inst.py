@@ -11,8 +11,6 @@ import os
 # In this directory
 import hx
 
-print "Beginning execution..."
-
 # parameters for TE legs
 area = (0.002)**2
 length = 2.e-3
