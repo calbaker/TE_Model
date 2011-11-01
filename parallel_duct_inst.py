@@ -15,9 +15,10 @@ reload(hx)
 # parameters for TE legs
 area = (0.002)**2
 length = 1.e-3
-current = 3.4
+current = 5. # this is really close to max for these params
 area_ratio = 0.69
-fill_fraction = 1. / 25.
+fill_fraction = 1. / 75. # this is still about right so fill_fraction
+                         # may be independent of current.  
 
 hx_ducts0 = hx.HX()
 hx_ducts0.width = 30.e-2
@@ -32,9 +33,11 @@ hx_ducts0.tem.Ptype.material = 'HMS'
 
 hx_ducts0.tem.Ptype.area = area                           
 hx_ducts0.tem.Ntype.area = hx_ducts0.tem.Ptype.area * area_ratio
-hx_ducts0.tem.area_void = (1. - fill_fraction) * area                      
+hx_ducts0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_ducts0.tem.Ptype.area +
+                            hx_ducts0.tem.Ntype.area) )  
 
-hx_ducts0.tem.method = 'analytical'
+# hx_ducts0.tem.method = 'analytical'
 hx_ducts0.type = 'parallel'
 hx_ducts0.exh.enhancement = "straight fins"
 hx_ducts0.exh.fin.thickness = 5.e-3
@@ -44,7 +47,7 @@ hx_ducts0.exh.T_inlet = 800.
 hx_ducts0.exh.P = 100.
 hx_ducts0.cool.T_inlet = 300.
 
-hx_ducts0.ducts = 3.
+hx_ducts0.ducts = 7
 hx_ducts0.exh.height = 3.5e-2 / hx_ducts0.ducts
 hx_ducts0.cool.height = 2.e-2 / (hx_ducts0.ducts + 1.)
 hx_ducts0.height = ( hx_ducts0.exh.height * hx_ducts0.ducts + hx_ducts0.cool.height * (hx_ducts0.ducts +
@@ -72,6 +75,8 @@ plt.rcParams['legend.fontsize'] = FONTSIZE
 plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
+
+plt.close('all')
 
 plt.figure()
 plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.exh.T_nodes, '-r', label='Exhaust')

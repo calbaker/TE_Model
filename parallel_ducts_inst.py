@@ -12,19 +12,13 @@ import os
 import hx
 reload(hx)
 
+# parameters for TE legs
 area = (0.002)**2
 length = 1.e-3
 current = 5. # this is really close to max for these params
 area_ratio = 0.69
 fill_fraction = 1. / 75. # this is still about right so fill_fraction
                          # may be independent of current.  
-
-# area = (0.002)**2
-# length = 1.e-3
-# current = 3.4
-# area_ratio = 0.69
-# fill_fraction = 1. / 75. # This is maximum for the other specified
-# parameters. 
 
 hx_ducts = hx.HX()
 hx_ducts.width = 30.e-2
@@ -43,7 +37,7 @@ hx_ducts.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_ducts.tem.Ptype.area +
                             hx_ducts.tem.Ntype.area) )  
 
-hx_ducts.tem.method = 'analytical'
+# hx_ducts.tem.method = 'analytical'
 hx_ducts.type = 'parallel'
 hx_ducts.exh.enhancement = "straight fins"
 hx_ducts.exh.fin.thickness = 5.e-3
