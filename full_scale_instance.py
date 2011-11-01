@@ -14,8 +14,9 @@ reload(hx)
 
 area = (0.002)**2
 length = 1.e-3
-current = 3.4
+current = 4.
 area_ratio = 0.69
+fill_fraction = 1. / 40.
 
 hx_inst = hx.HX()
 hx_inst.tem.method = 'analytical'
@@ -32,7 +33,9 @@ hx_inst.tem.Ntype.material = 'MgSi'
 
 hx_inst.tem.Ptype.area = area                           
 hx_inst.tem.Ntype.area = hx_inst.tem.Ptype.area * area_ratio
-hx_inst.tem.area_void = 25. * area                      
+hx_inst.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_inst.tem.Ptype.area +
+                            hx_inst.tem.Ntype.area) )  
 
 hx_inst.type = 'parallel'
 # hx_inst.exh.enhancement = 'straight fins'
@@ -43,7 +46,7 @@ hx_inst.exh.P = 100.
 hx_inst.cool.T_inlet = 300.
 
 hx_inst.set_mdot_charge()
-hx_inst.solve_hx(verbose=True)
+hx_inst.solve_hx()
 
 print "\nProgram finished."
 print "\nPlotting..."
@@ -57,7 +60,7 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
-plt.close()
+plt.close('all')
 
 plt.figure()
 plt.plot(hx_inst.x_dim * 100., hx_inst.exh.T_nodes, 'sr', label='Exhaust')
@@ -87,3 +90,4 @@ plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'TEG power.pdf')
 
 # plt.show()
 
+print hx_inst.power_net
