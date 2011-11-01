@@ -74,6 +74,8 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
+plt.show()
+
 FIGDIM1 = ([0.12, 0.12, 0.75, 0.75])
 
 XTICKS = list()
