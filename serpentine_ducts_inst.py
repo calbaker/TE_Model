@@ -36,6 +36,7 @@ hx.exh.T_inlet = 800.
 hx.exh.P = 100.
 hx.cool.T_inlet = 300.
 
+hx.set_mdot_charge()
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
