@@ -22,7 +22,7 @@ fill_fraction = 1. / 75. # this is still about right so fill_fraction
 
 hx_ducts = hx.HX()
 hx_ducts.width = 30.e-2
-hx_ducts.exh.bypass = 0.
+# hx_ducts.exh.bypass = 0.
 hx_ducts.exh.height = 3.5e-2
 hx_ducts.length = 1.
 hx_ducts.tem.I = current
@@ -47,33 +47,36 @@ hx_ducts.exh.T_inlet = 800.
 hx_ducts.exh.P = 100.
 hx_ducts.cool.T_inlet = 300.
 
-hx_ducts.set_mdot_charge()
-hx_ducts.solve_hx() # solving once to initialize variables that are used
-              # later 
+ducts = np.arange(2, 18, 1)
 
-ducts = np.arange(2, 20, 1)
+hx_ducts.exh.height_array = 3.5e-2 / ducts
+hx_ducts.cool.height_array = 2.e-2 / (ducts + 1.)
+
+hx_ducts.set_mdot_charge()
+hx_ducts.exh.mdot0 = hx_ducts.exh.mdot 
+
+hx_ducts.exh.mdot_array = hx_ducts.exh.mdot0 / ducts
+hx_ducts.cool.mdot_array = hx_ducts.cool.mdot * 2. / (ducts + 1.) 
+
+hx_ducts.height_array = ( ducts * hx_ducts.exh.height_array +  (ducts
+                            + 1) * hx_ducts.cool.height_array ) 
+
+# Initializing arrays for storing loop results.  
 hx_ducts.Qdot_array = np.zeros(np.size(ducts))
 hx_ducts.tem.power_array = np.zeros(np.size(ducts)) 
 hx_ducts.power_net_array = np.zeros(np.size(ducts))
 hx_ducts.Wdot_pumping_array = np.zeros(np.size(ducts)) 
-hx_ducts.exh.height_array = 3.5e-2 / (ducts)
-hx_ducts.cool.height_array = 2.e-2 / (ducts + 1.)
-hx_ducts.exh.bypass_array = 1. - 1./ducts
-hx_ducts.cool.mdot_array = hx_ducts.cool.mdot / ducts
-hx_ducts.height_array = np.zeros(np.size(ducts))
 
-hx_ducts.exh.mdot0 = hx_ducts.exh.mdot
 
 for i in np.arange(np.size(ducts)):
     hx_ducts.exh.height = hx_ducts.exh.height_array[i]
     hx_ducts.cool.height = hx_ducts.cool.height_array[i]
-    hx_ducts.exh.mdot = hx_ducts.exh.mdot0 / ducts[i]
+
+    hx_ducts.exh.mdot = hx_ducts.exh.mdot_array[i]
     hx_ducts.cool.mdot = hx_ducts.cool.mdot_array[i]
-    hx_ducts.height_array[i] = ( ducts[i] * hx_ducts.exh.height_array[i] +
-    (ducts[i] + 1) * hx_ducts.cool.height_array[i] )
 
     hx_ducts.solve_hx()
-#    print "Finished solving for", ducts[i], "ducts\n"
+    print "Finished solving for", ducts[i], "ducts\n"
     
     hx_ducts.Qdot_array[i] = hx_ducts.Qdot * ducts[i]
     hx_ducts.tem.power_array[i] = hx_ducts.tem.power_total * ducts[i]
