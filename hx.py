@@ -161,17 +161,20 @@ class HX(object):
 
         self.error_hot = 100. # really big number to start while loop
 
+        self.loop_count = 0
         if self.thermoelectrics_on == True:
-            while ( np.absolute(self.error_hot) > self.xtol ): 
+            while ( np.absolute(self.error_hot) > self.xtol or
+        np.absolute(self.error_cold) > self.xtol ): 
                 self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
-            self.tem.T_h, xtol=self.xtol)  
+        x0=self.tem.T_h_goal)
                 # self.tem.solve_tem()
                 self.tem.T_c = spopt.fsolve(self.get_error_cold,
-            self.tem.T_c, xtol=self.xtol) 
-                # self.tem.solve_tem()
-                # self.error_cold = self.get_error_cold(self.tem.T_c)
+        x0=self.tem.T_c) 
+                self.error_cold = self.get_error_cold(self.tem.T_c)
                 self.error_hot = self.get_error_hot(self.tem.T_h)
                 self.loop_count = self.loop_count + 1
+                print self.loop_count, self.tem.T_h_goal, self.tem.T_c
+                print self.error_hot, self.error_cold
                 self.Qdot_node = -self.q_h * self.area
                 # heat transfer on hot side of node, positive values indicates
                 # heat transfer from hot to cold
@@ -246,7 +249,7 @@ class HX(object):
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
             if self.verbose == True:
-                print "Solving node", i
+                print "\nSolving node", i
             self.solve_node(i)
 
             self.Qdot_nodes[i] = self.Qdot_node
