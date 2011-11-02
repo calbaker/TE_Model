@@ -15,15 +15,12 @@ reload(hx)
 # parameters for TE legs
 area = (0.002)**2
 length = 1.e-3
-current = 5. # this is really close to max for these params
+current = 5.
 area_ratio = 0.69
-fill_fraction = 1. / 75. # this is still about right so fill_fraction
-                         # may be independent of current.  
+fill_fraction = 0.004
 
 hx_ducts0 = hx.HX()
 hx_ducts0.width = 30.e-2
-hx_ducts0.exh.bypass = 0.
-hx_ducts0.exh.height = 3.5e-2
 hx_ducts0.length = 1.
 hx_ducts0.tem.I = current
 hx_ducts0.tem.length = length
@@ -37,35 +34,43 @@ hx_ducts0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_ducts0.tem.Ptype.area +
                             hx_ducts0.tem.Ntype.area) )  
 
-# hx_ducts0.tem.method = 'analytical'
+hx_ducts0.tem.method = 'analytical'
 hx_ducts0.type = 'parallel'
 hx_ducts0.exh.enhancement = "straight fins"
 hx_ducts0.exh.fin.thickness = 5.e-3
-hx_ducts0.exh.fins = 22 # 22 fins seems to be best.  
+hx_ducts0.exh.fins = 30 # 22 fins seems to be best.  
 
 hx_ducts0.exh.T_inlet = 800.
 hx_ducts0.exh.P = 100.
 hx_ducts0.cool.T_inlet = 300.
 
-hx_ducts0.ducts = 7
-hx_ducts0.exh.height = 3.5e-2 / hx_ducts0.ducts
-hx_ducts0.cool.height = 2.e-2 / (hx_ducts0.ducts + 1.)
-hx_ducts0.height = ( hx_ducts0.exh.height * hx_ducts0.ducts + hx_ducts0.cool.height * (hx_ducts0.ducts +
-                                                           1.) )
 hx_ducts0.set_mdot_charge()
-hx_ducts0.exh.mdot0 = hx_ducts0.exh.mdot
-hx_ducts0.exh.bypass = 1. - 1./hx_ducts0.ducts
-hx_ducts0.cool.mdot = hx_ducts0.cool.mdot / hx_ducts0.ducts
 
-hx_ducts0.solve_hx() # solving once to initialize variables that are used
+ducts = 7
 
-hx_ducts0.power_net = hx_ducts0.power_net * hx_ducts0.ducts
-hx_ducts0.tem.power = hx_ducts0.tem.power_total * hx_ducts0.ducts
-hx_ducts0.Qdot = hx_ducts0.Qdot * hx_ducts0.ducts
-hx_ducts0.Wdot_pumping = hx_ducts0.Wdot_pumping * hx_ducts0.ducts
-    
+hx_ducts0.exh.height = 3.5e-2 / ducts
+hx_ducts0.cool.height_array = 2.e-2 / (ducts + 1.)
+
+hx_ducts0.cool.mdot = hx_ducts0.cool.mdot * 2. / (ducts + 1.) 
+hx_ducts0.exh.mdot = hx_ducts0.exh.mdot / ducts
+
+hx_ducts0.height = ( ducts * hx_ducts0.exh.height + (ducts + 1) *
+                    hx_ducts0.cool.height )    
+
+hx_ducts0.solve_hx()
+
+hx_ducts0.Qdot = hx_ducts0.Qdot * ducts
+hx_ducts0.tem.power = hx_ducts0.tem.power_total * ducts
+hx_ducts0.Wdot_pumping = ( hx_ducts0.exh.Wdot_pumping *
+                                   ducts +
+                                   hx_ducts0.cool.Wdot_pumping * 2. /
+                                   (ducts + 1.) ) 
+
+hx_ducts0.power_net = ( hx_ducts0.tem.power - hx_ducts0.Wdot_pumping )    
+
+
 print "\nProgram finished."
-print "\nPlotting..."
+print "Plotting..."
 
 # Plot configuration
 FONTSIZE = 20
@@ -90,8 +95,10 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/temp '+hx_ducts0.type+str(hx_ducts0.ducts)+'.png')
-plt.savefig('Plots/temp '+hx_ducts0.type+str(hx_ducts0.ducts)+'.pdf')
+plt.savefig('Plots/temp '+hx_ducts0.type+str(ducts)+'.png')
+plt.savefig('Plots/temp '+hx_ducts0.type+str(ducts)+'.pdf')
 
 # plt.show()
+
+print hx_ducts0.power_net
 
