@@ -14,11 +14,11 @@ reload(hx)
 
 t0 = time.clock()
 
-length = 1 / 1000.
-current = 6.
+length = 1. * 0.001
+current = 4.5
 area = (0.002)**2
 area_ratio = 0.69 # p-type area per n-type area
-fill_fraction = 1. / 75. 
+fill_fraction = 0.025
 
 hx = hx.HX()
 hx.width = 30.e-2
@@ -50,9 +50,9 @@ hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
 res = 10
-length1d = np.linspace(0.2, 1.5, res) / 1000.
-current1d = np.linspace(3, 17, res+1)
-fill_fraction1d = np.linspace(0.01, 0.1, res-1)
+length1d = np.linspace(0.2, 2, res) / 1000.
+current1d = np.linspace(1, 15, res+1)
+fill_fraction1d = np.linspace(0.005, 0.1, res+2)
 
 length_current, current_length = np.meshgrid(length1d, current1d)
 current_fill, fill_current = np.meshgrid(current1d, fill_fraction1d)
@@ -65,7 +65,6 @@ P_length_fill = np.empty([np.size(length1d),
 print "base camp"
 
 for i in range(np.size(length1d)):
-    print '\n\n1st outer loop iteration', i
     hx.tem.length = length1d[i]
     for j in range(np.size(current1d)):
         hx.tem.I = current1d[j]
@@ -78,24 +77,22 @@ print "finished first for loop."
 
 for i in range(np.size(current1d)):
     hx.tem.I = current1d[i]
-    print '\n\n2nd outer loop iteration', i
     for j in range(np.size(fill_fraction1d)):
         hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )
         hx.solve_hx()
         P_current_fill[i,j] = hx.tem.power_total * 1000.
 
-hx.tem.current = current
+hx.tem.I = current
 print "finished second for loop."
 
 for i in range(np.size(length1d)):
     hx.tem.length = length1d[i]
-    print '\n\n3rd outer loop iteration', i
     for j in range(np.size(fill_fraction1d)):
         hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )   
         hx.solve_hx()
-        P_current_fill[i,j] = hx.tem.power_total * 1000.
+        P_length_fill[i,j] = hx.tem.power_total * 1000.
 
 print "finished third for loop."
 print "summit"
@@ -148,3 +145,4 @@ plt.ylabel("Fill Fraction")
 fig2.savefig('Plots/HX Optimization/length_fill.pdf')
 fig2.savefig('Plots/HX Optimization/length_fill.png')
 
+plt.show()
