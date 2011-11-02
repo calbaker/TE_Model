@@ -155,6 +155,9 @@ class HX(object):
             # guess at hot side TEM temperature (K)
             self.tem.solve_tem()
             self.set_convection()
+            self.q = self.U * (self.cool.T - self.exh.T)
+            self.tem.T_h_goal = self.q / self.U_hot + self.exh.T
+            self.tem.T_c = -self.q / self.U_cold + self.cool.T
         else:
             self.tem.T_c = (self.tem.T_c_nodes[i-1])
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
