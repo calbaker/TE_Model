@@ -65,7 +65,7 @@ P_length_fill = np.empty([np.size(length1d),
 print "base camp"
 
 for i in range(np.size(length1d)):
-    print '1st outer loop iteration', i
+    print '\n\n1st outer loop iteration', i
     hx.tem.length = length1d[i]
     for j in range(np.size(current1d)):
         hx.tem.I = current1d[j]
@@ -78,7 +78,7 @@ print "finished first for loop."
 
 for i in range(np.size(current1d)):
     hx.tem.I = current1d[i]
-    print '2nd outer loop iteration', i
+    print '\n\n2nd outer loop iteration', i
     for j in range(np.size(fill_fraction1d)):
         hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )
@@ -90,11 +90,10 @@ print "finished second for loop."
 
 for i in range(np.size(length1d)):
     hx.tem.length = length1d[i]
-    print '3rd outer loop iteration', i
+    print '\n\n3rd outer loop iteration', i
     for j in range(np.size(fill_fraction1d)):
         hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )   
-        hx.tem.set_constants()
         hx.solve_hx()
         P_current_fill[i,j] = hx.tem.power_total * 1000.
 
