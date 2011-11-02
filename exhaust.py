@@ -57,7 +57,7 @@ class Exhaust(prop.ideal_gas):
         self.PPI = 10 # default pores per inch of porous media, used in Mancin model  
         self.K = 2.e-7 # default permeability (m^2) of porous metal foam, used in
             # Bejan model
-        self.bypass = 0.80
+        self.bypass = 0.
         # fraction of exhaust flow bypassing heat exchanger
         self.fin = _Fin() # workaround to be able to change fin from
                           # instance
