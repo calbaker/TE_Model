@@ -49,7 +49,7 @@ hx.set_mdot_charge()
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
-res = 10
+res = 100
 length1d = np.linspace(0.2, 2, res) / 1000.
 current1d = np.linspace(1, 15, res+1)
 fill_fraction1d = np.linspace(0.005, 0.1, res+2)
@@ -112,7 +112,15 @@ plt.rcParams['axes.formatter.limits'] = -3,3
 
 plt.close('all')
 
-LEVELS = np.linspace(0, P_length_current.max(), 12)
+max_array = np.array([P_length_current.max(), P_current_fill.max(),
+                      P_length_fill.max()]) 
+
+high = max_array.max()
+dummy = ( high - np.logspace(np.log10(high), -1, 10) )
+LEVELS = np.empty(np.size(dummy)+1)
+LEVELS[-1] = high
+LEVELS[0:-1] = dummy
+# LEVELS = np.linspace(0,high,15) 
 
 fig1 = plt.figure()
 FCS = plt.contourf(length_current * 1000., current_length,
