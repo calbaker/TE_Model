@@ -87,10 +87,10 @@ for i in sp.arange(sp.size(hx.exh.height_array)):
 XTICKS[0] = ''
 fig = plt.figure()
 ax1 = fig.add_axes(FIGDIM1)
-ax1.plot(ducts, hx.Qdot_array / 10., label=r'$\dot{Q}/10$') 
-ax1.plot(ducts, hx.tem.power_array, label='TEM')
-ax1.plot(ducts, hx.power_net_array, label='$P_{net}$')  
-ax1.plot(ducts, hx.Wdot_pumping_array, label='Pumping')
+ax1.plot(ducts, hx.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
+ax1.plot(ducts, hx.tem.power_array, 'og', label='TEM')
+ax1.plot(ducts, hx.power_net_array, 'sr', label='$P_{net}$')  
+ax1.plot(ducts, hx.Wdot_pumping_array, '*k', label='Pumping')
 ax1.legend(loc='best')
 ax1.grid()
 ax1.set_xlabel('Ducts')
@@ -101,8 +101,8 @@ ax2 = plt.twiny(ax1)
 plt.xticks(sp.arange(len(XTICKS)), XTICKS)
 ax2.set_xlabel('Exhaust Duct Height (cm)')
 
-fig.savefig('Plots/power v _|_ ducts.pdf')
-fig.savefig('Plots/power v _|_ ducts.png')
+fig.savefig('Plots/power v s ducts.pdf')
+fig.savefig('Plots/power v s ducts.png')
 
 plt.show()
 
