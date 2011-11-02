@@ -37,7 +37,7 @@ hx_ducts.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_ducts.tem.Ptype.area +
                             hx_ducts.tem.Ntype.area) )  
 
-hx_ducts.tem.method = 'analytical'
+# hx_ducts.tem.method = 'analytical'
 hx_ducts.type = 'parallel'
 
 hx_ducts.exh.T_inlet = 800.
