@@ -176,8 +176,6 @@ class HX(object):
                 self.error_cold = self.get_error_cold(self.tem.T_c)
                 self.error_hot = self.get_error_hot(self.tem.T_h)
                 self.loop_count = self.loop_count + 1
-                print self.loop_count, self.tem.T_h_goal, self.tem.T_c
-                print self.error_hot, self.error_cold
                 self.Qdot_node = -self.q_h * self.area
                 # heat transfer on hot side of node, positive values indicates
                 # heat transfer from hot to cold
