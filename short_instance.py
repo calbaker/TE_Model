@@ -49,7 +49,7 @@ hx.set_mdot_charge()
 hx.solve_hx() # solving once to initialize variables that are used
               # later 
 
-res = 100
+res = 30
 length1d = np.linspace(0.2, 2, res) / 1000.
 current1d = np.linspace(1, 15, res+1)
 fill_fraction1d = np.linspace(0.005, 0.1, res+2)
