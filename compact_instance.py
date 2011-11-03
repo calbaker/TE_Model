@@ -4,7 +4,7 @@
 # Distribution Modules
 import matplotlib.pyplot as plt
 import numpy as np
-import xlrd
+
 
 # User Defined Modules
 # In this directory

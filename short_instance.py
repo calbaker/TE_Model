@@ -4,7 +4,7 @@
 # Distribution Modules
 import matplotlib.pyplot as plt
 import numpy as np
-import xlrd
+
 import time
 
 # User Defined Modules
