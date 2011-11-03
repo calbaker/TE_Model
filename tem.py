@@ -12,7 +12,7 @@ import te_prop
 reload(te_prop)
 
 
-class Leg():
+class Leg(object):
     """class for individual p-type or n-type TE leg"""
 
     def __init__(self):
@@ -137,7 +137,7 @@ class Leg():
         self.length * self.area ) 
 
 
-class TEModule():
+class TEModule(object):
     """class for TEModule that includes a pair of legs"""
 
     def __init__(self):

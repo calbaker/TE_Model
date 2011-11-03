@@ -8,7 +8,7 @@ import scipy as sp
 import properties as prop
 
 
-class Engine():
+class Engine(object):
     """Operating condintions for Cummins Engine. This module
     eventually needs to provide charge flow rate, EGR flow rate,
     exhaust port temperature, post turbo temperature.""" 
