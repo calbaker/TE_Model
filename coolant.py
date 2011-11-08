@@ -1,5 +1,6 @@
 # In python directory
 import properties as prop
+import types
 
 # In local directory
 import functions
@@ -27,9 +28,10 @@ class Coolant(prop.flow):
                           # (kW/m*K)
         self.Nu_coeff = 0.023
             
-    set_flow_geometry = functions.set_flow_geometry
-    set_Re_dependents = functions.set_Re_dependents
-                          
+        self.set_flow_geometry = (
+        types.MethodType(functions.set_flow_geometry, self) )
+        self.set_Re_dependents = (
+        types.MethodType(functions.set_Re_dependents, self) )
 
     def set_flow(self):
         """calculates flow parameters"""
