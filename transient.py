@@ -1,113 +1,57 @@
 # Chad Baker
-# Created on 2011 Nov 7
+# Created on 2011 Feb 10
 
 # Distribution Modules
+import scipy as sp
 import matplotlib.pyplot as plt
-import numpy as np
+import os
 
+#
 # User Defined Modules
 # In this directory
 import hx
 reload(hx)
-import tem
-reload(tem)
 
-# parameter space -- not varying for optimization!
 area = (0.002)**2
-length = 5.e-3
+length = 1.e-3
+current = 4.
+area_ratio = 0.69
+fill_fraction = 1. / 40.
 
-hx = hx.HX()
-hx.tem.segments = 25
-hx.width = 30.e-2
-hx.exh.bypass = 0.
-hx.exh.height = 3.5e-2
-hx.length = 1.
-hx.tem.I = 2.
-hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area
-hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 25. * area
-hx.type = 'parallel'
-hx.exh.enhancement = "straight fins"
-hx.exh.fin.thickness = 5.e-3
-hx.exh.fins = 22
+hx1 = hx.HX()
+hx1.tem.method = 'analytical'
+hx1.width = 30.e-2
+hx1.exh.bypass = 0.
+hx1.exh.height = 3.5e-2
+hx1.cool.mdot = 1.
+hx1.length = 1.
+hx1.tem.I = current
+hx1.tem.length = length
 
-hx.exh.T_inlet = 800.
-hx.cool.T_inlet = 300.
-hx.set_mdot_charge()
+hx1.tem.Ptype.material = 'HMS'
+hx1.tem.Ntype.material = 'MgSi'
 
+hx1.tem.Ptype.area = area                           
+hx1.tem.Ntype.area = hx1.tem.Ptype.area * area_ratio
+hx1.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx1.tem.Ptype.area +
+                            hx1.tem.Ntype.area) )  
 
-# additional variables (as of 9/1/11)
-hx.tem.Ptype.area = 10.e-6
+hx1.type = 'parallel'
 
-# this is our optimization method 
-# (what we desire to optimize)
-def optim(apar):
-    # unpack guess vector
-    apar=asarray(apar)
-    hx.tem.leg_ratio     = apar[0]
-    hx.tem.fill_fraction = apar[1]
-    hx.tem.length        = apar[2]
-    hx.tem.I             = apar[3]
+hx1.exh.T_inlet = 800.
+hx1.exh.P = 100.
+hx1.cool.T_inlet = 300.
 
-    # reset surrogate variables
-    hx.tem.Ntype.area = hx.tem.leg_ratio*hx.tem.Ptype.area
-    hx.tem.area_void  = hx.tem.Ptype.area/hx.tem.fill_fraction
+hx1.set_mdot_charge()
 
-    hx.solve_hx()
+offset = 700.
+amplitude = 100.
 
-    # 1/power_net -- fmin is a minimization routine
-    return 1/(hx.power_net)
+hx1.exh.T_inlet_array = ( offset + amplitude *
+                          np.linspace(0, 2.*np.pi, 25) )
 
-# dummy function
-def fprime():
-    return 1
+for i in range(np.size(hx1.exh.T_inlet_array)):
+    hx1.exh.T_inlet = hx1.exh.T_inlet_array[i]
+    hx1.solve_hx()
 
-#
-# parameter optimization:
-#
-#   I) tem.leg_ratio
-#  II) tem.fill_fraction
-# III) hx.tem.length
-#  IV) hx.tem.I
-#
-# initial guess {I-IV}:
-x0 = 1.2, 0.02, .001, 2
-
-# bounds for the parameters {I-IV}:
-xb = [(0.2,5.0),(0.001,0.5),(0.0005,0.01),(.1,10.0)]
-
-# optimization loop
-print "Beginning optimization..."
-
-# find min
-#xmin1 = fmin(optim,x0)
-
-# find min using L-BFGS-B algorithm
-xmin1 = fmin_l_bfgs_b(optim,x0,fprime,approx_grad=True,bounds=xb)
-
-print "Finalizing optimization..."
-
-# output optimal parameters
-
-print "\nProgram finished."
-print xmin1
-
-
-# notes:
-#
-# define a variable, tem.leg_ratio = tem.Ntype.area / tem.Ptype.area .  
-# Keep tem.Ptype.area = 10.e-6 and vary tem.Ntype.area by varying leg_ratio.  
-# leg_ratio can be anywhere from 0.2 up to 5.
-#
-# The next parameter is the leg area to the void area. 
-# define tem.fill_fraction = tem.Ptype.area / tem.area_void.   
-# vary this between 1 and 100 by changing area_void.  
-#
-# The next one is leg length or height, hx.tem.length.  
-# Vary this between 0.0005 and 0.01.  
-#
-# The last one is current, hx.tem.I.  Vary this between 0.1 and 10. 
-#
