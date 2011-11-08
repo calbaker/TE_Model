@@ -16,9 +16,11 @@ import exhaust
 reload(exhaust)
 import coolant
 reload(coolant)
+import platewall
+reload(platewall)
 
 
-class _PlateWall(object):
+class PlateWall(object):
     """class for modeling metal walls of heat exchanger"""
     k = 0.2 # thermal conductivity (kW/m-K) of Aluminum HX plate
     t = 0.00635 # thickness (m) of HX plate
@@ -49,7 +51,7 @@ class HX(object):
         self.cool = coolant.Coolant()
         self.exh = exhaust.Exhaust()
         self.tem = tem.TEModule()
-        self.plate = _PlateWall()
+        self.plate = platewall.PlateWall()
         self.cummins = engine.Engine()
 
         self.fix_geometry()
