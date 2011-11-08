@@ -91,6 +91,7 @@ plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.power_net_array, 'sr',
 plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.Wdot_pumping_array, '*k',
          label='Pumping')
 plt.grid()
+plt.xticks(rotation=40)
 plt.xlabel('Fin Spacing (cm)')
 plt.ylabel('Power (kW)')
 plt.ylim(0,3)
