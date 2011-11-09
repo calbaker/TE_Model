@@ -6,7 +6,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import os
 
-os.chdir('Modules/')
+os.chdir('../Modules/')
 
 # User Defined Modules
 # In this directory
@@ -94,3 +94,5 @@ plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'TEG power.pdf')
 # plt.show()
 
 print hx_inst.power_net
+
+os.chdir('Instances')
