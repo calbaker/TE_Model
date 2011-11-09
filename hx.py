@@ -86,7 +86,7 @@ class HX(object):
         come from experimental data.  Also, it should probably go
         within the exhaust module."""
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
-        self.exh.mdot = self.cummins.mdot_charge * (1. - self.exh.bypass) 
+        self.exh.mdot = self.cummins.mdot_charge 
 
     def set_convection(self):
         """Sets values for convection coefficients."""
