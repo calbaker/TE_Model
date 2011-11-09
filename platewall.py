@@ -10,6 +10,8 @@ class PlateWall(object):
         self.k = 0.2 # thermal conductivity (kW/m-K) of Aluminum HX plate
         self.t = 0.00635 # thickness (m) of HX plate
         self.c_p = 900. # specific heat of aluminum (J/kg-K)
+        self.R_contact = 0.
+        # thermal contact resistance (m^2*K/kW) between plates
 
     def set_h(self):
         """Sets the effective convection coefficient which is the
