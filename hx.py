@@ -221,35 +221,7 @@ class HX(object):
             if self.verbose == True:
                 print "\nSolving node", i
             self.solve_node(i)
-
-            self.Qdot_nodes[i] = self.Qdot_node
-            # storing node heat transfer in array
-            self.q_h_nodes[i] = self.q_h
-            self.q_c_nodes[i] = self.q_c
-            self.tem.q_h_nodes[i] = self.tem.q_h
-            self.tem.q_c_nodes[i] = self.tem.q_c
-            self.error_hot_nodes[i] = self.error_hot
-            self.error_cold_nodes[i] = self.error_cold
-
-            self.exh.T_nodes[i] = self.exh.T
-            self.exh.h_nodes[i] = self.exh.h
-            self.exh.f_nodes = self.exh.f
-            self.exh.Nu_nodes = self.exh.Nu_D
-
-            self.cool.h_nodes[i] = self.cool.h
-            self.cool.T_nodes[i] = self.cool.T
-            self.cool.f_nodes = self.cool.f
-            self.cool.Nu_nodes = self.cool.Nu_D
-            self.tem.T_h_nodes[i] = self.tem.T_h
-            # hot side temperature (K) of TEM at each node 
-            self.tem.T_c_nodes[i] = self.tem.T_c
-            # cold side temperature (K) of TEM at each node.  
-            self.U_nodes[i] = self.U
-            self.U_hot_nodes[i] = self.U_hot
-            self.U_cold_nodes[i] = self.U_cold
-            self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
-            self.tem.eta_nodes[i] = self.tem.eta
-            self.tem.h_nodes[i] = self.tem.h
+            self.store_node_values(i)
 
             # redefining temperatures (K) for next node
             self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
@@ -279,3 +251,37 @@ class HX(object):
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power_total - self.Wdot_pumping 
         self.eta_1st = self.power_net / self.Qdot
+
+    def store_node_values(self,i):
+        """Storing solved values in array to keep track of what
+        happens in every node."""
+        self.Qdot_nodes[i] = self.Qdot_node
+        # storing node heat transfer in array
+        self.q_h_nodes[i] = self.q_h
+        self.q_c_nodes[i] = self.q_c
+        self.tem.q_h_nodes[i] = self.tem.q_h
+        self.tem.q_c_nodes[i] = self.tem.q_c
+        self.error_hot_nodes[i] = self.error_hot
+        self.error_cold_nodes[i] = self.error_cold
+
+        self.exh.T_nodes[i] = self.exh.T
+        self.exh.h_nodes[i] = self.exh.h
+        self.exh.f_nodes = self.exh.f
+        self.exh.Nu_nodes = self.exh.Nu_D
+
+        self.cool.h_nodes[i] = self.cool.h
+        self.cool.T_nodes[i] = self.cool.T
+        self.cool.f_nodes = self.cool.f
+        self.cool.Nu_nodes = self.cool.Nu_D
+        self.tem.T_h_nodes[i] = self.tem.T_h
+        # hot side temperature (K) of TEM at each node 
+        self.tem.T_c_nodes[i] = self.tem.T_c
+        # cold side temperature (K) of TEM at each node.  
+        self.U_nodes[i] = self.U
+        self.U_hot_nodes[i] = self.U_hot
+        self.U_cold_nodes[i] = self.U_cold
+        self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
+        self.tem.eta_nodes[i] = self.tem.eta
+        self.tem.h_nodes[i] = self.tem.h
+
+        
