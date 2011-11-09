@@ -6,11 +6,14 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import os
 
-#
+os.chdir('Modules/')
+
 # User Defined Modules
 # In this directory
 import hx
 reload(hx)
+
+os.chdir('..')
 
 area = (0.002)**2
 length = 1.e-3
