@@ -5,7 +5,6 @@
 import numpy as np
 import matplotlib.pyplot as mpl
 import scipy.optimize as spopt
-import time
 
 # User Defined Modules
 # In this directory
@@ -32,11 +31,6 @@ class HX(object):
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
         self.xtol = 0.01
-        self.R_contact = 0.
-        # thermal contact resistance (m^2*K/kW) between plates
-        self.thermoelectrics_on = True
-        # if True, the thermoelectric model runs, if false, pure
-        # conduction 
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -101,15 +95,15 @@ class HX(object):
         # TE stuff
 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.R_contact + self.tem.R_thermal + self.R_contact +
+        self.plate.R_contact + self.tem.R_thermal + self.plate.R_contact +
         self.plate.R_thermal + self.cool.R_thermal )**-1 )    
         # overall heat transfer coefficient (kW/m^2-K)
         self.U_hot = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.R_contact)**-1 )
+        self.plate.R_contact)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE hot side and
         # exhaust  
         self.U_cold = ( (self.cool.R_thermal +
-        self.plate.R_thermal + self.R_contact)**-1 )
+        self.plate.R_thermal + self.plate.R_contact)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
         
@@ -137,7 +131,6 @@ class HX(object):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
-        self.t = time.clock()
         self.tem.Ntype.node = i # used within tem.py
         self.tem.Ptype.node = i
         
@@ -158,39 +151,20 @@ class HX(object):
         self.error_hot = 100. # really big number to start while loop
 
         self.loop_count = 0
-        if self.thermoelectrics_on == True:
-            while ( np.absolute(self.error_hot) > self.xtol or
-        np.absolute(self.error_cold) > self.xtol ): 
-                self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
-        x0=self.tem.T_h_goal)
-                # self.tem.solve_tem()
-                self.tem.T_c = spopt.fsolve(self.get_error_cold,
-        x0=self.tem.T_c) 
-                self.error_cold = self.get_error_cold(self.tem.T_c)
-                self.error_hot = self.get_error_hot(self.tem.T_h)
-                self.loop_count = self.loop_count + 1
-                self.Qdot_node = -self.q_h * self.area
-                # heat transfer on hot side of node, positive values indicates
-                # heat transfer from hot to cold
-
-        else:
-            self.tem.Ntype.set_TEproperties()
-            self.tem.Ptype.set_TEproperties()
-            self.tem.Ntype.R_thermal = ( self.tem.Ntype.length /
-            (self.tem.Ntype.k * self.tem.Ntype.area) )
-            self.tem.Ptype.R_thermal = ( self.tem.Ptype.length /
-            (self.tem.Ptype.k * self.tem.Ptype.area) )
-            self.tem.R_thermal = ( (self.tem.Ntype.R_thermal**-1. +
-            self.tem.Ptype.R_thermal**-1.)**-1 * (self.tem.area +
-            self.tem.area_void) )  
+        while ( np.absolute(self.error_hot) > self.xtol or
+    np.absolute(self.error_cold) > self.xtol ): 
+            self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
+    x0=self.tem.T_h_goal)
+            # self.tem.solve_tem()
+            self.tem.T_c = spopt.fsolve(self.get_error_cold,
+    x0=self.tem.T_c) 
+            self.error_cold = self.get_error_cold(self.tem.T_c)
+            self.error_hot = self.get_error_hot(self.tem.T_h)
+            self.loop_count = self.loop_count + 1
+            self.Qdot_node = -self.q_h * self.area
+            # heat transfer on hot side of node, positive values indicates
+            # heat transfer from hot to cold
             
-            self.set_convection()
-            self.q_h = self.U * (self.cool.T - self.exh.T)
-        self.Qdot_node = -self.q_h * self.area
-            
-        self.elapsed = time.clock() - self.t
-        # print "elapsed time:", self.elapsed
-        
     def solve_hx(self,**kwargs): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
         if 'verbose' in kwargs:
@@ -248,13 +222,12 @@ class HX(object):
 
             self.Qdot_nodes[i] = self.Qdot_node
             # storing node heat transfer in array
-            if self.thermoelectrics_on == True:
-                self.q_h_nodes[i] = self.q_h
-                self.q_c_nodes[i] = self.q_c
-                self.tem.q_h_nodes[i] = self.tem.q_h
-                self.tem.q_c_nodes[i] = self.tem.q_c
-                self.error_hot_nodes[i] = self.error_hot
-                self.error_cold_nodes[i] = self.error_cold
+            self.q_h_nodes[i] = self.q_h
+            self.q_c_nodes[i] = self.q_c
+            self.tem.q_h_nodes[i] = self.tem.q_h
+            self.tem.q_c_nodes[i] = self.tem.q_c
+            self.error_hot_nodes[i] = self.error_hot
+            self.error_cold_nodes[i] = self.error_cold
 
             self.exh.T_nodes[i] = self.exh.T
             self.exh.h_nodes[i] = self.exh.h
@@ -276,25 +249,15 @@ class HX(object):
             self.tem.eta_nodes[i] = self.tem.eta
             self.tem.h_nodes[i] = self.tem.h
 
-            if self.thermoelectrics_on == True:
-                # redefining temperatures (K) for next node
-                self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
-                    self.exh.C )   
-                if self.type == 'parallel':
-                    self.cool.T = ( self.cool.T - self.tem.q_c * self.area
-                        / self.cool.C )  
-                elif self.type == 'counter':
-                    self.cool.T = ( self.cool.T + self.tem.q_c * self.area
-                        / self.cool.C )
-            else:
-                self.exh.T = ( self.exh.T - self.Qdot_node / self.exh.C )
-                if self.type == 'parallel':
-                    self.cool.T = ( self.cool.T + self.Qdot_node /
-            self.cool.C )    
-                elif self.type == 'counter':
-                    self.cool.T = ( self.cool.T + self.Qdot_node /
-            self.cool.C ) 
-                
+            # redefining temperatures (K) for next node
+            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+                self.exh.C )   
+            if self.type == 'parallel':
+                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+                    / self.cool.C )  
+            elif self.type == 'counter':
+                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+                    / self.cool.C )
                 
         # defining HX outlet/inlet temperatures (K)
         self.exh.T_outlet = self.exh.T
@@ -314,28 +277,3 @@ class HX(object):
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power_total - self.Wdot_pumping 
         self.eta_1st = self.power_net / self.Qdot
-
-    def set_params(self):
-        """Uses scipy optimize curve_fit to R_contact and Nu_coeff."""
-        def get_Qdot(flow_array, Nu_coeff, R_contact):
-            """Returns heat transfer as a function of fit parameters Nu_coeff
-            and R_contact."""
-            self.exh.Nu_coeff = Nu_coeff
-            print self.exh.Nu_coeff 
-            self.R_contact = R_contact
-            print self.R_contact
-            Qdot_array = np.empty(np.size(self.exh.T_array))
-            for i in range(np.size(self.exh.T_array)):
-                self.cool.T_outlet = self.cool.T_outlet_array[i] + 273.15
-                self.exh.T_inlet = self.exh.T_inlet_array[i] + 273.15
-                self.exh.T = self.exh.T_inlet
-                self.exh.set_TempPres_dependents()
-                self.exh.mdot = flow_array[i] * self.exh.rho 
-
-                self.solve_hx()
-            return Qdot_array
-        popt, pcov = spopt.curve_fit(get_Qdot, self.exh.flow_array,
-        self.exh.Qdot_exp, p0=[0.023,0.1])  
-        self.exh.Nu_coeff = popt[0]
-        self.R_contact = popt[1]
-
