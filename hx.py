@@ -40,6 +40,39 @@ class HX(object):
         self.cummins = engine.Engine()
 
         self.fix_geometry()
+        self.init_arrays()
+
+    def init_arrays(self):
+        # initializing arrays for tracking variables at nodes
+        ZEROS = np.zeros(self.nodes)
+        self.Qdot_nodes = ZEROS.copy() # initialize array for storing
+                                    # heat transfer (kW) in each node 
+        self.exh.T_nodes = ZEROS.copy()
+        # initializing array for storing temperature (K) in each node 
+        self.exh.h_nodes = ZEROS.copy()
+        self.exh.f_nodes = ZEROS.copy()
+        self.exh.Nu_nodes = ZEROS.copy()
+        self.cool.T_nodes = ZEROS.copy() # initializing array for storing
+                                     # temperature (K) in each node 
+        self.cool.f_nodes = ZEROS.copy()
+        self.cool.Nu_nodes = ZEROS.copy()
+        self.cool.h_nodes = ZEROS.copy() 
+        self.U_nodes = ZEROS.copy() 
+        self.U_hot_nodes = ZEROS.copy() 
+        self.U_cold_nodes = ZEROS.copy()
+        self.q_h_nodes = ZEROS.copy()
+        self.q_c_nodes = ZEROS.copy()
+        self.tem.q_h_nodes = ZEROS.copy()
+        self.tem.q_c_nodes = ZEROS.copy()
+        self.error_hot_nodes = ZEROS.copy()
+        self.error_cold_nodes = ZEROS.copy()
+        self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
+                                     # temperature (K) in each node 
+        self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
+                                     # temperature (K) in each node
+        self.tem.h_nodes = ZEROS.copy()                                     
+        self.tem.power_nodes = ZEROS.copy()
+        self.tem.eta_nodes = ZEROS.copy()
 
     def setup(self):
         """Sets up variables that must be defined before running
@@ -183,37 +216,6 @@ class HX(object):
         self.tem.Ptype.set_prop_fit()
         self.tem.Ntype.set_prop_fit()
 
-        # initializing arrays for tracking variables at nodes
-        ZEROS = np.zeros(self.nodes)
-        self.Qdot_nodes = ZEROS.copy() # initialize array for storing
-                                    # heat transfer (kW) in each node 
-        self.exh.T_nodes = ZEROS.copy()
-        # initializing array for storing temperature (K) in each node 
-        self.exh.h_nodes = ZEROS.copy()
-        self.exh.f_nodes = ZEROS.copy()
-        self.exh.Nu_nodes = ZEROS.copy()
-        self.cool.T_nodes = ZEROS.copy() # initializing array for storing
-                                     # temperature (K) in each node 
-        self.cool.f_nodes = ZEROS.copy()
-        self.cool.Nu_nodes = ZEROS.copy()
-        self.cool.h_nodes = ZEROS.copy() 
-        self.U_nodes = ZEROS.copy() 
-        self.U_hot_nodes = ZEROS.copy() 
-        self.U_cold_nodes = ZEROS.copy()
-        self.q_h_nodes = ZEROS.copy()
-        self.q_c_nodes = ZEROS.copy()
-        self.tem.q_h_nodes = ZEROS.copy()
-        self.tem.q_c_nodes = ZEROS.copy()
-        self.error_hot_nodes = ZEROS.copy()
-        self.error_cold_nodes = ZEROS.copy()
-        self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
-                                     # temperature (K) in each node 
-        self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
-                                     # temperature (K) in each node
-        self.tem.h_nodes = ZEROS.copy()                                     
-        self.tem.power_nodes = ZEROS.copy()
-        self.tem.eta_nodes = ZEROS.copy()
-        
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
             if self.verbose == True:
