@@ -14,7 +14,6 @@ class PlateWall(object):
         self.c_p = 900.e-3 # specific heat of aluminum (J/kg-K)
         self.R_contact = 0.
         # thermal contact resistance (m^2*K/kW) between plates
-        self.t_step = 1. # time step (s) for transient model 
 
     def set_h(self):
         """Sets the effective convection coefficient which is the
