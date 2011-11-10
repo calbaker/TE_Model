@@ -22,42 +22,42 @@ class transient_hx(hx):
 
     def init_arrays(self):
         # initializing arrays for tracking variables at nodes
-        EMPTY = np.empty(self.t_step, self.nodes)
-        self.Qdot_nodes = EMPTY.copy() # initialize array for storing
+        ZEROS = np.zeros(self.t_step, self.nodes)
+        self.Qdot_nodes = ZEROS.copy() # initialize array for storing
                                     # heat transfer (kW) in each node 
-        self.exh.T_nodes = EMPTY.copy()
+        self.exh.T_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
-        self.exh.h_nodes = EMPTY.copy()
-        self.exh.f_nodes = EMPTY.copy()
-        self.exh.Nu_nodes = EMPTY.copy()
-        self.cool.T_nodes = EMPTY.copy() # initializing array for storing
+        self.exh.h_nodes = ZEROS.copy()
+        self.exh.f_nodes = ZEROS.copy()
+        self.exh.Nu_nodes = ZEROS.copy()
+        self.cool.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-        self.cool.f_nodes = EMPTY.copy()
-        self.cool.Nu_nodes = EMPTY.copy()
-        self.cool.h_nodes = EMPTY.copy() 
-        self.U_nodes = EMPTY.copy() 
-        self.U_hot_nodes = EMPTY.copy() 
-        self.U_cold_nodes = EMPTY.copy()
-        self.q_h_nodes = EMPTY.copy()
-        self.q_c_nodes = EMPTY.copy()
-        self.tem.q_h_nodes = EMPTY.copy()
-        self.tem.q_c_nodes = EMPTY.copy()
-        self.error_hot_nodes = EMPTY.copy()
-        self.error_cold_nodes = EMPTY.copy()
-        self.tem.T_c_nodes = EMPTY.copy() # initializing array for storing
+        self.cool.f_nodes = ZEROS.copy()
+        self.cool.Nu_nodes = ZEROS.copy()
+        self.cool.h_nodes = ZEROS.copy() 
+        self.U_nodes = ZEROS.copy() 
+        self.U_hot_nodes = ZEROS.copy() 
+        self.U_cold_nodes = ZEROS.copy()
+        self.q_h_nodes = ZEROS.copy()
+        self.q_c_nodes = ZEROS.copy()
+        self.tem.q_h_nodes = ZEROS.copy()
+        self.tem.q_c_nodes = ZEROS.copy()
+        self.error_hot_nodes = ZEROS.copy()
+        self.error_cold_nodes = ZEROS.copy()
+        self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-        self.tem.T_h_nodes = EMPTY.copy() # initializing array for storing
+        self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node
-        self.tem.h_nodes = EMPTY.copy()                                     
-        self.tem.power_nodes = EMPTY.copy()
-        self.tem.eta_nodes = EMPTY.copy()
+        self.tem.h_nodes = ZEROS.copy()                                     
+        self.tem.power_nodes = ZEROS.copy()
+        self.tem.eta_nodes = ZEROS.copy()
 
     def solve_hx_transient(self):
         """needs a better doc string"""
         self.solve_hx()
 
         self.power_net_trans = (
-        np.empty([np.size(self.exh.T_inlet_array),
+        np.zeros([np.size(self.exh.T_inlet_array),
         np.size(self.exh.T_nodes)]) ) 
 
         for i in range(np.size(self.exh.T_inlet_array)):
