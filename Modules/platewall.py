@@ -10,30 +10,52 @@ class PlateWall(object):
     def __init__(self):
         """Initializes material properties and plate wall geometry defaults."""
         self.k = 0.2 # thermal conductivity (kW/m-K) of Aluminum HX plate
-        self.t = 0.00635 # thickness (m) of HX plate
-        self.c_p = 900.e-3 # specific heat of aluminum (J/kg-K)
+        self.thickness = 0.00635 # thickness (m) of HX plate
         self.R_contact = 0.
         # thermal contact resistance (m^2*K/kW) between plates
+        self.nodes = 3.
+        self.time = 1. # time (s) of something that I don't understand
+                       # yet.  
+        self.t_step = 0.01 # time step (s) in transient solution
 
     def set_h(self):
         """Sets the effective convection coefficient which is the
         inverse of thermal resistance."""
-        self.h = self.k/self.t
+        self.h = self.k/self.thickness
         self.R_thermal = 1. / self.h
 
-    def get_error_hot(self, delta_T):
-        """needs a better doc string"""
-        self.delta_T = delta_T
-        self.q_h = ( self.h * (self.T_c - self.T_h) + 0.5 * self.m *
-        self.c_p * self.delta_T / self.t_step )
-        
-    def get_error_cold(self, delta_T):
-        """needs a better doc string"""
-        self.delta_T = delta_T
-        self.q_c = ( self.h * (self.T_c - self.T_h) - 0.5 * self.m *
-        self.c_p * self.delta_T / self.t_step )         
+    def solve_ss(self):
+        """sets up for solve_transient"""
+        self.T0 = np.linspace(self.T_c, self.T_h, self.nodes)
 
-    def solve(self):
+    def setup_transient(self):
+        """sets Fo and maybe other things."""
+        self.x_step = self.thickness / (self.nodes - 1.)
+        self.Fo = ( self.alpha * self.t_step / self.x_step**2)         
+        self.t_crit = self.x_step**2 / (2. * self.alpha)
+        self.margin = (t_crit - t_step) / t_crit * 100.
+        if self.t_step > self.t_crit:
+            print "time step is", margin, """percent lower than
+        necessary."""
+        self.T = np.zeros([self.x.size, self.t.size])
+
+    def solve_transient(self):
         """Similar to tem.solve_leg but simpler."""
-        self.delta_T = 3.
-        # change in temperature with respect to time.  
+        self.T_old = self.T
+
+        T[:,0] = np.array(np.linspace(T_hot[0], T_cold, x.size))
+        T[-1,:] = T_cold
+
+        # creating and populating the coefficient matrix
+        coeff_mat = np.zeros([T.shape[0], T.shape[0]])
+        coeff_mat[0,0] = 1.
+        coeff_mat[-1,-1] = 1.
+        for pop in range(coeff_mat.shape[0]-2):
+            coeff_mat[pop+1, pop] = Fo
+            coeff_mat[pop+1, pop+1] = 1. - 2. * Fo
+            coeff_mat[pop+1, pop+2] = Fo
+
+            # solving
+        for i in range(1,t.size):
+            T[:,i] = np.dot(coeff_mat, T[:,i-1])
+
