@@ -62,11 +62,13 @@ class PlateWall(object):
             
     def solve_transient(self, T_exh, T_te_hot):
         """Similar to tem.solve_leg but simpler and maybe not
-        simpler.""" 
-        self.T_bc = np.array([T_exh, 0., T_te_hot])
+        simpler. Time step should be the same as the residence time of
+        exhaust gas in a particular node in the heat exchanger.""" 
+        self.T_bc = np.zeros(self.T.shape[0])
+        self.T_bc[0] = T_exh
+        self.T_bc[-1] = T_te_hot
         # forcing matrix
 
-            # solving
         for i in range(1, np.size(self.time)):
             self.T[:,i] = ( np.dot(self.coeff_mat, self.T[:,i-1]) +
         np.dot(self.coeff_mat2, self.T_bc) ) 
