@@ -2,7 +2,7 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 import os
 
@@ -10,49 +10,24 @@ os.chdir('../Modules/')
 
 # User Defined Modules
 # In this directory
-import hx
-reload(hx)
+import platewall 
+reload(platewall)
 
 os.chdir('..')
 
-area = (0.002)**2
-length = 1.e-3
-current = 4.
-area_ratio = 0.69
-fill_fraction = 1. / 40.
+plate = platewall.PlateWall()
 
-hx_inst = hx.HX()
-hx_inst.tem.method = 'analytical'
-hx_inst.width = 30.e-2
-hx_inst.exh.bypass = 0.
-hx_inst.exh.height = 3.5e-2
-hx_inst.cool.mdot = 1.
-hx_inst.length = 1.
-hx_inst.tem.I = current
-hx_inst.tem.length = length
+plate.T_h = 500.
+plate.T_c = 300.
 
-hx_inst.tem.Ptype.material = 'HMS'
-hx_inst.tem.Ntype.material = 'MgSi'
+plate.set_h()
+plate.solve_ss()
+plate.time = np.arange(0, 30., plate.t_step) # total run time (s)
 
-hx_inst.tem.Ptype.area = area                           
-hx_inst.tem.Ntype.area = hx_inst.tem.Ptype.area * area_ratio
-hx_inst.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_inst.tem.Ptype.area +
-                            hx_inst.tem.Ntype.area) )  
+h_exh = 100.
+plate.setup_transient(h_exh)
 
-hx_inst.type = 'parallel'
-# hx_inst.exh.enhancement = 'straight fins'
-# hx_inst.exh.fins = 15
-
-hx_inst.exh.T_inlet = 800.
-hx_inst.exh.P = 100.
-hx_inst.cool.T_inlet = 300.
-
-hx_inst.set_mdot_charge()
-hx_inst.solve_hx()
-
-print "\nProgram finished."
-print "\nPlotting..."
+plate.solve_transient(900., 300.)
 
 # Plot configuration
 FONTSIZE = 20
@@ -65,34 +40,15 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close('all')
 
-plt.figure()
-plt.plot(hx_inst.x_dim * 100., hx_inst.exh.T_nodes, 'sr', label='Exhaust')
-plt.plot(hx_inst.x_dim * 100., hx_inst.tem.T_h_nodes, 'sg', label='TEM Hot Side')
-plt.plot(hx_inst.x_dim * 100., hx_inst.tem.T_c_nodes, 'sk', label='TEM Cold Side')
-plt.plot(hx_inst.x_dim * 100., hx_inst.cool.T_nodes, 'sb', label='Coolant')
+fig1 = plt.figure()
+for i in range(plate.time.size):
+    if i%250 == 0:
+        plt.plot(plate.x*100., plate.T[:,i])
 
-plt.xlabel('Distance Along HX (cm)')
+plt.xlabel('X coordinate (cm)')
 plt.ylabel('Temperature (K)')
-#plt.title('Temperature v. Distance, '+hx_inst.type)
 plt.grid()
-plt.legend(loc='best')
-plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'temp.png')
-plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'temp.pdf')
 
-plt.figure()
-plt.plot(hx_inst.x_dim * 100., hx_inst.tem.power_nodes * 1000., 's', label='Exhaust')
-
-plt.xlabel('Distance Along HX (cm)')
-plt.ylabel('TEG Power (W)')
-plt.grid()
-plt.legend(loc='best')
-plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'TEG power.png')
-plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'TEG power.pdf')
-
-# plt.show()
-
-print hx_inst.power_net
+plt.show()
 
 os.chdir('Instances')
