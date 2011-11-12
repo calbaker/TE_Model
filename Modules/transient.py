@@ -53,7 +53,26 @@ class transient_hx(hx):
         self.tem.eta_nodes = ZEROS.copy()
 
     def solve_hx_transient(self):
-        """needs a better doc string"""
+        """This doc string will talk about what this method should
+        do.  The method should specify an inlet boundary condition
+        after having initially run the steady state solution.  With
+        the inlet boundary condition establish and temperature
+        profiles in all of the nodes known (must store temp data in 2d
+        for tem's), the inlet boundary condition can then be changed.
+        For the first streamwise hx node, the plate model and te model
+        can be iterated until their boundary conditions match up.
+        When this happens the temperature values and performance
+        parameters of interest must be stored.  Then the next node is
+        iterated and so forth.
+
+        After all the nodes have been iterated in this fashion, the
+        time is incremented by the residence time of the exhaust in a
+        single node (or perhaps less???).  Then the new exhaust
+        temperature profile can be estimated because a slug of exhaust
+        has moved one node forward, but maybe this is already
+        accounted for.  I don't know; I'll need to think about this
+        one for a bit."""
+        
         self.solve_hx()
 
         self.power_net_trans = (

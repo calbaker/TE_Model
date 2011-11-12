@@ -20,7 +20,7 @@ class PlateWall(object):
         # thermal contact resistance (m^2*K/kW) between plates
         self.nodes = 3. # default number of nodes in transient
                         # solution.  
-        self.t_step = 0.01 # time step (s) in transient solution
+        self.t_step = 0.005 # time step (s) in transient solution
 
     def set_h(self):
         """Sets the effective convection coefficient which is the
