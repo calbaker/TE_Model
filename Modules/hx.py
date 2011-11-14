@@ -44,35 +44,40 @@ class HX(object):
 
     def init_arrays(self):
         # initializing arrays for tracking variables at nodes
-        EMPTY = np.empty(self.nodes)
-        self.Qdot_nodes = EMPTY.copy() # initialize array for storing
+        ZEROS = np.zeros(self.nodes)
+        self.Qdot_nodes = ZEROS.copy() # initialize array for storing
                                     # heat transfer (kW) in each node 
-        self.exh.T_nodes = EMPTY.copy()
+        self.exh.T_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
-        self.exh.h_nodes = EMPTY.copy()
-        self.exh.f_nodes = EMPTY.copy()
-        self.exh.Nu_nodes = EMPTY.copy()
-        self.cool.T_nodes = EMPTY.copy() # initializing array for storing
+        self.exh.h_nodes = ZEROS.copy()
+        self.exh.f_nodes = ZEROS.copy()
+        self.exh.Nu_nodes = ZEROS.copy()
+
+        self.cool.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-        self.cool.f_nodes = EMPTY.copy()
-        self.cool.Nu_nodes = EMPTY.copy()
-        self.cool.h_nodes = EMPTY.copy() 
-        self.U_nodes = EMPTY.copy() 
-        self.U_hot_nodes = EMPTY.copy() 
-        self.U_cold_nodes = EMPTY.copy()
-        self.q_h_nodes = EMPTY.copy()
-        self.q_c_nodes = EMPTY.copy()
-        self.tem.q_h_nodes = EMPTY.copy()
-        self.tem.q_c_nodes = EMPTY.copy()
-        self.error_hot_nodes = EMPTY.copy()
-        self.error_cold_nodes = EMPTY.copy()
-        self.tem.T_c_nodes = EMPTY.copy() # initializing array for storing
+        self.cool.f_nodes = ZEROS.copy()
+        self.cool.Nu_nodes = ZEROS.copy()
+        self.cool.h_nodes = ZEROS.copy() 
+
+        self.U_nodes = ZEROS.copy() 
+        self.U_hot_nodes = ZEROS.copy() 
+        self.U_cold_nodes = ZEROS.copy()
+
+        self.q_h_nodes = ZEROS.copy()
+        self.q_c_nodes = ZEROS.copy()
+        self.tem.q_h_nodes = ZEROS.copy()
+        self.tem.q_c_nodes = ZEROS.copy()
+
+        self.error_hot_nodes = ZEROS.copy()
+        self.error_cold_nodes = ZEROS.copy()
+
+        self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-        self.tem.T_h_nodes = EMPTY.copy() # initializing array for storing
+        self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node
-        self.tem.h_nodes = EMPTY.copy()                                     
-        self.tem.power_nodes = EMPTY.copy()
-        self.tem.eta_nodes = EMPTY.copy()
+        self.tem.h_nodes = ZEROS.copy()                                     
+        self.tem.power_nodes = ZEROS.copy()
+        self.tem.eta_nodes = ZEROS.copy()
 
     def setup(self):
         """Sets up variables that must be defined before running
@@ -273,13 +278,18 @@ class HX(object):
         self.cool.T_nodes[i] = self.cool.T
         self.cool.f_nodes = self.cool.f
         self.cool.Nu_nodes = self.cool.Nu_D
+
+        self.plate.T_nodes[:,i] = self.plate.T
+
         self.tem.T_h_nodes[i] = self.tem.T_h
         # hot side temperature (K) of TEM at each node 
         self.tem.T_c_nodes[i] = self.tem.T_c
         # cold side temperature (K) of TEM at each node.  
+
         self.U_nodes[i] = self.U
         self.U_hot_nodes[i] = self.U_hot
         self.U_cold_nodes[i] = self.U_cold
+
         self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
         self.tem.eta_nodes[i] = self.tem.eta
         self.tem.h_nodes[i] = self.tem.h
