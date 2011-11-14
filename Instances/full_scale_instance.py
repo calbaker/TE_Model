@@ -4,17 +4,17 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as plt
-import os
-
-os.chdir('../Modules/')
+import os, sys
 
 # User Defined Modules
-# In this directory
+
+cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
+
 import hx
 reload(hx)
-
-os.chdir('..')
-
+    
 area = (0.002)**2
 length = 1.e-3
 current = 4.
@@ -77,8 +77,8 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'temp.png')
-plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'temp.pdf')
+plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'temp.png')
+plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'temp.pdf')
 
 plt.figure()
 plt.plot(hx_inst.x_dim * 100., hx_inst.tem.power_nodes * 1000., 's', label='Exhaust')
@@ -88,11 +88,10 @@ plt.ylabel('TEG Power (W)')
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'TEG power.png')
-plt.savefig('Plots/' + hx_inst.tem.method + '/' + 'TEG power.pdf')
+plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'TEG power.png')
+plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'TEG power.pdf')
 
 # plt.show()
 
 print hx_inst.power_net
 
-os.chdir('Instances')
