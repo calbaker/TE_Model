@@ -4,31 +4,29 @@
 # Distribution Modules
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+import os, sys
 
-os.chdir('../Modules/')
+cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 
-# User Defined Modules
-# In this directory
 import platewall 
 reload(platewall)
-
-os.chdir('..')
 
 plate = platewall.PlateWall()
 
 plate.nodes = 4.
-plate.T_h = 500.
-plate.T_c = 400.
+plate.T_h = 300.
+plate.T_c = 300.
 
 plate.set_h()
 plate.solve_ss()
 plate.time = np.arange(0, 2., plate.t_step) # total run time (s)
 
-h_exh = 100.
+h_exh = 0.2
 plate.setup_transient(h_exh)
 
-plate.solve_transient(600., 450.)
+plate.solve_transient(700., 500.)
 
 # Plot configuration
 FONTSIZE = 20
