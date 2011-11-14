@@ -32,6 +32,12 @@ class PlateWall(object):
         """sets up for solve_transient"""
         self.T0 = np.linspace(self.T_c, self.T_h, self.nodes)
 
+    def init_arrays(self):
+        """initializes array for storying temperature"""
+        self.T = np.zeros([self.nodes, np.size(self.time)])
+        self.T[:,0] = np.array(np.linspace(self.T_h, self.T_c,
+        self.nodes)) 
+
     def setup_transient(self, h_exh):
         """sets Fo and maybe other things.  See Mills Table 3.8""" 
         self.x_step = self.thickness / (self.nodes - 1.)
@@ -43,9 +49,6 @@ class PlateWall(object):
         if self.Fo > self.Fo_crit:
             print "time step is", self.margin, """percent lower than
         necessary."""
-        self.T = np.zeros([self.nodes, np.size(self.time)])
-        self.T[:,0] = np.array(np.linspace(self.T_h, self.T_c,
-        self.nodes)) 
 
         # creating and populating the coefficient matrix
         self.coeff_mat = np.zeros([self.T.shape[0], self.T.shape[0]]) 
