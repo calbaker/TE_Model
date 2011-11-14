@@ -11,7 +11,7 @@ import os
 import hx
 reload(hx)
 
-class transient_hx(hx):
+class Transient_HX(hx.HX):
     """Special class for modeling waste heat recovery heat exchanger
     with transient inlet temperature and flow conditions."""
 
@@ -76,10 +76,10 @@ class transient_hx(hx):
         self.solve_hx()
 
         self.power_net_trans = (
-        np.zeros([np.size(self.exh.T_inlet_array),
-        np.size(self.exh.T_nodes)]) ) 
+        np.zeros([self.exh.T_inlet_array.size, self.exh.T_nodes.size])
+        )  
 
-        for i in range(np.size(self.exh.T_inlet_array)):
+        for i in range(self.exh.T_inlet_array.size):
             
                         
     
@@ -109,6 +109,7 @@ class transient_hx(hx):
         happens in every node."""
         self.Qdot_nodes[i,t] = self.Qdot_node
         # storing node heat transfer in array
+
         self.q_h_nodes[i,t] = self.q_h
         self.q_c_nodes[i,t] = self.q_c
         self.tem.q_h_nodes[i,t] = self.tem.q_h
@@ -125,16 +126,77 @@ class transient_hx(hx):
         self.cool.T_nodes[i,t] = self.cool.T
         self.cool.f_nodes = self.cool.f
         self.cool.Nu_nodes = self.cool.Nu_D
+
         self.tem.T_h_nodes[i,t] = self.tem.T_h
         # hot side temperature (K) of TEM at each node 
         self.tem.T_c_nodes[i,t] = self.tem.T_c
         # cold side temperature (K) of TEM at each node.  
+
         self.U_nodes[i,t] = self.U
         self.U_hot_nodes[i,t] = self.U_hot
         self.U_cold_nodes[i,t] = self.U_cold
+
         self.tem.power_nodes[i,t] = self.tem.P * self.leg_pairs
         self.tem.eta_nodes[i,t] = self.tem.eta
         self.tem.h_nodes[i,t] = self.tem.h
+
+    def init_node_values(self):
+        """Initiating important values in arrays to keep track of what
+        happens in every node.""" 
+        self.Qdot_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        # storing node heat transfer in array
+
+        self.q_h_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.q_c_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.tem.q_h_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.tem.q_c_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.error_hot_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.error_cold_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+
+        self.exh.T_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.exh.h_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.exh.f_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.exh.Nu_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+
+        self.cool.h_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.cool.T_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.cool.f_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.cool.Nu_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        
+        self.tem.T_h_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        # hot side temperature (K) of TEM at each node 
+        self.tem.T_c_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        # cold side temperature (K) of TEM at each node.  
+
+        self.U_nodes = np.zeros([self.nodes, self.time / self.t_step]) 
+        self.U_hot_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.U_cold_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+
+        self.tem.power_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.tem.eta_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
+        self.tem.h_nodes = np.zeros([self.nodes, self.time /
+        self.t_step]) 
 
         
             
