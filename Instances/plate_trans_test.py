@@ -27,7 +27,7 @@ h_exh = 0.2
 plate.init_arrays()
 plate.setup_transient(h_exh)
 
-plate.solve_transient(700., 500.)
+plate.solve_standalone(700., 500.)
 
 # Plot configuration
 FONTSIZE = 20
@@ -51,4 +51,3 @@ plt.grid()
 
 plt.show()
 
-os.chdir('Instances')
