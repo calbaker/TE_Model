@@ -50,8 +50,10 @@ hx_trans.set_mdot_charge()
 hx_trans.init_arrays()
 hx_trans.solve_hx()
 hx_trans.set_t_step()
-hx_trans.exh.T_inlet_trans = np.linspace(0, 2. * np.pi,
-					 int(hx_trans.t_max / hx_trans.t_step))
+hx_trans.exh.T_inlet_trans = ( np.sin(np.linspace(0, 2. * np.pi,
+			   int(hx_trans.t_max / hx_trans.t_step))) *
+			       50. + 700. )
+
 hx_trans.solve_hx_transient()
 
 print "\nProgram finished."
@@ -68,7 +70,14 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close('all')
 
-
+fig1 = plt.figure()
+# plt.plot(np.arange(1,hx_trans.t_max,hx_trans.t_step),
+# 	 hx_trans.exh.T_inlet_trans, label='Exhaust Temperature (K)')
+plt.plot(np.arange(1,hx_trans.t_max,hx_trans.t_step),
+	 hx_trans.power_net_trans, label='Net Power (kW)')
+plt.grid()
+plt.xlabel('Time (s)')
+plt.ylabel('Net Power (kW)')
 
 plt.show()
 

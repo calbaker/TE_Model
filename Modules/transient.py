@@ -78,7 +78,7 @@ class Transient_HX(hx.HX):
             elif self.type == 'counter':
                 self.cool.T = ( self.cool.T + self.tem.q_c * self.area
                     / self.cool.C )
-    
+
     def solve_node_transient(self,i,t):
         """needs a better doc string"""
         self.tem.Ntype.node = i # used within tem.py
@@ -128,13 +128,13 @@ class Transient_HX(hx.HX):
 
         self.exh.T_trans[i,t] = self.exh.T
         self.exh.h_trans[i,t] = self.exh.h
-        self.exh.f_trans = self.exh.f
-        self.exh.Nu_trans = self.exh.Nu_D
+        self.exh.f_trans[i,t] = self.exh.f
+        self.exh.Nu_trans[i,t] = self.exh.Nu_D
 
         self.cool.h_trans[i,t] = self.cool.h
         self.cool.T_trans[i,t] = self.cool.T
-        self.cool.f_trans = self.cool.f
-        self.cool.Nu_trans = self.cool.Nu_D
+        self.cool.f_trans[i,t] = self.cool.f
+        self.cool.Nu_trans[i,t] = self.cool.Nu_D
 
         self.tem.T_h_trans[i,t] = self.tem.T_h
         # hot side temperature (K) of TEM at each node 
@@ -151,6 +151,12 @@ class Transient_HX(hx.HX):
 
         self.plate_hot.T_trans[:,i,t] = self.plate_hot.T
 
+	self.cool.Wdot_pump_trans[t] = self.cool.Wdot_pumping
+	self.exh.Wdot_pump_trans[t] = self.exh.Wdot_pumping
+	self.Wdot_pump_trans[t] = self.cool.Wdot_pumping + self.exh.Wdot_pumping
+
+	self.power_net_trans[t] = self.tem.power_trans.sum(0)[t] - self.Wdot_pump_trans[t]
+	
     def init_trans_zeros(self):
         """Initiating important values in arrays to keep track of what
         happens in every node.""" 
@@ -212,7 +218,12 @@ class Transient_HX(hx.HX):
         self.plate_hot.T_trans = np.zeros([self.plate_hot.nodes,
         self.nodes, self.t_max / self.t_step]) 
         self.plate_hot.T_nodes = np.zeros([self.plate_hot.nodes,
-        self.nodes]) 
+        self.nodes])
+
+	self.power_net_trans = np.zeros(self.t_max / self.t_step)
+	self.Wdot_pump_trans = np.zeros(self.t_max / self.t_step)
+	self.cool.Wdot_pump_trans = np.zeros(self.t_max / self.t_step)   
+	self.exh.Wdot_pump_trans = np.zeros(self.t_max / self.t_step) 
 
     def init_trans_values(self):
         """Initiating t=0 values.""" 
@@ -275,6 +286,7 @@ class Transient_HX(hx.HX):
 
         self.U_trans[:,0] = self.U_nodes
         self.U_cold_trans[:,0] = self.U_cold_nodes
+        self.U_hot_trans[:,0] = self.U_hot_nodes
 
         self.tem.power_trans[:,0] = self.tem.power_nodes
         self.tem.eta_trans[:,0] = self.tem.eta_nodes
@@ -291,3 +303,8 @@ class Transient_HX(hx.HX):
 	    
         self.plate_hot.T_trans[:,:,0] = self.plate_hot.T_nodes
 
+	self.cool.Wdot_pump_trans[0] = self.cool.Wdot_pumping
+	self.exh.Wdot_pump_trans[0] = self.exh.Wdot_pumping
+	self.Wdot_pump_trans[0] = self.cool.Wdot_pumping + self.exh.Wdot_pumping
+
+	self.power_net_trans[0] = self.tem.power_trans.sum(0)[0] - self.Wdot_pump_trans[0]
