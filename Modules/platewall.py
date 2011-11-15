@@ -87,7 +87,7 @@ class PlateWall(object):
         self.T = ( np.dot(self.coeff_mat, self.T_prev) +
         np.dot(self.coeff_mat2, self.T_bc) )
 
-        self.q_c = -self.k * (self.T[1] - self.T[0]) / self.x_step 
+        self.q_c = -self.k * (self.T[1] - self.T[2]) / self.x_step 
         
         # print '\nplate T and q_c'
         # print self.T

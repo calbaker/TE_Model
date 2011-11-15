@@ -66,6 +66,17 @@ class Transient_HX(hx.HX):
             for i in range(self.nodes):
                 self.solve_node_transient(i,t)
                 self.store_trans_values(i,t)
+		print self.plate_hot.T
+
+            # redefining temperatures (K) for next node
+            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+                self.exh.C )   
+            if self.type == 'parallel':
+                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+                    / self.cool.C )  
+            elif self.type == 'counter':
+                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+                    / self.cool.C )
     
     def solve_node_transient(self,i,t):
         """needs a better doc string"""
@@ -74,19 +85,15 @@ class Transient_HX(hx.HX):
         self.node = i
         self.time = t
         
-        if i == 0:
-            self.tem.T_c = self.cool.T
-            # guess at cold side tem temperature (K)
-            self.tem.T_h_goal = self.exh.T
-            # guess at hot side TEM temperature (K)
-            self.tem.solve_tem()
-            self.set_convection()
-            self.q = self.U * (self.cool.T - self.exh.T)
-            self.tem.T_h_goal = self.q / self.U_hot + self.exh.T
-            self.tem.T_c = -self.q / self.U_cold + self.cool.T
-        else:
-            self.tem.T_c = (self.tem.T_c_nodes[i-1])
-            self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
+	self.tem.T_c = self.cool.T
+	# guess at cold side tem temperature (K)
+	self.tem.T_h_goal = self.exh.T
+	# guess at hot side TEM temperature (K)
+	self.tem.solve_tem()
+	self.set_convection()
+	self.q = self.U * (self.cool.T - self.exh.T)
+	self.tem.T_h_goal = self.q / self.U_hot + self.exh.T
+	self.tem.T_c = -self.q / self.U_cold + self.cool.T
 
 	self.plate_hot.T_prev = self.plate_hot.T_trans[:,i,t-1]
         self.plate_hot.setup_transient(self.exh.h_trans[i,t-1])
