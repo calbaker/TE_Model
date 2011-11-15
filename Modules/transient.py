@@ -31,9 +31,6 @@ class Transient_HX(hx.HX):
 
     def get_error_hot_trans(self,T_h):
         """Needs better doc string."""
-        self.plate_hot.T_prev = ( self.plate_hot.T_trans[:,
-        self.node, self.time - 1] )
-        print self.plate_hot.T_prev
         self.plate_hot.solve_transient(self.exh.T, T_h)
         # hot side heat flux coming from plate into TE devices
         self.tem.T_h_goal = T_h
@@ -65,6 +62,7 @@ class Transient_HX(hx.HX):
         self.init_trans_values()
 
         for t in range(1,int(self.t_max / self.t_step)):
+	    print "t index =", t
             for i in range(self.nodes):
                 self.solve_node_transient(i,t)
                 self.store_trans_values(i,t)
@@ -90,12 +88,8 @@ class Transient_HX(hx.HX):
             self.tem.T_c = (self.tem.T_c_nodes[i-1])
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
 
-        self.plate_hot.T_h = ( self.exh.T_trans[i,t] + self.q_h_trans[i,t-1]
-        / self.exh.h_nodes[i] )  
-        self.plate_hot.T_c = self.tem.T_h_trans[i,t-1]
-        self.plate_hot.solve_ss()
-        print self.plate_hot.T_prev
-        self.plate_hot.setup_transient(self.exh.h_trans[i,t - 1])
+	self.plate_hot.T_prev = self.plate_hot.T_trans[:,i,t-1]
+        self.plate_hot.setup_transient(self.exh.h_trans[i,t-1])
         self.error_hot = 100. # really big number to start while loop
 
         self.loop_count = 0
@@ -278,5 +272,14 @@ class Transient_HX(hx.HX):
         self.tem.eta_trans[:,0] = self.tem.eta_nodes
         self.tem.h_trans[:,0] = self.tem.h_nodes
 
+	self.plate_hot.T_h_nodes = ( self.exh.T_nodes +
+				     self.q_h_nodes / self.exh.h_nodes )
+	self.plate_hot.T_c_nodes = self.tem.T_h_nodes
+
+	for i in range(self.plate_hot.T_h_nodes.size):
+	    self.plate_hot.T_nodes[:,i] = np.linspace(
+		self.plate_hot.T_h_nodes[i], self.plate_hot.T_c_nodes[i],
+		self.plate_hot.nodes) 
+	    
         self.plate_hot.T_trans[:,:,0] = self.plate_hot.T_nodes
 
