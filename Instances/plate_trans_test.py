@@ -24,7 +24,7 @@ plate.solve_ss()
 plate.time = np.arange(0, 2., plate.t_step) # total run time (s)
 
 h_exh = 0.2
-plate.init_arrays()
+plate.init_standalone()
 plate.setup_transient(h_exh)
 
 plate.solve_standalone(700., 500.)
