@@ -2,7 +2,7 @@
 # Created on 2011 Nov 14
 
 # Distribution Modules
-import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 import os, sys
 
@@ -29,6 +29,7 @@ hx_trans.cool.mdot = 1.
 hx_trans.length = 1.
 hx_trans.tem.I = current
 hx_trans.tem.length = length
+hx_trans.t_max = .1
 
 hx_trans.tem.Ptype.material = 'HMS'
 hx_trans.tem.Ntype.material = 'MgSi'
@@ -46,6 +47,11 @@ hx_trans.exh.P = 100.
 hx_trans.cool.T_inlet = 300.
 
 hx_trans.set_mdot_charge()
+hx_trans.init_arrays()
+hx_trans.solve_hx()
+hx_trans.set_t_step()
+hx_trans.exh.T_inlet_trans = np.linspace(0, 2. * np.pi,
+					 int(hx_trans.t_max / hx_trans.t_step))
 hx_trans.solve_hx_transient()
 
 print "\nProgram finished."
@@ -62,34 +68,8 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close('all')
 
-plt.figure()
-plt.plot(hx_trans.x_dim * 100., hx_trans.exh.T_nodes, 'sr', label='Exhaust')
-plt.plot(hx_trans.x_dim * 100., hx_trans.tem.T_h_nodes, 'sg', label='TEM Hot Side')
-plt.plot(hx_trans.x_dim * 100., hx_trans.tem.T_c_nodes, 'sk', label='TEM Cold Side')
-plt.plot(hx_trans.x_dim * 100., hx_trans.cool.T_nodes, 'sb', label='Coolant')
 
-plt.xlabel('Distance Along HX (cm)')
-plt.ylabel('Temperature (K)')
-#plt.title('Temperature v. Distance, '+hx_trans.type)
-plt.grid()
-plt.legend(loc='best')
-plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/' + hx_trans.tem.method + '/' + 'temp.png')
-plt.savefig('Plots/' + hx_trans.tem.method + '/' + 'temp.pdf')
 
-plt.figure()
-plt.plot(hx_trans.x_dim * 100., hx_trans.tem.power_nodes * 1000., 's', label='Exhaust')
+plt.show()
 
-plt.xlabel('Distance Along HX (cm)')
-plt.ylabel('TEG Power (W)')
-plt.grid()
-plt.legend(loc='best')
-plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/' + hx_trans.tem.method + '/' + 'TEG power.png')
-plt.savefig('Plots/' + hx_trans.tem.method + '/' + 'TEG power.pdf')
 
-# plt.show()
-
-print hx_trans.power_net
-
-os.chdir('Instances')

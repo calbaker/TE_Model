@@ -20,7 +20,7 @@ class Transient_HX(hx.HX):
 
     def __init__(self):
         """initializes variables."""
-        self.t_max = 600. # total elapsed time (s)
+        self.t_max = 5. # total elapsed time (s)
         self.plate_hot = platewall.PlateWall()
         super(Transient_HX, self).__init__()
 
@@ -61,12 +61,13 @@ class Transient_HX(hx.HX):
         self.init_trans_zeros()
         self.init_trans_values()
 
-        for t in range(1,int(self.t_max / self.t_step)):
-	    print "t index =", t
+        for t in range(1,int(self.t_max / self.t_step)-1):
+	    if t%10 == 0:
+		print "t_index =", t, "of", int(self.t_max / self.t_step)
+		self.exh.T = self.exh.T_inlet_trans[i]		
             for i in range(self.nodes):
                 self.solve_node_transient(i,t)
                 self.store_trans_values(i,t)
-		print self.plate_hot.T
 
             # redefining temperatures (K) for next node
             self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
@@ -209,7 +210,7 @@ class Transient_HX(hx.HX):
         self.t_step])
 
         self.plate_hot.T_trans = np.zeros([self.plate_hot.nodes,
-        self.nodes, self.t_max]) 
+        self.nodes, self.t_max / self.t_step]) 
         self.plate_hot.T_nodes = np.zeros([self.plate_hot.nodes,
         self.nodes]) 
 
