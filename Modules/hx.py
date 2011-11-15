@@ -289,4 +289,4 @@ class HX(object):
         self.tem.eta_nodes[i] = self.tem.eta
         self.tem.h_nodes[i] = self.tem.h
 
-        self.exh.velocity_nodes[i] self.exh.velocity
+        self.exh.velocity_nodes[i] = self.exh.velocity
