@@ -61,7 +61,7 @@ class Transient_HX(hx.HX):
         self.init_trans_zeros()
         self.init_trans_values()
 
-        for t in range(1,int(self.t_max / self.t_step)-1):
+        for t in range(1,int(self.t_max / self.t_step)):
 	    if t%10 == 0:
 		print "t_index =", t, "of", int(self.t_max / self.t_step)
 		self.exh.T = self.exh.T_inlet_trans[i]		
