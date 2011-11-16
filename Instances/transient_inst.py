@@ -4,7 +4,7 @@
 # Distribution Modules
 import numpy as np
 import matplotlib.pyplot as plt
-import os, sys
+import os, sys, time
 
 # User Defined Modules
 
@@ -14,6 +14,8 @@ if cmd_folder not in sys.path:
 import transient
 reload(transient)
 
+t0 = time.clock()
+
 area = (0.002)**2
 length = 1.e-3
 current = 4.
@@ -21,7 +23,7 @@ area_ratio = 0.69
 fill_fraction = 1. / 40.
 
 hx_trans = transient.Transient_HX()
-# hx_trans.nodes = 100
+hx_trans.nodes = 10
 hx_trans.tem.method = 'analytical'
 hx_trans.width = 30.e-2
 hx_trans.exh.bypass = 0.
@@ -31,7 +33,7 @@ hx_trans.length = 1.
 hx_trans.tem.I = current
 hx_trans.tem.length = length
 
-hx_trans.t_max = 0.1
+hx_trans.t_max = .1
 
 hx_trans.tem.Ptype.material = 'HMS'
 hx_trans.tem.Ntype.material = 'MgSi'
@@ -57,12 +59,12 @@ hx_trans.set_t_step()
 hx_trans.init_trans_zeros()
 hx_trans.exh.T_inlet_trans = np.zeros(hx_trans.power_net_trans.size)
 hx_trans.exh.T_inlet_trans[0:5] = T_inlet
-hx_trans.exh.T_inlet_trans[5:] = T_inlet + 100. 
+hx_trans.exh.T_inlet_trans[5:] = T_inlet #+ 300. 
 
 hx_trans.solve_hx_transient()
 
-print "\nProgram finished."
-print "\nPlotting..."
+elapsed = time.clock() - t0
+print "Elapsed time (s) =", elapsed
 
 # Plot configuration
 FONTSIZE = 15
@@ -76,19 +78,18 @@ plt.rcParams['lines.linewidth'] = 2.5
 plt.close('all')
 
 fig1 = plt.figure()
-plt.plot(np.linspace(0,hx_trans.t_max,hx_trans.power_net_trans.size),
-	 hx_trans.Qdot_trans.sum(0))
+plt.plot(hx_trans.Qdot_trans.sum(0))
 plt.grid()
-plt.xlabel('Time (s)')
+plt.xlabel('Time Index')
 plt.ylabel('Stuff (kW)')
 
 fig2 = plt.figure()
-# plt.plot(hx_trans.exh.T_trans[0,:], ':r', label='exh')
-plt.plot(hx_trans.plate_hot.T_trans[0,0,:], '-.r', label='plate hot')
-plt.plot(hx_trans.plate_hot.T_trans[-1,0,:], '-.b', label='plate cold')
-plt.plot(hx_trans.tem.T_h_trans[0,:], '--r', label='TE hot')
-plt.plot(hx_trans.tem.T_c_trans[0,:], '--b', label='TE cold')
-# plt.plot(hx_trans.cool.T_trans[0,:], ':b', label='cool')
+plt.plot(hx_trans.exh.T_trans[-1,:], ':r', label='exh')
+plt.plot(hx_trans.plate_hot.T_trans[0,-1,:], '-.r', label='plate hot')
+plt.plot(hx_trans.plate_hot.T_trans[-1,-1,:], '-.b', label='plate cold')
+plt.plot(hx_trans.tem.T_h_trans[-1,:], '--r', label='TE hot')
+plt.plot(hx_trans.tem.T_c_trans[-1,:], '--b', label='TE cold')
+plt.plot(hx_trans.cool.T_trans[-1,:], ':b', label='cool')
 plt.xlabel('Time Index')
 plt.ylabel('Temperature (K)')
 plt.ylim(290, 800)

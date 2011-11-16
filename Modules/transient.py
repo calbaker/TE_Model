@@ -64,7 +64,8 @@ class Transient_HX(hx.HX):
         for t in range(1,int(self.t_max / self.t_step)):
 	    if t%10==0:
 		print "t_index =", t, "of", int(self.t_max / self.t_step)
-	    self.exh.T = self.exh.T_inlet_trans[t]		
+	    self.exh.T = self.exh.T_inlet_trans[t]
+	    self.cool.T = self.cool.T_inlet
             for i in range(self.nodes):
                 self.solve_node_transient(i,t)
                 self.store_trans_values(i,t)
