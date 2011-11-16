@@ -21,6 +21,7 @@ area_ratio = 0.69
 fill_fraction = 1. / 40.
 
 hx_trans = transient.Transient_HX()
+# hx_trans.nodes = 100
 hx_trans.tem.method = 'analytical'
 hx_trans.width = 30.e-2
 hx_trans.exh.bypass = 0.
@@ -55,8 +56,8 @@ hx_trans.set_t_step()
 
 hx_trans.init_trans_zeros()
 hx_trans.exh.T_inlet_trans = np.zeros(hx_trans.power_net_trans.size)
-
-hx_trans.exh.T_inlet_trans = np.linspace(T_inlet, 900., hx_trans.power_net_trans.size)
+hx_trans.exh.T_inlet_trans[0:5] = T_inlet
+hx_trans.exh.T_inlet_trans[5:] = T_inlet + 100. 
 
 hx_trans.solve_hx_transient()
 
@@ -82,26 +83,27 @@ plt.xlabel('Time (s)')
 plt.ylabel('Stuff (kW)')
 
 fig2 = plt.figure()
-plt.plot(hx_trans.plate_hot.T_trans[0,0,:], label='plate hot')
-plt.plot(hx_trans.plate_hot.T_trans[1,0,:], label='plate middle')
-plt.plot(hx_trans.plate_hot.T_trans[2,0,:], label='plate cold')
-plt.plot(hx_trans.exh.T_trans[0,:], label='exh')
-plt.plot(hx_trans.cool.T_trans[0,:], label='cool')
-plt.plot(hx_trans.tem.T_h_trans[0,:], label='TE hot')
-plt.plot(hx_trans.tem.T_c_trans[0,:], label='TE cold')
+plt.plot(hx_trans.exh.T_trans[0,:], ':r', label='exh')
+plt.plot(hx_trans.plate_hot.T_trans[0,0,:], '-.r', label='plate hot')
+plt.plot(hx_trans.plate_hot.T_trans[1,0,:], '-.k', label='plate middle')
+plt.plot(hx_trans.plate_hot.T_trans[2,0,:], '-.b', label='plate cold')
+plt.plot(hx_trans.tem.T_h_trans[0,:], '--r', label='TE hot')
+plt.plot(hx_trans.tem.T_c_trans[0,:], '--b', label='TE cold')
+plt.plot(hx_trans.cool.T_trans[0,:], ':b', label='cool')
 plt.xlabel('Time Index')
 plt.ylabel('Temperature (K)')
+plt.ylim(290, 800)
 plt.grid()
 plt.legend()
 
 fig3 = plt.figure()
-plt.plot(hx_trans.q_h_trans[5,:], '-.r', label='q_h')
+plt.plot(hx_trans.plate_hot.q_c_trans[5,:], '-.r', label='q_h')
 plt.plot(hx_trans.q_c_trans[5,:], '-.b', label='q_c')
 plt.plot(hx_trans.tem.q_h_trans[5,:], ':r', label='te q_h')
 plt.plot(hx_trans.tem.q_c_trans[5,:], ':b', label='te q_c')
 plt.grid()
 plt.xlabel('Time Index')
-plt.ylabel(r'Heat Flux ($\frac{kW}{m^2K}')
+plt.ylabel(r'Heat Flux ($\frac{kW}{m^2K}$')
 plt.legend()
 
 plt.show()

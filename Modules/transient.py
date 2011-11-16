@@ -79,6 +79,8 @@ class Transient_HX(hx.HX):
 		    self.cool.T = ( self.cool.T + self.tem.q_c * self.area
 				    / self.cool.C )
 
+        self.Qdot_node = -self.tem.q_h * self.area
+
     def solve_node_transient(self,i,t):
         """needs a better doc string"""
         self.tem.Ntype.node = i # used within tem.py
@@ -110,13 +112,15 @@ class Transient_HX(hx.HX):
 
             self.tem.T_c = spopt.fsolve(self.get_error_cold,
     x0=self.tem.T_c)
+
+            self.tem.T_h_goal = spopt.fsolve(self.get_error_hot_trans,
+    x0=self.tem.T_h_goal)
 	    self.loop_count = self.loop_count + 1
 	    self.threshold = 10.
+
 	    if self.loop_count > self.threshold:
 		print ( "loop count is", self.loop_count,
 			" which exceeds threshold of", self.threshold )
-
-        self.Qdot_node = -self.tem.q_h * self.area
 
     def store_trans_values(self,i,t):
         """Storing solved values in array to keep track of what
@@ -141,7 +145,7 @@ class Transient_HX(hx.HX):
         self.cool.f_trans[i,t] = self.cool.f
         self.cool.Nu_trans[i,t] = self.cool.Nu_D
 
-        self.tem.T_h_trans[i,t] = self.tem.T_h
+        self.tem.T_h_trans[i,t] = self.tem.T_h_goal
         # hot side temperature (K) of TEM at each node 
         self.tem.T_c_trans[i,t] = self.tem.T_c
         # cold side temperature (K) of TEM at each node.  

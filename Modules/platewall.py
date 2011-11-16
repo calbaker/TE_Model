@@ -84,6 +84,7 @@ class PlateWall(object):
         self.T_bc[-1] = T_te_hot
         # forcing matrix
 
+	print self.T_prev
         self.T = ( np.dot(self.coeff_mat, self.T_prev) +
         np.dot(self.coeff_mat2, self.T_bc) )
 
