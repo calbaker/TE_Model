@@ -23,7 +23,6 @@ area_ratio = 0.69
 fill_fraction = 1. / 40.
 
 hx_trans = transient.Transient_HX()
-hx_trans.nodes = 10
 hx_trans.tem.method = 'analytical'
 hx_trans.width = 30.e-2
 hx_trans.exh.bypass = 0.
@@ -33,7 +32,8 @@ hx_trans.length = 1.
 hx_trans.tem.I = current
 hx_trans.tem.length = length
 
-hx_trans.t_max = .1
+hx_trans.nodes = 25
+hx_trans.t_max = 300.
 
 hx_trans.tem.Ptype.material = 'HMS'
 hx_trans.tem.Ntype.material = 'MgSi'
@@ -59,7 +59,7 @@ hx_trans.set_t_step()
 hx_trans.init_trans_zeros()
 hx_trans.exh.T_inlet_trans = np.zeros(hx_trans.power_net_trans.size)
 hx_trans.exh.T_inlet_trans[0:5] = T_inlet
-hx_trans.exh.T_inlet_trans[5:] = T_inlet #+ 300. 
+hx_trans.exh.T_inlet_trans[5:] = T_inlet + 300. 
 
 hx_trans.solve_hx_transient()
 
@@ -78,7 +78,8 @@ plt.rcParams['lines.linewidth'] = 2.5
 plt.close('all')
 
 fig1 = plt.figure()
-plt.plot(hx_trans.Qdot_trans.sum(0))
+# plt.plot(hx_trans.Qdot_trans.sum(0))
+plt.plot(hx_trans.power_net_trans)
 plt.grid()
 plt.xlabel('Time Index')
 plt.ylabel('Stuff (kW)')
@@ -97,10 +98,10 @@ plt.grid()
 plt.legend()
 
 fig3 = plt.figure()
-plt.plot(hx_trans.plate_hot.q_c_trans[5,:], '-.r', label='q_h')
-plt.plot(hx_trans.q_c_trans[5,:], '-.b', label='q_c')
-plt.plot(hx_trans.tem.q_h_trans[5,:], ':r', label='te q_h')
-plt.plot(hx_trans.tem.q_c_trans[5,:], ':b', label='te q_c')
+plt.plot(hx_trans.plate_hot.q_c_trans[-1,:], '-.r', label='q_h')
+plt.plot(hx_trans.q_c_trans[-1,:], '-.b', label='q_c')
+plt.plot(hx_trans.tem.q_h_trans[-1,:], ':r', label='te q_h')
+plt.plot(hx_trans.tem.q_c_trans[-1,:], ':b', label='te q_c')
 plt.grid()
 plt.xlabel('Time Index')
 plt.ylabel(r'Heat Flux ($\frac{kW}{m^2K}$')

@@ -68,6 +68,7 @@ class Transient_HX(hx.HX):
 	    self.cool.T = self.cool.T_inlet
             for i in range(self.nodes):
                 self.solve_node_transient(i,t)
+		self.Qdot_node = -self.tem.q_h * self.area
                 self.store_trans_values(i,t)
 
 		# redefining temperatures (K) for next node
@@ -83,8 +84,6 @@ class Transient_HX(hx.HX):
 		    self.cool.T = ( self.cool.T_trans[i-1,t-1]
 				    + self.tem.q_c_trans[i-1,t-1]
 				    * self.area / self.cool.C )  
-
-        self.Qdot_node = -self.tem.q_h * self.area
 
     def solve_node_transient(self,i,t):
         """needs a better doc string"""
