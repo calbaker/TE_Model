@@ -71,14 +71,18 @@ class Transient_HX(hx.HX):
                 self.store_trans_values(i,t)
 
 		# redefining temperatures (K) for next node
-		self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
-			       self.exh.C )
+		self.exh.T = ( self.exh.T_trans[i-1,t-1]
+			       + self.plate_hot.q_h_trans[i-1,t-1]
+			       * self.area / self.exh.C )
+
 		if self.type == 'parallel':
-		    self.cool.T = ( self.cool.T - self.tem.q_c * self.area
-				    / self.cool.C )  
+		    self.cool.T = ( self.cool.T_trans[i-1,t-1]
+				    - self.tem.q_c_trans[i-1,t-1]
+				    * self.area / self.cool.C )  
 		elif self.type == 'counter':
-		    self.cool.T = ( self.cool.T + self.tem.q_c * self.area
-				    / self.cool.C )
+		    self.cool.T = ( self.cool.T_trans[i-1,t-1]
+				    + self.tem.q_c_trans[i-1,t-1]
+				    * self.area / self.cool.C )  
 
         self.Qdot_node = -self.tem.q_h * self.area
 
@@ -129,6 +133,7 @@ class Transient_HX(hx.HX):
         self.Qdot_trans[i,t] = self.Qdot_node
         # storing node heat transfer in array
 
+        self.plate_hot.q_h_trans[i,t] = self.plate_hot.q_h
         self.plate_hot.q_c_trans[i,t] = self.plate_hot.q_c
         self.q_c_trans[i,t] = self.q_c
         self.tem.q_h_trans[i,t] = self.tem.q_h
@@ -175,6 +180,8 @@ class Transient_HX(hx.HX):
         # storing node heat transfer in array
 
         self.plate_hot.q_c_trans = np.zeros([self.nodes, self.t_max /
+        self.t_step]) 
+        self.plate_hot.q_h_trans = np.zeros([self.nodes, self.t_max /
         self.t_step]) 
         self.q_c_trans = np.zeros([self.nodes, self.t_max /
         self.t_step]) 
@@ -240,6 +247,7 @@ class Transient_HX(hx.HX):
         self.Qdot_trans[:,0] = self.Qdot_nodes
         # storing node heat transfer in array
 
+        self.plate_hot.q_h_trans[:,0] = self.q_h_nodes
         self.plate_hot.q_c_trans[:,0] = self.q_h_nodes
         self.q_c_trans[:,0] = self.q_c_nodes
         self.tem.q_h_trans[:,0] = self.tem.q_h_nodes
