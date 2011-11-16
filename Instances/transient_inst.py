@@ -83,15 +83,15 @@ plt.xlabel('Time (s)')
 
 fig2 = plt.figure()
 
-for i in range(hx_trans.plate_hot.T_trans.shape[0]):
-    plt.plot(hx_trans.plate_hot.T_trans[i,5,:])
-plt.plot(hx_trans.exh.T_trans[5,:])
-plt.plot(hx_trans.cool.T_trans[5,:])
-plt.plot(hx_trans.tem.T_h_trans[5,:])
-plt.plot(hx_trans.tem.T_c_trans[5,:])
+# for i in range(hx_trans.plate_hot.T_trans.shape[0]):
+#     plt.plot(hx_trans.plate_hot.T_trans[i,0,:])
+plt.plot(hx_trans.exh.T_trans[0,:])
+# plt.plot(hx_trans.cool.T_trans[0,:])
+# plt.plot(hx_trans.tem.T_h_trans[0,:])
+# plt.plot(hx_trans.tem.T_c_trans[0,:])
 
 plt.grid()
-plt.legend()
+# plt.legend()
 
 plt.show()
 

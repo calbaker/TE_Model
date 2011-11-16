@@ -62,22 +62,21 @@ class Transient_HX(hx.HX):
         self.init_trans_values()
 
         for t in range(1,int(self.t_max / self.t_step)):
-	    if t%10 == 0:
-		print "t_index =", t, "of", int(self.t_max / self.t_step)
-		self.exh.T = self.exh.T_inlet_trans[i]		
+	    print "t_index =", t, "of", int(self.t_max / self.t_step)
+	    self.exh.T = self.exh.T_inlet_trans[t]		
             for i in range(self.nodes):
                 self.solve_node_transient(i,t)
                 self.store_trans_values(i,t)
 
-            # redefining temperatures (K) for next node
-            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
-                self.exh.C )   
-            if self.type == 'parallel':
-                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
-                    / self.cool.C )  
-            elif self.type == 'counter':
-                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
-                    / self.cool.C )
+		# redefining temperatures (K) for next node
+		self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+			       self.exh.C )
+		if self.type == 'parallel':
+		    self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+				    / self.cool.C )  
+		elif self.type == 'counter':
+		    self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+				    / self.cool.C )
 
     def solve_node_transient(self,i,t):
         """needs a better doc string"""
