@@ -43,7 +43,7 @@ hx_trans.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
 
 hx_trans.type = 'parallel'
 
-T_inlet = 500.
+T_inlet = 600.
 hx_trans.exh.T_inlet = T_inlet
 hx_trans.exh.P = 100.
 hx_trans.cool.T_inlet = 300.
@@ -70,7 +70,7 @@ plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
 plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 1.5
+plt.rcParams['lines.linewidth'] = 2.5
 
 plt.close('all')
 
@@ -82,9 +82,9 @@ plt.xlabel('Time (s)')
 plt.ylabel('Stuff (kW)')
 
 fig2 = plt.figure()
-plt.plot(hx_trans.plate_hot.T_trans[0,0,:], label='plate cold?')
+plt.plot(hx_trans.plate_hot.T_trans[0,0,:], label='plate hot')
 plt.plot(hx_trans.plate_hot.T_trans[1,0,:], label='plate middle')
-plt.plot(hx_trans.plate_hot.T_trans[2,0,:], label='plate hot?')
+plt.plot(hx_trans.plate_hot.T_trans[2,0,:], label='plate cold')
 plt.plot(hx_trans.exh.T_trans[0,:], label='exh')
 plt.plot(hx_trans.cool.T_trans[0,:], label='cool')
 plt.plot(hx_trans.tem.T_h_trans[0,:], label='TE hot')
@@ -94,6 +94,15 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 plt.legend()
 
-plt.show()
+fig3 = plt.figure()
+plt.plot(hx_trans.q_h_trans[5,:], '-.r', label='q_h')
+plt.plot(hx_trans.q_c_trans[5,:], '-.b', label='q_c')
+plt.plot(hx_trans.tem.q_h_trans[5,:], ':r', label='te q_h')
+plt.plot(hx_trans.tem.q_c_trans[5,:], ':b', label='te q_c')
+plt.grid()
+plt.xlabel('Time Index')
+plt.ylabel(r'Heat Flux ($\frac{kW}{m^2K}')
+plt.legend()
 
+plt.show()
 
