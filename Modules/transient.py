@@ -39,17 +39,17 @@ class Transient_HX(hx.HX):
         return self.error_hot
 
     def solve_hx_transient(self):
-        """This doc string will talk about what this method should
-        do.  The method should specify an inlet boundary condition
-        after having initially run the steady state solution.  With
-        the inlet boundary condition establish and temperature
-        profiles in all of the nodes known (must store temp data in 2d
-        for tem's), the inlet boundary condition can then be changed.
-        For the first streamwise hx node, the plate model and te model
-        can be iterated until their boundary conditions match up.
-        When this happens the temperature values and performance
-        parameters of interest must be stored.  Then the next node is
-        iterated and so forth.
+        """This doc string explains what this method should do.  The
+        method should specify an inlet boundary condition after having
+        initially run the steady state solution.  With the inlet
+        boundary condition establish and temperature profiles in all
+        of the nodes known (must store temp data in 2d for tem's), the
+        inlet boundary condition can then be changed.  For the first
+        streamwise hx node, the plate model and te model can be
+        iterated until their boundary conditions match up.  When this
+        happens the temperature values and performance parameters of
+        interest must be stored.  Then the next node is iterated and
+        so forth.
 
         After all the nodes have been iterated in this fashion, the
         time is incremented by the residence time of the exhaust in a
@@ -62,7 +62,8 @@ class Transient_HX(hx.HX):
         self.init_trans_values()
 
         for t in range(1,int(self.t_max / self.t_step)):
-	    print "t_index =", t, "of", int(self.t_max / self.t_step)
+	    if t%10==0:
+		print "t_index =", t, "of", int(self.t_max / self.t_step)
 	    self.exh.T = self.exh.T_inlet_trans[t]		
             for i in range(self.nodes):
                 self.solve_node_transient(i,t)
@@ -108,7 +109,12 @@ class Transient_HX(hx.HX):
             # self.tem.solve_tem()
 
             self.tem.T_c = spopt.fsolve(self.get_error_cold,
-    x0=self.tem.T_c) 
+    x0=self.tem.T_c)
+	    self.loop_count = self.loop_count + 1
+	    self.threshold = 10.
+	    if self.loop_count > self.threshold:
+		print ( "loop count is", self.loop_count,
+			" which exceeds threshold of", self.threshold )
 
         self.Qdot_node = -self.tem.q_h * self.area
 

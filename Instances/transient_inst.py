@@ -30,7 +30,7 @@ hx_trans.length = 1.
 hx_trans.tem.I = current
 hx_trans.tem.length = length
 
-hx_trans.t_max = .1
+hx_trans.t_max = 0.1
 
 hx_trans.tem.Ptype.material = 'HMS'
 hx_trans.tem.Ntype.material = 'MgSi'
@@ -43,7 +43,8 @@ hx_trans.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
 
 hx_trans.type = 'parallel'
 
-hx_trans.exh.T_inlet = 700.
+T_inlet = 500.
+hx_trans.exh.T_inlet = T_inlet
 hx_trans.exh.P = 100.
 hx_trans.cool.T_inlet = 300.
 
@@ -55,7 +56,7 @@ hx_trans.set_t_step()
 hx_trans.init_trans_zeros()
 hx_trans.exh.T_inlet_trans = np.zeros(hx_trans.power_net_trans.size)
 
-hx_trans.exh.T_inlet_trans = np.linspace(500., 900., hx_trans.power_net_trans.size)
+hx_trans.exh.T_inlet_trans = np.linspace(T_inlet, 900., hx_trans.power_net_trans.size)
 
 hx_trans.solve_hx_transient()
 
@@ -63,7 +64,7 @@ print "\nProgram finished."
 print "\nPlotting..."
 
 # Plot configuration
-FONTSIZE = 20
+FONTSIZE = 15
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
@@ -74,24 +75,24 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.close('all')
 
 fig1 = plt.figure()
-# plt.plot(np.arange(1,hx_trans.t_max,hx_trans.t_step),
-# 	 hx_trans.exh.T_inlet_trans, label='Exhaust Temperature (K)')
 plt.plot(np.linspace(0,hx_trans.t_max,hx_trans.power_net_trans.size),
 	 hx_trans.Qdot_trans.sum(0))
 plt.grid()
 plt.xlabel('Time (s)')
+plt.ylabel('Stuff (kW)')
 
 fig2 = plt.figure()
-
-# for i in range(hx_trans.plate_hot.T_trans.shape[0]):
-#     plt.plot(hx_trans.plate_hot.T_trans[i,0,:])
-plt.plot(hx_trans.exh.T_trans[0,:])
-# plt.plot(hx_trans.cool.T_trans[0,:])
-# plt.plot(hx_trans.tem.T_h_trans[0,:])
-# plt.plot(hx_trans.tem.T_c_trans[0,:])
-
+plt.plot(hx_trans.plate_hot.T_trans[0,0,:], label='plate cold?')
+plt.plot(hx_trans.plate_hot.T_trans[1,0,:], label='plate middle')
+plt.plot(hx_trans.plate_hot.T_trans[2,0,:], label='plate hot?')
+plt.plot(hx_trans.exh.T_trans[0,:], label='exh')
+plt.plot(hx_trans.cool.T_trans[0,:], label='cool')
+plt.plot(hx_trans.tem.T_h_trans[0,:], label='TE hot')
+plt.plot(hx_trans.tem.T_c_trans[0,:], label='TE cold')
+plt.xlabel('Time Index')
+plt.ylabel('Temperature (K)')
 plt.grid()
-# plt.legend()
+plt.legend()
 
 plt.show()
 
