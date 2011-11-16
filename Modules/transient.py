@@ -39,17 +39,17 @@ class Transient_HX(hx.HX):
         return self.error_hot
 
     def solve_hx_transient(self):
-        """This doc string will talk about what this method should
-        do.  The method should specify an inlet boundary condition
-        after having initially run the steady state solution.  With
-        the inlet boundary condition establish and temperature
-        profiles in all of the nodes known (must store temp data in 2d
-        for tem's), the inlet boundary condition can then be changed.
-        For the first streamwise hx node, the plate model and te model
-        can be iterated until their boundary conditions match up.
-        When this happens the temperature values and performance
-        parameters of interest must be stored.  Then the next node is
-        iterated and so forth.
+        """This doc string explains what this method should do.  The
+        method should specify an inlet boundary condition after having
+        initially run the steady state solution.  With the inlet
+        boundary condition establish and temperature profiles in all
+        of the nodes known (must store temp data in 2d for tem's), the
+        inlet boundary condition can then be changed.  For the first
+        streamwise hx node, the plate model and te model can be
+        iterated until their boundary conditions match up.  When this
+        happens the temperature values and performance parameters of
+        interest must be stored.  Then the next node is iterated and
+        so forth.
 
         After all the nodes have been iterated in this fashion, the
         time is incremented by the residence time of the exhaust in a
@@ -61,23 +61,26 @@ class Transient_HX(hx.HX):
         self.init_trans_zeros()
         self.init_trans_values()
 
-        for t in range(1,int(self.t_max / self.t_step)-1):
-	    if t%10 == 0:
+        for t in range(1,int(self.t_max / self.t_step)):
+	    if t%10==0:
 		print "t_index =", t, "of", int(self.t_max / self.t_step)
-		self.exh.T = self.exh.T_inlet_trans[i]		
+	    self.exh.T = self.exh.T_inlet_trans[t]
+	    self.cool.T = self.cool.T_inlet
             for i in range(self.nodes):
                 self.solve_node_transient(i,t)
                 self.store_trans_values(i,t)
 
-            # redefining temperatures (K) for next node
-            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
-                self.exh.C )   
-            if self.type == 'parallel':
-                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
-                    / self.cool.C )  
-            elif self.type == 'counter':
-                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
-                    / self.cool.C )
+		# redefining temperatures (K) for next node
+		self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+			       self.exh.C )
+		if self.type == 'parallel':
+		    self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+				    / self.cool.C )  
+		elif self.type == 'counter':
+		    self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+				    / self.cool.C )
+
+        self.Qdot_node = -self.tem.q_h * self.area
 
     def solve_node_transient(self,i,t):
         """needs a better doc string"""
@@ -109,9 +112,16 @@ class Transient_HX(hx.HX):
             # self.tem.solve_tem()
 
             self.tem.T_c = spopt.fsolve(self.get_error_cold,
-    x0=self.tem.T_c) 
+    x0=self.tem.T_c)
 
-        self.Qdot_node = -self.tem.q_h * self.area
+            self.tem.T_h_goal = spopt.fsolve(self.get_error_hot_trans,
+    x0=self.tem.T_h_goal)
+	    self.loop_count = self.loop_count + 1
+	    self.threshold = 10.
+
+	    if self.loop_count > self.threshold:
+		print ( "loop count is", self.loop_count,
+			" which exceeds threshold of", self.threshold )
 
     def store_trans_values(self,i,t):
         """Storing solved values in array to keep track of what
@@ -119,7 +129,7 @@ class Transient_HX(hx.HX):
         self.Qdot_trans[i,t] = self.Qdot_node
         # storing node heat transfer in array
 
-        self.q_h_trans[i,t] = self.q_h
+        self.plate_hot.q_c_trans[i,t] = self.plate_hot.q_c
         self.q_c_trans[i,t] = self.q_c
         self.tem.q_h_trans[i,t] = self.tem.q_h
         self.tem.q_c_trans[i,t] = self.tem.q_c
@@ -136,7 +146,7 @@ class Transient_HX(hx.HX):
         self.cool.f_trans[i,t] = self.cool.f
         self.cool.Nu_trans[i,t] = self.cool.Nu_D
 
-        self.tem.T_h_trans[i,t] = self.tem.T_h
+        self.tem.T_h_trans[i,t] = self.tem.T_h_goal
         # hot side temperature (K) of TEM at each node 
         self.tem.T_c_trans[i,t] = self.tem.T_c
         # cold side temperature (K) of TEM at each node.  
@@ -164,7 +174,7 @@ class Transient_HX(hx.HX):
         self.t_step]) 
         # storing node heat transfer in array
 
-        self.q_h_trans = np.zeros([self.nodes, self.t_max /
+        self.plate_hot.q_c_trans = np.zeros([self.nodes, self.t_max /
         self.t_step]) 
         self.q_c_trans = np.zeros([self.nodes, self.t_max /
         self.t_step]) 
@@ -230,7 +240,7 @@ class Transient_HX(hx.HX):
         self.Qdot_trans[:,0] = self.Qdot_nodes
         # storing node heat transfer in array
 
-        self.q_h_trans[:,0] = self.q_h_nodes
+        self.plate_hot.q_c_trans[:,0] = self.q_h_nodes
         self.q_c_trans[:,0] = self.q_c_nodes
         self.tem.q_h_trans[:,0] = self.tem.q_h_nodes
         self.tem.q_c_trans[:,0] = self.tem.q_c_nodes
@@ -261,36 +271,6 @@ class Transient_HX(hx.HX):
 
         self.Qdot_trans[:,0] = self.Qdot_nodes
         # storing node heat transfer in array
-
-        self.q_h_trans[:,0] = self.q_h_nodes
-        self.q_c_trans[:,0] = self.q_c_nodes
-        self.tem.q_h_trans[:,0] = self.tem.q_h_nodes
-        self.tem.q_c_trans[:,0] = self.tem.q_c_nodes
-        self.error_hot_trans[:,0] = self.error_hot_nodes
-        self.error_cold_trans[:,0] = self.error_cold_nodes
-
-        self.exh.T_trans[:,0] = self.exh.T_nodes
-        self.exh.h_trans[:,0] = self.exh.h_nodes
-        self.exh.f_trans[:,0] = self.exh.f_nodes
-        self.exh.Nu_trans[:,0] = self.exh.Nu_nodes
-
-        self.cool.h_trans[:,0] = self.cool.h_nodes
-        self.cool.T_trans[:,0] = self.cool.T_nodes
-        self.cool.f_trans[:,0] = self.cool.f_nodes
-        self.cool.Nu_trans[:,0] = self.cool.Nu_nodes
-        
-        self.tem.T_h_trans[:,0] = self.tem.T_h_nodes
-        # hot side temperature (K) of TEM at each node 
-        self.tem.T_c_trans[:,0] = self.tem.T_c_nodes
-        # cold side temperature (K) of TEM at each node.  
-
-        self.U_trans[:,0] = self.U_nodes
-        self.U_cold_trans[:,0] = self.U_cold_nodes
-        self.U_hot_trans[:,0] = self.U_hot_nodes
-
-        self.tem.power_trans[:,0] = self.tem.power_nodes
-        self.tem.eta_trans[:,0] = self.tem.eta_nodes
-        self.tem.h_trans[:,0] = self.tem.h_nodes
 
 	self.plate_hot.T_h_nodes = ( self.exh.T_nodes +
 				     self.q_h_nodes / self.exh.h_nodes )

@@ -18,7 +18,7 @@ class PlateWall(object):
         self.thickness = 0.00635 # thickness (m) of HX plate
         self.R_contact = 0.
         # thermal contact resistance (m^2*K/W) between plates
-        self.nodes = 3. # default number of nodes in transient
+        self.nodes = 2. # default number of nodes in transient
                         # solution.  
         self.t_step = 0.005 # time step (s) in transient solution
         self.set_h()
@@ -53,14 +53,16 @@ class PlateWall(object):
 
         # creating and populating the coefficient matrix
         self.coeff_mat = np.zeros([self.T_prev.shape[0], self.T_prev.shape[0]]) 
-        self.coeff_mat[0,0] = 1. - 2. * self.Fo * (1. + self.Bi) 
-        self.coeff_mat[0,1] = 2. * self.Fo
-        self.coeff_mat[-1,-1] = 0
         for pop in range(self.coeff_mat.shape[0]-2):
             self.coeff_mat[pop+1, pop] = self.Fo
             self.coeff_mat[pop+1, pop+1] = 1. - 2. * self.Fo 
             self.coeff_mat[pop+1, pop+2] = self.Fo
-        self.coeff_mat2 = np.zeros([self.T_prev.shape[0], self.T_prev.shape[0]])
+        self.coeff_mat[0,0] = 1. - 2. * self.Fo * (1. + self.Bi) 
+        self.coeff_mat[0,1] = 2. * self.Fo
+        self.coeff_mat[-1,-1] = 0
+
+        self.coeff_mat2 = np.zeros([self.T_prev.shape[0],
+				    self.T_prev.shape[0]])
         self.coeff_mat2[0,0] = 2. * self.Fo * self.Bi
         self.coeff_mat2[-1, -1] = 1.
             
@@ -87,4 +89,4 @@ class PlateWall(object):
         self.T = ( np.dot(self.coeff_mat, self.T_prev) +
         np.dot(self.coeff_mat2, self.T_bc) )
 
-        self.q_c = -self.k * (self.T[1] - self.T[2]) / self.x_step 
+        self.q_c = -self.k * (self.T[-2] - self.T[-1]) / self.x_step 

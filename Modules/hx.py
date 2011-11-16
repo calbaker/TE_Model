@@ -192,7 +192,9 @@ class HX(object):
     x0=self.tem.T_h_goal)
             # self.tem.solve_tem()
             self.tem.T_c = spopt.fsolve(self.get_error_cold,
-    x0=self.tem.T_c) 
+    x0=self.tem.T_c)
+            self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
+    x0=self.tem.T_h_goal) # repeat just to make sure
             self.error_cold = self.get_error_cold(self.tem.T_c)
             self.error_hot = self.get_error_hot(self.tem.T_h)
             self.loop_count = self.loop_count + 1
