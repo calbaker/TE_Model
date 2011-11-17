@@ -1,6 +1,9 @@
 # Chad Baker
 # Created on 2011 Nov 14
 
+# useful command for writing output to file:
+# ipython initialfile.py 1>stdout.txt 2>stderr.txt
+
 # Distribution Modules
 import numpy as np
 import matplotlib.pyplot as plt
