@@ -83,6 +83,7 @@ plt.plot(hx_trans.power_net_trans)
 plt.grid()
 plt.xlabel('Time Index')
 plt.ylabel('Stuff (kW)')
+plt.savefig('../Plots/transient/power_v_time.pdf')
 
 fig2 = plt.figure()
 plt.plot(hx_trans.exh.T_trans[-1,:], ':r', label='exh')
@@ -96,6 +97,7 @@ plt.ylabel('Temperature (K)')
 plt.ylim(290, 800)
 plt.grid()
 plt.legend()
+plt.savefig('../Plots/transient/temp_v_time.pdf')
 
 fig3 = plt.figure()
 plt.plot(hx_trans.plate_hot.q_c_trans[-1,:], '-.r', label='q_h')
@@ -106,6 +108,7 @@ plt.grid()
 plt.xlabel('Time Index')
 plt.ylabel(r'Heat Flux ($\frac{kW}{m^2K}$')
 plt.legend()
+plt.savefig('../Plots/transient/q_v_time.pdf')
 
 plt.show()
 
