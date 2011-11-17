@@ -106,7 +106,7 @@ plt.plot(hx_trans.tem.q_h_trans[-1,:], ':r', label='te q_h')
 plt.plot(hx_trans.tem.q_c_trans[-1,:], ':b', label='te q_c')
 plt.grid()
 plt.xlabel('Time Index')
-plt.ylabel(r'Heat Flux ($\frac{kW}{m^2K}$')
+plt.ylabel(r'Heat Flux $\left(\frac{kW}{m^2K}\right)$')
 plt.legend()
 plt.savefig('../Plots/transient/q_v_time.pdf')
 
