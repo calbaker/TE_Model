@@ -46,7 +46,7 @@ hx.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx.tem.Ptype.area +
                             hx.tem.Ntype.area) )  
 
-hx.type = 'counter'
+hx.type = 'parallel'
 
 hx.exh.T_inlet = 800.
 hx.exh.P = 100.
@@ -58,7 +58,7 @@ hx.set_mdot_charge()
 # (what we desire to optimize)
 def optim(apar):
     # unpack guess vector
-    apar=asarray(apar)
+    apar=np.asarray(apar)
     hx.tem.leg_ratio     = apar[0]
     hx.tem.fill_fraction = apar[1]
     hx.tem.length        = apar[2]
@@ -66,7 +66,7 @@ def optim(apar):
 
     # reset surrogate variables
     hx.tem.Ntype.area = hx.tem.leg_ratio*hx.tem.Ptype.area
-    hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
+    hx.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )
     hx.set_constants()
     hx.solve_hx()
