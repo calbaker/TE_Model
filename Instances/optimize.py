@@ -99,10 +99,13 @@ print "Beginning optimization..."
 #xmin1 = fmin(optim,x0)
 
 # find min using L-BFGS-B algorithm
-#xmin1 = fmin_l_bfgs_b(optim,x0,fprime,approx_grad=True,bounds=xb)
+# xmin1 = fmin_l_bfgs_b(optim,x0,fprime,approx_grad=True,bounds=xb)
 
 # Find min using Powell's method
-xmin_powell = fmin_powell(optim,x0)
+# xmin_powell = fmin_powell(optim,x0)
+
+# Find min using downhill simplex algorithm
+xmin1 = fmin(optim,x0)
 
 print "Finalizing optimization..."
 
