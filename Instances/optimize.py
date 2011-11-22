@@ -8,48 +8,54 @@
 import os
 import matplotlib.pyplot as plt
 
-from numpy import *
+import numpy as np
 import scipy as sp
+import matplotlib.pyplot as plt
+import os, sys
 from scipy.optimize import fmin
 from scipy.optimize import fmin_powell
 from scipy.optimize import anneal
 from scipy.optimize import fmin_l_bfgs_b
 
 # User Defined Modules
-# In this directory
+cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
-import tem
-
-# parameter space -- not varying for optimization!
+    
 area = (0.002)**2
-length = 5.e-3
+length = 1.e-3
+current = 4.
+area_ratio = 0.69
+fill_fraction = 1. / 40.
 
 hx = hx.HX()
-hx.tem.segments = 25
+hx.tem.method = 'analytical'
 hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
+hx.cool.mdot = 1.
 hx.length = 1.
-hx.tem.I = 2.
+hx.tem.I = current
 hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area
+
 hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 25. * area
-hx.type = 'parallel'
-hx.exh.enhancement = "straight fins"
-hx.exh.fin.thickness = 5.e-3
-hx.exh.fins = 22
+hx.tem.Ntype.material = 'MgSi'
+
+hx.tem.Ptype.area = area                           
+hx.tem.Ntype.area = hx.tem.Ptype.area * area_ratio
+hx.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx.tem.Ptype.area +
+                            hx.tem.Ntype.area) )  
+
+hx.type = 'counter'
 
 hx.exh.T_inlet = 800.
+hx.exh.P = 100.
 hx.cool.T_inlet = 300.
+
 hx.set_mdot_charge()
-
-
-# additional variables (as of 9/1/11)
-hx.tem.Ptype.area = 10.e-6
 
 # this is our optimization method 
 # (what we desire to optimize)
@@ -63,12 +69,13 @@ def optim(apar):
 
     # reset surrogate variables
     hx.tem.Ntype.area = hx.tem.leg_ratio*hx.tem.Ptype.area
-    hx.tem.area_void  = hx.tem.Ptype.area/hx.tem.fill_fraction
+    hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
+                           (hx.tem.Ptype.area + hx.tem.Ntype.area) )
 
     hx.solve_hx()
 
     # 1/power_net -- fmin is a minimization routine
-    return 1/(hx.power_net)
+    return 1./(hx.power_net)
 
 # dummy function
 def fprime():
@@ -83,10 +90,10 @@ def fprime():
 #  IV) hx.tem.I
 #
 # initial guess {I-IV}:
-x0 = 1.2, 0.02, .001, 2
+x0 = 0.6, 0.02, .001, 4.5
 
 # bounds for the parameters {I-IV}:
-xb = [(0.2,5.0),(0.001,0.5),(0.0005,0.01),(.1,10.0)]
+xb = [(0.2,1.5),(0.001,0.05),(0.0005,0.01),(1,10.0)]
 
 # optimization loop
 print "Beginning optimization..."
