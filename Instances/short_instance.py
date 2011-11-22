@@ -70,7 +70,6 @@ for i in range(np.size(length1d)):
     hx.tem.length = length1d[i]
     for j in range(np.size(current1d)):
         hx.tem.I = current1d[j]
-        hx.set_constants()
         hx.solve_hx()
         P_length_current[i,j] = hx.tem.power_total * 1000.
 
@@ -82,7 +81,6 @@ for i in range(np.size(current1d)):
     for j in range(np.size(fill_fraction1d)):
         hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )
-	hx.set_constants()
         hx.solve_hx()
         P_current_fill[i,j] = hx.tem.power_total * 1000.
 
@@ -94,7 +92,6 @@ for i in range(np.size(length1d)):
     for j in range(np.size(fill_fraction1d)):
         hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )   
-	hx.set_constants()
         hx.solve_hx()
         P_length_fill[i,j] = hx.tem.power_total * 1000.
 
