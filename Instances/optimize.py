@@ -5,9 +5,6 @@
 # http://docs.scipy.org/doc/scipy/reference/optimize.html
 
 # Distribution Modules
-import os
-import matplotlib.pyplot as plt
-
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
