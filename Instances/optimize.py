@@ -66,7 +66,7 @@ def optim(apar):
 
     # reset surrogate variables
     hx.tem.Ntype.area = hx.tem.leg_ratio*hx.tem.Ptype.area
-    hx.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
+    hx.tem.area_void = ( (1. - hx.tem.fill_fraction) / hx.tem.fill_fraction *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )
     hx.set_constants()
     hx.solve_hx()
@@ -87,7 +87,7 @@ def fprime():
 #  IV) hx.tem.I
 #
 # initial guess {I-IV}:
-x0 = 0.6, 0.02, .001, 4.5
+x0 = 0.71, 0.02, .001, 4.5
 
 # bounds for the parameters {I-IV}:
 xb = [(0.2,1.5),(0.001,0.05),(0.0005,0.01),(1,10.0)]
@@ -99,7 +99,10 @@ print "Beginning optimization..."
 #xmin1 = fmin(optim,x0)
 
 # find min using L-BFGS-B algorithm
-xmin1 = fmin_l_bfgs_b(optim,x0,fprime,approx_grad=True,bounds=xb)
+#xmin1 = fmin_l_bfgs_b(optim,x0,fprime,approx_grad=True,bounds=xb)
+
+# Find min using Powell's method
+xmin_powell = fmin_powell(optim,x0)
 
 print "Finalizing optimization..."
 
