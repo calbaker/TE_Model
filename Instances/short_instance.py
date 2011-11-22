@@ -4,7 +4,7 @@
 # Distribution Modules
 import matplotlib.pyplot as plt
 import numpy as np
-import os
+import os, sys
 import time
 
 # User Defined Modules
@@ -40,7 +40,7 @@ hx.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx.tem.Ptype.area +
                             hx.tem.Ntype.area) )  
 
-# hx.tem.method = 'analytical'
+hx.tem.method = 'analytical'
 hx.type = 'parallel'
 
 hx.exh.T_inlet = 800.
@@ -70,7 +70,7 @@ for i in range(np.size(length1d)):
     hx.tem.length = length1d[i]
     for j in range(np.size(current1d)):
         hx.tem.I = current1d[j]
-        hx.tem.set_constants()
+        hx.set_constants()
         hx.solve_hx()
         P_length_current[i,j] = hx.tem.power_total * 1000.
 
@@ -82,6 +82,7 @@ for i in range(np.size(current1d)):
     for j in range(np.size(fill_fraction1d)):
         hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )
+	hx.set_constants()
         hx.solve_hx()
         P_current_fill[i,j] = hx.tem.power_total * 1000.
 
@@ -93,6 +94,7 @@ for i in range(np.size(length1d)):
     for j in range(np.size(fill_fraction1d)):
         hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )   
+	hx.set_constants()
         hx.solve_hx()
         P_length_fill[i,j] = hx.tem.power_total * 1000.
 
@@ -132,8 +134,8 @@ CB.set_label('TE Power (W)')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
 plt.ylabel("Current (A)")
-fig1.savefig('Plots/HX Optimization/length_current.pdf')
-fig1.savefig('Plots/HX Optimization/length_current.png')
+fig1.savefig('../Plots/HX Optimization/length_current.pdf')
+fig1.savefig('../Plots/HX Optimization/length_current.png')
 
 fig3 = plt.figure()
 FCS = plt.contourf(current_fill, fill_current, P_current_fill.T, levels=LEVELS) 
@@ -142,8 +144,8 @@ CB.set_label('TE Power (W)')
 plt.grid()
 plt.xlabel("Current (A)")
 plt.ylabel("Fill Fraction")
-fig3.savefig('Plots/HX Optimization/current_fill.pdf')
-fig3.savefig('Plots/HX Optimization/current_fill.png')
+fig3.savefig('../Plots/HX Optimization/current_fill.pdf')
+fig3.savefig('../Plots/HX Optimization/current_fill.png')
 
 fig2 = plt.figure()
 FCS = plt.contourf(length_fill * 1000., fill_length, P_length_fill.T, levels=LEVELS) 
@@ -152,7 +154,7 @@ CB.set_label('TE Power (W)')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
 plt.ylabel("Fill Fraction")
-fig2.savefig('Plots/HX Optimization/length_fill.pdf')
-fig2.savefig('Plots/HX Optimization/length_fill.png')
+fig2.savefig('../Plots/HX Optimization/length_fill.pdf')
+fig2.savefig('../Plots/HX Optimization/length_fill.png')
 
 plt.show()

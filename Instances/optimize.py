@@ -68,7 +68,7 @@ def optim(apar):
     hx.tem.Ntype.area = hx.tem.leg_ratio*hx.tem.Ptype.area
     hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
                            (hx.tem.Ptype.area + hx.tem.Ntype.area) )
-
+    hx.set_constants()
     hx.solve_hx()
 
     # 1/power_net -- fmin is a minimization routine
