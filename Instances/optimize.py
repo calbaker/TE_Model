@@ -107,13 +107,18 @@ print "Beginning optimization..."
 # Find min using downhill simplex algorithm
 xmin1 = fmin(optim,x0)
 
+# Find min again using the numerical model.  The analytical model
+# should run first to provide a better initial guess.
+hx.tem.method = 'numerical'
+xmin2 = fmin(optim, xmin1)
+
 print "Finalizing optimization..."
 
 # output optimal parameters
 
 print "\nProgram finished."
 print xmin1
-
+print xmin2
 
 # notes:
 #
