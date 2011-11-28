@@ -5,6 +5,7 @@
 # http://docs.scipy.org/doc/scipy/reference/optimize.html
 
 # Distribution Modules
+import time
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
@@ -21,6 +22,8 @@ if cmd_folder not in sys.path:
 import hx
 reload(hx)
     
+t0 = time.clock()
+
 area = (0.002)**2
 length = 1.e-3
 current = 4.
@@ -106,13 +109,23 @@ print "Beginning optimization..."
 
 # Find min using downhill simplex algorithm
 xmin1 = fmin(optim,x0)
+t1 = time.clock() - t0
 
-print "xmin1 found. Switching to numerical model."
+print """xmin1 found. Switching to numerical model.
+Elapsed time solving xmin1 =""", t1 
 
 # Find min again using the numerical model.  The analytical model
 # should run first to provide a better initial guess.
 hx.tem.method = 'numerical'
 xmin2 = fmin(optim, xmin1)
+t2 = time.clock() - t1
+
+print """xmin2 found.
+Elapsed time solving xmin2 =""", t2
+
+t = time.clock() - t0
+
+print """Total elapsed time =""", t 
 
 print "Finalizing optimization..."
 
