@@ -327,11 +327,11 @@ class HX(object):
 
 	self.x0 must be defined elsewhere"""
 	
-	t0 = time.clock()
+	time.clock()
 
 	self.tem.method = 'analytical'
 	self.xmin1 = fmin(self.get_inv_power, self.x0)
-	t1 = time.clock() - t0
+	t1 = time.clock() 
 	print """xmin1 found. Switching to numerical model.
 	Elapsed time solving xmin1 =""", t1
 
@@ -341,10 +341,10 @@ class HX(object):
 	print """xmin2 found.
 	Elapsed time solving xmin2 =""", t2
 
-	t = time.clock() - t0
+	t = time.clock()
 	print """Total elapsed time =""", t 
 
 	print """Writing to output/optimize/xmin1 and output/optimize/xmin2"""
 
-	np.savetxt('output/optimize/'+xmin_file+'1', self.xmin1)
-	np.savetxt('output/optimize/'+xmin_file+'2', self.xmin2)
+	np.savetxt('output/optimize/'+self.xmin_file+'1', self.xmin1)
+	np.savetxt('output/optimize/'+self.xmin_file+'2', self.xmin2)
