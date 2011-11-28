@@ -2,9 +2,10 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
+import time
 import numpy as np
 import matplotlib.pyplot as mpl
-import scipy.optimize as spopt
+from scipy.optimize import fsolve,fmin
 
 # User Defined Modules
 # In this directory
@@ -188,12 +189,12 @@ class HX(object):
         self.loop_count = 0
         while ( np.absolute(self.error_hot) > self.xtol or
     np.absolute(self.error_cold) > self.xtol ): 
-            self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
+            self.tem.T_h_goal = fsolve(self.get_error_hot,
     x0=self.tem.T_h_goal)
             # self.tem.solve_tem()
-            self.tem.T_c = spopt.fsolve(self.get_error_cold,
+            self.tem.T_c = fsolve(self.get_error_cold,
     x0=self.tem.T_c)
-            self.tem.T_h_goal = spopt.fsolve(self.get_error_hot,
+            self.tem.T_h_goal = fsolve(self.get_error_hot,
     x0=self.tem.T_h_goal) # repeat just to make sure
             self.error_cold = self.get_error_cold(self.tem.T_c)
             self.error_hot = self.get_error_hot(self.tem.T_h)
@@ -292,3 +293,55 @@ class HX(object):
         self.tem.h_nodes[i] = self.tem.h
 
         self.exh.velocity_nodes[i] = self.exh.velocity
+
+    def get_inv_power(self,apar):
+	"""Method for returning inverse of net power as a function of
+	leg ratio, fill fraction, length, and current.  Use with
+	scipy.optimize.fmin to find optimal set of input parameters."""
+	# unpack guess vector
+	apar=np.asarray(apar)
+	self.tem.leg_ratio     = apar[0]
+	self.tem.fill_fraction = apar[1]
+	self.tem.length        = apar[2]
+	self.tem.I             = apar[3]
+
+	# reset surrogate variables
+	self.tem.Ntype.area = self.tem.leg_ratio * self.tem.Ptype.area
+	self.tem.area_void = ( (1. - self.tem.fill_fraction) /
+	self.tem.fill_fraction * (self.tem.Ptype.area + self.tem.Ntype.area)
+	)
+	self.set_constants()
+	self.solve_hx()
+
+	# 1/power_net 
+	return 1. / (self.power_net)
+
+    def optimize(self):
+	"""Uses fmin to find optimal set of:
+	I) tem.leg_ratio
+	II) tem.fill_fraction
+	III) hx.tem.length
+	IV) hx.tem.I
+	based on minimizing the inverse of power.  This may be a bad
+	method if net power is negative."""
+	t0 = time.clock()
+
+	self.tem.method = 'analytical'
+	self.xmin1 = fmin(self.get_inv_power, self.x0)
+	t1 = time.clock() - t0
+	print """xmin1 found. Switching to numerical model.
+	Elapsed time solving xmin1 =""", t1
+
+	self.tem.method = 'numerical'
+	self.xmin2 = fmin(self.get_inv_power, self.xmin1)
+	t2 = time.clock() - t1
+	print """xmin2 found.
+	Elapsed time solving xmin2 =""", t2
+
+	t = time.clock() - t0
+	print """Total elapsed time =""", t 
+
+	print """Writing to output/optimize/xmin1 and output/optimize/xmin2"""
+
+	np.savetxt('output/optimize/'+xmin_file+'1', self.xmin1)
+	np.savetxt('output/optimize/'+xmin_file+'2', self.xmin2)
