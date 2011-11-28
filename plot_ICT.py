@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 
 print "Running full_scale_instance.py"
-execfile('full_scale_instance.py')
+execfile('Instances/full_scale_instance.py')
 plt.close('all')
 print "Running fin_inst.py"
-execfile('fin_inst.py')
+execfile('Instances/fin_inst.py')
 plt.close('all')
 print "Running parallel_duct_instance.py"
-execfile('parallel_duct_inst.py')
+execfile('Instances/parallel_duct_inst.py')
 plt.close('all')
 print "Preparing plots."
 

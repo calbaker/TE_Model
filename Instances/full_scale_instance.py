@@ -40,9 +40,7 @@ hx_inst.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_inst.tem.Ptype.area +
                             hx_inst.tem.Ntype.area) )  
 
-hx_inst.type = 'parallel'
-# hx_inst.exh.enhancement = 'straight fins'
-# hx_inst.exh.fins = 15
+hx_inst.type = 'counter'
 
 hx_inst.exh.T_inlet = 800.
 hx_inst.exh.P = 100.

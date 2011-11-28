@@ -8,7 +8,9 @@ import os
 
 
 # User Defined Modules
-# In this directory
+cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
 
@@ -38,7 +40,7 @@ hx_ducts0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                             hx_ducts0.tem.Ntype.area) )  
 
 # hx_ducts0.tem.method = 'analytical'
-hx_ducts0.type = 'parallel'
+hx_ducts0.type = 'counter'
 
 hx_ducts0.exh.T_inlet = 800.
 hx_ducts0.exh.P = 100.
