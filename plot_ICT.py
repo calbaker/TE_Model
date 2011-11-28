@@ -1,6 +1,9 @@
 """This script replots a whole slew of the ICT paper plots."""
 
 import matplotlib.pyplot as plt
+import os
+
+os.chdir('Instances')
 
 print "Running full_scale_instance.py"
 execfile('Instances/full_scale_instance.py')
@@ -17,6 +20,8 @@ execfile('Instances/parallel_ducts_inst.py')
 plt.close('all')
 
 print "Preparing plots."
+
+os.chdir('..')
 
 plt.figure()
 plt.plot(hx_inst.x_dim * 100., hx_inst.exh.T_nodes, '-r', label='Exhaust')
@@ -40,7 +45,9 @@ plt.grid()
 plt.xlim(xmax = 200)
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/temp.png')
-plt.savefig('Plots/temp.pdf')
+plt.savefig('../Plots/temp.png')
+plt.savefig('../Plots/temp.pdf')
 
 plt.show()
+
+

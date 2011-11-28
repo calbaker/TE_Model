@@ -4,11 +4,13 @@
 # Distribution Modules
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+import os,sys
 
 
 # User Defined Modules
-# In this directory
+cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
 
