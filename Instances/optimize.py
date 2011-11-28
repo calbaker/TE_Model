@@ -110,7 +110,6 @@ print "Beginning optimization..."
 # Find min using downhill simplex algorithm
 xmin1 = fmin(optim,x0)
 t1 = time.clock() - t0
-
 print """xmin1 found. Switching to numerical model.
 Elapsed time solving xmin1 =""", t1 
 
@@ -131,7 +130,12 @@ print "Finalizing optimization..."
 
 # output optimal parameters
 
-print "\nProgram finished."
+print """\nProgram finished.
+Writing to output/optimize/xmin1 and output/optimize/xmin2"""
+
+np.savetxt('output/optimize/xmin1', xmin1)
+np.savetxt('output/optimize/xmin2', xmin2)
+
 print xmin1
 print xmin2
 
