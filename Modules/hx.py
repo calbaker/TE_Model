@@ -323,7 +323,10 @@ class HX(object):
 	III) hx.tem.length
 	IV) hx.tem.I
 	based on minimizing the inverse of power.  This may be a bad
-	method if net power is negative."""
+	method if net power is negative.
+
+	self.x0 must be defined elsewhere"""
+	
 	t0 = time.clock()
 
 	self.tem.method = 'analytical'
