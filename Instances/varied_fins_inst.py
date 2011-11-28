@@ -12,11 +12,18 @@ import os
 import hx
 reload(hx)
 
+# Output from xmin2
+# 6.834534389943245358e-01
+# 2.384892371916906562e-02
+# 3.267547630355634538e-04
+# 1.390419916569227965e+01
+
+# parameters for TE legs
 area = (0.002)**2
-length = 1.e-3
-current = 5.5 # this is really close to max for these params
-area_ratio = 0.69
-fill_fraction = 1. / 20.
+length = 3.27e-4
+current = 13.9
+area_ratio = 0.683
+fill_fraction = 2.38e-2
 
 hx_fins = hx.HX()
 hx_fins.width = 30.e-2
@@ -36,14 +43,14 @@ hx_fins.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                             hx_fins.tem.Ntype.area) )  
 
 # hx_fins.tem.method = "analytical"
-hx_fins.type = 'parallel'
+hx_fins.type = 'counter'
 hx_fins.exh.enhancement = "straight fins"
 hx_fins.exh.fin.thickness = 5.e-3
 hx_fins.exh.fins = 10
 
 hx_fins.exh.T_inlet = 800.
 hx_fins.exh.P = 100.
-hx_fins.cool.T_inlet = 300.
+hx_fins.cool.T_outlet = 310.
 
 hx_fins.set_mdot_charge()
 hx_fins.solve_hx()

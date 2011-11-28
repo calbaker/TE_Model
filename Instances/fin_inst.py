@@ -37,7 +37,7 @@ hx_fins0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_fins0.tem.Ptype.area +
                             hx_fins0.tem.Ntype.area) )  
 
-hx_fins0.tem.method = 'analytical'
+# hx_fins0.tem.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = "straight fins"
 hx_fins0.exh.fin.thickness = 5.e-3

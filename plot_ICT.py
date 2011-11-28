@@ -1,14 +1,21 @@
+"""This script replots a whole slew of the ICT paper plots."""
+
 import matplotlib.pyplot as plt
 
 print "Running full_scale_instance.py"
 execfile('Instances/full_scale_instance.py')
 plt.close('all')
+
 print "Running fin_inst.py"
 execfile('Instances/fin_inst.py')
+execfile('Instances/varied_fins_inst.py')
 plt.close('all')
+
 print "Running parallel_duct_instance.py"
 execfile('Instances/parallel_duct_inst.py')
+execfile('Instances/parallel_ducts_inst.py')
 plt.close('all')
+
 print "Preparing plots."
 
 plt.figure()

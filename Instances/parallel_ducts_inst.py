@@ -12,13 +12,18 @@ import os
 import hx
 reload(hx)
 
+# xmin2 output: 
+# 7.556944047800089326e-01
+# 1.843479126333371840e-02
+# 1.247566990833368561e-03
+# 3.945352024826855430e+00
+
 # parameters for TE legs
 area = (0.002)**2
-length = 1.e-3
-current = 5. # this is really close to max for these params
-area_ratio = 0.69
-fill_fraction = 1. / 75. # this is still about right so fill_fraction
-                         # may be independent of current.  
+length = 1.25e-3
+current = 3.95 
+area_ratio = 0.756
+fill_fraction = 1.83e-2
 
 hx_ducts = hx.HX()
 hx_ducts.width = 30.e-2
@@ -38,11 +43,11 @@ hx_ducts.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                             hx_ducts.tem.Ntype.area) )  
 
 # hx_ducts.tem.method = 'analytical'
-hx_ducts.type = 'parallel'
+hx_ducts.type = 'counter'
 
 hx_ducts.exh.T_inlet = 800.
 hx_ducts.exh.P = 100.
-hx_ducts.cool.T_inlet = 300.
+hx_ducts.cool.T_outlet = 310.
 
 ducts = np.arange(2, 18, 1)
 

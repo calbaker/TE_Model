@@ -15,14 +15,20 @@ if cmd_folder not in sys.path:
 import hx
 reload(hx)
     
+# parameters from xmin2
+# 7.049488398024472691e-01
+# 2.074354421989454272e-02
+# 1.033370547666811676e-03
+# 4.634972529966798760e+00
+
 area = (0.002)**2
-length = 1.e-3
-current = 4.
-area_ratio = 0.69
-fill_fraction = 1. / 40.
+length = 1.03e-3
+current = 4.63
+area_ratio = 0.705
+fill_fraction = 2.07e-2
 
 hx_inst = hx.HX()
-hx_inst.tem.method = 'analytical'
+# hx_inst.tem.method = 'analytical'
 hx_inst.width = 30.e-2
 hx_inst.exh.bypass = 0.
 hx_inst.exh.height = 3.5e-2
