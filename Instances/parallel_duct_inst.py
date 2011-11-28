@@ -93,8 +93,8 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('Plots/temp '+hx_ducts0.type+str(ducts)+'.png')
-plt.savefig('Plots/temp '+hx_ducts0.type+str(ducts)+'.pdf')
+plt.savefig('../Plots/temp '+hx_ducts0.type+str(ducts)+'.png')
+plt.savefig('../Plots/temp '+hx_ducts0.type+str(ducts)+'.pdf')
 
 # plt.show()
 
