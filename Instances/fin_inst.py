@@ -4,7 +4,7 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as plt
-import os
+import os,sys
 
 
 # User Defined Modules
@@ -44,7 +44,7 @@ hx_fins0.exh.fin.thickness = 5.e-3
 hx_fins0.exh.fins = 30
 
 hx_fins0.exh.T_inlet = 800.
-hx_fins0.cool.T_inlet = 300.
+hx_fins0.cool.T_inlet = 310.
 
 hx_fins0.set_mdot_charge()
 hx_fins0.solve_hx()

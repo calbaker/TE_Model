@@ -44,7 +44,7 @@ hx_inst.type = 'counter'
 
 hx_inst.exh.T_inlet = 800.
 hx_inst.exh.P = 100.
-hx_inst.cool.T_inlet = 300.
+hx_inst.cool.T_outlet = 310.
 
 hx_inst.set_mdot_charge()
 hx_inst.solve_hx()

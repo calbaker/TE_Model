@@ -4,7 +4,7 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as plt
-import os
+import os,sys
 
 
 # User Defined Modules
@@ -44,7 +44,7 @@ hx_ducts0.type = 'counter'
 
 hx_ducts0.exh.T_inlet = 800.
 hx_ducts0.exh.P = 100.
-hx_ducts0.cool.T_inlet = 300.
+hx_ducts0.cool.T_outlet = 310.
 
 ducts = 7
 
