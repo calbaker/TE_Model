@@ -70,7 +70,7 @@ hx_fins.exh.fin.spacings = np.zeros(np.size(hx_fins.exh.fin_array))
 for i in np.arange(np.size(hx_fins.exh.fin_array)):
     hx_fins.exh.fins = hx_fins.exh.fin_array[i]
     print "\nSolving for", hx_fins.exh.fins, "fins\n"
-    hx_fins.solve_hx()
+    hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error, x0=hx_fins.cool.T_outlet)
     hx_fins.power_net_array[i] = hx_fins.power_net
     hx_fins.Wdot_pumping_array[i] = hx_fins.Wdot_pumping
     hx_fins.Qdot_array[i] = hx_fins.Qdot
