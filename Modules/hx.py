@@ -348,3 +348,17 @@ class HX(object):
 
 	np.savetxt('output/optimize/'+self.xmin_file+'1', self.xmin1)
 	np.savetxt('output/optimize/'+self.xmin_file+'2', self.xmin2)
+
+    def get_T_inlet_error(self,T_outlet):
+	"""Returns error for coolant inlet temperature from desired
+	setpoint for the counter flow configuration in which the
+	outlet coolant temperaure is specified.  Should be used with
+	fsolve to determine the correct inlet temperature for the
+	coolant.
+
+	Inputs: hx instance and outlet coolant temperature"""
+
+	self.cool.T_outlet = T_outlet
+	self.solve_hx()
+	error = self.cool.T_inlet_set - self.cool.T_inlet
+	return error
