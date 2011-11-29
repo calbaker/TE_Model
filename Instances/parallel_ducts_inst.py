@@ -50,6 +50,7 @@ hx_ducts.type = 'counter'
 hx_ducts.exh.T_inlet = 800.
 hx_ducts.exh.P = 100.
 hx_ducts.cool.T_outlet = 310.
+hx_ducts.cool.T_inlet_set = 300.
 
 ducts = np.arange(2, 18, 1)
 
@@ -63,7 +64,9 @@ hx_ducts.exh.mdot_array = hx_ducts.exh.mdot0 / ducts
 hx_ducts.cool.mdot_array = hx_ducts.cool.mdot * 2. / (ducts + 1.) 
 
 hx_ducts.height_array = ( ducts * hx_ducts.exh.height_array +  (ducts
-                            + 1) * hx_ducts.cool.height_array ) 
+                            + 1) * hx_ducts.cool.height_array )
+hx_ducts.cool.T_outlet_array = np.zeros(len(hx_ducts.height_array))
+hx_ducts.cool.T_inlet_array = np.zeros(len(hx_ducts.height_array))
 
 # Initializing arrays for storing loop results.  
 hx_ducts.Qdot_array = np.zeros(np.size(ducts))
@@ -79,7 +82,10 @@ for i in np.arange(np.size(ducts)):
     hx_ducts.exh.mdot = hx_ducts.exh.mdot_array[i]
     hx_ducts.cool.mdot = hx_ducts.cool.mdot_array[i]
 
-    hx_ducts.solve_hx()
+    hx_ducts.cool.T_outlet = fsolve(hx_ducts.get_T_inlet_error, x0=hx_ducts.cool.T_outlet)
+    hx_ducts.cool.T_outlet_array[i] = hx_ducts.cool.T_outlet
+    hx_ducts.cool.T_inlet_array[i] = hx_ducts.cool.T_inlet
+    
     print "Finished solving for", ducts[i], "ducts\n"
     
     hx_ducts.Qdot_array[i] = hx_ducts.Qdot * ducts[i]
