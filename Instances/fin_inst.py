@@ -5,7 +5,7 @@
 import scipy as sp
 import matplotlib.pyplot as plt
 import os,sys
-
+from scipy.optimize import fsolve
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -44,11 +44,11 @@ hx_fins0.exh.fin.thickness = 5.e-3
 hx_fins0.exh.fins = 30
 
 hx_fins0.exh.T_inlet = 800.
+hx_fins0.cool.T_inlet_set = 300.
 hx_fins0.cool.T_outlet = 310.
 
 hx_fins0.set_mdot_charge()
-hx_fins0.solve_hx()
-
+hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error, x0=hx_fins0.cool.T_outlet)
 
 print "\nProgram finished."
 print "\nPlotting..."

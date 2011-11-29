@@ -5,7 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-
+from scipy.optimize import fsolve
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -52,10 +52,11 @@ hx_fins.exh.fins = 10
 
 hx_fins.exh.T_inlet = 800.
 hx_fins.exh.P = 100.
+hx_fins.cool.T_inlet_set = 300.
 hx_fins.cool.T_outlet = 310.
 
 hx_fins.set_mdot_charge()
-hx_fins.solve_hx()
+hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error, x0=hx_fins.cool.T_outlet)
 
 hx_fins.exh.fin_array = np.arange(20, 42, 2)
 # array for varied exhaust duct height (m)

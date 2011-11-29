@@ -5,7 +5,7 @@
 import scipy as sp
 import matplotlib.pyplot as plt
 import os,sys
-
+from scipy.optimize import fsolve
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -44,6 +44,7 @@ hx_ducts0.type = 'counter'
 
 hx_ducts0.exh.T_inlet = 800.
 hx_ducts0.exh.P = 100.
+hx_ducts0.cool.T_inlet_set = 300.
 hx_ducts0.cool.T_outlet = 310.
 
 ducts = 7
@@ -60,7 +61,7 @@ hx_ducts0.cool.mdot = hx_ducts0.cool.mdot * 2. / (ducts + 1.)
 hx_ducts0.height = ( ducts * hx_ducts0.exh.height + (ducts + 1) *
                      hx_ducts0.cool.height )  
 
-hx_ducts0.solve_hx()
+hx_ducts0.cool.T_outlet = fsolve(self.get_T_inlet_error, x0=hx_ducts0.cool.T_outlet) 
     
 hx_ducts0.Qdot = hx_ducts0.Qdot * ducts
 hx_ducts0.tem.power = hx_ducts0.tem.power_total * ducts
