@@ -5,7 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-
+from scipy.optimize import fsolve
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
