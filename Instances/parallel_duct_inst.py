@@ -61,7 +61,7 @@ hx_ducts0.cool.mdot = hx_ducts0.cool.mdot * 2. / (ducts + 1.)
 hx_ducts0.height = ( ducts * hx_ducts0.exh.height + (ducts + 1) *
                      hx_ducts0.cool.height )  
 
-hx_ducts0.cool.T_outlet = fsolve(self.get_T_inlet_error, x0=hx_ducts0.cool.T_outlet) 
+hx_ducts0.cool.T_outlet = fsolve(hx_ducts0.get_T_inlet_error, x0=hx_ducts0.cool.T_outlet) 
     
 hx_ducts0.Qdot = hx_ducts0.Qdot * ducts
 hx_ducts0.tem.power = hx_ducts0.tem.power_total * ducts
