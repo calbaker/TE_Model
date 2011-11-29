@@ -3,8 +3,6 @@
 import matplotlib.pyplot as plt
 import os
 
-os.chdir('Instances')
-
 print "Running full_scale_instance.py"
 execfile('full_scale_instance.py')
 plt.close('all')
@@ -20,8 +18,6 @@ execfile('parallel_ducts_inst.py')
 plt.close('all')
 
 print "Preparing plots."
-
-os.chdir('..')
 
 plt.figure()
 plt.plot(hx_inst.x_dim * 100., hx_inst.exh.T_nodes, '-r', label='Exhaust')
