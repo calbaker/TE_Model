@@ -110,8 +110,8 @@ FIGDIM1 = ([0.12, 0.12, 0.75, 0.75])
 XTICKS = hx_ducts.exh.height_array[0::3].copy() * 100.
 XTICKS = list(XTICKS)
 
-# for i in range(len(XTICKS)):
-#     XTICKS[i] = ('{:01.1f}'.format(XTICKS[i])) 
+for i in range(len(XTICKS)):
+    XTICKS[i] = ('{:01.1f}'.format(XTICKS[i])) 
 
 XTICKS[0] = ''
 fig = plt.figure()
