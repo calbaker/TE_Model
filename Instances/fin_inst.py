@@ -41,7 +41,7 @@ hx_fins0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = "straight fins"
 hx_fins0.exh.fin.thickness = 5.e-3
-hx_fins0.exh.fins = 30
+hx_fins0.exh.fins = 32
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.

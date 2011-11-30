@@ -9,12 +9,12 @@ plt.close('all')
 
 print "Running fin_inst.py"
 execfile('fin_inst.py')
-execfile('varied_fins_inst.py')
+# execfile('varied_fins_inst.py')
 plt.close('all')
 
 print "Running parallel_duct_instance.py"
 execfile('parallel_duct_inst.py')
-execfile('parallel_ducts_inst.py')
+# execfile('parallel_ducts_inst.py')
 plt.close('all')
 
 print "Preparing plots."

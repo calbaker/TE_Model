@@ -47,7 +47,7 @@ hx_ducts0.exh.P = 100.
 hx_ducts0.cool.T_inlet_set = 300.
 hx_ducts0.cool.T_outlet = 310.
 
-ducts = 7
+ducts = 11
 
 hx_ducts0.exh.height = 3.5e-2 / ducts
 hx_ducts0.cool.height = 2.e-2 / (ducts + 1.)
