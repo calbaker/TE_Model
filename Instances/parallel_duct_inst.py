@@ -23,7 +23,7 @@ reload(hx)
 # parameters for TE legs
 area = (0.002)**2
 length = 1.24e-3
-current = 3.95. 
+current = 3.95
 area_ratio = 0.756
 fill_fraction = 1.84e-2 
 
