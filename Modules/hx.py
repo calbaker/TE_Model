@@ -314,7 +314,7 @@ class HX(object):
 	self.solve_hx()
 
 	# 1/power_net 
-	return 1. / (self.power_net)
+	return 1. / (self.tem.power_total)
 
     def optimize(self):
 	"""Uses fmin to find optimal set of:
