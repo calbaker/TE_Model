@@ -14,13 +14,18 @@ if cmd_folder not in sys.path:
 import hx
 reload(hx)
 
+# xmin2 output: 
+# 7.556944047800089326e-01
+# 1.843479126333371840e-02
+# 1.247566990833368561e-03
+# 3.945352024826855430e+00
+
 # parameters for TE legs
 area = (0.002)**2
-length = 1.e-3
-current = 5. # this is really close to max for these params
-area_ratio = 0.69
-fill_fraction = 1. / 75. # this is still about right so fill_fraction
-                         # may be independent of current.  
+length = 1.24e-3
+current = 3.95. 
+area_ratio = 0.756
+fill_fraction = 1.84e-2 
 
 hx_ducts0 = hx.HX()
 hx_ducts0.width = 30.e-2
