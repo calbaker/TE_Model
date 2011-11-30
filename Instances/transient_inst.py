@@ -35,7 +35,7 @@ hx_trans.length = 1.
 hx_trans.tem.I = current
 hx_trans.tem.length = length
 
-hx_trans.nodes = 25
+hx_trans.nodes = 5
 hx_trans.t_max = 60.
 
 hx_trans.tem.Ptype.material = 'HMS'
