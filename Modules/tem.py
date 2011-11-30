@@ -97,7 +97,7 @@ class Leg(object):
             self.V = -self.P / np.abs(self.I)
             self.R_internal = self.rho * self.length / self.area
 
-        self.R_load = self.V / np.abs(self.I)
+        self.R_load = - self.V / self.I
             
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
