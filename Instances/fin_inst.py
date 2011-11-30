@@ -15,10 +15,10 @@ import hx
 reload(hx)
 
 area = (0.002)**2
-length = 1.e-3
-current = 5.5 # this is really close to max for these params
-area_ratio = 0.69
-fill_fraction = 1. / 20.
+length = 3.27e-4
+current = 13.9
+area_ratio = 0.683
+fill_fraction = 2.38e-2
 
 hx_fins0 = hx.HX()
 hx_fins0.width = 30.e-2
