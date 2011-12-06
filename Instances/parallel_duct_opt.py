@@ -2,7 +2,7 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import numpy as np
+import scipy as sp
 import matplotlib.pyplot as plt
 import os,sys
 from scipy.optimize import fsolve
@@ -22,79 +22,59 @@ reload(hx)
 
 # parameters for TE legs
 area = (0.002)**2
-length = 1.25e-3
-current = 3.95 
+length = 1.24e-3
+current = 3.95
 area_ratio = 0.756
-fill_fraction = 1.83e-2
+fill_fraction = 1.84e-2 
 
-hx_ducts = hx.HX()
-hx_ducts.width = 30.e-2
-# hx_ducts.exh.bypass = 0.
-hx_ducts.exh.height = 3.5e-2
-hx_ducts.length = 1.
-hx_ducts.tem.I = current
-hx_ducts.tem.length = length
+hx_ducts0 = hx.HX()
+hx_ducts0.width = 30.e-2
+# hx_ducts0.exh.bypass = 0.
+hx_ducts0.exh.height = 3.5e-2
+hx_ducts0.length = 1.
+hx_ducts0.tem.I = current
+hx_ducts0.tem.length = length
 
-hx_ducts.tem.Ntype.material = 'MgSi'
-hx_ducts.tem.Ptype.material = 'HMS'
+hx_ducts0.tem.Ntype.material = 'MgSi'
+hx_ducts0.tem.Ptype.material = 'HMS'
 
-hx_ducts.tem.Ptype.area = area                           
-hx_ducts.tem.Ntype.area = hx_ducts.tem.Ptype.area * area_ratio
-hx_ducts.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_ducts.tem.Ptype.area +
-                            hx_ducts.tem.Ntype.area) )  
+hx_ducts0.tem.Ptype.area = area                           
+hx_ducts0.tem.Ntype.area = hx_ducts0.tem.Ptype.area * area_ratio
+hx_ducts0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_ducts0.tem.Ptype.area +
+                            hx_ducts0.tem.Ntype.area) )  
 
-# hx_ducts.tem.method = 'analytical'
-hx_ducts.type = 'counter'
+# hx_ducts0.tem.method = 'analytical'
+hx_ducts0.type = 'counter'
 
-hx_ducts.exh.T_inlet = 800.
-hx_ducts.exh.P = 100.
-hx_ducts.cool.T_outlet = 310.
-hx_ducts.cool.T_inlet_set = 300.
+hx_ducts0.exh.T_inlet = 800.
+hx_ducts0.exh.P = 100.
+hx_ducts0.cool.T_inlet_set = 300.
+hx_ducts0.cool.T_outlet = 310.
 
-ducts = np.arange(2, 18, 1)
+ducts = 11
 
-hx_ducts.exh.height_array = 3.5e-2 / ducts
-hx_ducts.cool.height_array = 2.e-2 / (ducts + 1.)
+hx_ducts0.exh.height = 3.5e-2 / ducts
+hx_ducts0.cool.height = 2.e-2 / (ducts + 1.)
 
-hx_ducts.set_mdot_charge()
-hx_ducts.exh.mdot0 = hx_ducts.exh.mdot 
+hx_ducts0.set_mdot_charge()
+hx_ducts0.exh.mdot0 = hx_ducts0.exh.mdot 
 
-hx_ducts.exh.mdot_array = hx_ducts.exh.mdot0 / ducts
-hx_ducts.cool.mdot_array = hx_ducts.cool.mdot * 2. / (ducts + 1.) 
+hx_ducts0.exh.mdot = hx_ducts0.exh.mdot0 / ducts
+hx_ducts0.cool.mdot = hx_ducts0.cool.mdot * 2. / (ducts + 1.) 
 
-hx_ducts.height_array = ( ducts * hx_ducts.exh.height_array +  (ducts
-                            + 1) * hx_ducts.cool.height_array )
-hx_ducts.cool.T_outlet_array = np.zeros(len(hx_ducts.height_array))
-hx_ducts.cool.T_inlet_array = np.zeros(len(hx_ducts.height_array))
+hx_ducts0.height = ( ducts * hx_ducts0.exh.height + (ducts + 1) *
+                     hx_ducts0.cool.height )  
 
-# Initializing arrays for storing loop results.  
-hx_ducts.Qdot_array = np.zeros(np.size(ducts))
-hx_ducts.tem.power_array = np.zeros(np.size(ducts)) 
-hx_ducts.power_net_array = np.zeros(np.size(ducts))
-hx_ducts.Wdot_pumping_array = np.zeros(np.size(ducts)) 
-
-
-for i in np.arange(np.size(ducts)):
-    hx_ducts.exh.height = hx_ducts.exh.height_array[i]
-    hx_ducts.cool.height = hx_ducts.cool.height_array[i]
-
-    hx_ducts.exh.mdot = hx_ducts.exh.mdot_array[i]
-    hx_ducts.cool.mdot = hx_ducts.cool.mdot_array[i]
-
-    hx_ducts.cool.T_outlet = fsolve(hx_ducts.get_T_inlet_error, x0=hx_ducts.cool.T_outlet)
-    hx_ducts.cool.T_outlet_array[i] = hx_ducts.cool.T_outlet
-    hx_ducts.cool.T_inlet_array[i] = hx_ducts.cool.T_inlet
+hx_ducts0.cool.T_outlet = fsolve(hx_ducts0.get_T_inlet_error, x0=hx_ducts0.cool.T_outlet) 
     
-    print "Finished solving for", ducts[i], "ducts\n"
-    
-    hx_ducts.Qdot_array[i] = hx_ducts.Qdot * ducts[i]
-    hx_ducts.tem.power_array[i] = hx_ducts.tem.power_total * ducts[i]
-    hx_ducts.power_net_array[i] = hx_ducts.power_net * ducts[i]
-    hx_ducts.Wdot_pumping_array[i] = hx_ducts.Wdot_pumping * ducts[i]
-    
+hx_ducts0.Qdot = hx_ducts0.Qdot * ducts
+hx_ducts0.tem.power = hx_ducts0.tem.power_total * ducts
+hx_ducts0.power_net = hx_ducts0.power_net * ducts
+hx_ducts0.Wdot_pumping = hx_ducts0.Wdot_pumping * ducts
+
 print "\nProgram finished."
-print "\nPlotting..."
+print "Plotting..."
 
 # Plot configuration
 FONTSIZE = 20
@@ -105,37 +85,24 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
-FIGDIM1 = ([0.12, 0.12, 0.75, 0.75])
+plt.close('all')
 
-XTICKS = hx_ducts.exh.height_array[0::3].copy() * 100.
-XTICKS = list(XTICKS)
+plt.figure()
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.exh.T_nodes, '-r', label='Exhaust')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.tem.T_h_nodes, '-g', label='TEM Hot Side')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.tem.T_c_nodes, '-k', label='TEM Cold Side')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.cool.T_nodes, '-b', label='Coolant')
 
-for i in range(len(XTICKS)):
-    XTICKS[i] = ('{:01.1f}'.format(XTICKS[i])) 
-
-XTICKS[0] = ''
-fig = plt.figure()
-ax1 = fig.add_axes(FIGDIM1)
-ax1.plot(ducts, hx_ducts.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
-ax1.plot(ducts, hx_ducts.tem.power_array, 'og', label='TEM')
-ax1.plot(ducts, hx_ducts.power_net_array, 'sr', label='$P_{net}$')  
-ax1.plot(ducts, hx_ducts.Wdot_pumping_array, '*k', label='Pumping')
-ax1.legend(loc='best')
-ax1.grid()
-ax1.set_xlabel('Ducts')
-ax1.set_ylabel('Power (kW)')
-ax1.set_ylim(0,7)
-ax1.set_ylim(ymin=0)
-ax2 = plt.twiny(ax1)
-plt.xticks(np.arange(len(XTICKS)), XTICKS)
-ax2.set_xlabel('Exhaust Duct Height (cm)')
-
-fig.savefig('../Plots/power v stacked ducts.pdf')
-fig.savefig('../Plots/power v stacked ducts.pdf')
+plt.xlabel('Distance Along HX (cm)')
+plt.ylabel('Temperature (K)')
+#plt.title('Temperature v. Distance, '+hx_ducts0.type)
+plt.grid()
+plt.legend(loc='best')
+plt.subplots_adjust(bottom=0.15)
+plt.savefig('../Plots/temp '+hx_ducts0.type+str(ducts)+'.png')
+plt.savefig('../Plots/temp '+hx_ducts0.type+str(ducts)+'.pdf')
 
 # plt.show()
 
-print "\nCurrent =", current
-print "Length =", length
-print "Fill Fraction", fill_fraction
-print "power =", hx_ducts.power_net_array.max()
+print hx_ducts0.power_net
+
