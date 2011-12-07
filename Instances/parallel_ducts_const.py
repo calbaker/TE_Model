@@ -44,7 +44,7 @@ hx_ducts.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_ducts.tem.Ptype.area +
                             hx_ducts.tem.Ntype.area) )  
 
-# hx_ducts.tem.method = 'analytical'
+hx_ducts.tem.method = 'analytical'
 hx_ducts.type = 'counter'
 
 hx_ducts.exh.T_inlet = 800.
@@ -52,7 +52,7 @@ hx_ducts.exh.P = 100.
 hx_ducts.cool.T_outlet = 310.
 hx_ducts.cool.T_inlet_set = 300.
 
-hx_ducts.ducts = np.arange(2, 18, 1)
+hx_ducts.ducts = np.arange(2, 10, 1)
 
 hx_ducts.set_mdot_charge()
 hx_ducts.exh.mdot0 = hx_ducts.exh.mdot 
@@ -75,7 +75,7 @@ def get_height(height):
 
     hx_ducts.height = ( (ducts + 1.) * (2. * hx_ducts.plate.thickness + hx_ducts.cool.height) + ducts * hx_ducts.exh.height )
 
-    total = 5.5 + 6. * hx_ducts.plate.thickness
+    total = 5.5e-2 + 6. * hx_ducts.plate.thickness
 
     error = hx_ducts.height - total
 
