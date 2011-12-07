@@ -52,7 +52,7 @@ hx_ducts.exh.P = 100.
 hx_ducts.cool.T_outlet = 310.
 hx_ducts.cool.T_inlet_set = 300.
 
-hx_ducts.ducts = np.arange(2, 10, 1)
+hx_ducts.ducts = np.arange(1, 7, 1)
 
 hx_ducts.set_mdot_charge()
 hx_ducts.exh.mdot0 = hx_ducts.exh.mdot 
