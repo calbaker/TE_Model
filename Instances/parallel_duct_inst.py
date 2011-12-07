@@ -106,3 +106,4 @@ plt.savefig('../Plots/temp '+hx_ducts0.type+str(ducts)+'.pdf')
 
 print hx_ducts0.power_net
 
+hx_ducts0.optimize()
