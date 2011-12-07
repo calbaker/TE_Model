@@ -74,9 +74,11 @@ def get_height(height):
     hx_ducts.exh.height = np.float(height)
     hx_ducts.cool.height = 2. / 3.5 * hx_ducts.exh.height 
 
-    hx_ducts.height = ( (ducts + 1.) * (2. * hx_ducts.plate.thickness + hx_ducts.cool.height) + ducts * hx_ducts.exh.height )
+    hx_ducts.height = ( (ducts + 1.) * (2. * hx_ducts.plate.thickness
+    + hx_ducts.cool.height) + ducts * hx_ducts.exh.height +
+    hx_ducts.tem.length * 2. * ducts )
 
-    total = 5.5e-2 + 6. * hx_ducts.plate.thickness
+    total = 5.5e-2 + 6. * hx_ducts.plate.thickness + hx_ducts.tem.length * 2. 
 
     error = hx_ducts.height - total
 
