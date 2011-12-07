@@ -45,7 +45,7 @@ hx_ducts.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_ducts.tem.Ptype.area +
                             hx_ducts.tem.Ntype.area) )  
 
-hx_ducts.tem.method = 'analytical'
+# hx_ducts.tem.method = 'analytical'
 hx_ducts.type = 'counter'
 
 hx_ducts.exh.T_inlet = 800.
@@ -131,13 +131,14 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 FIGDIM1 = ([0.12, 0.12, 0.75, 0.75])
 
-XTICKS = hx_ducts.exh.height_array[0::3].copy() * 100.
-# XTICKS = list(XTICKS)
+XTICKS = hx_ducts.exh.height_array.copy() * 100.
+XTICKS = list(XTICKS)
 
-# for i in range(len(XTICKS)):
-#     XTICKS[i] = ('{:01.1f}'.format(XTICKS[i])) 
+for i in range(len(XTICKS)):
+    XTICKS[i] = ('{:01.1f}'.format(XTICKS[i])) 
 
-#XTICKS[0] = ''
+XTICKS[0] = ''
+
 fig = plt.figure()
 ax1 = fig.add_axes(FIGDIM1)
 ax1.plot(hx_ducts.ducts, hx_ducts.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
@@ -149,6 +150,7 @@ ax1.grid()
 ax1.set_xlabel('Ducts')
 ax1.set_ylabel('Power (kW)')
 ax1.set_ylim(0,7)
+ax1.set_xlim(0,7)
 ax1.set_ylim(ymin=0)
 ax2 = plt.twiny(ax1)
 plt.xticks(np.arange(len(XTICKS)), XTICKS)
@@ -157,7 +159,7 @@ ax2.set_xlabel('Exhaust Duct Height (cm)')
 fig.savefig('../Plots/power v stacked ducts.pdf')
 fig.savefig('../Plots/power v stacked ducts.pdf')
 
-# plt.show()
+plt.show()
 
 print "\nCurrent =", current
 print "Length =", length
