@@ -52,10 +52,10 @@ hx_ducts0.exh.P = 100.
 hx_ducts0.cool.T_inlet_set = 300.
 hx_ducts0.cool.T_outlet = 310.
 
-ducts = 11
+ducts = 3
 
-hx_ducts0.exh.height = 3.5e-2 / ducts
-hx_ducts0.cool.height = 2.e-2 / (ducts + 1.)
+hx_ducts0.exh.height = 7.24e-3 # from *const.py
+hx_ducts0.cool.height = 4.14e-3
 
 hx_ducts0.set_mdot_charge()
 hx_ducts0.exh.mdot0 = hx_ducts0.exh.mdot 
