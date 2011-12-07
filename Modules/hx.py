@@ -32,6 +32,8 @@ class HX(object):
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
         self.xtol = 0.01
+        self.x0 = np.array([.7,0.02,0.001,4.])
+        self.xmin_file = 'xmin'
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
