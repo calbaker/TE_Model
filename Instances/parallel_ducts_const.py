@@ -15,18 +15,14 @@ import hx
 reload(hx)
 
 # xmin2 output: 
-# 6.66986085e-01
-# 2.55604533e-02
-# 1.01858645e-03
-# 4.59318487e+00
 
 # parameters for TE legs
 area = (0.002)**2
 
-area_ratio = 0.667
-fill_fraction = 2.56e-2
-length = 1.01e-3
-current = 4.59
+area_ratio =    6.414362693368951263e-01
+fill_fraction = 2.571583488993029604e-02
+length =        9.635165319449931357e-04
+current =       4.773474042990549115e+00
 
 hx_ducts = hx.HX()
 hx_ducts.width = 30.e-2
