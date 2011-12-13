@@ -4,11 +4,14 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as plt
-import os
-
+import os,sys
 
 # User Defined Modules
 # In this directory
+# User Defined Modules
+cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 import hx
 
 # parameters for TE legs
@@ -27,6 +30,7 @@ hx.tem.Ntype.area = area
 hx.tem.Ptype.material = 'HMS'
 hx.tem.Ptype.area = area * 2. 
 hx.tem.area_void = 150. * area
+hx.tem.method = 'analytical'
 hx.type = 'parallel'
 hx.exh.enhancement = "straight fins"
 hx.exh.fin.thickness = 5.e-3
@@ -101,8 +105,8 @@ ax2 = plt.twiny(ax1)
 plt.xticks(sp.arange(len(XTICKS)), XTICKS)
 ax2.set_xlabel('Exhaust Duct Height (cm)')
 
-fig.savefig('Plots/power v s ducts.pdf')
-fig.savefig('Plots/power v s ducts.png')
+fig.savefig('../Plots/power v s ducts.pdf')
+fig.savefig('../Plots/power v s ducts.png')
 
 plt.show()
 
