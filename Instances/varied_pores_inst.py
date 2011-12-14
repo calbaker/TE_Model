@@ -4,11 +4,12 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as plt
-import os
-
+import os, sys
 
 # User Defined Modules
-# In this directory
+cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 import hx
 import tem
 
@@ -27,6 +28,7 @@ hx.tem.Ntype.area = area
 hx.tem.Ptype.material = 'HMS'
 hx.tem.Ptype.area = area * 2. 
 hx.tem.area_void = 25. * area
+hx.tem.method = 'analytical'
 hx.type = 'parallel'
 hx.exh.enhancement = "Mancin porous"
 
@@ -34,9 +36,10 @@ hx.exh.T_inlet = 800.
 hx.exh.P = 100.
 hx.cool.T_inlet = 300.
 
+hx.set_mdot_charge()
 hx.solve_hx()
 
-hx.exh.PPI_array = sp.array_size([10])
+hx.exh.PPI_array = sp.arange(10)
 array_size = sp.size(hx.exh.PPI_array)
 hx.power_net_array = sp.zeros(array_size)
 hx.Wdot_pumping_array = sp.zeros(array_size)
@@ -50,7 +53,7 @@ for i in sp.arange(array_size):
     hx.power_net_array[i] = hx.power_net
     hx.Wdot_pumping_array[i] = hx.Wdot_pumping
     hx.Qdot_array[i] = hx.Qdot
-    hx.tem.power_array[i] = hx.tem.power
+    hx.tem.power_array[i] = hx.tem.P
     
 print "\nProgram finished."
 print "\nPlotting..."
@@ -80,7 +83,7 @@ plt.ylim(ymin=0)
 plt.subplots_adjust(bottom=0.15)
 plt.title('Power v. Pore Size')
 plt.legend(loc='best')
-plt.savefig('Plots/power v pore size.pdf')
-plt.savefig('Plots/power v pore size.png')
+plt.savefig('../Plots/power v pore size.pdf')
+plt.savefig('../Plots/power v pore size.png')
 
 plt.show()

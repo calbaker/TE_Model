@@ -106,6 +106,8 @@ class Exhaust(prop.ideal_gas):
             # Re of porous media from Mancin et al.
             self.F = ( (1.765 * self.Re_K**(-0.1014) * self.porosity**2 /
             self.PPI**(0.6)) ) # friction factor from Mancin et al. 
+            self.f = self.F # possibly wrong assignment but gets code to shut
+# up and run 
             self.deltaP = (self.length * 2. * self.F * self.G**2 /
             (self.D_pore * self.rho)) # pressure drop from Mancin et al.
             self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)

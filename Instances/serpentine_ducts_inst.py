@@ -32,9 +32,9 @@ hx.tem.Ptype.area = area * 2.
 hx.tem.area_void = 150. * area
 hx.tem.method = 'analytical'
 hx.type = 'parallel'
-hx.exh.enhancement = "straight fins"
-hx.exh.fin.thickness = 5.e-3
-hx.exh.fins = 22 # 22 fins seems to be best.  
+# hx.exh.enhancement = "straight fins"
+# hx.exh.fin.thickness = 5.e-3
+# hx.exh.fins = 22 # 22 fins seems to be best.  
 
 hx.exh.T_inlet = 800.
 hx.exh.P = 100.
