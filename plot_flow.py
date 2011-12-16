@@ -5,8 +5,12 @@
 import matplotlib.pyplot as plt
 import xlrd
 import numpy as np
+import os,sys
 
 # User Defined Modules
+cmd_folder = os.path.dirname(os.path.abspath('Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
 import properties as prop
@@ -48,14 +52,14 @@ fig06.canvas.set_window_title('Flow v Pressure')
 plt.plot(flow_sim.flow_data.pressure_drop, flow_sim.flow_data.flow *1e3, 'or',
          label='experiment')
 plt.plot(pressure_drop, flow * 1e3, '-k', 
-         label='model')
+         label='quadratic fit')
 plt.ylabel('Flow Rate (L/s)')
 plt.xlabel('Pressure Drop (kPa)')
 plt.ylim(ymin=0)
 plt.xlim(xmin=0)
 plt.grid()
 plt.legend(loc='lower right')
-plt.savefig('Plots/SAE Paper/Flow v Pressure.pdf')
-plt.savefig('Plots/SAE Paper/Flow v Pressure.png')
+plt.savefig('Plots/SAE Paper/Flow v Pressure1.pdf')
+plt.savefig('Plots/SAE Paper/Flow v Pressure1.png')
 
 plt.show()
