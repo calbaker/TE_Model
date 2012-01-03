@@ -146,7 +146,7 @@ fig3.savefig('../Plots/HX Optimization/current_fill.png')
 
 fig2 = plt.figure()
 FCS = plt.contourf(length_fill * 1000., fill_length, P_length_fill.T, levels=LEVELS) 
-CB = plt.colorbar(FCS, orientation='vertical')
+CB = plt.colorbar(FCS, orientation='vertical', format='%0.1f')
 CB.set_label('TE Power (W)')
 plt.grid()
 plt.xlabel("Leg Height (mm)")
