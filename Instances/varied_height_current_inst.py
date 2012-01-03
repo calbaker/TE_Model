@@ -4,8 +4,13 @@
 # Distribution Modules
 import scipy as sp
 import matplotlib.pyplot as plt
-import os
+import os,sys
 
+# User Defined Modules
+cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
+import hx
 
 # User Defined Modules
 # In this directory
@@ -19,6 +24,8 @@ T_h_goal = 650.
 T_c = 310.
 
 Ntype = tem.Leg()
+Ntype.node = 0
+Ntype.method = 'numerical'
 Ntype.material = 'MgSi'
 Ntype.set_prop_fit()
 Ntype.area = area
@@ -27,6 +34,8 @@ Ntype.T_c = T_c
 Ntype.I = I
 
 Ptype = tem.Leg()
+Ptype.node = 0
+Ptype.method = 'numerical'
 Ptype.material = 'HMS'
 Ptype.set_prop_fit()
 Ptype.area = area * 2.
@@ -77,9 +86,9 @@ CB = plt.colorbar(FCS, orientation='horizontal', format='%0.1f')
 plt.xlabel('TE Leg Height (mm)')
 plt.ylabel(r'Current Density (A/$cm^2$)')
 plt.title('Efficiency v. Leg Height and Current n-type')
-fig.savefig('Plots/eta v height and current n' + str(Ntype.T_h_goal) +
+fig.savefig('../Plots/eta v height and current n' + str(Ntype.T_h_goal) +
             ' K.pdf')
-fig.savefig('Plots/eta v height and current n' + str(Ntype.T_h_goal) +
+fig.savefig('../Plots/eta v height and current n' + str(Ntype.T_h_goal) +
             ' K.png')
 
 fig = plt.figure()
@@ -89,9 +98,9 @@ CB = plt.colorbar(FCS, orientation='horizontal', format='%0.1f')
 plt.xlabel('TE Leg Height (mm)')
 plt.ylabel(r'Negative Current Density (A/$cm^2$)')
 plt.title('Efficiency v. Leg Height and Current p-type')
-fig.savefig('Plots/eta v height and current p' + str(Ptype.T_h_goal) +
+fig.savefig('../Plots/eta v height and current p' + str(Ptype.T_h_goal) +
             ' K.pdf')
-fig.savefig('Plots/eta v height and current p' + str(Ptype.T_h_goal) +
+fig.savefig('../Plots/eta v height and current p' + str(Ptype.T_h_goal) +
             ' K.png')
 
 plt.show()
