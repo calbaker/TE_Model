@@ -91,16 +91,16 @@ fig.savefig('../Plots/eta v height and current n' + str(Ntype.T_h_goal) +
 fig.savefig('../Plots/eta v height and current n' + str(Ntype.T_h_goal) +
             ' K.png')
 
-fig = plt.figure()
-height, Js = sp.meshgrid(Ptype.lengths, Ptype.Js)
-FCS = plt.contourf(height * 1000., currents2d, Ptype.etas.T * 100., LEVELS) 
-CB = plt.colorbar(FCS, orientation='horizontal', format='%0.1f')
-plt.xlabel('TE Leg Height (mm)')
-plt.ylabel(r'Negative Current Density (A/$cm^2$)')
-plt.title('Efficiency v. Leg Height and Current p-type')
-fig.savefig('../Plots/eta v height and current p' + str(Ptype.T_h_goal) +
-            ' K.pdf')
-fig.savefig('../Plots/eta v height and current p' + str(Ptype.T_h_goal) +
-            ' K.png')
+# fig = plt.figure()
+# height, Js = sp.meshgrid(Ptype.lengths, Ptype.Js)
+# FCS = plt.contourf(height * 1000., currents2d, Ptype.etas.T * 100., LEVELS) 
+# CB = plt.colorbar(FCS, orientation='horizontal', format='%0.1f')
+# plt.xlabel('TE Leg Height (mm)')
+# plt.ylabel(r'Negative Current Density (A/$cm^2$)')
+# plt.title('Efficiency v. Leg Height and Current p-type')
+# fig.savefig('../Plots/eta v height and current p' + str(Ptype.T_h_goal) +
+#             ' K.pdf')
+# fig.savefig('../Plots/eta v height and current p' + str(Ptype.T_h_goal) +
+#             ' K.png')
 
 plt.show()
