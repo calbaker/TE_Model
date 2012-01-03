@@ -102,7 +102,7 @@ elapsed = time.clock() - t0
 print "Elapsed time:", elapsed
 
 # Plot configuration
-FONTSIZE = 15
+FONTSIZE = 20
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
