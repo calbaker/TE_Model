@@ -34,6 +34,8 @@ class HX(object):
         self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xmin_file = 'xmin'
+        self.T0 = 300. # temperature (K) at restricted dead state
+        self.p0 = 101. # pressure (kPa) at restricted dead state
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
