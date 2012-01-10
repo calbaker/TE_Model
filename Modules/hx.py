@@ -35,7 +35,6 @@ class HX(object):
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xmin_file = 'xmin'
         self.T0 = 300. # temperature (K) at restricted dead state
-        self.p0 = 101. # pressure (kPa) at restricted dead state
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -260,6 +259,33 @@ class HX(object):
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power_total - self.Wdot_pumping 
         self.eta_1st = self.power_net / self.Qdot
+        
+        self.set_availability()
+
+    def set_availability(self):
+        """Runs at end of analysis to determin availability of coolant
+        and exhaust everywhere."""
+
+        # Availability analysis
+        self.exh.enthalpy0 = self.exh.c_p * self.T0
+        # enthalpy (kJ/kg*K) of exhaust at restricted dead state
+        self.exh.enthalpy_nodes = self.exh.c_p * self.exh.T_nodes 
+        # enthalpy (kJ/kg*K) of exhaust
+        self.exh.entropy_nodes = 
+
+        self.cool.enthalpy0 = 113.25 
+        # enthalpy (kJ/kg*K) of coolant at restricted dead state
+        self.cool.enthalpy_nodes = ( self.cool.c_p * (self.cool.T_nodes -
+        self.T0) )
+        # enthalpy (kJ/kg*K) of coolant
+        
+        self.exh.availability_nodes = ( self.exh.enthalpy_nodes -
+        self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
+        self.exh.entropy0) )
+
+        self.cool.availability_nodes = ( self.cool.enthalpy_nodes -
+        self.cool.enthalpy0 - self.T0 * (self.cool.entropy_nodes -
+        self.cool.entropy0) )
 
     def store_node_values(self,i):
         """Storing solved values in array to keep track of what
