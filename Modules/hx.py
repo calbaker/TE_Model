@@ -315,13 +315,15 @@ class HX(object):
 
         self.exh.T_nodes[i] = self.exh.T
         self.exh.h_nodes[i] = self.exh.h
-        self.exh.f_nodes = self.exh.f
-        self.exh.Nu_nodes = self.exh.Nu_D
+        self.exh.f_nodes[i] = self.exh.f
+        self.exh.Nu_nodes[i] = self.exh.Nu_D
+        self.exh.c_p_nodes[i] = self.exh.c_p 
 
         self.cool.h_nodes[i] = self.cool.h
         self.cool.T_nodes[i] = self.cool.T
-        self.cool.f_nodes = self.cool.f
-        self.cool.Nu_nodes = self.cool.Nu_D
+        self.cool.f_nodes[i] = self.cool.f
+        self.cool.Nu_nodes[i] = self.cool.Nu_D
+        self.cool.c_p_nodes[i] = self.cool.c_p
 
         self.tem.T_h_nodes[i] = self.tem.T_h
         # hot side temperature (K) of TEM at each node 
