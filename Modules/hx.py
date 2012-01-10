@@ -58,6 +58,8 @@ class HX(object):
         self.exh.Nu_nodes = ZEROS.copy()
         self.cool.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
+        self.exh.c_p_nodes = ZEROS.copy()
+        self.cool.c_p_nodes = ZEROS.copy()
         self.cool.f_nodes = ZEROS.copy()
         self.cool.Nu_nodes = ZEROS.copy()
         self.cool.h_nodes = ZEROS.copy() 
@@ -263,29 +265,41 @@ class HX(object):
         self.set_availability()
 
     def set_availability(self):
-        """Runs at end of analysis to determin availability of coolant
-        and exhaust everywhere."""
+        """Runs at end of analysis to determine availability of
+        coolant and exhaust everywhere."""
 
         # Availability analysis
         self.exh.enthalpy0 = self.exh.c_p * self.T0
-        # enthalpy (kJ/kg*K) of exhaust at restricted dead state
-        self.exh.enthalpy_nodes = self.exh.c_p * self.exh.T_nodes 
-        # enthalpy (kJ/kg*K) of exhaust
-        self.exh.entropy_nodes = 
+        # enthalpy (kJ/kg) of exhaust at restricted dead state
+        self.exh.enthalpy_nodes = self.exh.c_p_nodes * self.exh.T_nodes 
+        # enthalpy (kJ/kg) of exhaust
+        self.exh.entropy0 = 1.70 
+        # entropy (kJ/kg*K) of exhuast at restricted dead state
+        self.exh.entropy_nodes = ( self.exh.c_p_nodes *
+        np.log(self.exh.T_nodes / self.T0) + self.exh.entropy0) 
+        # entropy (kJ/kg*K) of exhaust.  This assumes constant
+        # specific heat and that pressure changes are negligible.
+        # The latter assumption may be a bad assumption.
 
-        self.cool.enthalpy0 = 113.25 
-        # enthalpy (kJ/kg*K) of coolant at restricted dead state
-        self.cool.enthalpy_nodes = ( self.cool.c_p * (self.cool.T_nodes -
-        self.T0) )
-        # enthalpy (kJ/kg*K) of coolant
-        
         self.exh.availability_nodes = ( self.exh.enthalpy_nodes -
         self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
         self.exh.entropy0) )
+        # availability (kJ/kg) of exhaust
+
+        self.cool.enthalpy0 = 113.25 
+        # enthalpy (kJ/kg*K) of coolant at restricted dead state
+        self.cool.enthalpy_nodes = ( self.cool.c_p_nodes *
+        (self.cool.T_nodes - self.T0) ) 
+        # enthalpy (kJ/kg*K) of coolant
+        self.cool.entropy0 = 0.437
+        # entropy (kJ/kg*K) of coolant at restricted dead state
+        self.cool.entropy_nodes = ( self.cool.c_p_nodes *
+        np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 ) 
 
         self.cool.availability_nodes = ( self.cool.enthalpy_nodes -
         self.cool.enthalpy0 - self.T0 * (self.cool.entropy_nodes -
         self.cool.entropy0) )
+        # availability (kJ/kg) of coolant
 
     def store_node_values(self,i):
         """Storing solved values in array to keep track of what
