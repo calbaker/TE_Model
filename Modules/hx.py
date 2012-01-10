@@ -186,6 +186,7 @@ class HX(object):
             self.tem.T_h_goal = self.q / self.U_hot + self.exh.T
             self.tem.T_c = -self.q / self.U_cold + self.cool.T
         else:
+            self.set_convection()
             self.tem.T_c = (self.tem.T_c_nodes[i-1])
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
 
