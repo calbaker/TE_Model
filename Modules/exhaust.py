@@ -1,10 +1,11 @@
 """Module for modeling exhaust side of heat exhanger"""
 # Distribution libraries
 import numpy as np
+import types
 
 # In python directory
 import properties as prop
-import types
+reload(prop)
 
 # In this directory
 import functions
