@@ -6,6 +6,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as mpl
 from scipy.optimize import fsolve,fmin
+from scipy.integrate import quad
 
 # User Defined Modules
 # In this directory
@@ -56,9 +57,11 @@ class HX(object):
         self.exh.h_nodes = ZEROS.copy()
         self.exh.f_nodes = ZEROS.copy()
         self.exh.Nu_nodes = ZEROS.copy()
+        self.exh.c_p_nodes = ZEROS.copy()
+        self.exh.entropy_nodes = ZEROS.copy()
+        self.exh.enthalpy_nodes = ZEROS.copy()
         self.cool.T_nodes = ZEROS.copy() # initializing array for storing
                                      # temperature (K) in each node 
-        self.exh.c_p_nodes = ZEROS.copy()
         self.cool.c_p_nodes = ZEROS.copy()
         self.cool.f_nodes = ZEROS.copy()
         self.cool.Nu_nodes = ZEROS.copy()
@@ -270,21 +273,14 @@ class HX(object):
         coolant and exhaust everywhere."""
 
         # Availability analysis
-        self.exh.enthalpy0 = self.exh.c_p * self.T0
+        self.exh.enthalpy0 = self.exh.get_enthalpy(self.T0)
         # enthalpy (kJ/kg) of exhaust at restricted dead state
-        self.exh.enthalpy_nodes = self.exh.c_p_nodes * self.exh.T_nodes 
-        # enthalpy (kJ/kg) of exhaust
-        self.exh.entropy0 = 1.70 
+        self.exh.entropy0 = self.exh.get_entropy(self.T0)
         # entropy (kJ/kg*K) of exhuast at restricted dead state
-        self.exh.entropy_nodes = ( self.exh.c_p_nodes *
-        np.log(self.exh.T_nodes / self.T0) + self.exh.entropy0) 
-        # entropy (kJ/kg*K) of exhaust.  This assumes constant
-        # specific heat and that pressure changes are negligible.
-        # The latter assumption may be a bad assumption.
 
-        self.exh.availability_nodes = ( self.exh.enthalpy_nodes -
+        self.exh.availability_nodes = ( (self.exh.enthalpy_nodes -
         self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
-        self.exh.entropy0) )
+        self.exh.entropy0)) * self.exh.mdot )
         # availability (kJ/kg) of exhaust
 
         self.cool.enthalpy0 = 113.25 
@@ -297,9 +293,9 @@ class HX(object):
         self.cool.entropy_nodes = ( self.cool.c_p_nodes *
         np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 ) 
 
-        self.cool.availability_nodes = ( self.cool.enthalpy_nodes -
+        self.cool.availability_nodes = ( (self.cool.enthalpy_nodes -
         self.cool.enthalpy0 - self.T0 * (self.cool.entropy_nodes -
-        self.cool.entropy0) )
+        self.cool.entropy0)) * self.cool.mdot)
         # availability (kJ/kg) of coolant
 
     def store_node_values(self,i):
@@ -319,6 +315,8 @@ class HX(object):
         self.exh.f_nodes[i] = self.exh.f
         self.exh.Nu_nodes[i] = self.exh.Nu_D
         self.exh.c_p_nodes[i] = self.exh.c_p 
+        self.exh.entropy_nodes[i] = self.exh.entropy
+        self.exh.enthalpy_nodes[i] = self.exh.enthalpy
 
         self.cool.h_nodes[i] = self.cool.h
         self.cool.T_nodes[i] = self.cool.T

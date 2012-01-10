@@ -103,15 +103,15 @@ plt.plot(hx_inst.x_dim * 100., hx_inst.exh.availability_nodes, label='exhaust')
 plt.plot(hx_inst.x_dim * 100., hx_inst.cool.availability_nodes, label='coolant')
 
 plt.xlabel('Distance Along HX (cm)')
-plt.ylabel('Availability (W?)')
+plt.ylabel('Availability (kW)')
 plt.grid()
 plt.legend(loc='best')
 plt.subplots_adjust(bottom=0.15)
-plt.subplots_adjust(left=0.15)
+plt.subplots_adjust(left=0.18)
 plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'availability.png')
 plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'availability.pdf')
 
-# plt.show()
+plt.show(3)
 
 print hx_inst.power_net
 
