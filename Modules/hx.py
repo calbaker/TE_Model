@@ -290,7 +290,7 @@ class HX(object):
         self.cool.enthalpy0 = 113.25 
         # enthalpy (kJ/kg*K) of coolant at restricted dead state
         self.cool.enthalpy_nodes = ( self.cool.c_p_nodes *
-        (self.cool.T_nodes - self.T0) ) 
+        (self.cool.T_nodes - self.T0) + self.cool.enthalpy0) 
         # enthalpy (kJ/kg*K) of coolant
         self.cool.entropy0 = 0.437
         # entropy (kJ/kg*K) of coolant at restricted dead state
