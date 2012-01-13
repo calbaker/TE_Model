@@ -3,3 +3,10 @@ in engine exhaust for waste heat recovery.  It requires the additional
 module properties.py in Properties.
 
 hx.py can be thought of as the parent library.  
+
+
+To do:
+Clean up everything to look nicer.
+Move enhancement stuff to separate file to clean up hx.py
+Add enhancement stuff for impinging jet and jet arrays
+Eventually add scimath.units to make it better.  
