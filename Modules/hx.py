@@ -97,9 +97,8 @@ class HX(object):
         """Sets constants used at the HX level."""
         self.node_length = self.length / self.nodes
         # length (m) of each node
-        self.area = self.node_length * self.width * self.cool.ducts # area (m^2)
-                                        # through which heat flux
-                                        # occurs in each node
+        self.area = self.node_length * self.width * self.cool.ducts 
+        # area (m^2) through which heat flux occurs in each node
         self.tem.set_constants()
         self.leg_pairs = int(self.area / self.tem.area)
         # Number of TEM leg pairs per node
