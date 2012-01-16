@@ -2,6 +2,8 @@
 # Distribution libraries
 import numpy as np
 import types
+from scimath.units import * 
+from scimath.units.api import *
 
 # In python directory
 import properties as prop
@@ -20,9 +22,13 @@ class _Fin(object):
     def __init__(self):
         """Sets constants and things that need to be guessed to
         execute as a standalone model."""
-        self.thickness = 1.e-3 # fin thickness (m)
-        self.k = 0.2 # thermal conductivity (kW/m-K) of fin material
-        self.h = 0.2
+        self.thickness = UnitScalar(1.e-3, units=length.m)  
+        # fin thickness (m)
+        self.k = UnitScalar(0.2, units=power.kw / length.m /
+        temperature.K) 
+        # thermal conductivity (kW/m-K) of fin material
+        self.h = UnitScalar(0.2 , units=power.kw / length.m**2 /
+        temperature.K) 
         # heat transfer coefficient (kW/m^2-K).  This can be updated
         # from Exhaust.
 
@@ -48,17 +54,23 @@ class Exhaust(prop.ideal_gas):
         self.porous = 'no' # is there porous media?
         self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
             # corrugate metal, etc.)
-        self.T_ref = 300 # default reference temperature (K) for
-                         # availability calculation
-        self.P = 100. # default pressure (kPa)
-        self.height = 1.5e-2 # default height (m) of exhaust duct
+        self.T_ref = UnitScalar(300., units=temperature.K)
+        # default reference temperature (K) for availability
+        # calculation 
+        self.P = UnitScalar(100., units=pressure.kPa) 
+        # default pressure (kPa) 
+        self.height = UnitScalar(1.5e-2, units=length.m)
+        # default height (m) of exhaust duct
         self.ducts = 1 # default number of exhaust ducts
         self.porosity = 0.92 # default volume of void per total volume
-        self.k_matrix = 5.8e-3 # default thermal conductivity(kW/m-K) of metal foam +
-            # air
-        self.PPI = 10 # default pores per inch of porous media, used in Mancin model  
-        self.K = 2.e-7 # default permeability (m^2) of porous metal foam, used in
-            # Bejan model
+        self.k_matrix = UnitScalar(5.8e-3, units=power.kw / length.m /
+        temperature.K) 
+        # default thermal conductivity(kW/m-K) of metal foam + air
+        self.PPI = UnitScalar(10., units=length.m**-1)
+        # default pores per inch of porous media, used in Mancin model   
+        self.K = UnitScalar(2.e-7, units=length.m**2)
+        # default permeability (m^2) of porous metal foam, used in
+        # Bejan model 
         self.fin = _Fin() # workaround to be able to change fin from
                           # instance
         self.Nu_coeff = 0.023
@@ -156,6 +168,6 @@ class Exhaust(prop.ideal_gas):
         if self.enhancement == 'straight fins':
             self.fin.h = self.h
 
-        self.R_thermal = 1 / self.h
+        self.R_thermal = 1. / self.h
         # thermal resistance (m^2-K/kW) of exhaust
 

@@ -6,7 +6,8 @@ import time
 import numpy as np
 import matplotlib.pyplot as mpl
 from scipy.optimize import fsolve,fmin
-from scipy.integrate import quad
+from scimath.units import * 
+from scimath.units.api import *
 
 # User Defined Modules
 # In this directory
@@ -27,15 +28,18 @@ class HX(object):
     def __init__(self):
         """Geometry and constants"""
         self.loop_count = 0
-        self.width = 10.e-2 # width (cm*10**-2) of HX duct. This model treats
-            # duct as parallel plates for simpler modeling.
-        self.length = 20.e-2 # length (m) of HX duct
+        self.width = UnitScalar(10.e-2, units=length.m) 
+        # width (cm*10**-2) of HX duct. This model treats duct as
+        # parallel plates for simpler modeling. 
+        self.length = UnitScalar(20.e-2, units=length.m)
+        # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
         self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xmin_file = 'xmin'
-        self.T0 = 300. # temperature (K) at restricted dead state
+        self.T0 = UnitScalar(300., units=temperature.K)
+        # temperature (K) at restricted dead state
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -123,7 +127,8 @@ class HX(object):
         come from experimental data.  Also, it should probably go
         within the exhaust module."""
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
-        self.exh.mdot = self.cummins.mdot_charge 
+        self.exh.mdot = UnitScalar(self.cummins.mdot_charge,
+        units=mass.kg / time.sec) 
 
     def set_convection(self):
         """Sets values for convection coefficients."""

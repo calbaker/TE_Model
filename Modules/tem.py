@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as mpl
 import time
 import scipy.optimize as spopt
+from scimath.units import * 
+from scimath.units.api import *
 
 # User defined modules
 import te_prop
@@ -18,14 +20,18 @@ class Leg(object):
     def __init__(self):
         """this method sets everything that is constant and
         initializes some arrays""" 
-        self.I = 0.5 # current (A)
+        self.I = UnitScalar(0.5, units=SI.ampere)
+        # current (A)
         self.segments = 25
         # number of segments for finite difference model
-        self.length = 1.e-2  # leg length (m)
-        self.area = (3.e-3)**2. # leg area (m^2)
-        self.T_h_goal = 550.
+        self.length = UnitScalar(1.e-2, units=length.m)
+        # leg length (m)
+        self.area = UnitScalar((3.e-3)**2., units=length.m**2)
+        # leg area (m^2)
+        self.T_h_goal = UnitScalar(550., units=temperature.K)
         # hot side temperature (K) that matches HX BC
-        self.T_c = 350. # cold side temperature (K)
+        self.T_c = UnitScalar(350., units=temperature.K)
+        # cold side temperature (K)
         self.T = sp.zeros(self.segments) # initial array for
                                         # temperature (K)
         self.q = sp.zeros(self.segments)
