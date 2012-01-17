@@ -284,7 +284,7 @@ class HX(object):
             self.cool.T_inlet = self.cool.T
 
         self.Qdot_total = self.Qdot_nodes.sum()
-        self.effectiveness = ( self.Qdot / (self.exh.C *
+        self.effectiveness = ( self.Qdot_total / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
         self.tem.power_total = UnitArray(self.tem.power_nodes.sum(),
@@ -294,7 +294,7 @@ class HX(object):
         self.cool.Wdot_pumping ) 
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power_total - self.Wdot_pumping 
-        self.eta_1st = self.power_net / self.Qdot
+        self.eta_1st = self.power_net / self.Qdot_total
         
         self.set_availability()
 
