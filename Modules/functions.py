@@ -3,7 +3,6 @@
 import numpy as np
 from scimath.units.api import *
 
-@has_units(inputs="width:width:units=m")
 def set_flow_geometry(self,width):
     """Given heat exchanger width, this function sets some
     geometry stuff."""
@@ -11,9 +10,9 @@ def set_flow_geometry(self,width):
     # wetted perimeter (m) of flow
     self.area = self.height * width # cross-section area (m^2) of
         # exhaust flow
-    self.D = 4.*self.area / self.perimeter # coolant hydraulic diameter (m)
+    self.D = 4. * self.area / self.perimeter
+    # coolant hydraulic diameter (m)
 
-@has_units()
 def set_Re_dependents(self):
     """Sets Nu and f based on Re."""
     self.set_Re()

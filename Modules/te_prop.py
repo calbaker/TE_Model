@@ -61,46 +61,48 @@ def set_prop_fit(self):
         self.sigma_params = np.polyfit(sigma_raw[:,0], sigma_raw[:,1],
                               poly_deg)
 
-def set_TEproperties(self):
+@has_units(inputs="T_props:temperature:units=K")
+def set_TEproperties(self,T_props):
     """Sets thermal and electrical properties, as a function of
     temperature if self.T_props is used."""
 
     if self.material == 'HMS':
-        self.alpha = np.polyval(self.alpha_params, self.T_props) * 1.e-6
+        self.alpha = ( np.polyval(self.alpha_params, T_props) *
+        1.e-6 )
         # Seebeck coefficient (V/K)        
-        self.k = np.polyval(self.k_params, self.T_props)      
+        self.k = np.polyval(self.k_params, T_props)  
         # thermal conductivity (W/m-K) 
-        self.sigma = np.polyval(self.sigma_params, self.T_props) * 1.e4 
+        self.sigma = np.polyval(self.sigma_params, T_props) * 1.e4 
         # electrical conductivity (S/m)
         self.rho = 1. / self.sigma
         # electrical resistivity (Ohm-m)        
 
     if self.material == 'MgSi': 
-        self.alpha = np.polyval(self.alpha_params, self.T_props) * 1.e-6
+        self.alpha = np.polyval(self.alpha_params, T_props) * 1.e-6
         # Seebeck coefficient (V/K)        
-        self.k = np.polyval(self.k_params, self.T_props)      
+        self.k = np.polyval(self.k_params, T_props)      
         # thermal conductivity (W/m-K) 
-        self.sigma = np.polyval(self.sigma_params, self.T_props) * 1.e4
+        self.sigma = np.polyval(self.sigma_params, T_props) * 1.e4
         # electrical conductivity (S/m)
         self.rho = 1. / self.sigma
         # electrical resistivity (Ohm-m)        
 
     # from CRC TE Handbook Table 12.1
     if self.material == 'ex1 n-type':
-        self.k = 54. / self.T_props * 100.
+        self.k = 54. / T_props * 100.
         # thermal conductivity (W/m-K)
-        self.alpha = (0.268 * self.T_props - 329.) * 1.e-6
+        self.alpha = (0.268 * T_props - 329.) * 1.e-6
         # Seebeck coefficient (V/K)
-        self.sigma = (self.T_props - 310.) / 0.1746
+        self.sigma = (T_props - 310.) / 0.1746
         # electrical conductivity (S/cm)
         self.rho = 1. / self.sigma / 100.
         # electrical resistivity (Ohm-m)
 
     # from CRC TE Handbook Table 12.1
     if self.material == 'ex1 p-type':
-        self.k = 3.194 / self.T_props * 100.
+        self.k = 3.194 / T_props * 100.
         # thermal conductivity (W/m-K)
-        self.alpha = (0.150 * self.T_props + 211.) * 1.e-6
+        self.alpha = (0.150 * T_props + 211.) * 1.e-6
         # Seebeck coefficient (V/K)
         self.sigma = 25.
         # electrical conductivity (S/cm)
@@ -109,31 +111,31 @@ def set_TEproperties(self):
 
     # from CRC TE Handbook Table 12.1
     if self.material == 'ex2 n-type':
-        self.k = 3. / self.T_props * 100.
+        self.k = 3. / T_props * 100.
         # thermal conductivity (W/m-K)
-        self.alpha = (0.20 * self.T_props - 400.) * 1.e-6
+        self.alpha = (0.20 * T_props - 400.) * 1.e-6
         # Seebeck coefficient (V/K)
-        self.sigma = 1.e5 / self.T_props
+        self.sigma = 1.e5 / T_props
         # electrical conductivity (S/cm)
         self.rho = 1. / self.sigma / 100.
         # electrical resistivity (Ohm-m)
 
     # from CRC TE Handbook Table 12.1
     if self.material == 'ex2 p-type':
-        self.k = 10. / self.T_props * 100.
+        self.k = 10. / T_props * 100.
         # thermal conductivity (W/m-K)
         self.alpha = (200.) * 1.e-6
         # Seebeck coefficient (V/K)
-        self.sigma = self.T_props
+        self.sigma = T_props
         # electrical conductivity (S/cm)
         self.rho = 1. / self.sigma / 100.
         # electrical resistivity (Ohm-m)
 
     # from CRC TE Handbook Table 12.1
     if self.material == 'ex3 n-type':
-        self.k = 3. / self.T_props * 100.
+        self.k = 3. / T_props * 100.
         # thermal conductivity (W/m-K)
-        self.alpha = 0.20 * self.T_props * 1.e-6
+        self.alpha = 0.20 * T_props * 1.e-6
         # Seebeck coefficient (V/K)
         self.sigma = 1000.
         # electrical conductivity (S/cm)
@@ -142,11 +144,11 @@ def set_TEproperties(self):
 
     # from CRC TE Handbook Table 12.1
     if self.material == 'ex3 p-type':
-        self.k = 10. / self.T_props * 100.
+        self.k = 10. / T_props * 100.
         # thermal conductivity (W/m-K)
         self.alpha = 200. * 1.e-6
         # Seebeck coefficient (V/K)
-        self.sigma = self.T_props
+        self.sigma = T_props
         # electrical conductivity (S/cm)
         self.rho = 1. / self.sigma / 100.
         # electrical resistivity (Ohm-m)
@@ -184,3 +186,11 @@ def set_TEproperties(self):
                       # that resistance is zero
         self.alpha = 1.e-9 # dummy value
         self.rho = 1. # dummy value
+
+    # Post processing for set_TE_properties to make all the units
+    # happy. 
+    self.alpha = UnitScalar(self.alpha, units=SI.volt / temperature.K)
+    self.k = UnitScalar(self.k, units=power.watt / length.m /
+    temperature.K)  
+    self.sigma = UnitScalar(self.sigma, units=SI.siemens / length.m) 
+    self.rho = UnitScalar(self.rho, units=SI.ohm * length.m) 

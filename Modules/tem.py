@@ -69,7 +69,7 @@ class Leg(object):
         if self.method == "numerical":
             self.T[0] = self.T_c
             self.T_props = self.T[0]
-            self.set_TEproperties()
+            self.set_TEproperties(T_props=self.T_props)
             self.set_q_c_guess()
             self.q_c = spopt.fsolve(self.get_T_h_error_numerical,
         x0=self.q_c_guess, xtol=self.xtol)  
@@ -84,7 +84,7 @@ class Leg(object):
         if self.method == "analytical":
             self.T_h = self.T_h_goal
             self.T_props = 0.5 * (self.T_h + self.T_c)
-            self.set_TEproperties()
+            self.set_TEproperties(T_props=self.T_props)
             delta_T = self.T_h - self.T_c
             self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
             self.length * self.k + self.J**2. * self.length * self.rho
@@ -111,7 +111,7 @@ class Leg(object):
         # for loop for iterating over segments
         for j in range(1,self.segments):
             self.T_props = self.T[j-1]
-            self.set_TEproperties()
+            self.set_TEproperties(T_props=self.T_props)
             self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
             (self.J * self.T[j-1] * self.alpha - self.q[j-1]) )
             # determines temperature of current segment based on
@@ -226,7 +226,7 @@ class TEModule(object):
         properties evaluated at the average temperature based on
         Sherman's analysis."""
         self.T_props = 0.5 * (self.T_h_goal + self.T_c)
-        self.set_TEproperties()
+        self.set_TEproperties(T_props=self.T_props)
         self.set_ZT()
         delta_T = self.T_h_goal - self.T_c
         self.eta_max = ( delta_T / self.T_h_goal * ((1. +
@@ -237,7 +237,7 @@ class TEModule(object):
         """Sets Ntype / Ptype area that results in maximum efficiency
         based on material properties evaluated at the average
         temperature."""
-        self.set_TEproperties()
+        self.set_TEproperties(T_props=self.T_props)
         self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
         (self.Ptype.rho * self.Ntype.k))
 

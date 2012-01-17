@@ -57,8 +57,8 @@ hx_inst.cool.T_inlet_set = UnitScalar(300., units=temperature.K)
 hx_inst.cool.T_outlet = UnitScalar(310., units=temperature.K)
 
 hx_inst.set_mdot_charge()
-hx_inst.cool.T_outlet = fsolve(hx_inst.get_T_inlet_error, x0=hx_inst.cool.T_outlet)
-# hx_inst.solve_hx()
+# hx_inst.cool.T_outlet = fsolve(hx_inst.get_T_inlet_error, x0=hx_inst.cool.T_outlet)
+hx_inst.solve_hx()
 
 print "\nProgram finished."
 print "\nPlotting..."
