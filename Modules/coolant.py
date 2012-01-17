@@ -35,6 +35,11 @@ class Coolant(prop.flow):
         self.rho = UnitScalar(1000., units=density.kg_per_m3) 
         # density (kg/m**3) of water
         self.Nu_coeff = 0.023
+        self.enthalpy0 = UnitScalar(113.25, units=energy.kJ / mass.kg) 
+        # enthalpy (kJ/kg) of coolant at restricted dead state
+        self.entropy0 = UnitScalar(0.437, units=energy.kJ / mass.kg /
+        temperature.K) 
+        # entropy (kJ/kg*K) of coolant at restricted dead state
             
         self.set_flow_geometry = (
         types.MethodType(functions.set_flow_geometry, self) )
