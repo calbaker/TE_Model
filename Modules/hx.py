@@ -283,7 +283,7 @@ class HX(object):
         elif self.type == 'counter':
             self.cool.T_inlet = self.cool.T
 
-        self.Qdot = self.Qdot_nodes.sum()
+        self.Qdot_total = self.Qdot_nodes.sum()
         self.effectiveness = ( self.Qdot / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
