@@ -13,7 +13,6 @@ from scimath.units.api import *
 import te_prop
 reload(te_prop)
 
-
 class Leg(object):
     """class for individual p-type or n-type TE leg"""
 
