@@ -52,8 +52,8 @@ class Leg(object):
     
     def set_q_c_guess(self):
         if self.node == 0:
-            self.q_c_guess = ( -self.k / self.length * (self.T_h_goal -
-                                                        self.T_c) )
+            self.q_c_guess = ( -self.k / self.length * (self.T_h_goal
+        - self.T_c) )   
             # (W/m^2) guess for q[0] (W/m^2)
         else:
             self.q_c_guess = self.q_c
@@ -74,8 +74,9 @@ class Leg(object):
             self.T_props = self.T[0]
             self.set_TEproperties(T_props=self.T_props)
             self.set_q_c_guess()
-            self.q_c = spopt.fsolve(self.get_T_h_error_numerical,
-        x0=self.q_c_guess, xtol=self.xtol)  
+            self.q_c = UnitScalar(
+                spopt.fsolve(self.get_T_h_error_numerical,
+            x0=self.q_c_guess, xtol=self.xtol), units=self.q.units)   
             self.error = self.get_T_h_error_numerical(self.q_c) 
             self.V = self.V_segment.sum()
             self.P = self.P_flux_segment.sum() * self.area
@@ -110,27 +111,28 @@ class Leg(object):
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
-        self.q[0] = q_c
-        print q_c.units
         # for loop for iterating over segments
         for j in range(1,self.segments):
             self.T_props = self.T[j-1]
             self.set_TEproperties(T_props=self.T_props)
-            self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
-            (self.J * self.T[j-1] * self.alpha - self.q[j-1]) )
+            T_prev = UnitScalar(self.T[j-1], units=self.T.units)
+            q_prev = UnitScalar(self.q[j-1], units=self.q.units)
+            self.T[j] = ( T_prev + self.segment_length / self.k *
+            (self.J * T_prev * self.alpha - q_prev) )
             # determines temperature of current segment based on
             # properties evaluated at previous segment
+            T_curr = UnitScalar(self.T[j], units=self.T.units)
             self.dq = ( (self.rho * self.J * self.J * (1 + self.alpha
-        * self.alpha * self.T[j-1] / (self.rho * self.k)) - self.J *
-        self.alpha * self.q[j-1] / self.k) ) 
-            self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
-            self.V_segment[j] = ( self.alpha * (self.T[j] -
-        self.T[j-1]) + self.J * self.rho * self.segment_length )
+        * self.alpha * T_prev / (self.rho * self.k)) - self.J *
+        self.alpha * q_prev / self.k) ) 
+            self.q[j] = ( q_prev + self.dq * self.segment_length )
+            self.V_segment[j] = ( self.alpha * (T_curr -
+        T_prev) + self.J * self.rho * self.segment_length )
             self.R_int_seg = ( self.rho * self.segment_length /
         self.area )
             self.P_flux_segment[j] = self.J * self.V_segment[j]
-            self.T_h = self.T[-1]
-            self.q_h = self.q[-1]
+            self.T_h = UnitScalar(self.T[-1], units=self.T.units)
+            self.q_h = UnitScalar(self.q[-1], units=self.q.units)
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
         return error
 
