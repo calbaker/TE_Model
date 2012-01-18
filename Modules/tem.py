@@ -30,13 +30,17 @@ class Leg(object):
         # hot side temperature (K) that matches HX BC
         self.T_c = UnitScalar(350., units=temperature.K)
         # cold side temperature (K)
-        self.T = np.zeros(self.segments) # initial array for
-                                        # temperature (K)
-        self.q = np.zeros(self.segments)
+        self.T = UnitArray(np.zeros(self.segments),
+        units=temperature.K)
+        # initial array for temperature (K)
+        self.q = UnitArray(np.zeros(self.segments), units=power.watt /
+        length.m**2) 
         # initial array for heat flux (W/m^2)
-        self.V_segment = np.zeros(self.segments)
+        self.V_segment = UnitArray(np.zeros(self.segments),
+        units=SI.volt) 
         # initial array for Seebeck voltage (V)
-        self.P_flux_segment = np.zeros(self.segments)
+        self.P_flux_segment = UnitArray(np.zeros(self.segments),
+        units=power.watt / length.m**2) 
         # initial array for power flux in segment (W/m^2)
         self.xtol = 0.01 # tolerable fractional error in hot side
                          # temperature
