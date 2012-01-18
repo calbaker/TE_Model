@@ -111,6 +111,7 @@ class Leg(object):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
         self.q[0] = q_c
+        print q_c.units
         # for loop for iterating over segments
         for j in range(1,self.segments):
             self.T_props = self.T[j-1]
