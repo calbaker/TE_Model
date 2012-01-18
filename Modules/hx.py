@@ -204,6 +204,8 @@ class HX(object):
         function solve_hx."""
         self.tem.Ntype.node = i # used within tem.py
         self.tem.Ptype.node = i
+        if self.tem.method == 'numerical':
+            print "Solving node", i
         
         if i == 0:
             self.tem.T_c = self.cool.T
