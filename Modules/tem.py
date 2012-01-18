@@ -1,7 +1,6 @@
 # Distribution modules
 
 import types
-import scipy as sp
 import numpy as np
 import matplotlib.pyplot as mpl
 import time
@@ -31,13 +30,13 @@ class Leg(object):
         # hot side temperature (K) that matches HX BC
         self.T_c = UnitScalar(350., units=temperature.K)
         # cold side temperature (K)
-        self.T = sp.zeros(self.segments) # initial array for
+        self.T = np.zeros(self.segments) # initial array for
                                         # temperature (K)
-        self.q = sp.zeros(self.segments)
+        self.q = np.zeros(self.segments)
         # initial array for heat flux (W/m^2)
-        self.V_segment = sp.zeros(self.segments)
+        self.V_segment = np.zeros(self.segments)
         # initial array for Seebeck voltage (V)
-        self.P_flux_segment = sp.zeros(self.segments)
+        self.P_flux_segment = np.zeros(self.segments)
         # initial array for power flux in segment (W/m^2)
         self.xtol = 0.01 # tolerable fractional error in hot side
                          # temperature
