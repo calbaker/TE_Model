@@ -102,7 +102,7 @@ class Exhaust(prop.ideal_gas):
                 # 0.55
             self.k = self.k_matrix
             self.deltaP = (self.f * self.perimeter * self.length /
-             self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
+             self.area * (0.5*self.rho * self.velocity**2)) # pressure drop (kPa)
             self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
 
         elif self.enhancement == 'Mancin porous':
@@ -154,13 +154,13 @@ class Exhaust(prop.ideal_gas):
         self.fin.thickness) + self.fin.h_base * self.fins *
         self.fin.thickness) / self.width ) 
             self.deltaP = (self.f * self.flow_perimeter * self.length /
-        self.flow_area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
+        self.flow_area * (0.5*self.rho * self.velocity**2)) # pressure drop (kPa)
 
         elif self.enhancement == 'none':            
             self.k = self.k_air
             self.set_Re_dependents()
             self.deltaP = (self.f * self.perimeter * self.length /
-            self.area * (0.5*self.rho * self.velocity**2)*1.e-3) # pressure drop (kPa)
+            self.area * (0.5*self.rho * self.velocity**2)) # pressure drop (kPa)
             self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
 
         self.Wdot_pumping = self.Vdot * self.deltaP # pumping power

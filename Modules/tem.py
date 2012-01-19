@@ -189,7 +189,6 @@ class TEModule(object):
         self.T_h = self.Ntype.T_h
 
         # Renaming stuff for use elsewhere
-        # Everything from here on out is in kW instead of W
         self.q_h = ( (self.Ptype.q_h * self.Ptype.area +
                       self.Ntype.q_h * self.Ntype.area) /
                      (self.Ptype.area + self.Ntype.area +
