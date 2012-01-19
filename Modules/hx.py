@@ -104,7 +104,7 @@ class HX(object):
         # initializing array for storing temperature (K) in each node 
         self.tem.h_nodes = self.U_nodes.copy()
 
-        self.tem.power_nodes = UnitArray(ZEROS.copy(), units=power.kw)
+        self.tem.power_nodes = UnitArray(ZEROS.copy(), units=power.watt)
         self.tem.eta_nodes = ZEROS.copy()
 
         self.exh.velocity_nodes = UnitArray(ZEROS.copy(),
@@ -289,6 +289,7 @@ class HX(object):
         self.effectiveness = ( self.Qdot_total / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
+        self.tem.power_nodes.units = self.tem.P.units
         self.tem.power_total = UnitArray(self.tem.power_nodes.sum(),
         units=self.tem.power_nodes.units) 
         # total TE power output (kW)

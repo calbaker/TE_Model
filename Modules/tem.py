@@ -203,6 +203,7 @@ class TEModule(object):
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs
         # a negative sign also.  
+        self.P_flux = self.P / self.area
         self.eta = -self.P / (self.q_h * self.area)
         self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)

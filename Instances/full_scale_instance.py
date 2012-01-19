@@ -113,7 +113,7 @@ plt.subplots_adjust(left=0.18)
 plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'availability.png')
 plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'availability.pdf')
 
-plt.show()
+# plt.show()
 
 print hx_inst.power_net
 
