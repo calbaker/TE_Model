@@ -180,26 +180,22 @@ class HX(object):
         """Returns hot side and cold side heat flux values in an
         array.  The first entry is hot side heat flux and the second
         entry is cold side heat flux."""
-        print "running get_error_hot"
         T_h = UnitScalar(T_h, units=temperature.K)
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
         self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
-        print self.error_hot
         return self.error_hot
 
     def get_error_cold(self,T_c):
         """Returns cold side and cold side heat flux values in an
         array.  The first entry is cold side heat flux and the second
         entry is cold side heat flux."""
-        print "running get_erro_cold"
         T_c = UnitScalar(T_c, units=temperature.K)
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.tem.T_c = T_c
         self.tem.solve_tem()
         self.error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
-        print self.error_cold
         return self.error_cold
 
     def solve_node(self,i):
