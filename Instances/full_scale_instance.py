@@ -101,8 +101,8 @@ plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'TEG power.png')
 plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'TEG power.pdf')
 
 plt.figure()
-plt.plot(hx_inst.x_dim * 100., hx_inst.exh.availability_nodes, label='exhaust')
-plt.plot(hx_inst.x_dim * 100., hx_inst.cool.availability_nodes, label='coolant')
+plt.plot(hx_inst.x_dim * 100., hx_inst.exh.availability_flow_nodes, label='exhaust')
+plt.plot(hx_inst.x_dim * 100., hx_inst.cool.availability_flow_nodes, label='coolant')
 
 plt.xlabel('Distance Along HX (cm)')
 plt.ylabel('Availability (kW)')
