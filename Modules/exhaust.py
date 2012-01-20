@@ -70,7 +70,7 @@ class Exhaust(prop.ideal_gas):
 
     def set_flow(self):
         """calculates flow parameters"""        
-        self.set_alpha()
+        self.set_thermal_props()
         self.c_p = self.c_p_air
 
         self.C = self.mdot * self.c_p # heat capacity of
