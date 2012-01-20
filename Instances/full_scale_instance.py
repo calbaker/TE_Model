@@ -24,17 +24,16 @@ reload(hx)
 # 1.033370547666811676e-03
 # 4.634972529966798760e+00
 
-leg_area = UnitScalar((0.01)**2, units=length.m**2)
+leg_area = UnitScalar((0.002)**2, units=length.m**2)
 leg_length = UnitScalar(1.03e-3, units=length.m)
 current = UnitScalar(4.63, units=SI.ampere)
 area_ratio = 0.705
 fill_fraction = 2.07e-2
 
 hx_inst = hx.HX()
-# hx_inst.tem.method = 'analytical'
+hx_inst.tem.method = 'analytical'
 hx_inst.width = UnitScalar(30.e-2, units=length.m)
-hx_inst.exh.bypass = 0.
-hx_inst.exh.height = UnitScalar(3.e-2, units=length.m)
+hx_inst.exh.height = UnitScalar(3.5e-2, units=length.m)
 hx_inst.cool.mdot = UnitScalar(1., units=mass.kg / time.sec)
 hx_inst.length = UnitScalar(1., units=length.m)
 hx_inst.tem.I = current
