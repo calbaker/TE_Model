@@ -297,7 +297,6 @@ class HX(object):
         self.cool.Wdot_pumping ) 
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power_total - self.Wdot_pumping 
-        self.eta_1st = self.power_net / self.Qdot_total
         
         self.set_availability()
 
@@ -311,9 +310,9 @@ class HX(object):
         self.exh.entropy0 = self.exh.get_entropy(self.T0)
         # entropy (kJ/kg*K) of exhuast at restricted dead state
 
-        self.exh.availability_nodes = ( (self.exh.enthalpy_nodes -
-        self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
-        self.exh.entropy0)) * self.exh.mdot )
+        self.exh.availability_flow_nodes = ( (self.exh.enthalpy_nodes
+        - self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
+        self.exh.entropy0)) * self.exh.mdot ) 
         # availability (kJ/kg) of exhaust
 
         self.cool.enthalpy_nodes = ( self.cool.c_p_nodes *
@@ -322,9 +321,10 @@ class HX(object):
         self.cool.entropy_nodes = ( self.cool.c_p_nodes *
         np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 ) 
 
-        self.cool.availability_nodes = ( (self.cool.enthalpy_nodes -
-        self.cool.enthalpy0 - self.T0 * (self.cool.entropy_nodes -
-        self.cool.entropy0)) * self.cool.mdot)
+        self.cool.availability_flow_nodes = (
+        (self.cool.enthalpy_nodes - self.cool.enthalpy0 - self.T0 *
+        (self.cool.entropy_nodes - self.cool.entropy0)) *
+        self.cool.mdot) 
         # availability (kJ/kg) of coolant
 
     def store_node_values(self,i):
