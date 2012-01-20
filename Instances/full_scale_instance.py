@@ -89,7 +89,7 @@ plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'temp.png')
 plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'temp.pdf')
 
 plt.figure()
-plt.plot(hx_inst.x_dim * 100., hx_inst.tem.power_nodes * 1000., 's', label='Exhaust')
+plt.plot(hx_inst.x_dim * 100., hx_inst.tem.power_nodes, 's', label='Exhaust')
 
 plt.xlabel('Distance Along HX (cm)')
 plt.ylabel('TEG Power (W)')
