@@ -31,10 +31,10 @@ area_ratio = 0.705
 fill_fraction = 2.07e-2
 
 hx_inst = hx.HX()
-hx_inst.tem.method = 'analytical'
+# hx_inst.tem.method = 'analytical'
 hx_inst.width = UnitScalar(30.e-2, units=length.m)
 hx_inst.exh.bypass = 0.
-hx_inst.exh.height = UnitScalar(3.5e-2, units=length.m)
+hx_inst.exh.height = UnitScalar(3.e-2, units=length.m)
 hx_inst.cool.mdot = UnitScalar(1., units=mass.kg / time.sec)
 hx_inst.length = UnitScalar(1., units=length.m)
 hx_inst.tem.I = current
@@ -115,5 +115,5 @@ plt.savefig('../Plots/' + hx_inst.tem.method + '/' + 'availability.pdf')
 
 # plt.show()
 
-print hx_inst.power_net
+print hx_inst.power_net, hx_inst.power_net.units
 

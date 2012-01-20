@@ -27,8 +27,8 @@ class _Fin(object):
         self.k = UnitScalar(0.2, units=power.kw / length.m /
         temperature.K) 
         # thermal conductivity (kW/m-K) of fin material
-        self.h = UnitScalar(0.2 , units=power.kw / length.m**2 /
-        temperature.K) 
+        # self.h = UnitScalar(0.2 , units=power.kw / length.m**2 /
+        # temperature.K) 
         # heat transfer coefficient (kW/m^2-K).  This can be updated
         # from Exhaust.
 
@@ -160,8 +160,10 @@ class Exhaust(prop.ideal_gas):
             self.k = self.k_air
             self.set_Re_dependents()
             self.deltaP = (self.f * self.perimeter * self.length /
-            self.area * (0.5*self.rho * self.velocity**2)) # pressure drop (kPa)
-            self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
+            self.area * (0.5*self.rho * self.velocity**2)) 
+            # pressure drop (kPa)
+            self.h = self.Nu_D * self.k / self.D 
+            # coefficient of convection (kW/m^2-K)
 
         self.Wdot_pumping = self.Vdot * self.deltaP # pumping power
                                         # (kW)

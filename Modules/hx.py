@@ -177,25 +177,29 @@ class HX(object):
         # coolant  
 
     def get_error_hot(self,T_h):
-        # """Returns hot side and cold side heat flux values in an
-        # array.  The first entry is hot side heat flux and the second
-        # entry is cold side heat flux."""
+        """Returns hot side and cold side heat flux values in an
+        array.  The first entry is hot side heat flux and the second
+        entry is cold side heat flux."""
+        print "running get_error_hot"
         T_h = UnitScalar(T_h, units=temperature.K)
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
         self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
+        print self.error_hot
         return self.error_hot
 
     def get_error_cold(self,T_c):
-        # """Returns cold side and cold side heat flux values in an
-        # array.  The first entry is cold side heat flux and the second
-        # entry is cold side heat flux."""
+        """Returns cold side and cold side heat flux values in an
+        array.  The first entry is cold side heat flux and the second
+        entry is cold side heat flux."""
+        print "running get_erro_cold"
         T_c = UnitScalar(T_c, units=temperature.K)
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.tem.T_c = T_c
         self.tem.solve_tem()
         self.error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
+        print self.error_cold
         return self.error_cold
 
     def solve_node(self,i):
@@ -285,12 +289,13 @@ class HX(object):
         elif self.type == 'counter':
             self.cool.T_inlet = self.cool.T
 
-        self.Qdot_total = self.Qdot_nodes.sum()
+        self.Qdot_total = UnitScalar(self.Qdot_nodes.sum(),
+        units=self.Qdot_nodes.units) 
         self.effectiveness = ( self.Qdot_total / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
         self.tem.power_nodes.units = self.tem.P.units
-        self.tem.power_total = UnitArray(self.tem.power_nodes.sum(),
+        self.tem.power_total = UnitScalar(self.tem.power_nodes.sum(),
         units=self.tem.power_nodes.units) 
         # total TE power output (kW)
         self.Wdot_pumping = ( self.exh.Wdot_pumping +
