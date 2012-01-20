@@ -1,16 +1,17 @@
 """functions to be used in both exhaust and coolant modules"""
 
 import numpy as np
-
+from scimath.units.api import *
 
 def set_flow_geometry(self,width):
     """Given heat exchanger width, this function sets some
     geometry stuff."""
-    self.perimeter = 2.*(self.height+width) # wetted perimeter (m) of
-        # exhaust flow
+    self.perimeter = 2.*(self.height + width) 
+    # wetted perimeter (m) of flow
     self.area = self.height * width # cross-section area (m^2) of
         # exhaust flow
-    self.D = 4.*self.area / self.perimeter # coolant hydraulic diameter (m)
+    self.D = 4. * self.area / self.perimeter
+    # coolant hydraulic diameter (m)
 
 def set_Re_dependents(self):
     """Sets Nu and f based on Re."""

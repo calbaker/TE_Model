@@ -1,16 +1,16 @@
 # Distribution modules
 
 import types
-import scipy as sp
 import numpy as np
 import matplotlib.pyplot as mpl
 import time
 import scipy.optimize as spopt
+from scimath.units import * 
+from scimath.units.api import *
 
 # User defined modules
 import te_prop
 reload(te_prop)
-
 
 class Leg(object):
     """class for individual p-type or n-type TE leg"""
@@ -18,21 +18,29 @@ class Leg(object):
     def __init__(self):
         """this method sets everything that is constant and
         initializes some arrays""" 
-        self.I = 0.5 # current (A)
+        self.I = UnitScalar(0.5, units=SI.ampere)
+        # current (A)
         self.segments = 25
         # number of segments for finite difference model
-        self.length = 1.e-2  # leg length (m)
-        self.area = (3.e-3)**2. # leg area (m^2)
-        self.T_h_goal = 550.
+        self.length = UnitScalar(1.e-2, units=length.m)
+        # leg length (m)
+        self.area = UnitScalar((3.e-3)**2., units=length.m**2)
+        # leg area (m^2)
+        self.T_h_goal = UnitScalar(550., units=temperature.K)
         # hot side temperature (K) that matches HX BC
-        self.T_c = 350. # cold side temperature (K)
-        self.T = sp.zeros(self.segments) # initial array for
-                                        # temperature (K)
-        self.q = sp.zeros(self.segments)
+        self.T_c = UnitScalar(350., units=temperature.K)
+        # cold side temperature (K)
+        self.T = UnitArray(np.zeros(self.segments),
+        units=temperature.K)
+        # initial array for temperature (K)
+        self.q = UnitArray(np.zeros(self.segments), units=power.watt /
+        length.m**2) 
         # initial array for heat flux (W/m^2)
-        self.V_segment = sp.zeros(self.segments)
+        self.V_segment = UnitArray(np.zeros(self.segments),
+        units=SI.volt) 
         # initial array for Seebeck voltage (V)
-        self.P_flux_segment = sp.zeros(self.segments)
+        self.P_flux_segment = UnitArray(np.zeros(self.segments),
+        units=power.watt / length.m**2) 
         # initial array for power flux in segment (W/m^2)
         self.xtol = 0.01 # tolerable fractional error in hot side
                          # temperature
@@ -44,8 +52,8 @@ class Leg(object):
     
     def set_q_c_guess(self):
         if self.node == 0:
-            self.q_c_guess = ( -self.k / self.length * (self.T_h_goal -
-                                                        self.T_c) )
+            self.q_c_guess = ( -self.k / self.length * (self.T_h_goal
+        - self.T_c) )   
             # (W/m^2) guess for q[0] (W/m^2)
         else:
             self.q_c_guess = self.q_c
@@ -64,10 +72,11 @@ class Leg(object):
         if self.method == "numerical":
             self.T[0] = self.T_c
             self.T_props = self.T[0]
-            self.set_TEproperties()
+            self.set_TEproperties(T_props=self.T_props)
             self.set_q_c_guess()
-            self.q_c = spopt.fsolve(self.get_T_h_error_numerical,
-        x0=self.q_c_guess, xtol=self.xtol)  
+            self.q_c = UnitScalar(
+                spopt.fsolve(self.get_T_h_error_numerical,
+            x0=self.q_c_guess, xtol=self.xtol), units=self.q.units)   
             self.error = self.get_T_h_error_numerical(self.q_c) 
             self.V = self.V_segment.sum()
             self.P = self.P_flux_segment.sum() * self.area
@@ -79,7 +88,7 @@ class Leg(object):
         if self.method == "analytical":
             self.T_h = self.T_h_goal
             self.T_props = 0.5 * (self.T_h + self.T_c)
-            self.set_TEproperties()
+            self.set_TEproperties(T_props=self.T_props)
             delta_T = self.T_h - self.T_c
             self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
             self.length * self.k + self.J**2. * self.length * self.rho
@@ -102,26 +111,28 @@ class Leg(object):
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
-        self.q[0] = q_c
         # for loop for iterating over segments
         for j in range(1,self.segments):
             self.T_props = self.T[j-1]
-            self.set_TEproperties()
-            self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
-            (self.J * self.T[j-1] * self.alpha - self.q[j-1]) )
+            self.set_TEproperties(T_props=self.T_props)
+            T_prev = UnitScalar(self.T[j-1], units=self.T.units)
+            q_prev = UnitScalar(self.q[j-1], units=self.q.units)
+            self.T[j] = ( T_prev + self.segment_length / self.k *
+            (self.J * T_prev * self.alpha - q_prev) )
             # determines temperature of current segment based on
             # properties evaluated at previous segment
+            T_curr = UnitScalar(self.T[j], units=self.T.units)
             self.dq = ( (self.rho * self.J * self.J * (1 + self.alpha
-        * self.alpha * self.T[j-1] / (self.rho * self.k)) - self.J *
-        self.alpha * self.q[j-1] / self.k) ) 
-            self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
-            self.V_segment[j] = ( self.alpha * (self.T[j] -
-        self.T[j-1]) + self.J * self.rho * self.segment_length )
+        * self.alpha * T_prev / (self.rho * self.k)) - self.J *
+        self.alpha * q_prev / self.k) ) 
+            self.q[j] = ( q_prev + self.dq * self.segment_length )
+            self.V_segment[j] = ( self.alpha * (T_curr -
+        T_prev) + self.J * self.rho * self.segment_length )
             self.R_int_seg = ( self.rho * self.segment_length /
         self.area )
             self.P_flux_segment[j] = self.J * self.V_segment[j]
-            self.T_h = self.T[-1]
-            self.q_h = self.q[-1]
+            self.T_h = UnitScalar(self.T[-1], units=self.T.units)
+            self.q_h = UnitScalar(self.q[-1], units=self.q.units)
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
         return error
 
@@ -178,21 +189,21 @@ class TEModule(object):
         self.T_h = self.Ntype.T_h
 
         # Renaming stuff for use elsewhere
-        # Everything from here on out is in kW instead of W
         self.q_h = ( (self.Ptype.q_h * self.Ptype.area +
                       self.Ntype.q_h * self.Ntype.area) /
                      (self.Ptype.area + self.Ntype.area +
-                      self.area_void) ) * 0.001
+                      self.area_void) ) 
         # area averaged hot side heat flux (kW/m^2)
         self.q_c = ( (self.Ptype.q_c * self.Ptype.area +
                       self.Ntype.q_c * self.Ntype.area) /
                      (self.Ptype.area + self.Ntype.area +
-                      self.area_void) * 0.001 ) 
+                      self.area_void) ) 
         # area averaged hot side heat flux (kW/m^2)
-        self.P = -( self.Ntype.P + self.Ptype.P ) * 0.001
+        self.P = -( self.Ntype.P + self.Ptype.P )
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs
         # a negative sign also.  
+        self.P_flux = self.P / self.area
         self.eta = -self.P / (self.q_h * self.area)
         self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
@@ -221,7 +232,7 @@ class TEModule(object):
         properties evaluated at the average temperature based on
         Sherman's analysis."""
         self.T_props = 0.5 * (self.T_h_goal + self.T_c)
-        self.set_TEproperties()
+        self.set_TEproperties(T_props=self.T_props)
         self.set_ZT()
         delta_T = self.T_h_goal - self.T_c
         self.eta_max = ( delta_T / self.T_h_goal * ((1. +
@@ -232,7 +243,7 @@ class TEModule(object):
         """Sets Ntype / Ptype area that results in maximum efficiency
         based on material properties evaluated at the average
         temperature."""
-        self.set_TEproperties()
+        self.set_TEproperties(T_props=self.T_props)
         self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
         (self.Ptype.rho * self.Ntype.k))
 

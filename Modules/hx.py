@@ -6,7 +6,8 @@ import time
 import numpy as np
 import matplotlib.pyplot as mpl
 from scipy.optimize import fsolve,fmin
-from scipy.integrate import quad
+from scimath.units import * 
+from scimath.units.api import *
 
 # User Defined Modules
 # In this directory
@@ -27,15 +28,18 @@ class HX(object):
     def __init__(self):
         """Geometry and constants"""
         self.loop_count = 0
-        self.width = 10.e-2 # width (cm*10**-2) of HX duct. This model treats
-            # duct as parallel plates for simpler modeling.
-        self.length = 20.e-2 # length (m) of HX duct
+        self.width = UnitScalar(10.e-2, units=length.m) 
+        # width (cm*10**-2) of HX duct. This model treats duct as
+        # parallel plates for simpler modeling. 
+        self.length = UnitScalar(20.e-2, units=length.m)
+        # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
         self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xmin_file = 'xmin'
-        self.T0 = 300. # temperature (K) at restricted dead state
+        self.T0 = UnitScalar(300., units=temperature.K)
+        # temperature (K) at restricted dead state
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -50,46 +54,67 @@ class HX(object):
     def init_arrays(self):
         # initializing arrays for tracking variables at nodes
         ZEROS = np.zeros(self.nodes)
-        self.Qdot_nodes = ZEROS.copy() # initialize array for storing
-                                    # heat transfer (kW) in each node 
-        self.exh.T_nodes = ZEROS.copy()
+        self.Qdot_nodes = UnitArray(ZEROS.copy(), units=power.kw)
+        # initialize array for storing heat transfer (kW) in each node 
+
+        self.exh.T_nodes = UnitArray(ZEROS.copy(), units=temperature.K)
         # initializing array for storing temperature (K) in each node 
-        self.exh.h_nodes = ZEROS.copy()
+        self.exh.h_nodes = UnitArray(ZEROS.copy(), units=power.kw /
+        length.m**2 / temperature.K) 
         self.exh.f_nodes = ZEROS.copy()
         self.exh.Nu_nodes = ZEROS.copy()
-        self.exh.c_p_nodes = ZEROS.copy()
-        self.exh.entropy_nodes = ZEROS.copy()
-        self.exh.enthalpy_nodes = ZEROS.copy()
-        self.cool.T_nodes = ZEROS.copy() # initializing array for storing
-                                     # temperature (K) in each node 
-        self.cool.c_p_nodes = ZEROS.copy()
+        self.exh.c_p_nodes = UnitArray(ZEROS.copy(), units=energy.kJ /
+    mass.kg / temperature.K)
+        self.exh.entropy_nodes = UnitArray(ZEROS.copy(),
+    units=energy.kJ / mass.kg / temperature.K) 
+        self.exh.enthalpy_nodes = UnitArray(ZEROS.copy(),
+    units=energy.kJ / mass.kg)
+
+        self.cool.T_nodes = UnitArray(ZEROS.copy(),
+        units=temperature.K) 
+        # initializing array for storing temperature (K) in each node 
+        self.cool.h_nodes = UnitArray(ZEROS.copy(), units=power.kw /
+    length.m**2 / temperature.K)
         self.cool.f_nodes = ZEROS.copy()
         self.cool.Nu_nodes = ZEROS.copy()
-        self.cool.h_nodes = ZEROS.copy() 
-        self.U_nodes = ZEROS.copy() 
-        self.U_hot_nodes = ZEROS.copy() 
-        self.U_cold_nodes = ZEROS.copy()
-        self.q_h_nodes = ZEROS.copy()
-        self.q_c_nodes = ZEROS.copy()
-        self.tem.q_h_nodes = ZEROS.copy()
-        self.tem.q_c_nodes = ZEROS.copy()
+        self.cool.c_p_nodes = UnitArray(ZEROS.copy(), units=energy.kJ /
+    mass.kg / temperature.K)
+        self.cool.entropy_nodes = UnitArray(ZEROS.copy(),
+    units=energy.kJ / mass.kg / temperature.K) 
+        self.cool.enthalpy_nodes = UnitArray(ZEROS.copy(),
+    units=energy.kJ / mass.kg)
+
+        self.U_nodes = UnitArray(ZEROS.copy(), units=power.kw /
+        length.m**2 / temperature.K)
+        self.U_hot_nodes = self.U_nodes.copy()
+        self.U_cold_nodes = self.U_nodes.copy()
+        self.q_h_nodes = UnitArray(ZEROS.copy(), units=power.kw)
+        self.q_c_nodes = self.q_h_nodes.copy()
+        self.tem.q_h_nodes = self.q_h_nodes.copy()
+        self.tem.q_c_nodes = self.q_h_nodes.copy()
+
         self.error_hot_nodes = ZEROS.copy()
         self.error_cold_nodes = ZEROS.copy()
-        self.tem.T_c_nodes = ZEROS.copy() # initializing array for storing
-                                     # temperature (K) in each node 
-        self.tem.T_h_nodes = ZEROS.copy() # initializing array for storing
-                                     # temperature (K) in each node
-        self.tem.h_nodes = ZEROS.copy()                                     
-        self.tem.power_nodes = ZEROS.copy()
+
+        self.tem.T_c_nodes = UnitArray(ZEROS.copy(),
+        units=temperature.K)
+        # initializing array for storing temperature (K) in each node 
+        self.tem.T_h_nodes = UnitArray(ZEROS.copy(),
+        units=temperature.K) 
+        # initializing array for storing temperature (K) in each node 
+        self.tem.h_nodes = self.U_nodes.copy()
+
+        self.tem.power_nodes = UnitArray(ZEROS.copy(), units=power.watt)
         self.tem.eta_nodes = ZEROS.copy()
 
-        self.exh.velocity_nodes = ZEROS.copy()
+        self.exh.velocity_nodes = UnitArray(ZEROS.copy(),
+        units=length.m / time.sec) 
 
     def setup(self):
         """Sets up variables that must be defined before running
         model.  Useful for terminal.  Not necessary elsewhere."""
-        self.exh.T = 800.
-        self.cool.T = 300. 
+        self.exh.T = UnitScalar(800., units=temperature.K)
+        self.cool.T = UnitScalar(300., units=temperature.K)
         self.set_mdot_charge()
         self.set_constants()
 
@@ -123,7 +148,8 @@ class HX(object):
         come from experimental data.  Also, it should probably go
         within the exhaust module."""
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
-        self.exh.mdot = self.cummins.mdot_charge 
+        self.exh.mdot = UnitScalar(self.cummins.mdot_charge,
+        units=mass.kg / time.sec) 
 
     def set_convection(self):
         """Sets values for convection coefficients."""
@@ -149,11 +175,12 @@ class HX(object):
         self.plate.R_thermal + self.plate.R_contact)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
-        
+
     def get_error_hot(self,T_h):
         """Returns hot side and cold side heat flux values in an
         array.  The first entry is hot side heat flux and the second
         entry is cold side heat flux."""
+        T_h = UnitScalar(T_h, units=temperature.K)
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
@@ -164,6 +191,7 @@ class HX(object):
         """Returns cold side and cold side heat flux values in an
         array.  The first entry is cold side heat flux and the second
         entry is cold side heat flux."""
+        T_c = UnitScalar(T_c, units=temperature.K)
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.tem.T_c = T_c
         self.tem.solve_tem()
@@ -176,6 +204,8 @@ class HX(object):
         function solve_hx."""
         self.tem.Ntype.node = i # used within tem.py
         self.tem.Ptype.node = i
+        if self.tem.method == 'numerical':
+            print "Solving node", i
         
         if i == 0:
             self.tem.T_c = self.cool.T
@@ -189,7 +219,8 @@ class HX(object):
             self.tem.T_c = -self.q / self.U_cold + self.cool.T
         else:
             self.set_convection()
-            self.tem.T_c = (self.tem.T_c_nodes[i-1])
+            self.tem.T_c = UnitScalar((self.tem.T_c_nodes[i-1]),
+            units=temperature.K) 
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
 
         self.error_hot = 100. # really big number to start while loop
@@ -197,13 +228,14 @@ class HX(object):
         self.loop_count = 0
         while ( np.absolute(self.error_hot) > self.xtol or
     np.absolute(self.error_cold) > self.xtol ): 
-            self.tem.T_h_goal = fsolve(self.get_error_hot,
-    x0=self.tem.T_h_goal)
+            self.tem.T_h_goal = UnitScalar(fsolve(self.get_error_hot,
+    x0=self.tem.T_h_goal), units=temperature.K) 
             # self.tem.solve_tem()
-            self.tem.T_c = fsolve(self.get_error_cold,
-    x0=self.tem.T_c)
-            self.tem.T_h_goal = fsolve(self.get_error_hot,
-    x0=self.tem.T_h_goal) # repeat just to make sure
+            self.tem.T_c = UnitScalar(fsolve(self.get_error_cold,
+    x0=self.tem.T_c), units=temperature.K)
+            self.tem.T_h_goal = UnitScalar(fsolve(self.get_error_hot,
+    x0=self.tem.T_h_goal), units=temperature.K)
+            # repeat just to make sure
             self.error_cold = self.get_error_cold(self.tem.T_c)
             self.error_hot = self.get_error_hot(self.tem.T_h)
             self.loop_count = self.loop_count + 1
@@ -225,7 +257,7 @@ class HX(object):
             self.cool.T = self.cool.T_inlet
         elif self.type == 'counter':
             self.cool.T = self.cool.T_outlet  
-
+            
         self.tem.Ptype.set_prop_fit()
         self.tem.Ntype.set_prop_fit()
 
@@ -253,17 +285,19 @@ class HX(object):
         elif self.type == 'counter':
             self.cool.T_inlet = self.cool.T
 
-        self.Qdot = self.Qdot_nodes.sum()
-        self.effectiveness = ( self.Qdot / (self.exh.C *
+        self.Qdot_total = UnitScalar(self.Qdot_nodes.sum(),
+        units=self.Qdot_nodes.units) 
+        self.effectiveness = ( self.Qdot_total / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
-        self.tem.power_total = self.tem.power_nodes.sum()
+        self.tem.power_nodes.units = self.tem.P.units
+        self.tem.power_total = UnitScalar(self.tem.power_nodes.sum(),
+        units=self.tem.power_nodes.units) 
         # total TE power output (kW)
         self.Wdot_pumping = ( self.exh.Wdot_pumping +
         self.cool.Wdot_pumping ) 
         # total pumping power requirement (kW) 
         self.power_net = self.tem.power_total - self.Wdot_pumping 
-        self.eta_1st = self.power_net / self.Qdot
         
         self.set_availability()
 
@@ -277,24 +311,21 @@ class HX(object):
         self.exh.entropy0 = self.exh.get_entropy(self.T0)
         # entropy (kJ/kg*K) of exhuast at restricted dead state
 
-        self.exh.availability_nodes = ( (self.exh.enthalpy_nodes -
-        self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
-        self.exh.entropy0)) * self.exh.mdot )
+        self.exh.availability_flow_nodes = ( (self.exh.enthalpy_nodes
+        - self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
+        self.exh.entropy0)) * self.exh.mdot ) 
         # availability (kJ/kg) of exhaust
 
-        self.cool.enthalpy0 = 113.25 
-        # enthalpy (kJ/kg*K) of coolant at restricted dead state
         self.cool.enthalpy_nodes = ( self.cool.c_p_nodes *
         (self.cool.T_nodes - self.T0) + self.cool.enthalpy0) 
         # enthalpy (kJ/kg*K) of coolant
-        self.cool.entropy0 = 0.437
-        # entropy (kJ/kg*K) of coolant at restricted dead state
         self.cool.entropy_nodes = ( self.cool.c_p_nodes *
         np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 ) 
 
-        self.cool.availability_nodes = ( (self.cool.enthalpy_nodes -
-        self.cool.enthalpy0 - self.T0 * (self.cool.entropy_nodes -
-        self.cool.entropy0)) * self.cool.mdot)
+        self.cool.availability_flow_nodes = (
+        (self.cool.enthalpy_nodes - self.cool.enthalpy0 - self.T0 *
+        (self.cool.entropy_nodes - self.cool.entropy0)) *
+        self.cool.mdot) 
         # availability (kJ/kg) of coolant
 
     def store_node_values(self,i):
