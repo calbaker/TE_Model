@@ -6,8 +6,6 @@ import time
 import numpy as np
 import matplotlib.pyplot as mpl
 from scipy.optimize import fsolve,fmin
-from scimath.units import * 
-from scimath.units.api import *
 
 # User Defined Modules
 # In this directory
@@ -27,17 +25,17 @@ class HX(object):
 
     def __init__(self):
         """Geometry and constants"""
-        self.width = UnitScalar(10.e-2, units=length.m) 
+        self.width = 10.e-2
         # width (cm*10**-2) of HX duct. This model treats duct as
         # parallel plates for simpler modeling. 
-        self.length = UnitScalar(20.e-2, units=length.m)
+        self.length = 20.e-2
         # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
         self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xmin_file = 'xmin'
-        self.T0 = UnitScalar(300., units=temperature.K)
+        self.T0 = 300.
         # temperature (K) at restricted dead state
 
         # initialization of sub classes
@@ -112,8 +110,8 @@ class HX(object):
     def setup(self):
         """Sets up variables that must be defined before running
         model.  Useful for terminal.  Not necessary elsewhere."""
-        self.exh.T = UnitScalar(800., units=temperature.K)
-        self.cool.T = UnitScalar(300., units=temperature.K)
+        self.exh.T = 800.
+        self.cool.T = 300.
         self.set_mdot_charge()
         self.set_constants()
 
@@ -147,7 +145,7 @@ class HX(object):
         come from experimental data.  Also, it should probably go
         within the exhaust module."""
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
-        self.exh.mdot = UnitScalar(self.cummins.mdot_charge,
+        self.exh.mdot = self.cummins.mdot_charge
         units=mass.kg / time.sec) 
 
     def set_convection(self):
@@ -179,14 +177,14 @@ class HX(object):
         """Returns hot and cold side error.  This doc string needs
         work.""" 
         T_h = T_arr[0]
-        T_h = UnitScalar(T_h, units=temperature.K)
+        T_h = T_h
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
         self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
 
         T_c = T_arr[1]
-        T_c = UnitScalar(T_c, units=temperature.K)
+        T_c = T_c
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.tem.T_c = T_c
         self.tem.solve_tem()
@@ -216,9 +214,8 @@ class HX(object):
             self.tem.T_c = -self.q / self.U_cold + self.cool.T
         else:
             self.set_convection()
-            self.tem.T_c = UnitScalar((self.tem.T_c_nodes[i-1]),
-            units=temperature.K) 
-            self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
+            self.tem.T_c = self.tem.T_c_nodes[i-1]
+            self.tem.T_h_goal = self.tem.T_h_nodes[i-1] 
 
         T_guess = UnitArray(np.array([self.tem.T_h_goal,
             self.tem.T_c]), units=temperature.K) 
@@ -271,14 +268,12 @@ class HX(object):
         elif self.type == 'counter':
             self.cool.T_inlet = self.cool.T
 
-        self.Qdot_total = UnitScalar(self.Qdot_nodes.sum(),
-        units=self.Qdot_nodes.units) 
+        self.Qdot_total = self.Qdot_nodes.sum()
         self.effectiveness = ( self.Qdot_total / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
         self.tem.power_nodes.units = self.tem.P.units
-        self.tem.power_total = UnitScalar(self.tem.power_nodes.sum(),
-        units=self.tem.power_nodes.units) 
+        self.tem.power_total = self.tem.power_nodes.sum()
         # total TE power output (kW)
         self.Wdot_pumping = ( self.exh.Wdot_pumping +
         self.cool.Wdot_pumping ) 
