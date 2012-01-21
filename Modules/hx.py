@@ -27,7 +27,6 @@ class HX(object):
 
     def __init__(self):
         """Geometry and constants"""
-        self.loop_count = 0
         self.width = UnitScalar(10.e-2, units=length.m) 
         # width (cm*10**-2) of HX duct. This model treats duct as
         # parallel plates for simpler modeling. 
@@ -176,27 +175,25 @@ class HX(object):
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
 
-    def get_error_hot(self,T_h):
-        """Returns hot side and cold side heat flux values in an
-        array.  The first entry is hot side heat flux and the second
-        entry is cold side heat flux."""
+    def get_error(self,T_arr):
+        """Returns hot and cold side error.  This doc string needs
+        work.""" 
+        T_h = T_arr[0]
         T_h = UnitScalar(T_h, units=temperature.K)
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.tem.T_h_goal = T_h
         self.tem.solve_tem()
         self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
-        return self.error_hot
 
-    def get_error_cold(self,T_c):
-        """Returns cold side and cold side heat flux values in an
-        array.  The first entry is cold side heat flux and the second
-        entry is cold side heat flux."""
+        T_c = T_arr[1]
         T_c = UnitScalar(T_c, units=temperature.K)
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.tem.T_c = T_c
         self.tem.solve_tem()
         self.error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
-        return self.error_cold
+
+        self.error = np.array([self.error_hot, self.error_cold])
+        return self.error
 
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
@@ -223,25 +220,14 @@ class HX(object):
             units=temperature.K) 
             self.tem.T_h_goal = (self.tem.T_h_nodes[i-1])
 
-        self.error_hot = 100. # really big number to start while loop
-
-        self.loop_count = 0
-        while ( np.absolute(self.error_hot) > self.xtol or
-    np.absolute(self.error_cold) > self.xtol ): 
-            self.tem.T_h_goal = UnitScalar(fsolve(self.get_error_hot,
-    x0=self.tem.T_h_goal), units=temperature.K) 
-            # self.tem.solve_tem()
-            self.tem.T_c = UnitScalar(fsolve(self.get_error_cold,
-    x0=self.tem.T_c), units=temperature.K)
-            self.tem.T_h_goal = UnitScalar(fsolve(self.get_error_hot,
-    x0=self.tem.T_h_goal), units=temperature.K)
-            # repeat just to make sure
-            self.error_cold = self.get_error_cold(self.tem.T_c)
-            self.error_hot = self.get_error_hot(self.tem.T_h)
-            self.loop_count = self.loop_count + 1
-            self.Qdot_node = -self.q_h * self.area
-            # heat transfer on hot side of node, positive values indicates
-            # heat transfer from hot to cold
+        T_guess = UnitArray(np.array([self.tem.T_h_goal,
+            self.tem.T_c]), units=temperature.K) 
+        T_arr = UnitArray(fsolve(self.get_error, x0=T_guess)) 
+        self.tem.T_h_goal = T_arr[0]
+        self.tem.T_c = T_arr[1]
+        self.Qdot_node = -self.q_h * self.area
+        # heat transfer on hot side of node, positive values indicates
+        # heat transfer from hot to cold
             
     def solve_hx(self,**kwargs): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
