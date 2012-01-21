@@ -2,8 +2,6 @@
 the tem module."""
 
 import numpy as np
-from scimath.units import * 
-from scimath.units.api import *
 
 def set_prop_fit(self):
     """Sets temperature fit curves for thermoelectric properties."""
@@ -61,7 +59,6 @@ def set_prop_fit(self):
         self.sigma_params = np.polyfit(sigma_raw[:,0], sigma_raw[:,1],
                               poly_deg)
 
-@has_units(inputs="T_props:temperature:units=K")
 def set_TEproperties(self,T_props):
     """Sets thermal and electrical properties, as a function of
     temperature if self.T_props is used."""
@@ -187,10 +184,3 @@ def set_TEproperties(self,T_props):
         self.alpha = 1.e-9 # dummy value
         self.rho = 1. # dummy value
 
-    # Post processing for set_TE_properties to make all the units
-    # happy. 
-    self.alpha = UnitScalar(self.alpha, units=SI.volt / temperature.K)
-    self.k = UnitScalar(self.k, units=power.watt / length.m /
-    temperature.K)  
-    self.sigma = UnitScalar(self.sigma, units=SI.siemens / length.m) 
-    self.rho = UnitScalar(self.rho, units=SI.ohm * length.m) 

@@ -5,8 +5,6 @@ import numpy as np
 import matplotlib.pyplot as mpl
 import time
 import scipy.optimize as spopt
-from scimath.units import * 
-from scimath.units.api import *
 
 # User defined modules
 import te_prop
@@ -18,29 +16,25 @@ class Leg(object):
     def __init__(self):
         """this method sets everything that is constant and
         initializes some arrays""" 
-        self.I = UnitScalar(0.5, units=SI.ampere)
+        self.I = 0.5
         # current (A)
         self.segments = 25
         # number of segments for finite difference model
-        self.length = UnitScalar(1.e-2, units=length.m)
+        self.length = 1.e-2
         # leg length (m)
-        self.area = UnitScalar((3.e-3)**2., units=length.m**2)
+        self.area = (3.e-3)**2.
         # leg area (m^2)
-        self.T_h_goal = UnitScalar(550., units=temperature.K)
+        self.T_h_goal = 550.
         # hot side temperature (K) that matches HX BC
-        self.T_c = UnitScalar(350., units=temperature.K)
+        self.T_c = 350.
         # cold side temperature (K)
-        self.T = UnitArray(np.zeros(self.segments),
-        units=temperature.K)
+        self.T = np.zeros(self.segments)
         # initial array for temperature (K)
-        self.q = UnitArray(np.zeros(self.segments), units=power.watt /
-        length.m**2) 
+        self.q = np.zeros(self.segments)
         # initial array for heat flux (W/m^2)
-        self.V_segment = UnitArray(np.zeros(self.segments),
-        units=SI.volt) 
+        self.V_segment = np.zeros(self.segments)
         # initial array for Seebeck voltage (V)
-        self.P_flux_segment = UnitArray(np.zeros(self.segments),
-        units=power.watt / length.m**2) 
+        self.P_flux_segment = np.zeros(self.segments)
         # initial array for power flux in segment (W/m^2)
         self.xtol = 0.01 # tolerable fractional error in hot side
                          # temperature
@@ -74,9 +68,8 @@ class Leg(object):
             self.T_props = self.T[0]
             self.set_TEproperties(T_props=self.T_props)
             self.set_q_c_guess()
-            self.q_c = UnitScalar(
-                spopt.fsolve(self.get_T_h_error_numerical,
-            x0=self.q_c_guess, xtol=self.xtol), units=self.q.units)   
+            self.q_c = spopt.fsolve(self.get_T_h_error_numerical,
+            x0=self.q_c_guess, xtol=self.xtol) 
             self.error = self.get_T_h_error_numerical(self.q_c) 
             self.V = self.V_segment.sum()
             self.P = self.P_flux_segment.sum() * self.area
@@ -115,13 +108,13 @@ class Leg(object):
         for j in range(1,self.segments):
             self.T_props = self.T[j-1]
             self.set_TEproperties(T_props=self.T_props)
-            T_prev = UnitScalar(self.T[j-1], units=self.T.units)
-            q_prev = UnitScalar(self.q[j-1], units=self.q.units)
+            T_prev = self.T[j-1]
+            q_prev = self.q[j-1]
             self.T[j] = ( T_prev + self.segment_length / self.k *
             (self.J * T_prev * self.alpha - q_prev) )
             # determines temperature of current segment based on
             # properties evaluated at previous segment
-            T_curr = UnitScalar(self.T[j], units=self.T.units)
+            T_curr = self.T[j]
             self.dq = ( (self.rho * self.J * self.J * (1 + self.alpha
         * self.alpha * T_prev / (self.rho * self.k)) - self.J *
         self.alpha * q_prev / self.k) ) 
@@ -131,8 +124,8 @@ class Leg(object):
             self.R_int_seg = ( self.rho * self.segment_length /
         self.area )
             self.P_flux_segment[j] = self.J * self.V_segment[j]
-            self.T_h = UnitScalar(self.T[-1], units=self.T.units)
-            self.q_h = UnitScalar(self.q[-1], units=self.q.units)
+            self.T_h = self.T[-1]
+            self.q_h = self.q[-1]
             error = (self.T_h - self.T_h_goal) / self.T_h_goal
         return error
 

@@ -51,41 +51,31 @@ class HX(object):
     def init_arrays(self):
         # initializing arrays for tracking variables at nodes
         ZEROS = np.zeros(self.nodes)
-        self.Qdot_nodes = UnitArray(ZEROS.copy(), units=power.kw)
+        self.Qdot_nodes = ZEROS.copy()
         # initialize array for storing heat transfer (kW) in each node 
 
-        self.exh.T_nodes = UnitArray(ZEROS.copy(), units=temperature.K)
+        self.exh.T_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
-        self.exh.h_nodes = UnitArray(ZEROS.copy(), units=power.kw /
-        length.m**2 / temperature.K) 
+        self.exh.h_nodes = ZEROS.copy()
         self.exh.f_nodes = ZEROS.copy()
         self.exh.Nu_nodes = ZEROS.copy()
-        self.exh.c_p_nodes = UnitArray(ZEROS.copy(), units=energy.kJ /
-    mass.kg / temperature.K)
-        self.exh.entropy_nodes = UnitArray(ZEROS.copy(),
-    units=energy.kJ / mass.kg / temperature.K) 
-        self.exh.enthalpy_nodes = UnitArray(ZEROS.copy(),
-    units=energy.kJ / mass.kg)
+        self.exh.c_p_nodes = ZEROS.copy()
+        self.exh.entropy_nodes = ZEROS.copy()
+        self.exh.enthalpy_nodes = ZEROS.copy()
 
-        self.cool.T_nodes = UnitArray(ZEROS.copy(),
-        units=temperature.K) 
+        self.cool.T_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
-        self.cool.h_nodes = UnitArray(ZEROS.copy(), units=power.kw /
-    length.m**2 / temperature.K)
+        self.cool.h_nodes = ZEROS.copy()
         self.cool.f_nodes = ZEROS.copy()
         self.cool.Nu_nodes = ZEROS.copy()
-        self.cool.c_p_nodes = UnitArray(ZEROS.copy(), units=energy.kJ /
-    mass.kg / temperature.K)
-        self.cool.entropy_nodes = UnitArray(ZEROS.copy(),
-    units=energy.kJ / mass.kg / temperature.K) 
-        self.cool.enthalpy_nodes = UnitArray(ZEROS.copy(),
-    units=energy.kJ / mass.kg)
+        self.cool.c_p_nodes = ZEROS.copy()
+        self.cool.entropy_nodes = ZEROS.copy()
+        self.cool.enthalpy_nodes = ZEROS.copy()
 
-        self.U_nodes = UnitArray(ZEROS.copy(), units=power.kw /
-        length.m**2 / temperature.K)
+        self.U_nodes = ZEROS.copy()
         self.U_hot_nodes = self.U_nodes.copy()
         self.U_cold_nodes = self.U_nodes.copy()
-        self.q_h_nodes = UnitArray(ZEROS.copy(), units=power.kw)
+        self.q_h_nodes = ZEROS.copy()
         self.q_c_nodes = self.q_h_nodes.copy()
         self.tem.q_h_nodes = self.q_h_nodes.copy()
         self.tem.q_c_nodes = self.q_h_nodes.copy()
@@ -93,19 +83,16 @@ class HX(object):
         self.error_hot_nodes = ZEROS.copy()
         self.error_cold_nodes = ZEROS.copy()
 
-        self.tem.T_c_nodes = UnitArray(ZEROS.copy(),
-        units=temperature.K)
+        self.tem.T_c_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
-        self.tem.T_h_nodes = UnitArray(ZEROS.copy(),
-        units=temperature.K) 
+        self.tem.T_h_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
         self.tem.h_nodes = self.U_nodes.copy()
 
-        self.tem.power_nodes = UnitArray(ZEROS.copy(), units=power.watt)
+        self.tem.power_nodes = ZEROS.copy()
         self.tem.eta_nodes = ZEROS.copy()
 
-        self.exh.velocity_nodes = UnitArray(ZEROS.copy(),
-        units=length.m / time.sec) 
+        self.exh.velocity_nodes = ZEROS.copy()
 
     def setup(self):
         """Sets up variables that must be defined before running
@@ -146,7 +133,6 @@ class HX(object):
         within the exhaust module."""
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge
-        units=mass.kg / time.sec) 
 
     def set_convection(self):
         """Sets values for convection coefficients."""
@@ -217,9 +203,8 @@ class HX(object):
             self.tem.T_c = self.tem.T_c_nodes[i-1]
             self.tem.T_h_goal = self.tem.T_h_nodes[i-1] 
 
-        T_guess = UnitArray(np.array([self.tem.T_h_goal,
-            self.tem.T_c]), units=temperature.K) 
-        T_arr = UnitArray(fsolve(self.get_error, x0=T_guess)) 
+        T_guess = np.array([self.tem.T_h_goal,self.tem.T_c])
+        T_arr = fsolve(self.get_error, x0=T_guess)
         self.tem.T_h_goal = T_arr[0]
         self.tem.T_c = T_arr[1]
         self.Qdot_node = -self.q_h * self.area
@@ -272,7 +257,6 @@ class HX(object):
         self.effectiveness = ( self.Qdot_total / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
-        self.tem.power_nodes.units = self.tem.P.units
         self.tem.power_total = self.tem.power_nodes.sum()
         # total TE power output (kW)
         self.Wdot_pumping = ( self.exh.Wdot_pumping +

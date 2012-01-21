@@ -4,28 +4,24 @@
 
 import scipy.optimize as spopt
 import numpy as np
-from scimath.units import * 
-from scimath.units.api import *
 
 class PlateWall(object):
     """class for modeling metal walls of heat exchanger"""
 
     def __init__(self):
         """Initializes material properties and plate wall geometry defaults."""
-        self.k = UnitScalar(200.e-3, units=power.kw / length.m /
-        temperature.K) 
+        self.k = 200.e-3
         # thermal conductivity (kW/m-K) of Aluminum HX plate
         # (Incropera and DeWitt)  
-        self.alpha = UnitScalar(73.0e-6, units=length.m**2 / time.sec) 
+        self.alpha = 73.0e-6
         # thermal diffusivity (m^2/s) of Al HX plate  
-        self.thickness = UnitScalar(0.00635, units=length.m) 
+        self.thickness = 0.00635
         # thickness (m) of HX plate
-        self.R_contact = UnitScalar(0., units=length.m**2 *
-        temperature.K / power.kw) 
+        self.R_contact = 0.
         # thermal contact resistance (m^2*K/kW) between plates
         self.nodes = 2. # default number of nodes in transient
                         # solution.  
-        self.t_step = UnitScalar(0.005, units=time.sec)
+        self.t_step = 0.005
         # time step (s) in transient solution
         self.set_h()
 
