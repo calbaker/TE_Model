@@ -29,7 +29,7 @@ area_ratio = 0.705
 fill_fraction = 2.07e-2
 
 hx_inst = hx.HX()
-# hx_inst.tem.method = 'analytical'
+hx_inst.tem.method = 'analytical'
 hx_inst.width = 30.e-2
 hx_inst.exh.height = 3.5e-2
 hx_inst.cool.mdot = 1.
@@ -49,7 +49,6 @@ hx_inst.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
 hx_inst.type = 'counter'
 
 hx_inst.exh.T_inlet = 800.
-hx_inst.exh.P = 100.
 hx_inst.cool.T_inlet_set = 300.
 hx_inst.cool.T_outlet = 310.
 
