@@ -32,6 +32,7 @@ class HX(object):
         # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
+        self.x = np.linspace(0, self.length, self.nodes)
         self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xmin_file = 'xmin'
@@ -389,7 +390,7 @@ class HX(object):
 	np.savetxt('output/optimize/'+self.xmin_file+'1', self.xmin1)
 	np.savetxt('output/optimize/'+self.xmin_file+'2', self.xmin2)
 
-    def get_T_inlet_error(self,T_outlet):
+    def get_T_inlet_error(self, T_outlet):
 	"""Returns error for coolant inlet temperature from desired
 	setpoint for the counter flow configuration in which the
 	outlet coolant temperaure is specified.  Should be used with

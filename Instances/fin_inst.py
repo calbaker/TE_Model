@@ -62,10 +62,10 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
 plt.figure()
-plt.plot(hx_fins0.x_dim * 100., hx_fins0.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx_fins0.x_dim * 100., hx_fins0.tem.T_h_nodes, '-g', label='TEM Hot Side')
-plt.plot(hx_fins0.x_dim * 100., hx_fins0.tem.T_c_nodes, '-k', label='TEM Cold Side')
-plt.plot(hx_fins0.x_dim * 100., hx_fins0.cool.T_nodes, '-b', label='Coolant')
+plt.plot(hx_fins0.x * 100., hx_fins0.exh.T_nodes, '-r', label='Exhaust')
+plt.plot(hx_fins0.x * 100., hx_fins0.tem.T_h_nodes, '-g', label='TEM Hot Side')
+plt.plot(hx_fins0.x * 100., hx_fins0.tem.T_c_nodes, '-k', label='TEM Cold Side')
+plt.plot(hx_fins0.x * 100., hx_fins0.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')
 plt.ylabel('Temperature (K)')

@@ -53,7 +53,7 @@ hx_inst.cool.T_inlet_set = 300.
 hx_inst.cool.T_outlet = 310.
 
 hx_inst.set_mdot_charge()
-# hx_inst.cool.T_outlet = fsolve(hx_inst.get_T_inlet_error, x0=hx_inst.cool.T_outlet)
+hx_inst.cool.T_outlet = fsolve(hx_inst.get_T_inlet_error, x0=hx_inst.cool.T_outlet)
 hx_inst.solve_hx()
 
 print "\nProgram finished."
