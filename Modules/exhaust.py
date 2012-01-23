@@ -41,30 +41,48 @@ class _Fin(object):
 
 
 class Exhaust(prop.ideal_gas):
-    """class for exhaust flow"""
+    """Class for modeling convection and flow of engine exhaust
+    through heat exchanger."""
 
     def __init__(self):
-        """sets constants and initiates class instances"""
+        """Sets the following constants:
+        self.porous : determines whether porous metal foam is used as
+        heat transfer enhancement.  Default is 'no'.  
+        self.enhancement : determines what method of heat transfer
+        enhancement, if any, is used.  Default is 'none'.
+        self.T_ref : reference restricted dead state temperature (K)
+        for availability calculations.
+        self.P : pressure (kPa) at which calculations are done.
+        self.height : exhaust duct height (m). Default is 1.5e-2 m.  
+        self.ducts : number of exhaust ducts in parallel. 
+        self.porosity : porosity (void volume per total volume) of
+        porous metal foam enhancement 
+        self.k_matrix : thermal conductivity (kW/m/K) of the metal
+        foam matrix
+        self.PPI : pores per inch for porous media in Mancin model
+        self.K : default permeability (m^2) of porous metal foam, used
+        in Bejan model  
+        self.fin : instance of _Fin class
+        self.Nu_coeff : coefficient used in Nusselt number calculation
+        
+        Binds the following methods:
+        set_flow_geometry
+        set_Re_dependents
+        
+        Also initializes super class"""
+
         super(Exhaust, self).__init__()
         self.porous = 'no' # is there porous media?
         self.enhancement = 'none' # is there any means of enhancement? (i.e. fins,
             # corrugate metal, etc.)
         self.T_ref = 300.
-        # default reference temperature (K) for availability
-        # calculation 
-        self.P = 100.
-        # default pressure (kPa) 
+        self.P = 101.
         self.height = 1.5e-2
-        # default height (m) of exhaust duct
-        self.ducts = 1 # default number of exhaust ducts
-        self.porosity = 0.92 # default volume of void per total volume
+        self.ducts = 1
+        self.porosity = 0.92
         self.k_matrix = 5.8e-3
-        # default thermal conductivity(kW/m-K) of metal foam + air
         self.PPI = 10.
-        # default pores per inch of porous media, used in Mancin model   
         self.K = 2.e-7
-        # default permeability (m^2) of porous metal foam, used in
-        # Bejan model 
         self.fin = _Fin() # workaround to be able to change fin from
                           # instance
         self.Nu_coeff = 0.023
@@ -159,8 +177,8 @@ class Exhaust(prop.ideal_gas):
             self.h = self.Nu_D * self.k / self.D 
             # coefficient of convection (kW/m^2-K)
 
-        self.Wdot_pumping = self.Vdot * self.deltaP # pumping power
-                                        # (kW)
+        self.Wdot_pumping = self.Vdot * self.deltaP 
+        # pumping power (kW)
         if self.enhancement == 'straight fins':
             self.fin.h = self.h
 

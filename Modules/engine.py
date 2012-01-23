@@ -7,7 +7,6 @@ import scipy as sp
 # User defined modules
 import properties as prop
 
-
 class Engine(object):
     """Operating condintions for Cummins Engine. This module
     eventually needs to provide charge flow rate, EGR flow rate,
@@ -23,7 +22,7 @@ class Engine(object):
             self.torque = kwargs['torque']
         else:
             self.torque = 300. # brake torque (lb-ft)
-        self.displacement = 6.6e-3 # engine swept displacement (m**3)
+        self.displacement = 6.7e-3 # engine swept displacement (m**3)
         self.cylinders = 6. # number of cylinders
         self.eta_V = 1. # volumetric efficiency of engine. Can exceed unity for
         # turbo-charged unthrottled engine. Accounts for error

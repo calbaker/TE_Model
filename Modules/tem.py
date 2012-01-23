@@ -14,30 +14,35 @@ class Leg(object):
     """class for individual p-type or n-type TE leg"""
 
     def __init__(self):
-        """this method sets everything that is constant and
-        initializes some arrays""" 
-        self.I = 0.5
-        # current (A)
-        self.segments = 25
-        # number of segments for finite difference model
-        self.length = 1.e-2
-        # leg length (m)
-        self.area = (3.e-3)**2.
-        # leg area (m^2)
-        self.T_h_goal = 550.
-        # hot side temperature (K) that matches HX BC
-        self.T_c = 350.
-        # cold side temperature (K)
-        self.T = np.zeros(self.segments)
-        # initial array for temperature (K)
-        self.q = np.zeros(self.segments)
-        # initial array for heat flux (W/m^2)
-        self.V_segment = np.zeros(self.segments)
-        # initial array for Seebeck voltage (V)
-        self.P_flux_segment = np.zeros(self.segments)
-        # initial array for power flux in segment (W/m^2)
-        self.xtol = 0.01 # tolerable fractional error in hot side
-                         # temperature
+        """Sets the following: 
+        self.I : current (A) in TE leg pair
+        self.segments : number of segments for finite difference model
+        self.length : leg length (m)
+        self.area = : leg area (m^2)
+        self.T_h_goal : hot side temperature (K) that matches HX BC
+        self.T_c : cold side temperature (K)
+        self.T : initial array for temperature (K) for finite
+        difference model
+        self.q : initial array for heat flux (W/m^2)
+        self.V_segment : initial array for Seebeck voltage (V)
+        self.P_flux_segment : initial array for power flux in segment (W/m^2)
+        self.xtol : tolerable fractional error in hot side temperature
+
+        Binds the following methods:
+        te_prop.set_prop_fit
+        te_prop.set_TEproperties"""
+    
+        self.I = 0.5 
+        self.segments = 25 
+        self.length = 1.e-2 
+        self.area = (3.e-3)**2. 
+        self.T_h_goal = 550. 
+        self.T_c = 350. 
+        self.T = np.zeros(self.segments) 
+        self.q = np.zeros(self.segments) 
+        self.V_segment = np.zeros(self.segments) 
+        self.P_flux_segment = np.zeros(self.segments) 
+        self.xtol = 0.01 
 
         self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
         self) 
@@ -185,12 +190,12 @@ class TEModule(object):
         self.q_h = ( (self.Ptype.q_h * self.Ptype.area +
                       self.Ntype.q_h * self.Ntype.area) /
                      (self.Ptype.area + self.Ntype.area +
-                      self.area_void) ) 
+                      self.area_void) * 0.001) 
         # area averaged hot side heat flux (kW/m^2)
         self.q_c = ( (self.Ptype.q_c * self.Ptype.area +
                       self.Ntype.q_c * self.Ntype.area) /
                      (self.Ptype.area + self.Ntype.area +
-                      self.area_void) ) 
+                      self.area_void) * 0.001 ) 
         # area averaged hot side heat flux (kW/m^2)
         self.P = -( self.Ntype.P + self.Ptype.P )
         # power for the entire leg pair(kW). Negative sign makes this
