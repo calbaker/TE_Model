@@ -6,8 +6,6 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import os,sys
 from scipy.optimize import fsolve
-from scimath.units import * 
-from scimath.units.api import *
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -16,16 +14,16 @@ if cmd_folder not in sys.path:
 import hx
 reload(hx)
 
-area = UnitScalar((0.002)**2, units=length.m**2)
-leg_length = UnitScalar(3.27e-4, units=length.m)
-current = UnitScalar(13.9, units=SI.ampere)
+area = (0.002)**2
+leg_length = 3.27e-4
+current = 13.9
 area_ratio = 0.683
 fill_fraction = 2.38e-2
 
 hx_fins0 = hx.HX()
-hx_fins0.width = UnitScalar(30.e-2, units=length.m)
-hx_fins0.exh.height = UnitScalar(3.5e-2, units=length.m)
-hx_fins0.length = UnitScalar(1., units=length.m)
+hx_fins0.width = 30.e-2
+hx_fins0.exh.height = 3.5e-2
+hx_fins0.length = 1.
 hx_fins0.tem.I = current
 hx_fins0.tem.length = leg_length
 
@@ -41,12 +39,12 @@ hx_fins0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
 hx_fins0.tem.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = "straight fins"
-hx_fins0.exh.fin.thickness = UnitScalar(5.e-3, units=length.m)
+hx_fins0.exh.fin.thickness = 5.e-3
 hx_fins0.exh.fins = 32
 
-hx_fins0.exh.T_inlet = UnitScalar(800., units=temperature.K)
-hx_fins0.cool.T_inlet_set = UnitScalar(300., units=temperature.K)
-hx_fins0.cool.T_outlet = UnitScalar(310., units=temperature.K)
+hx_fins0.exh.T_inlet = 800.
+hx_fins0.cool.T_inlet_set = 300.
+hx_fins0.cool.T_outlet = 310.
 
 hx_fins0.set_mdot_charge()
 hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error, x0=hx_fins0.cool.T_outlet)
