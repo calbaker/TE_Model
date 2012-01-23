@@ -9,7 +9,7 @@ import functions
 reload(functions)
 
 
-class Coolant(prop.flow):
+class Coolant(object):
     """class for coolant flow"""
 
     def __init__(self):
@@ -54,7 +54,7 @@ class Coolant(prop.flow):
         self.set_Re_dependents()
         self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
         self.deltaP =  ( self.f * self.perimeter * self.length / self.area *
-        (0.5 * self.rho * self.velocity**2)*1.e-3 ) # pressure drop (kPa) 
+        (0.5 * self.rho * self.velocity**2) * 1.e-3 ) # pressure drop (kPa) 
         self.Wdot_pumping = self.Vdot * self.deltaP # pumping power (kW)
         self.R_thermal = 1 / self.h
         # thermal resistance of coolant (m^2-K/W)

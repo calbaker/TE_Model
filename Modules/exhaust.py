@@ -115,8 +115,8 @@ class Exhaust(prop.ideal_gas):
                 # that f is pretty close to
                 # 0.55
             self.k = self.k_matrix
-            self.deltaP = (self.f * self.perimeter * self.length /
-             self.area * (0.5 * self.rho * self.velocity**2)) #
+            self.deltaP = ( self.f * self.perimeter * self.length /
+            self.area * (0.5 * self.rho * self.velocity**2) * 0.001 ) 
             # pressure drop (kPa) 
             self.h = self.Nu_D * self.k / self.D 
             # coefficient of convection (kW/m^2-K)
@@ -137,8 +137,9 @@ class Exhaust(prop.ideal_gas):
             self.PPI**(0.6)) ) # friction factor from Mancin et al. 
             self.f = self.F 
             # possibly wrong assignment but gets code to shut up and run 
-            self.deltaP = (self.length * 2. * self.F * self.G**2 /
-            (self.D_pore * self.rho)) # pressure drop from Mancin et al.
+            self.deltaP = ( self.length * 2. * self.F * self.G**2 /
+            (self.D_pore * self.rho) * 0.001 ) 
+            # pressure drop from Mancin et al.
             self.h = self.Nu_D * self.k / self.D 
             # coefficient of convection (kW/m^2-K)
 
@@ -170,14 +171,15 @@ class Exhaust(prop.ideal_gas):
             self.h = ( (self.h * (self.width - self.fins *
         self.fin.thickness) + self.fin.h_base * self.fins *
         self.fin.thickness) / self.width ) 
-            self.deltaP = (self.f * self.flow_perimeter * self.length /
-        self.flow_area * (0.5*self.rho * self.velocity**2)) # pressure drop (kPa)
+            self.deltaP = ( self.f * self.flow_perimeter * self.length
+        / self.flow_area * (0.5*self.rho * self.velocity**2) * 0.001 )  
+        # pressure drop (kPa)
 
         elif self.enhancement == 'none':            
             self.k = self.k_air
             self.set_Re_dependents()
-            self.deltaP = (self.f * self.perimeter * self.length /
-            self.area * (0.5*self.rho * self.velocity**2)) 
+            self.deltaP = ( self.f * self.perimeter * self.length /
+            self.area * (0.5*self.rho * self.velocity**2) * 0.001 ) 
             # pressure drop (kPa)
             self.h = self.Nu_D * self.k / self.D 
             # coefficient of convection (kW/m^2-K)
