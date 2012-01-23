@@ -116,8 +116,10 @@ class Exhaust(prop.ideal_gas):
                 # 0.55
             self.k = self.k_matrix
             self.deltaP = (self.f * self.perimeter * self.length /
-             self.area * (0.5*self.rho * self.velocity**2)) # pressure drop (kPa)
-            self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
+             self.area * (0.5 * self.rho * self.velocity**2)) #
+            # pressure drop (kPa) 
+            self.h = self.Nu_D * self.k / self.D 
+            # coefficient of convection (kW/m^2-K)
 
         elif self.enhancement == 'Mancin porous':
             self.k = self.k_matrix
@@ -133,11 +135,12 @@ class Exhaust(prop.ideal_gas):
             # Re of porous media from Mancin et al.
             self.F = ( (1.765 * self.Re_K**(-0.1014) * self.porosity**2 /
             self.PPI**(0.6)) ) # friction factor from Mancin et al. 
-            self.f = self.F # possibly wrong assignment but gets code to shut
-# up and run 
+            self.f = self.F 
+            # possibly wrong assignment but gets code to shut up and run 
             self.deltaP = (self.length * 2. * self.F * self.G**2 /
             (self.D_pore * self.rho)) # pressure drop from Mancin et al.
-            self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
+            self.h = self.Nu_D * self.k / self.D 
+            # coefficient of convection (kW/m^2-K)
 
         elif self.enhancement == 'straight fins':
             # self.fins is the number of fins that fully extend across
