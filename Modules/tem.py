@@ -109,6 +109,7 @@ class Leg(object):
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
+        self.q[0] = q_c
         # for loop for iterating over segments
         for j in range(1,self.segments):
             self.T_props = self.T[j-1]
