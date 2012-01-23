@@ -89,6 +89,8 @@ class Exhaust(prop.ideal_gas):
 
         self.set_flow_geometry = (
         types.MethodType(functions.set_flow_geometry, self) )
+        self.set_Re = (
+        types.MethodType(functions.set_Re, self) )
         self.set_Re_dependents = (
         types.MethodType(functions.set_Re_dependents, self) )
 

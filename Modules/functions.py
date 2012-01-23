@@ -36,3 +36,15 @@ def set_Re_dependents(self):
                 # parallel plates with constant T
             self.f = 24. / self.Re_D
 
+def set_Re(self):
+    """Sets
+    -----------
+    self.Re_D : Reynolds number based on hydraulic diameter.
+    Requiures
+    -----------
+    self.velocity
+    self.D
+    self.nu
+    self.Re_D = self.velocity * self.D / self.nu""" 
+    self.Re_D = self.velocity * self.D / self.nu
+
