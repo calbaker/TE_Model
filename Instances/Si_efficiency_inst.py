@@ -9,16 +9,16 @@ import os
 
 # User Defined Modules
 # In this directory
-import tem
-reload(tem)
+import te_pair
+reload(te_pair)
 
-Ntype = tem.Leg()
+Ntype = te_pair.Leg()
 Ntype.material = 'MgSi'
 Ntype.set_prop_fit()
 Ntype.T_h_goal = 750.
 Ntype.T_c = 400.
 
-Ptype = tem.Leg()
+Ptype = te_pair.Leg()
 Ptype.material = 'HMS'
 Ptype.set_prop_fit()
 Ptype.T_h_goal = 750.

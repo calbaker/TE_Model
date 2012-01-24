@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import time
 
 # local user modules
-import tem
-reload(tem)
+import te_pair
+reload(te_pair)
 
 t0 = time.clock()
 
@@ -15,23 +15,23 @@ area = (0.002)**2
 area_ratio = 0.69 # n-type area per p-type area, consistent with
                   # Sherman.  
 
-tem = tem.TEModule()
-tem.I = current
-tem.Ntype.material = 'MgSi'
-tem.Ptype.material = 'HMS'
-tem.T_h_goal = 500.
-tem.T_c = 300.
-tem.Ptype.node = 0
-tem.Ntype.node = 0
-tem.Ptype.area = area
-tem.Ntype.area = tem.Ptype.area * area_ratio
-tem.length = length
-tem.area_void = 0.
-tem.method = 'analytical'
-tem.set_constants()
-tem.Ptype.set_prop_fit()
-tem.Ntype.set_prop_fit()
-tem.solve_tem()
+te_pair = te_pair.TE_PAIRodule()
+te_pair.I = current
+te_pair.Ntype.material = 'MgSi'
+te_pair.Ptype.material = 'HMS'
+te_pair.T_h_goal = 500.
+te_pair.T_c = 300.
+te_pair.Ptype.node = 0
+te_pair.Ntype.node = 0
+te_pair.Ptype.area = area
+te_pair.Ntype.area = te_pair.Ptype.area * area_ratio
+te_pair.length = length
+te_pair.area_void = 0.
+te_pair.method = 'analytical'
+te_pair.set_constants()
+te_pair.Ptype.set_prop_fit()
+te_pair.Ntype.set_prop_fit()
+te_pair.solve_te_pair()
 
 T_props = np.linspace(300,450.,100)
 T_h_goal = np.linspace(300,600.,100)
@@ -41,14 +41,14 @@ eta_max = np.empty(np.size(T_props))
 abc = np.empty([np.size(T_props),3])
 
 for i in range(np.size(T_props)):
-    tem.T_props = T_props[i]
-    tem.set_A_opt()
-    A_opt[i] = tem.A_opt
+    te_pair.T_props = T_props[i]
+    te_pair.set_A_opt()
+    A_opt[i] = te_pair.A_opt
 
 for i in range(np.size(T_h_goal)):
-    tem.T_h_goal = T_h_goal[i]
-    tem.set_eta_max()
-    eta_max[i] = tem.eta_max
+    te_pair.T_h_goal = T_h_goal[i]
+    te_pair.set_eta_max()
+    eta_max[i] = te_pair.eta_max
 
 # Plot configuration
 FONTSIZE = 15

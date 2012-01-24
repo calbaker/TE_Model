@@ -26,26 +26,26 @@ area_ratio = 0.69
 fill_fraction = 1. / 40.
 
 hx_trans = transient.Transient_HX()
-hx_trans.tem.method = 'analytical'
+hx_trans.te_pair.method = 'analytical'
 hx_trans.width = 30.e-2
 hx_trans.exh.bypass = 0.
 hx_trans.exh.height = 3.5e-2
 hx_trans.cool.mdot = 1.
 hx_trans.length = 1.
-hx_trans.tem.I = current
-hx_trans.tem.length = length
+hx_trans.te_pair.I = current
+hx_trans.te_pair.length = length
 
 hx_trans.nodes = 5
 hx_trans.t_max = 60.
 
-hx_trans.tem.Ptype.material = 'HMS'
-hx_trans.tem.Ntype.material = 'MgSi'
+hx_trans.te_pair.Ptype.material = 'HMS'
+hx_trans.te_pair.Ntype.material = 'MgSi'
 
-hx_trans.tem.Ptype.area = area                           
-hx_trans.tem.Ntype.area = hx_trans.tem.Ptype.area * area_ratio
-hx_trans.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_trans.tem.Ptype.area +
-                            hx_trans.tem.Ntype.area) )  
+hx_trans.te_pair.Ptype.area = area                           
+hx_trans.te_pair.Ntype.area = hx_trans.te_pair.Ptype.area * area_ratio
+hx_trans.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_trans.te_pair.Ptype.area +
+                            hx_trans.te_pair.Ntype.area) )  
 
 hx_trans.type = 'parallel'
 
@@ -92,8 +92,8 @@ fig2 = plt.figure()
 plt.plot(hx_trans.exh.T_trans[-1,:], ':r', label='exh')
 plt.plot(hx_trans.plate_hot.T_trans[0,-1,:], '-.r', label='plate hot')
 plt.plot(hx_trans.plate_hot.T_trans[-1,-1,:], '-.b', label='plate cold')
-plt.plot(hx_trans.tem.T_h_trans[-1,:], '--r', label='TE hot')
-plt.plot(hx_trans.tem.T_c_trans[-1,:], '--b', label='TE cold')
+plt.plot(hx_trans.te_pair.T_h_trans[-1,:], '--r', label='TE hot')
+plt.plot(hx_trans.te_pair.T_c_trans[-1,:], '--b', label='TE cold')
 plt.plot(hx_trans.cool.T_trans[-1,:], ':b', label='cool')
 plt.xlabel('Time Index')
 plt.ylabel('Temperature (K)')
@@ -105,8 +105,8 @@ plt.savefig('../Plots/transient/temp_v_time.pdf')
 fig3 = plt.figure()
 plt.plot(hx_trans.plate_hot.q_c_trans[-1,:], '-.r', label='q_h')
 plt.plot(hx_trans.q_c_trans[-1,:], '-.b', label='q_c')
-plt.plot(hx_trans.tem.q_h_trans[-1,:], ':r', label='te q_h')
-plt.plot(hx_trans.tem.q_c_trans[-1,:], ':b', label='te q_c')
+plt.plot(hx_trans.te_pair.q_h_trans[-1,:], ':r', label='te q_h')
+plt.plot(hx_trans.te_pair.q_c_trans[-1,:], ':b', label='te q_c')
 plt.grid()
 plt.xlabel('Time Index')
 plt.ylabel(r'Heat Flux $\left(\frac{kW}{m^2K}\right)$')

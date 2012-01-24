@@ -15,18 +15,18 @@ area = (0.002)**2
 length = 5.e-3
 
 hx = hx.HX()
-hx.tem.I = 2.
-hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area
-hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 10. * area
+hx.te_pair.I = 2.
+hx.te_pair.length = length
+hx.te_pair.Ntype.material = 'MgSi'
+hx.te_pair.Ntype.area = area
+hx.te_pair.Ptype.material = 'HMS'
+hx.te_pair.Ptype.area = area * 2. 
+hx.te_pair.area_void = 10. * area
 hx.type = 'parallel'
 hx.exh.T_inlet = 800.
 hx.exh.P = 100.
 hx.cool.T_inlet = 300.
-#hx.tem = tem.TECarnot()
+#hx.te_pair = te_pair.TECarnot()
 hx.solve_hx()
 
 print "\nProgram finished."
@@ -43,8 +43,8 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.figure()
 plt.plot(hx.x_dim * 100., hx.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx.x_dim * 100., hx.tem.T_h_nodes, '-g', label='TEM Hot Side')
-plt.plot(hx.x_dim * 100., hx.tem.T_c_nodes, '-k', label='TEM Cold Side')
+plt.plot(hx.x_dim * 100., hx.te_pair.T_h_nodes, '-g', label='TE_PAIR Hot Side')
+plt.plot(hx.x_dim * 100., hx.te_pair.T_c_nodes, '-k', label='TE_PAIR Cold Side')
 plt.plot(hx.x_dim * 100., hx.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')
@@ -56,8 +56,8 @@ plt.savefig('Plots/temp '+hx.type+'.png')
 plt.savefig('Plots/temp '+hx.type+'.pdf')
 
 plt.figure()
-plt.plot(hx.tem.Ntype.T, hx.tem.Ntype.q, label=hx.tem.Ntype.material)
-plt.plot(hx.tem.Ptype.T, hx.tem.Ptype.q, label=hx.tem.Ptype.material)
+plt.plot(hx.te_pair.Ntype.T, hx.te_pair.Ntype.q, label=hx.te_pair.Ntype.material)
+plt.plot(hx.te_pair.Ptype.T, hx.te_pair.Ptype.q, label=hx.te_pair.Ptype.material)
 plt.xlabel('Temperature (K)')
 plt.ylabel(r'Heat Flux ($\frac{W}{m^2K}$)')
 plt.title('Heat Flux v Temperature')

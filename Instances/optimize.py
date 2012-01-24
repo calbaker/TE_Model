@@ -31,23 +31,23 @@ area_ratio = 0.69
 fill_fraction = 1. / 40.
 
 hx = hx.HX()
-hx.tem.method = 'analytical'
+hx.te_pair.method = 'analytical'
 hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
 hx.cool.mdot = 1.
 hx.length = 1.
-hx.tem.I = current
-hx.tem.length = length
+hx.te_pair.I = current
+hx.te_pair.length = length
 
-hx.tem.Ptype.material = 'HMS'
-hx.tem.Ntype.material = 'MgSi'
+hx.te_pair.Ptype.material = 'HMS'
+hx.te_pair.Ntype.material = 'MgSi'
 
-hx.tem.Ptype.area = area                           
-hx.tem.Ntype.area = hx.tem.Ptype.area * area_ratio
-hx.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx.tem.Ptype.area +
-                            hx.tem.Ntype.area) )  
+hx.te_pair.Ptype.area = area                           
+hx.te_pair.Ntype.area = hx.te_pair.Ptype.area * area_ratio
+hx.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx.te_pair.Ptype.area +
+                            hx.te_pair.Ntype.area) )  
 
 hx.type = 'parallel'
 
@@ -62,15 +62,15 @@ hx.set_mdot_charge()
 def optim(apar):
     # unpack guess vector
     apar=np.asarray(apar)
-    hx.tem.leg_ratio     = apar[0]
-    hx.tem.fill_fraction = apar[1]
-    hx.tem.length        = apar[2]
-    hx.tem.I             = apar[3]
+    hx.te_pair.leg_ratio     = apar[0]
+    hx.te_pair.fill_fraction = apar[1]
+    hx.te_pair.length        = apar[2]
+    hx.te_pair.I             = apar[3]
 
     # reset surrogate variables
-    hx.tem.Ntype.area = hx.tem.leg_ratio*hx.tem.Ptype.area
-    hx.tem.area_void = ( (1. - hx.tem.fill_fraction) / hx.tem.fill_fraction *
-                           (hx.tem.Ptype.area + hx.tem.Ntype.area) )
+    hx.te_pair.Ntype.area = hx.te_pair.leg_ratio*hx.te_pair.Ptype.area
+    hx.te_pair.area_void = ( (1. - hx.te_pair.fill_fraction) / hx.te_pair.fill_fraction *
+                           (hx.te_pair.Ptype.area + hx.te_pair.Ntype.area) )
     hx.set_constants()
     hx.solve_hx()
 
@@ -84,10 +84,10 @@ def fprime():
 #
 # parameter optimization:
 #
-#   I) tem.leg_ratio
-#  II) tem.fill_fraction
-# III) hx.tem.length
-#  IV) hx.tem.I
+#   I) te_pair.leg_ratio
+#  II) te_pair.fill_fraction
+# III) hx.te_pair.length
+#  IV) hx.te_pair.I
 #
 # initial guess {I-IV}:
 x0 = 0.71, 0.02, .001, 4.5
@@ -115,7 +115,7 @@ Elapsed time solving xmin1 =""", t1
 
 # Find min again using the numerical model.  The analytical model
 # should run first to provide a better initial guess.
-hx.tem.method = 'numerical'
+hx.te_pair.method = 'numerical'
 xmin2 = fmin(optim, xmin1)
 t2 = time.clock() - t1
 
@@ -141,16 +141,16 @@ print xmin2
 
 # notes:
 #
-# define a variable, tem.leg_ratio = tem.Ntype.area / tem.Ptype.area .  
-# Keep tem.Ptype.area = 10.e-6 and vary tem.Ntype.area by varying leg_ratio.  
+# define a variable, te_pair.leg_ratio = te_pair.Ntype.area / te_pair.Ptype.area .  
+# Keep te_pair.Ptype.area = 10.e-6 and vary te_pair.Ntype.area by varying leg_ratio.  
 # leg_ratio can be anywhere from 0.2 up to 5.
 #
 # The next parameter is the leg area to the void area. 
-# define tem.fill_fraction = tem.Ptype.area / tem.area_void.   
+# define te_pair.fill_fraction = te_pair.Ptype.area / te_pair.area_void.   
 # vary this between 1 and 100 by changing area_void.  
 #
-# The next one is leg length or height, hx.tem.length.  
+# The next one is leg length or height, hx.te_pair.length.  
 # Vary this between 0.0005 and 0.01.  
 #
-# The last one is current, hx.tem.I.  Vary this between 0.1 and 10. 
+# The last one is current, hx.te_pair.I.  Vary this between 0.1 and 10. 
 #

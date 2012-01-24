@@ -3,10 +3,10 @@ import scipy as sp
 import matplotlib.pyplot as mpl
 
 # local user modules
-import tem
-reload(tem)
+import te_pair
+reload(te_pair)
 
-leg = tem.Leg()
+leg = te_pair.Leg()
 leg.I = 10.
 leg.material = 'HMS'
 leg.solve_leg()

@@ -11,16 +11,16 @@ os.chdir('/home/chad/Documents/UT Stuff/Research/Diesel TE/TE_Model')
 # User Defined Modules
 # In this directory
 import hx
-import tem
+import te_pair
 
 hx = hx.HX()
-hx.tem.I = 0.02
-hx.tem.Ntype.material = 'MgSi'
+hx.te_pair.I = 0.02
+hx.te_pair.Ntype.material = 'MgSi'
 area = (0.002)**2.
-hx.tem.Ntype.area = area
-hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 22./14.
-hx.tem.area_void = 2 * area
+hx.te_pair.Ntype.area = area
+hx.te_pair.Ptype.material = 'HMS'
+hx.te_pair.Ptype.area = area * 22./14.
+hx.te_pair.area_void = 2 * area
 hx.type = 'parallel'
 hx.exh.T_inlet = 800.
 hx.exh.P = 100.
@@ -32,7 +32,7 @@ array_size = sp.size(hx.exh.height_array)
 hx.power_net_array = sp.zeros(array_size)
 hx.Wdot_pumping_array = sp.zeros(array_size)
 hx.Qdot_array = sp.zeros(array_size)
-hx.tem.power_array = sp.zeros(array_size)
+hx.te_pair.power_array = sp.zeros(array_size)
 
 for i in sp.arange(sp.size(hx.exh.height_array)):
     hx.exh.height = hx.exh.height_array[i]
@@ -40,7 +40,7 @@ for i in sp.arange(sp.size(hx.exh.height_array)):
     hx.power_net_array[i] = hx.power_net
     hx.Wdot_pumping_array[i] = hx.Wdot_pumping
     hx.Qdot_array[i] = hx.Qdot
-    hx.tem.power_array[i] = hx.tem.power
+    hx.te_pair.power_array[i] = hx.te_pair.power
 
 print "\nProgram finished."
 print "\nPlotting..."
@@ -59,8 +59,8 @@ mpl.plot(hx.exh.height_array * 100., hx.power_net_array,
          label='Net')  
 mpl.plot(hx.exh.height_array * 100., hx.Wdot_pumping_array,
          label='Pumping')
-mpl.plot(hx.exh.height_array * 100., hx.tem.power_array,
-         label='TEM')
+mpl.plot(hx.exh.height_array * 100., hx.te_pair.power_array,
+         label='TE_PAIR')
 mpl.plot(hx.exh.height_array * 100., hx.Qdot_array,
          label=r'$\dot{Q}$') 
 mpl.grid()

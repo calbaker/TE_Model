@@ -144,7 +144,7 @@ class Leg(object):
         self.length * self.area ) 
 
 
-class TEModule(object):
+class TE_Pair(object):
     """class for TEModule that includes a pair of legs"""
 
     def __init__(self):

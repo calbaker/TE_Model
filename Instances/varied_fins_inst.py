@@ -32,19 +32,19 @@ hx_fins.width = 30.e-2
 hx_fins.exh.bypass = 0.
 hx_fins.exh.height = 3.5e-2
 hx_fins.length = 1.
-hx_fins.tem.I = current
-hx_fins.tem.length = length
+hx_fins.te_pair.I = current
+hx_fins.te_pair.length = length
 
-hx_fins.tem.Ntype.material = 'MgSi'
-hx_fins.tem.Ptype.material = 'HMS'
+hx_fins.te_pair.Ntype.material = 'MgSi'
+hx_fins.te_pair.Ptype.material = 'HMS'
 
-hx_fins.tem.Ptype.area = area                           
-hx_fins.tem.Ntype.area = hx_fins.tem.Ptype.area * area_ratio
-hx_fins.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_fins.tem.Ptype.area +
-                            hx_fins.tem.Ntype.area) )  
+hx_fins.te_pair.Ptype.area = area                           
+hx_fins.te_pair.Ntype.area = hx_fins.te_pair.Ptype.area * area_ratio
+hx_fins.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_fins.te_pair.Ptype.area +
+                            hx_fins.te_pair.Ntype.area) )  
 
-# hx_fins.tem.method = "analytical"
+# hx_fins.te_pair.method = "analytical"
 hx_fins.type = 'counter'
 hx_fins.exh.enhancement = "straight fins"
 hx_fins.exh.fin.thickness = 5.e-3
@@ -64,7 +64,7 @@ array_size = np.size(hx_fins.exh.fin_array)
 hx_fins.power_net_array = np.zeros(array_size)
 hx_fins.Wdot_pumping_array = np.zeros(array_size)
 hx_fins.Qdot_array = np.zeros(array_size)
-hx_fins.tem.power_array = np.zeros(array_size)
+hx_fins.te_pair.power_array = np.zeros(array_size)
 hx_fins.exh.fin.spacings = np.zeros(np.size(hx_fins.exh.fin_array)) 
 
 for i in np.arange(np.size(hx_fins.exh.fin_array)):
@@ -74,7 +74,7 @@ for i in np.arange(np.size(hx_fins.exh.fin_array)):
     hx_fins.power_net_array[i] = hx_fins.power_net
     hx_fins.Wdot_pumping_array[i] = hx_fins.Wdot_pumping
     hx_fins.Qdot_array[i] = hx_fins.Qdot
-    hx_fins.tem.power_array[i] = hx_fins.tem.power_total
+    hx_fins.te_pair.power_array[i] = hx_fins.te_pair.power_total
     hx_fins.exh.fin.spacings[i] = hx_fins.exh.fin.spacing
 
 print "\nProgram finished."
@@ -94,8 +94,8 @@ plt.close('all')
 plt.figure()
 plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.Qdot_array / 10., 'db', 
          label=r'$\dot{Q}/10$') 
-plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.tem.power_array, 'og',
-         label='TEM')
+plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.te_pair.power_array, 'og',
+         label='TE_PAIR')
 plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.power_net_array, 'sr', 
          label='$P_{net}$')  
 plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.Wdot_pumping_array, '*k',
@@ -114,7 +114,7 @@ plt.savefig('../Plots/power v fin spacing.png')
 
 plt.figure()
 plt.plot(hx_fins.exh.fin_array, hx_fins.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
-plt.plot(hx_fins.exh.fin_array, hx_fins.tem.power_array, 'og', label='TEM')
+plt.plot(hx_fins.exh.fin_array, hx_fins.te_pair.power_array, 'og', label='TE_PAIR')
 plt.plot(hx_fins.exh.fin_array, hx_fins.power_net_array, 'sr', 
          label='$P_{net}$')  
 plt.plot(hx_fins.exh.fin_array, hx_fins.Wdot_pumping_array, '*k', 

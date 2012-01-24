@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import time
 
 # local user modules
-import tem
-reload(tem)
+import te_pair
+reload(te_pair)
 
 t0 = time.clock()
 
@@ -15,29 +15,29 @@ area = (0.002)**2
 area_ratio = 0.69 # n-type area per p-type area, consistent with
                   # Sherman.  
 
-tem = tem.TEModule()
-tem.I = current
-tem.Ntype.material = 'MgSi'
-tem.Ptype.material = 'HMS'
-tem.T_h_goal = 500.
-tem.T_c = 300.
-tem.Ptype.node = 0
-tem.Ntype.node = 0
-tem.Ptype.area = area
-tem.Ntype.area = tem.Ptype.area * area_ratio
-tem.length = length
-tem.area_void = 0.
-tem.method = 'analytical'
-tem.set_constants()
-tem.Ptype.area = tem.area / (1. + area_ratio)
-tem.Ntype.area = tem.area - tem.Ptype.area 
-tem.Ptype.set_prop_fit()
-tem.Ntype.set_prop_fit()
-tem.solve_tem()
-tem.T_props = 0.5 * (tem.T_h + tem.T_c)
-tem.set_eta_max()
-tem.set_power_max()
-tem.set_A_opt()
+te_pair = te_pair.TE_PAIRodule()
+te_pair.I = current
+te_pair.Ntype.material = 'MgSi'
+te_pair.Ptype.material = 'HMS'
+te_pair.T_h_goal = 500.
+te_pair.T_c = 300.
+te_pair.Ptype.node = 0
+te_pair.Ntype.node = 0
+te_pair.Ptype.area = area
+te_pair.Ntype.area = te_pair.Ptype.area * area_ratio
+te_pair.length = length
+te_pair.area_void = 0.
+te_pair.method = 'analytical'
+te_pair.set_constants()
+te_pair.Ptype.area = te_pair.area / (1. + area_ratio)
+te_pair.Ntype.area = te_pair.area - te_pair.Ptype.area 
+te_pair.Ptype.set_prop_fit()
+te_pair.Ntype.set_prop_fit()
+te_pair.solve_te_pair()
+te_pair.T_props = 0.5 * (te_pair.T_h + te_pair.T_c)
+te_pair.set_eta_max()
+te_pair.set_power_max()
+te_pair.set_A_opt()
 
 res = 80
 length1d = np.linspace(0.01, 2, res) * 0.001
@@ -50,15 +50,15 @@ R_load = np.empty([np.size(length1d), np.size(current1d)])
 R_internal = np.empty([np.size(length1d), np.size(current1d)])
 
 for i in range(np.size(length1d)):
-    tem.length = length1d[i]
+    te_pair.length = length1d[i]
     for j in range(np.size(current1d)):
-        tem.I = current1d[j]
-        tem.set_constants()
-        tem.solve_tem()
-        eta_length_current[i,j] = tem.eta
-        p_length_current[i,j] = tem.P
-        R_load[i,j] = tem.R_load
-        R_internal[i,j] = tem.R_internal
+        te_pair.I = current1d[j]
+        te_pair.set_constants()
+        te_pair.solve_te_pair()
+        eta_length_current[i,j] = te_pair.eta
+        p_length_current[i,j] = te_pair.P
+        R_load[i,j] = te_pair.R_load
+        R_internal[i,j] = te_pair.R_internal
 
 eta_length_R_load = eta_length_current.copy()
 p_length_R_load = p_length_current.copy()
@@ -78,7 +78,7 @@ plt.rcParams['lines.linewidth'] = 2.5
 plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
-high = tem.eta_max * 100.
+high = te_pair.eta_max * 100.
 dummy = ( high - np.logspace(np.log10(high), -1, 10) )
 LEVELS_eta = np.empty(np.size(dummy)+1)
 LEVELS_eta[-1] = high
@@ -100,8 +100,8 @@ CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("Current (A)")
-fig1.savefig('Plots/' + tem.method + '/eta_length_current.pdf')
-fig1.savefig('Plots/' + tem.method + '/eta_length_current.png')
+fig1.savefig('Plots/' + te_pair.method + '/eta_length_current.pdf')
+fig1.savefig('Plots/' + te_pair.method + '/eta_length_current.png')
 
 fig1p = plt.figure()
 FCS = plt.contourf(current_length, length_current * 1000.,
@@ -111,8 +111,8 @@ CB.set_label('TE Power (W)')
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("Current (A)")
-fig1p.savefig('Plots/' + tem.method + '/p_length_current.pdf')
-fig1p.savefig('Plots/' + tem.method + '/p_length_current.png')
+fig1p.savefig('Plots/' + te_pair.method + '/p_length_current.pdf')
+fig1p.savefig('Plots/' + te_pair.method + '/p_length_current.png')
 
 fig1r = plt.figure()
 FCS = plt.contourf(R_load.T, length_current * 1000.,
@@ -122,8 +122,8 @@ CB.set_label('TE Thermal Efficiency (%)')
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel(r"R_load ($\Omega$)")
-fig1r.savefig('Plots/' + tem.method + '/eta_length_R_load.pdf')
-fig1r.savefig('Plots/' + tem.method + '/eta_length_R_load.png')
+fig1r.savefig('Plots/' + te_pair.method + '/eta_length_R_load.pdf')
+fig1r.savefig('Plots/' + te_pair.method + '/eta_length_R_load.png')
 
 fig1pr = plt.figure()
 FCS = plt.contourf(R_load.T, length_current * 1000.,
@@ -133,8 +133,8 @@ CB.set_label('TE Power (W)')
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("R_load ($\Omega$)")
-fig1pr.savefig('Plots/' + tem.method + '/p_length_R_load.pdf')
-fig1pr.savefig('Plots/' + tem.method + '/p_length_R_load.png')
+fig1pr.savefig('Plots/' + te_pair.method + '/p_length_R_load.pdf')
+fig1pr.savefig('Plots/' + te_pair.method + '/p_length_R_load.png')
 
 fig_R_load = plt.figure()
 FCS = plt.contourf(current_length, length_current * 1000.,
@@ -144,8 +144,8 @@ CB.set_label(r'Load Resistance ($\Omega$)')
 plt.grid()
 plt.ylabel("Leg Height (mm)")
 plt.xlabel("Current (A)")
-plt.savefig('Plots/' + tem.method + '/R_load.pdf')
-plt.savefig('Plots/' + tem.method + '/R_load.png')
+plt.savefig('Plots/' + te_pair.method + '/R_load.pdf')
+plt.savefig('Plots/' + te_pair.method + '/R_load.png')
 
 R_ratio = R_load / R_internal
 
@@ -161,8 +161,8 @@ plt.subplots_adjust(left=0.12)
 plt.subplots_adjust(right=0.78)
 plt.subplots_adjust(bottom=0.14)
 plt.subplots_adjust(top=0.95)
-plt.savefig('Plots/' + tem.method + '/eta_length_R_ratio.pdf')
-plt.savefig('Plots/' + tem.method + '/eta_length_R_ratio.png')
+plt.savefig('Plots/' + te_pair.method + '/eta_length_R_ratio.pdf')
+plt.savefig('Plots/' + te_pair.method + '/eta_length_R_ratio.png')
 
 fig1propt = plt.figure()
 FCS = plt.contourf(R_ratio.T, length_current * 1000.,
@@ -176,8 +176,8 @@ plt.subplots_adjust(left=0.12)
 plt.subplots_adjust(right=0.78)
 plt.subplots_adjust(bottom=0.14)
 plt.subplots_adjust(top=0.95)
-plt.savefig('Plots/' + tem.method + '/p_length_R_ratio.pdf')
-plt.savefig('Plots/' + tem.method + '/p_length_R_ratio.png')
+plt.savefig('Plots/' + te_pair.method + '/p_length_R_ratio.pdf')
+plt.savefig('Plots/' + te_pair.method + '/p_length_R_ratio.png')
 
 # fig1ropt = plt.figure()
 # FCS = plt.contourf(R_ratio.T, length_current * 1000.,
@@ -191,8 +191,8 @@ plt.savefig('Plots/' + tem.method + '/p_length_R_ratio.png')
 # plt.subplots_adjust(right=0.78)
 # plt.subplots_adjust(bottom=0.14)
 # plt.subplots_adjust(top=0.95)
-# plt.savefig('Plots/' + tem.method + '/eta_length_R_ratio.pdf')
-# plt.savefig('Plots/' + tem.method + '/eta_length_R_ratio.png')
+# plt.savefig('Plots/' + te_pair.method + '/eta_length_R_ratio.pdf')
+# plt.savefig('Plots/' + te_pair.method + '/eta_length_R_ratio.png')
 
 # fig1propt = plt.figure()
 # FCS = plt.contourf(R_ratio.T, length_current * 1000.,
@@ -206,8 +206,8 @@ plt.savefig('Plots/' + tem.method + '/p_length_R_ratio.png')
 # plt.subplots_adjust(right=0.78)
 # plt.subplots_adjust(bottom=0.14)
 # plt.subplots_adjust(top=0.95)
-# plt.savefig('Plots/' + tem.method + '/p_length_R_ratio.pdf')
-# plt.savefig('Plots/' + tem.method + '/p_length_R_ratio.png')
+# plt.savefig('Plots/' + te_pair.method + '/p_length_R_ratio.pdf')
+# plt.savefig('Plots/' + te_pair.method + '/p_length_R_ratio.png')
 
 # plt.show()
 

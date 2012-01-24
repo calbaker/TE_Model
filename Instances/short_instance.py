@@ -28,19 +28,19 @@ hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
 hx.nodes = 2.
 hx.length = 0.04
-hx.tem.I = current
-hx.tem.length = length
+hx.te_pair.I = current
+hx.te_pair.length = length
 
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ptype.material = 'HMS'
+hx.te_pair.Ntype.material = 'MgSi'
+hx.te_pair.Ptype.material = 'HMS'
 
-hx.tem.Ptype.area = area                           
-hx.tem.Ntype.area = hx.tem.Ptype.area * area_ratio
-hx.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx.tem.Ptype.area +
-                            hx.tem.Ntype.area) )  
+hx.te_pair.Ptype.area = area                           
+hx.te_pair.Ntype.area = hx.te_pair.Ptype.area * area_ratio
+hx.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx.te_pair.Ptype.area +
+                            hx.te_pair.Ntype.area) )  
 
-hx.tem.method = 'analytical'
+hx.te_pair.method = 'analytical'
 hx.type = 'parallel'
 
 hx.exh.T_inlet = 800.
@@ -67,33 +67,33 @@ P_length_fill = np.empty([np.size(length1d),
 print "base camp"
 
 for i in range(np.size(length1d)):
-    hx.tem.length = length1d[i]
+    hx.te_pair.length = length1d[i]
     for j in range(np.size(current1d)):
-        hx.tem.I = current1d[j]
+        hx.te_pair.I = current1d[j]
         hx.solve_hx()
-        P_length_current[i,j] = hx.tem.power_total * 1000.
+        P_length_current[i,j] = hx.te_pair.power_total * 1000.
 
-hx.tem.length = length
+hx.te_pair.length = length
 print "finished first for loop."
 
 for i in range(np.size(current1d)):
-    hx.tem.I = current1d[i]
+    hx.te_pair.I = current1d[i]
     for j in range(np.size(fill_fraction1d)):
-        hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
-                           (hx.tem.Ptype.area + hx.tem.Ntype.area) )
+        hx.te_pair.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
+                           (hx.te_pair.Ptype.area + hx.te_pair.Ntype.area) )
         hx.solve_hx()
-        P_current_fill[i,j] = hx.tem.power_total * 1000.
+        P_current_fill[i,j] = hx.te_pair.power_total * 1000.
 
-hx.tem.I = current
+hx.te_pair.I = current
 print "finished second for loop."
 
 for i in range(np.size(length1d)):
-    hx.tem.length = length1d[i]
+    hx.te_pair.length = length1d[i]
     for j in range(np.size(fill_fraction1d)):
-        hx.tem.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
-                           (hx.tem.Ptype.area + hx.tem.Ntype.area) )   
+        hx.te_pair.area_void = ( (1. - fill_fraction1d[j]) / fill_fraction1d[j] *
+                           (hx.te_pair.Ptype.area + hx.te_pair.Ntype.area) )   
         hx.solve_hx()
-        P_length_fill[i,j] = hx.tem.power_total * 1000.
+        P_length_fill[i,j] = hx.te_pair.power_total * 1000.
 
 print "finished third for loop."
 print "summit"

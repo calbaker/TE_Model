@@ -24,19 +24,19 @@ hx_fins0 = hx.HX()
 hx_fins0.width = 30.e-2
 hx_fins0.exh.height = 3.5e-2
 hx_fins0.length = 1.
-hx_fins0.tem.I = current
-hx_fins0.tem.length = leg_length
+hx_fins0.te_pair.I = current
+hx_fins0.te_pair.length = leg_length
 
-hx_fins0.tem.Ntype.material = 'MgSi'
-hx_fins0.tem.Ptype.material = 'HMS'
+hx_fins0.te_pair.Ntype.material = 'MgSi'
+hx_fins0.te_pair.Ptype.material = 'HMS'
 
-hx_fins0.tem.Ptype.area = area                           
-hx_fins0.tem.Ntype.area = hx_fins0.tem.Ptype.area * area_ratio
-hx_fins0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_fins0.tem.Ptype.area +
-                            hx_fins0.tem.Ntype.area) )  
+hx_fins0.te_pair.Ptype.area = area                           
+hx_fins0.te_pair.Ntype.area = hx_fins0.te_pair.Ptype.area * area_ratio
+hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_fins0.te_pair.Ptype.area +
+                            hx_fins0.te_pair.Ntype.area) )  
 
-hx_fins0.tem.method = 'analytical'
+hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = "straight fins"
 hx_fins0.exh.fin.thickness = 5.e-3
@@ -63,8 +63,8 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.figure()
 plt.plot(hx_fins0.x * 100., hx_fins0.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx_fins0.x * 100., hx_fins0.tem.T_h_nodes, '-g', label='TEM Hot Side')
-plt.plot(hx_fins0.x * 100., hx_fins0.tem.T_c_nodes, '-k', label='TEM Cold Side')
+plt.plot(hx_fins0.x * 100., hx_fins0.te_pair.T_h_nodes, '-g', label='TE_PAIR Hot Side')
+plt.plot(hx_fins0.x * 100., hx_fins0.te_pair.T_c_nodes, '-k', label='TE_PAIR Cold Side')
 plt.plot(hx_fins0.x * 100., hx_fins0.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')

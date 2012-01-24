@@ -10,15 +10,14 @@ from scipy.optimize import fsolve,fmin
 # User Defined Modules
 # In this directory
 import engine
-import tem
-reload(tem)
+import te_pair
+reload(te_pair)
 import exhaust
 reload(exhaust)
 import coolant
 reload(coolant)
 import platewall
 reload(platewall)
-
 
 class HX(object):
     """class for handling HX system"""
@@ -42,7 +41,7 @@ class HX(object):
         # initialization of sub classes
         self.cool = coolant.Coolant()
         self.exh = exhaust.Exhaust()
-        self.tem = tem.TEModule()
+        self.te_pair = te_pair.TE_Pair()
         self.plate = platewall.PlateWall()
         self.cummins = engine.Engine()
 
@@ -78,20 +77,20 @@ class HX(object):
         self.U_cold_nodes = self.U_nodes.copy()
         self.q_h_nodes = ZEROS.copy()
         self.q_c_nodes = self.q_h_nodes.copy()
-        self.tem.q_h_nodes = self.q_h_nodes.copy()
-        self.tem.q_c_nodes = self.q_h_nodes.copy()
+        self.te_pair.q_h_nodes = self.q_h_nodes.copy()
+        self.te_pair.q_c_nodes = self.q_h_nodes.copy()
 
         self.error_hot_nodes = ZEROS.copy()
         self.error_cold_nodes = ZEROS.copy()
 
-        self.tem.T_c_nodes = ZEROS.copy()
+        self.te_pair.T_c_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
-        self.tem.T_h_nodes = ZEROS.copy()
+        self.te_pair.T_h_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
-        self.tem.h_nodes = self.U_nodes.copy()
+        self.te_pair.h_nodes = self.U_nodes.copy()
 
-        self.tem.power_nodes = ZEROS.copy()
-        self.tem.eta_nodes = ZEROS.copy()
+        self.te_pair.power_nodes = ZEROS.copy()
+        self.te_pair.eta_nodes = ZEROS.copy()
 
         self.exh.velocity_nodes = ZEROS.copy()
 
@@ -109,8 +108,8 @@ class HX(object):
         # length (m) of each node
         self.area = self.node_length * self.width * self.cool.ducts 
         # area (m^2) through which heat flux occurs in each node
-        self.tem.set_constants()
-        self.leg_pairs = int(self.area / self.tem.area)
+        self.te_pair.set_constants()
+        self.leg_pairs = int(self.area / self.te_pair.area)
         # Number of TEM leg pairs per node
         self.x_dim = np.arange(self.node_length/2, self.length +
         self.node_length/2, self.node_length)   
@@ -148,7 +147,7 @@ class HX(object):
         # TE stuff
 
         self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.plate.R_contact + self.tem.R_thermal + self.plate.R_contact +
+        self.plate.R_contact + self.te_pair.R_thermal + self.plate.R_contact +
         self.plate.R_thermal + self.cool.R_thermal )**-1 )    
         # overall heat transfer coefficient (kW/m^2-K)
         self.U_hot = ( (self.exh.R_thermal + self.plate.R_thermal +
@@ -166,16 +165,16 @@ class HX(object):
         T_h = T_arr[0]
         T_h = T_h
         self.q_h = self.U_hot * (T_h - self.exh.T)
-        self.tem.T_h_goal = T_h
-        self.tem.solve_tem()
-        self.error_hot = (self.q_h - self.tem.q_h) / self.tem.q_h
+        self.te_pair.T_h_goal = T_h
+        self.te_pair.solve_tem()
+        self.error_hot = (self.q_h - self.te_pair.q_h) / self.te_pair.q_h
 
         T_c = T_arr[1]
         T_c = T_c
         self.q_c = self.U_cold * (self.cool.T - T_c)
-        self.tem.T_c = T_c
-        self.tem.solve_tem()
-        self.error_cold = (self.q_c - self.tem.q_c) / self.tem.q_c
+        self.te_pair.T_c = T_c
+        self.te_pair.solve_tem()
+        self.error_cold = (self.q_c - self.te_pair.q_c) / self.te_pair.q_c
 
         self.error = np.array([self.error_hot, self.error_cold])
         return self.error
@@ -184,31 +183,31 @@ class HX(object):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
-        self.tem.Ntype.node = i # used within tem.py
-        self.tem.Ptype.node = i
-        if self.tem.method == 'numerical':
+        self.te_pair.Ntype.node = i # used within tem.py
+        self.te_pair.Ptype.node = i
+        if self.te_pair.method == 'numerical':
             print "Solving node", i
         
         if i == 0:
-            self.tem.T_c = self.cool.T
+            self.te_pair.T_c = self.cool.T
             # guess at cold side tem temperature (K)
-            self.tem.T_h_goal = self.exh.T
+            self.te_pair.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
-            self.tem.solve_tem()
+            self.te_pair.solve_tem()
             self.set_convection()
             self.q = self.U * (self.cool.T - self.exh.T)
-            self.tem.T_h_goal = self.q / self.U_hot + self.exh.T
-            self.tem.T_c = -self.q / self.U_cold + self.cool.T
+            self.te_pair.T_h_goal = self.q / self.U_hot + self.exh.T
+            self.te_pair.T_c = -self.q / self.U_cold + self.cool.T
         else:
             self.set_convection()
-            self.tem.T_c = self.tem.T_c_nodes[i-1]
-            self.tem.T_h_goal = self.tem.T_h_nodes[i-1] 
+            self.te_pair.T_c = self.te_pair.T_c_nodes[i-1]
+            self.te_pair.T_h_goal = self.te_pair.T_h_nodes[i-1] 
 
-        self.T_guess = np.array([self.tem.T_h_goal,self.tem.T_c])
+        self.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
         self.T_guess = self.T_guess.reshape(2)
         self.T_arr = fsolve(self.get_error, x0=self.T_guess)
-        self.tem.T_h_goal = self.T_arr[0]
-        self.tem.T_c = self.T_arr[1]
+        self.te_pair.T_h_goal = self.T_arr[0]
+        self.te_pair.T_c = self.T_arr[1]
         self.Qdot_node = -self.q_h * self.area
         # heat transfer on hot side of node, positive values indicates
         # heat transfer from hot to cold
@@ -228,8 +227,8 @@ class HX(object):
         elif self.type == 'counter':
             self.cool.T = self.cool.T_outlet  
             
-        self.tem.Ptype.set_prop_fit()
-        self.tem.Ntype.set_prop_fit()
+        self.te_pair.Ptype.set_prop_fit()
+        self.te_pair.Ntype.set_prop_fit()
 
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
@@ -239,13 +238,13 @@ class HX(object):
             self.store_node_values(i)
 
             # redefining temperatures (K) for next node
-            self.exh.T = ( self.exh.T + self.tem.q_h * self.area /
+            self.exh.T = ( self.exh.T + self.te_pair.q_h * self.area /
                 self.exh.C )   
             if self.type == 'parallel':
-                self.cool.T = ( self.cool.T - self.tem.q_c * self.area
+                self.cool.T = ( self.cool.T - self.te_pair.q_c * self.area
                     / self.cool.C )  
             elif self.type == 'counter':
-                self.cool.T = ( self.cool.T + self.tem.q_c * self.area
+                self.cool.T = ( self.cool.T + self.te_pair.q_c * self.area
                     / self.cool.C )
                 
         # defining HX outlet/inlet temperatures (K)
@@ -259,12 +258,12 @@ class HX(object):
         self.effectiveness = ( self.Qdot_total / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
-        self.tem.power_total = self.tem.power_nodes.sum()
+        self.te_pair.power_total = self.te_pair.power_nodes.sum()
         # total TE power output (kW)
         self.Wdot_pumping = ( self.exh.Wdot_pumping +
         self.cool.Wdot_pumping ) 
         # total pumping power requirement (kW) 
-        self.power_net = self.tem.power_total - self.Wdot_pumping 
+        self.power_net = self.te_pair.power_total - self.Wdot_pumping 
         
         self.set_availability()
 
@@ -302,8 +301,8 @@ class HX(object):
         # storing node heat transfer in array
         self.q_h_nodes[i] = self.q_h
         self.q_c_nodes[i] = self.q_c
-        self.tem.q_h_nodes[i] = self.tem.q_h
-        self.tem.q_c_nodes[i] = self.tem.q_c
+        self.te_pair.q_h_nodes[i] = self.te_pair.q_h
+        self.te_pair.q_c_nodes[i] = self.te_pair.q_c
         self.error_hot_nodes[i] = self.error_hot
         self.error_cold_nodes[i] = self.error_cold
 
@@ -321,18 +320,18 @@ class HX(object):
         self.cool.Nu_nodes[i] = self.cool.Nu_D
         self.cool.c_p_nodes[i] = self.cool.c_p
 
-        self.tem.T_h_nodes[i] = self.tem.T_h
+        self.te_pair.T_h_nodes[i] = self.te_pair.T_h
         # hot side temperature (K) of TEM at each node 
-        self.tem.T_c_nodes[i] = self.tem.T_c
+        self.te_pair.T_c_nodes[i] = self.te_pair.T_c
         # cold side temperature (K) of TEM at each node.  
 
         self.U_nodes[i] = self.U
         self.U_hot_nodes[i] = self.U_hot
         self.U_cold_nodes[i] = self.U_cold
 
-        self.tem.power_nodes[i] = self.tem.P * self.leg_pairs
-        self.tem.eta_nodes[i] = self.tem.eta
-        self.tem.h_nodes[i] = self.tem.h
+        self.te_pair.power_nodes[i] = self.te_pair.P * self.leg_pairs
+        self.te_pair.eta_nodes[i] = self.te_pair.eta
+        self.te_pair.h_nodes[i] = self.te_pair.h
 
         self.exh.velocity_nodes[i] = self.exh.velocity
 
@@ -342,28 +341,28 @@ class HX(object):
 	scipy.optimize.fmin to find optimal set of input parameters."""
 	# unpack guess vector
 	apar=np.asarray(apar)
-	self.tem.leg_ratio     = apar[0]
-	self.tem.fill_fraction = apar[1]
-	self.tem.length        = apar[2]
-	self.tem.I             = apar[3]
+	self.te_pair.leg_ratio     = apar[0]
+	self.te_pair.fill_fraction = apar[1]
+	self.te_pair.length        = apar[2]
+	self.te_pair.I             = apar[3]
 
 	# reset surrogate variables
-	self.tem.Ntype.area = self.tem.leg_ratio * self.tem.Ptype.area
-	self.tem.area_void = ( (1. - self.tem.fill_fraction) /
-	self.tem.fill_fraction * (self.tem.Ptype.area + self.tem.Ntype.area)
+	self.te_pair.Ntype.area = self.te_pair.leg_ratio * self.te_pair.Ptype.area
+	self.te_pair.area_void = ( (1. - self.te_pair.fill_fraction) /
+	self.te_pair.fill_fraction * (self.te_pair.Ptype.area + self.te_pair.Ntype.area)
 	)
 	self.set_constants()
 	self.solve_hx()
 
 	# 1/power_net 
-	return 1. / (self.tem.power_total)
+	return 1. / (self.te_pair.power_total)
 
     def optimize(self):
 	"""Uses fmin to find optimal set of:
 	I) tem.leg_ratio
 	II) tem.fill_fraction
-	III) hx.tem.length
-	IV) hx.tem.I
+	III) hx.te_pair.length
+	IV) hx.te_pair.I
 	based on minimizing the inverse of power.  This may be a bad
 	method if net power is negative.
 
@@ -371,13 +370,13 @@ class HX(object):
 	
 	time.clock()
 
-	self.tem.method = 'analytical'
+	self.te_pair.method = 'analytical'
 	self.xmin1 = fmin(self.get_inv_power, self.x0)
 	t1 = time.clock() 
 	print """xmin1 found. Switching to numerical model.
 	Elapsed time solving xmin1 =""", t1
 
-	self.tem.method = 'numerical'
+	self.te_pair.method = 'numerical'
 	self.xmin2 = fmin(self.get_inv_power, self.xmin1)
 	t2 = time.clock() - t1
 	print """xmin2 found.

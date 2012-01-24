@@ -25,19 +25,19 @@ hx_ducts0.width = 30.e-2
 # hx_ducts0.exh.bypass = 0.
 hx_ducts0.exh.height = 3.5e-2
 hx_ducts0.length = 1.
-hx_ducts0.tem.I = current
-hx_ducts0.tem.length = length
+hx_ducts0.te_pair.I = current
+hx_ducts0.te_pair.length = length
 
-hx_ducts0.tem.Ntype.material = 'MgSi'
-hx_ducts0.tem.Ptype.material = 'HMS'
+hx_ducts0.te_pair.Ntype.material = 'MgSi'
+hx_ducts0.te_pair.Ptype.material = 'HMS'
 
-hx_ducts0.tem.Ptype.area = area                           
-hx_ducts0.tem.Ntype.area = hx_ducts0.tem.Ptype.area * area_ratio
-hx_ducts0.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_ducts0.tem.Ptype.area +
-                            hx_ducts0.tem.Ntype.area) )  
+hx_ducts0.te_pair.Ptype.area = area                           
+hx_ducts0.te_pair.Ntype.area = hx_ducts0.te_pair.Ptype.area * area_ratio
+hx_ducts0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_ducts0.te_pair.Ptype.area +
+                            hx_ducts0.te_pair.Ntype.area) )  
 
-# hx_ducts0.tem.method = 'analytical'
+# hx_ducts0.te_pair.method = 'analytical'
 hx_ducts0.type = 'counter'
 
 hx_ducts0.exh.T_inlet = 800.
@@ -62,7 +62,7 @@ hx_ducts0.height = ( ducts * hx_ducts0.exh.height + (ducts + 1) *
 hx_ducts0.cool.T_outlet = fsolve(hx_ducts0.get_T_inlet_error, x0=hx_ducts0.cool.T_outlet) 
     
 hx_ducts0.Qdot = hx_ducts0.Qdot * ducts
-hx_ducts0.tem.power = hx_ducts0.tem.power_total * ducts
+hx_ducts0.te_pair.power = hx_ducts0.te_pair.power_total * ducts
 hx_ducts0.power_net = hx_ducts0.power_net * ducts
 hx_ducts0.Wdot_pumping = hx_ducts0.Wdot_pumping * ducts
 
@@ -82,8 +82,8 @@ plt.close('all')
 
 plt.figure()
 plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.tem.T_h_nodes, '-g', label='TEM Hot Side')
-plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.tem.T_c_nodes, '-k', label='TEM Cold Side')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.te_pair.T_h_nodes, '-g', label='TE_PAIR Hot Side')
+plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.te_pair.T_c_nodes, '-k', label='TE_PAIR Cold Side')
 plt.plot(hx_ducts0.x_dim * 100., hx_ducts0.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')

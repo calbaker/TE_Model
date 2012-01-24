@@ -9,15 +9,15 @@ import os
 
 # User Defined Modules
 # In this directory
-import tem
-reload(tem)
+import te_pair
+reload(te_pair)
 
-Ntype = tem.Leg()
+Ntype = te_pair.Leg()
 Ntype.material = 'ex1 n-type'
 Ntype.T_h_goal = 750.
 Ntype.T_c = 400.
 
-Ptype = tem.Leg()
+Ptype = te_pair.Leg()
 Ptype.material = 'ex1 p-type'
 Ptype.area = (0.01)**2 # area (m^2)
 Ptype.T_h_goal = 750.

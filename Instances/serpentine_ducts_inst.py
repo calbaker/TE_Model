@@ -23,14 +23,14 @@ hx.width = 30.e-2
 hx.exh.bypass = 0.
 hx.exh.height = 3.5e-2
 hx.length = 1.
-hx.tem.I = 5.
-hx.tem.length = length
-hx.tem.Ntype.material = 'MgSi'
-hx.tem.Ntype.area = area
-hx.tem.Ptype.material = 'HMS'
-hx.tem.Ptype.area = area * 2. 
-hx.tem.area_void = 150. * area
-hx.tem.method = 'analytical'
+hx.te_pair.I = 5.
+hx.te_pair.length = length
+hx.te_pair.Ntype.material = 'MgSi'
+hx.te_pair.Ntype.area = area
+hx.te_pair.Ptype.material = 'HMS'
+hx.te_pair.Ptype.area = area * 2. 
+hx.te_pair.area_void = 150. * area
+hx.te_pair.method = 'analytical'
 hx.type = 'parallel'
 # hx.exh.enhancement = "straight fins"
 # hx.exh.fin.thickness = 5.e-3
@@ -46,7 +46,7 @@ hx.solve_hx() # solving once to initialize variables that are used
 
 ducts = sp.arange(1, 15, 1)
 hx.Qdot_array = sp.zeros(sp.size(ducts))
-hx.tem.power_array = sp.zeros(sp.size(ducts)) 
+hx.te_pair.power_array = sp.zeros(sp.size(ducts)) 
 hx.power_net_array = sp.zeros(sp.size(ducts))
 hx.Wdot_pumping_array = sp.zeros(sp.size(ducts)) 
 
@@ -62,7 +62,7 @@ for i in sp.arange(sp.size(ducts)):
     hx.solve_hx()
     
     hx.Qdot_array[i] = hx.Qdot 
-    hx.tem.power_array[i] = hx.tem.power_total
+    hx.te_pair.power_array[i] = hx.te_pair.power_total
     hx.power_net_array[i] = hx.power_net 
     hx.Wdot_pumping_array[i] = hx.Wdot_pumping 
     
@@ -92,7 +92,7 @@ XTICKS[0] = ''
 fig = plt.figure()
 ax1 = fig.add_axes(FIGDIM1)
 ax1.plot(ducts, hx.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
-ax1.plot(ducts, hx.tem.power_array, 'og', label='TEM')
+ax1.plot(ducts, hx.te_pair.power_array, 'og', label='TE_PAIR')
 ax1.plot(ducts, hx.power_net_array, 'sr', label='$P_{net}$')  
 ax1.plot(ducts, hx.Wdot_pumping_array, '*k', label='Pumping')
 ax1.legend(loc='best')

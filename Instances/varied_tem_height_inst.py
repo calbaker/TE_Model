@@ -9,13 +9,13 @@ import os
 
 # User Defined Modules
 # In this directory
-import tem
-reload(tem)
+import te_pair
+reload(te_pair)
 
 I = 22. # current (amps)
 area = (0.01)**2
 
-Ntype = tem.Leg()
+Ntype = te_pair.Leg()
 Ntype.material = 'MgSi'
 Ntype.set_prop_fit()
 Ntype.area = area
@@ -23,7 +23,7 @@ Ntype.T_h_goal = 750.
 Ntype.T_c = 400.
 Ntype.I = I
 
-Ptype = tem.Leg()
+Ptype = te_pair.Leg()
 Ptype.material = 'HMS'
 Ptype.set_prop_fit()
 Ptype.area = area * 22./14.

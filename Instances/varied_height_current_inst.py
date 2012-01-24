@@ -14,8 +14,8 @@ import hx
 
 # User Defined Modules
 # In this directory
-import tem
-reload(tem)
+import te_pair
+reload(te_pair)
 
 I = 22. # current (amps)
 area = (0.02)**2
@@ -23,7 +23,7 @@ area = (0.02)**2
 T_h_goal = 650.
 T_c = 310.
 
-Ntype = tem.Leg()
+Ntype = te_pair.Leg()
 Ntype.node = 0
 Ntype.method = 'numerical'
 Ntype.material = 'MgSi'
@@ -33,7 +33,7 @@ Ntype.T_h_goal = T_h_goal
 Ntype.T_c = T_c
 Ntype.I = I
 
-Ptype = tem.Leg()
+Ptype = te_pair.Leg()
 Ptype.node = 0
 Ptype.method = 'numerical'
 Ptype.material = 'HMS'

@@ -29,19 +29,19 @@ hx_ducts.width = 30.e-2
 # hx_ducts.exh.bypass = 0.
 hx_ducts.exh.height = 3.5e-2
 hx_ducts.length = 1.
-hx_ducts.tem.I = current
-hx_ducts.tem.length = length
+hx_ducts.te_pair.I = current
+hx_ducts.te_pair.length = length
 
-hx_ducts.tem.Ntype.material = 'MgSi'
-hx_ducts.tem.Ptype.material = 'HMS'
+hx_ducts.te_pair.Ntype.material = 'MgSi'
+hx_ducts.te_pair.Ptype.material = 'HMS'
 
-hx_ducts.tem.Ptype.area = area                           
-hx_ducts.tem.Ntype.area = hx_ducts.tem.Ptype.area * area_ratio
-hx_ducts.tem.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_ducts.tem.Ptype.area +
-                            hx_ducts.tem.Ntype.area) )  
+hx_ducts.te_pair.Ptype.area = area                           
+hx_ducts.te_pair.Ntype.area = hx_ducts.te_pair.Ptype.area * area_ratio
+hx_ducts.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
+                           (hx_ducts.te_pair.Ptype.area +
+                            hx_ducts.te_pair.Ntype.area) )  
 
-# hx_ducts.tem.method = 'analytical'
+# hx_ducts.te_pair.method = 'analytical'
 hx_ducts.type = 'counter'
 
 hx_ducts.exh.T_inlet = 800.
@@ -72,9 +72,9 @@ def get_height(height):
 
     hx_ducts.height = ( (ducts + 1.) * (2. * hx_ducts.plate.thickness
     + hx_ducts.cool.height) + ducts * hx_ducts.exh.height +
-    hx_ducts.tem.length * 2. * ducts )
+    hx_ducts.te_pair.length * 2. * ducts )
 
-    total = 5.5e-2 + 6. * hx_ducts.plate.thickness + hx_ducts.tem.length * 2. 
+    total = 5.5e-2 + 6. * hx_ducts.plate.thickness + hx_ducts.te_pair.length * 2. 
 
     error = hx_ducts.height - total
 
@@ -92,7 +92,7 @@ hx_ducts.cool.T_inlet_array = np.zeros(len(hx_ducts.height_array))
 
 # Initializing arrays for storing loop results.  
 hx_ducts.Qdot_array = np.zeros(hx_ducts.ducts.size)
-hx_ducts.tem.power_array = np.zeros(np.size(hx_ducts.ducts)) 
+hx_ducts.te_pair.power_array = np.zeros(np.size(hx_ducts.ducts)) 
 hx_ducts.power_net_array = np.zeros(np.size(hx_ducts.ducts))
 hx_ducts.Wdot_pumping_array = np.zeros(np.size(hx_ducts.ducts)) 
 
@@ -111,7 +111,7 @@ for i in np.arange(np.size(hx_ducts.ducts)):
     print "Finished solving for", hx_ducts.ducts[i], "ducts\n"
     
     hx_ducts.Qdot_array[i] = hx_ducts.Qdot * hx_ducts.ducts[i]
-    hx_ducts.tem.power_array[i] = hx_ducts.tem.power_total * hx_ducts.ducts[i]
+    hx_ducts.te_pair.power_array[i] = hx_ducts.te_pair.power_total * hx_ducts.ducts[i]
     hx_ducts.power_net_array[i] = hx_ducts.power_net * hx_ducts.ducts[i]
     hx_ducts.Wdot_pumping_array[i] = hx_ducts.Wdot_pumping * hx_ducts.ducts[i]
     
@@ -140,7 +140,7 @@ XTICKS[0] = ''
 fig = plt.figure()
 ax1 = fig.add_axes(FIGDIM1)
 ax1.plot(hx_ducts.ducts, hx_ducts.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
-ax1.plot(hx_ducts.ducts, hx_ducts.tem.power_array, 'og', label='TEM')
+ax1.plot(hx_ducts.ducts, hx_ducts.te_pair.power_array, 'og', label='TE_PAIR')
 ax1.plot(hx_ducts.ducts, hx_ducts.power_net_array, 'sr', label='$P_{net}$')  
 ax1.plot(hx_ducts.ducts, hx_ducts.Wdot_pumping_array, '*k', label='Pumping')
 ax1.legend(loc='best')
