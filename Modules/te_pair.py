@@ -75,7 +75,12 @@ class Leg(object):
             self.set_q_c_guess()
             self.q_c = fsolve(self.get_T_h_error_numerical,
             x0=self.q_c_guess, xtol=self.xtol)  
-            self.error = self.get_T_h_error_numerical(self.q_c) 
+            # the previous line runs get_T_h_error_numerical with the
+            # correct value of q_c so there is no need to run it
+            # again.  In addition, get_T_h_error_numerical runs the
+            # finite difference method that solves for the
+            # temperature, heat flux, and power flux profile in the
+            # leg.  
             self.V = self.V_segment.sum()
             self.P = self.P_flux_segment.sum() * self.area
             # Power for the entire leg (W)
