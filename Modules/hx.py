@@ -205,7 +205,8 @@ class HX(object):
 
         self.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
         self.T_guess = self.T_guess.reshape(2)
-        self.T_arr = fsolve(self.get_error, x0=self.T_guess)
+        self.T_arr = fsolve(self.get_error, x0=self.T_guess,
+        xtol=self.xtol) 
         self.te_pair.T_h_goal = self.T_arr[0]
         self.te_pair.T_c = self.T_arr[1]
         self.Qdot_node = -self.q_h * self.area
