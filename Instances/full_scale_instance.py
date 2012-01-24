@@ -2,7 +2,6 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import scipy as sp
 import matplotlib.pyplot as plt
 import os, sys
 from scipy.optimize import fsolve
@@ -54,7 +53,7 @@ hx_inst.cool.T_outlet = 310.
 
 hx_inst.set_mdot_charge()
 hx_inst.cool.T_outlet = fsolve(hx_inst.get_T_inlet_error, x0=hx_inst.cool.T_outlet)
-hx_inst.solve_hx()
+# hx_inst.solve_hx()
 
 print "\nProgram finished."
 print "\nPlotting..."

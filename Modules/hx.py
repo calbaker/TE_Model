@@ -204,10 +204,11 @@ class HX(object):
             self.tem.T_c = self.tem.T_c_nodes[i-1]
             self.tem.T_h_goal = self.tem.T_h_nodes[i-1] 
 
-        T_guess = np.array([self.tem.T_h_goal,self.tem.T_c])
-        T_arr = fsolve(self.get_error, x0=T_guess)
-        self.tem.T_h_goal = T_arr[0]
-        self.tem.T_c = T_arr[1]
+        self.T_guess = np.array([self.tem.T_h_goal,self.tem.T_c])
+        self.T_guess = self.T_guess.reshape(2)
+        self.T_arr = fsolve(self.get_error, x0=self.T_guess)
+        self.tem.T_h_goal = self.T_arr[0]
+        self.tem.T_c = self.T_arr[1]
         self.Qdot_node = -self.q_h * self.area
         # heat transfer on hot side of node, positive values indicates
         # heat transfer from hot to cold
@@ -399,7 +400,7 @@ class HX(object):
 
 	Inputs: hx instance and outlet coolant temperature"""
 
-	self.cool.T_outlet = T_outlet
+	self.cool.T_outlet = np.float(T_outlet)
 	self.solve_hx()
 	error = self.cool.T_inlet_set - self.cool.T_inlet
 	return error
