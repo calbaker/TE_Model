@@ -23,7 +23,7 @@ class JetArray(object):
         self.K = 0.5
         self.spacing = 0.01
         
-    def set_number(self, width, length):
+    def set_number(self):
         """Sets number of jets based on jet spacing and overall size
         of jet array.
 
