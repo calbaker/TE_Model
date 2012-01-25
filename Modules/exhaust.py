@@ -158,8 +158,8 @@ class Exhaust(prop.ideal_gas):
         elif self.enhancement == 'jet array':            
             self.k = self.k_air
             self.set_Re_dependents()
-            self.deltaP = ( self.f * self.perimeter * self.length /
-            self.area * (0.5*self.rho * self.velocity**2) * 0.001 ) 
+            self.deltaP_duct = ( self.f * self.perimeter * self.length
+            / self.area * (0.5 * self.rho * self.velocity**2) * 0.001 )  
             # pressure drop (kPa)
             self.total_height = self.jets.H * 2. + self.height
             self.jets.width = self.width
@@ -169,7 +169,14 @@ class Exhaust(prop.ideal_gas):
             self.jets.nu = self.nu 
             self.jets.Pr = self.Pr
             self.jets.solve_jet()
-            
+
+
+            self.deltaP_annulus = ( self.f * 2. *
+            self.jets.ann_perimeter * self.length / self.jets.ann_area
+            * (0.5 * self.rho * self.ann_velocity**2) * 0.001 ) 
+
+            self.deltaP = ( self.deltaP_duct + self.jets.deltaP +
+            self.deltaP_annulus ) 
             self.h = self.jets.Nu_D * self.k / self.jets.D 
             # coefficient of convection (kW/m^2-K)
 

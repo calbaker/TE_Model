@@ -42,6 +42,24 @@ class JetArray(object):
         self.N_transverse = self.width / self.spacing
         self.N = self.N_streamwise * self.N_transverse 
         
+    def set_annulus(self):
+        """Sets variables related to annulus geometry.
+
+        Requires
+        ---------------
+        self.width
+        self.Vdot
+
+        Sets
+        ---------------
+        self.ann_area
+        self.ann_perimeter
+        self.ann_velocity"""
+
+        self.ann_area = self.width * self.H
+        self.ann_perimeter = 2. * (self.width + self.H)
+        self.ann_velocity = self.Vdot / self.ann_area
+
     def set_flow(self):
         """Determines pressure drop through jet array. 
 
@@ -83,10 +101,12 @@ class JetArray(object):
     def solve_jet(self):
         """Runs the following methods:
         self.set_number
+        self.set_annulus
         self.set_flow
         self.set_Nu_D"""
         
         self.set_number()
+        self.set_annulus()
         self.set_flow()
         self.set_Nu_D()
         
