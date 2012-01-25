@@ -109,16 +109,19 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close('all')
 
+plt.figure()
 plt.plot(H * 100., power_net_H)
 plt.xlabel('Annular Duct Height (cm)')
 plt.ylabel('Net Power')
 plt.grid()
 
+plt.figure()
 plt.plot(D * 1000., power_net_D)
 plt.xlabel('Duct Diameter (mm)')
 plt.ylabel('Net Power')
 plt.grid()
 
+plt.figure()
 plt.plot(X * 100., power_net_X)
 plt.xlabel('Duct Spacing (cm)')
 plt.ylabel('Net Power')
