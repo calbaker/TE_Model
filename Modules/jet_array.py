@@ -63,12 +63,12 @@ class JetArray(object):
         self.h_loss = self.K * self.V**2 / 2.
         self.deltaP = self.h_loss * self.rho * 0.001
 
-    def set_Nu_Dbar(self):
+    def set_Nu_D(self):
         """Sets Nusselt number and some other variables
 
         Sets the following variables
         -------------------------
-        self.Nu_Dbar : average Nusselt number based on jet diameter
+        self.Nu_D : average Nusselt number based on jet diameter
         self.Re_D : Re based on jet diameter
         
         Variables that must be set to run this method
@@ -77,18 +77,18 @@ class JetArray(object):
         self.Pr : Prandtl number of fluid"""
 
         self.Re_D = self.V * self.D / self.nu
-        self.Nu_Dbar = ( 0.285 * self.Re_D**0.710 * self.Pr**0.33 *
+        self.Nu_D = ( 0.285 * self.Re_D**0.710 * self.Pr**0.33 *
         (self.H / self.D)**-0.123 * (self.spacing / self.D)**-0.725 )  
         
     def solve_jet(self):
         """Runs the following methods:
         self.set_number
         self.set_flow
-        self.set_Nu_Dbar"""
+        self.set_Nu_D"""
         
         self.set_number()
         self.set_flow()
-        self.set_Nu_Dbar()
+        self.set_Nu_D()
         
         
         
