@@ -78,7 +78,8 @@ def optim(apar):
 
     return 1. / hx_jets.power_net
 
-x0 = np.array([0.045, 0.005, 0.01])
+x0 = np.array([hx_jets.exh.jets.H, hx_jets.exh.jets.D,
+               hx_jets.exh.jets.spacing]) 
 
 t0 = time.clock()
 
