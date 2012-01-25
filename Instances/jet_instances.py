@@ -53,9 +53,16 @@ hx_jets.exh.T_inlet = 800.
 hx_jets.cool.T_inlet_set = 300.
 hx_jets.cool.T_outlet = 310.
 
-H = np.arange(15., 50.) * 0.001 
+H = np.arange(25., 70.) * 0.001 
 # range of annular height to be used for getting results
-power_net = np.zeros(H.size)
+D = np.arange(1., 20.) * 0.001
+# range of jet diameter
+X = np.arange(5., 20.) * 0.001
+# range of jet spacing
+
+power_net_H = np.zeros(H.size)
+power_net_D = np.zeros(D.size)
+power_net_X = np.zeros(X.size)
 
 hx_jets.set_mdot_charge()
 
@@ -63,7 +70,29 @@ for i in range(H.size):
     hx_jets.exh.jets.H = H[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
-    power_net[i] = hx_jets.power_net
+    power_net_H[i] = hx_jets.power_net
+    print "loop 1, iteration", i, "of", H.size
+
+hx_jets.exh.jets.__init__()
+    
+for i in range(D.size):
+    hx_jets.exh.jets.D = D[i]
+    # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
+    hx_jets.solve_hx()
+    power_net_D[i] = hx_jets.power_net
+    print "loop 2, iteration", i, "of", D.size
+
+
+hx_jets.exh.jets.__init__()
+    
+for i in range(X.size):
+    hx_jets.exh.jets.X = X[i]
+    # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
+    hx_jets.solve_hx()
+    power_net_X[i] = hx_jets.power_net
+    print "loop 3, iteration", i, "of", X.size
+
+hx_jets.exh.jets.__init__()
     
 
 print "\nProgram finished."
@@ -80,8 +109,18 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close('all')
 
-plt.plot(H * 100., power_net)
+plt.plot(H * 100., power_net_H)
 plt.xlabel('Annular Duct Height (cm)')
+plt.ylabel('Net Power')
+plt.grid()
+
+plt.plot(D * 1000., power_net_D)
+plt.xlabel('Duct Diameter (mm)')
+plt.ylabel('Net Power')
+plt.grid()
+
+plt.plot(X * 100., power_net_X)
+plt.xlabel('Duct Spacing (cm)')
 plt.ylabel('Net Power')
 plt.grid()
 
