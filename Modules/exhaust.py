@@ -12,6 +12,8 @@ import functions
 reload(functions)
 import fin
 reload(fin)
+import jet_array
+reload(jet_array)
 
 class Exhaust(prop.ideal_gas):
     """Class for modeling convection and flow of engine exhaust
@@ -35,11 +37,15 @@ class Exhaust(prop.ideal_gas):
         self.PPI : pores per inch for porous media in Mancin model
         self.K : default permeability (m^2) of porous metal foam, used
         in Bejan model  
-        self.fin : instance of _Fin class
         self.Nu_coeff : coefficient used in Nusselt number calculation
+
+        self.fin : instance of fin.Fin class
+        self.jets : instance of jet_array.JetArray class 
+
         
-        Binds the following methods:
+        Binds the following methods from functions.py:
         set_flow_geometry
+        set_Re
         set_Re_dependents
         
         Also initializes super class"""
@@ -56,8 +62,10 @@ class Exhaust(prop.ideal_gas):
         self.k_matrix = 5.8e-3
         self.PPI = 10.
         self.K = 2.e-7
-        self.fin = fin.Fin() 
         self.Nu_coeff = 0.023
+
+        self.fin = fin.Fin() 
+        self.jets = jet_array.JetArray()
 
         self.set_flow_geometry = (
         types.MethodType(functions.set_flow_geometry, self) )
@@ -146,6 +154,24 @@ class Exhaust(prop.ideal_gas):
             self.deltaP = ( self.f * self.flow_perimeter * self.length
         / self.flow_area * (0.5*self.rho * self.velocity**2) * 0.001 )  
         # pressure drop (kPa)
+
+        elif self.enhancement == 'jet array':            
+            self.k = self.k_air
+            self.set_Re_dependents()
+            self.deltaP = ( self.f * self.perimeter * self.length /
+            self.area * (0.5*self.rho * self.velocity**2) * 0.001 ) 
+            # pressure drop (kPa)
+            self.total_height = self.jets.H * 2. + self.height
+            self.jets.width = self.width
+            self.jets.length = self.length
+            self.jets.rho = self.rho
+            self.jets.Vdot = self.Vdot 
+            self.jets.nu = self.nu 
+            self.jets.Pr = self.Pr
+            self.jets.solve_jet()
+            
+            self.h = self.jets.Nu_D * self.k / self.jets.D 
+            # coefficient of convection (kW/m^2-K)
 
         elif self.enhancement == 'none':            
             self.k = self.k_air
