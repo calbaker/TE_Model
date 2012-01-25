@@ -4,8 +4,9 @@
 # Distribution Modules
 import matplotlib.pyplot as plt
 import os, sys
-from scipy.optimize import fsolve
+from scipy.optimize import fsolve, fmin
 import numpy as np
+import time
 
 # User Defined Modules
 
@@ -53,37 +54,56 @@ hx_jets.exh.T_inlet = 800.
 hx_jets.cool.T_inlet_set = 300.
 hx_jets.cool.T_outlet = 310.
 
-H = np.arange(15., 50.) * 0.001 
-# range of annular height to be used for getting results
-power_net = np.zeros(H.size)
-
 hx_jets.set_mdot_charge()
 
-for i in range(H.size):
-    hx_jets.exh.jets.H = H[i]
-    # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
+def optim(apar):
+    """Returns power_net as a function of the optimization parameters
+    of interest.
+
+    Arguments
+    -------------
+    apar[0] : hx_jets.exh.jets.H, height annulus between jet and
+    impinging surface
+    apar[1] : hx_jets.exh.jets.D, jet diameter
+    apar[2] : hx_jets.exh.jets.spacing, distance between adjacent jets 
+    """
+    hx_jets.exh.jets.H = apar[0] 
+    hx_jets.exh.jets.D = apar[1]
+    hx_jets.exh.jets.spacing = apar[2]
+
+    hx_jets.set_constants()
     hx_jets.solve_hx()
-    power_net[i] = hx_jets.power_net
-    
 
-print "\nProgram finished."
-print "\nPlotting..."
+    return hx_jets.power_net
 
-# Plot configuration
-FONTSIZE = 20
-plt.rcParams['axes.labelsize'] = FONTSIZE
-plt.rcParams['axes.titlesize'] = FONTSIZE
-plt.rcParams['legend.fontsize'] = FONTSIZE
-plt.rcParams['xtick.labelsize'] = FONTSIZE
-plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 1.5
+x0 = np.array([0.015, 0.005, 0.01])
 
-plt.close('all')
+t0 = time.clock()
 
-plt.plot(H * 100., power_net)
-plt.xlabel('Annular Duct Height (cm)')
-plt.ylabel('Net Power')
-plt.grid()
+# Find min using downhill simplex algorithm
+xmin1 = fmin(optim, x0)
+t1 = time.clock() - t0
 
-plt.show()
+print "xmin1 =", xmin1
+print "power_net =", hx_jets.power_net 
+
+print "Switching to numerical model."
+print "Elapsed time solving xmin1:", t1 
+
+# Find min again using the numerical model.  The analytical model
+# should run first to provide a better initial guess.
+hx.te_pair.method = 'numerical'
+
+xmin2 = fmin(optim, xmin1)
+t2 = time.clock() - t1
+
+print "xmin2 =", xmin2
+print "power_net =", hx_jets.power_net 
+
+print "Elapsed time solving xmin2:", t2
+
+t = time.clock() - t0
+
+print """Total elapsed time =""", t
+
 
