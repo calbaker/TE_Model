@@ -67,16 +67,19 @@ def optim(apar):
     apar[1] : hx_jets.exh.jets.D, jet diameter
     apar[2] : hx_jets.exh.jets.spacing, distance between adjacent jets 
     """
+    apar = np.asarray(apar)
+
     hx_jets.exh.jets.H = apar[0] 
-    hx_jets.exh.jets.D = apar[1]
-    hx_jets.exh.jets.spacing = apar[2]
+    # hx_jets.exh.jets.D = apar[1]
+    # hx_jets.exh.jets.spacing = apar[2]
 
     hx_jets.set_constants()
     hx_jets.solve_hx()
 
-    return hx_jets.power_net
+    return 1. / hx_jets.power_net
 
-x0 = np.array([0.015, 0.005, 0.01])
+x0 = np.array([0.045, 0.005, 0.01])
+x0 = 0.015
 
 t0 = time.clock()
 
