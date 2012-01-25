@@ -173,7 +173,7 @@ class Exhaust(prop.ideal_gas):
 
             self.deltaP_annulus = ( self.f * 2. *
             self.jets.ann_perimeter * self.length / self.jets.ann_area
-            * (0.5 * self.rho * self.ann_velocity**2) * 0.001 ) 
+            * (0.5 * self.rho * self.jets.ann_velocity**2) * 0.001 ) 
 
             self.deltaP = ( self.deltaP_duct + self.jets.deltaP +
             self.deltaP_annulus ) 
