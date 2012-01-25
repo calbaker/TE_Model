@@ -12,16 +12,14 @@ class JetArray(object):
         -------------------------
         self.D : jet diameter (m)
         self.H : distance (m) from jet exit to impingement surface
-        self.l : thickness (m) of the orifice plate
         self.K : minor loss coefficient. Fox, McDonald, and Pritchard
         Table 8.2.
         self.spacing : distance (m) between adjacent jets"""
         
-        self.D = 0.005
-        self.H = 0.01 
-        self.l = 0.005
+        self.D = 2.e-3
+        self.H = 5.5e-2
         self.K = 0.5
-        self.spacing = 0.01
+        self.spacing = 1.1e-2
         
     def set_number(self):
         """Sets number of jets based on jet spacing and overall size
