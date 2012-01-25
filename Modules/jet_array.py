@@ -33,13 +33,13 @@ class JetArray(object):
         self.N_transverse : number of jets in transverse direction
         self.N : total number of jets in array
 
-        Arguments
+        Variables that must be set to run this method
         ---------
-        width : width (m) of jet array in transverse direction
-        length : length (m) of jet array in streamwise direction""" 
+        self.width : width (m) of jet array in transverse direction
+        self.length : length (m) of jet array in streamwise direction""" 
 
-        self.N_streamwise = length / self.spacing
-        self.N_transverse = width / self.spacing
+        self.N_streamwise = self.length / self.spacing
+        self.N_transverse = self.width / self.spacing
         self.N = self.N_streamwise * self.N_transverse 
         
     def set_flow(self):
