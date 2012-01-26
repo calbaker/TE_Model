@@ -56,7 +56,7 @@ class JetArray(object):
 
         self.ann_area = self.width * self.H
         self.ann_perimeter = 2. * (self.width + self.H)
-        self.ann_velocity = self.Vdot / self.ann_area
+        self.ann_velocity = self.Vdot / self.ann_area / 2. 
 
     def set_flow(self):
         """Determines pressure drop through jet array. 
