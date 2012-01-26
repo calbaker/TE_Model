@@ -78,24 +78,28 @@ def optim(apar):
 
     return 1. / hx_jets.power_net
 
+def fprime():
+    """dummy function"""
+    return 1
+
 x0 = np.array([5.5e-2, 2.e-3, 1.6e-2]) 
 # initial guess for fmin
 
-xb = [(2.5e-2, 7.e-2),(1.e-3, 4.e-3), (5.e-3, 3.e-2)]
+xb = [(2.5e-2, 7.e-2),(2.e-3, 4.e-3), (5.e-3, 3.e-2)]
 
 t0 = time.clock()
 
 # Find min using downhill simplex algorithm
 #xmin1 = fmin(optim, x0)
-xmin1 = fmin_tnc(optim, x0=x0, bounds=xb)
+xmin1 = fmin_tnc(optim,x0,fprime,approx_grad=True,bounds=xb)
 
 t1 = time.clock() - t0
 
 print "xmin1 =", xmin1
 print "power_net =", hx_jets.power_net 
 
-# print "Switching to numerical model."
-# print "Elapsed time solving xmin1:", t1 
+print "Switching to numerical model."
+print "Elapsed time solving xmin1:", t1 
 
 # # Find min again using the numerical model.  The analytical model
 # # should run first to provide a better initial guess.
