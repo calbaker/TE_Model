@@ -9,14 +9,15 @@ class Fin(object):
 
     def __init__(self):
         """Sets constants and things that need to be guessed to
-        execute as a standalone model."""
-        self.thickness = 1.e-3
-        # fin thickness (m)
+        execute as a standalone model.
+
+        Sets
+        ------------------
+        self.thickness : thickness (m) of fin
+        self.k : thermal conductivity (kW/m-K) of fin material"""
+
+        self.thickness = 5.e-3
         self.k = 0.2
-        # thermal conductivity (kW/m-K) of fin material
-        # self.h = 0.2 
-        # heat transfer coefficient (kW/m^2-K).  This can be updated
-        # from Exhaust.
 
     def set_eta(self):
         """Determines fin efficiency"""
