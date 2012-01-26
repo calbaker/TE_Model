@@ -4,7 +4,7 @@
 # Distribution Modules
 import matplotlib.pyplot as plt
 import os, sys
-from scipy.optimize import fsolve, fmin, fminbound
+from scipy.optimize import fsolve, fmin_tnc
 import numpy as np
 import time
 
