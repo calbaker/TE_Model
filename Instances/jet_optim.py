@@ -81,15 +81,14 @@ def optim(apar):
 x0 = np.array([5.5e-2, 2.e-3, 1.6e-2]) 
 # initial guess for fmin
 
-x1 = np.array([2.5e-2, 1.e-3, 5.e-3])
-# minimum bound for fminbound
-x2 = np.array([7.e-2, 4.e-3, 3.e-2])
+xb = [(2.5e-2, 7.e-2),(1.e-3, 4.e-3), (5.e-3, 3.e-2)]
 
 t0 = time.clock()
 
 # Find min using downhill simplex algorithm
 #xmin1 = fmin(optim, x0)
-xminbound1 = fminbound(optim, x1, x2)
+xmin1 = fmin_tnc(optim, x0=x0, bounds=xb)
+
 t1 = time.clock() - t0
 
 print "xmin1 =", xmin1
