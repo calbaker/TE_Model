@@ -49,4 +49,14 @@ class Harmonica(object):
         self.fix_geometry()
         self.hx1.solve_hx()
 
-        self.hx2.exh.T_inlet = self.hx1.exh.T_outlet
+        self.hx2.exh.T_inlet = self.hx1.exh.T_nodes.mean()
+        self.hx2.exh.fins = 65
+        self.set_mdot_charge()
+        self.hx2.solve_hx()
+
+        self.Wdot_pumping = ( self.hx1.Wdot_pumping +
+        self.hx2.Wdot_pumping ) 
+        self.power_total = ( self.hx1.te_pair.power_total +
+        self.hx2.te_pair.power_total ) 
+        self.power_net = self.power_total - self.Wdot_pumping
+        
