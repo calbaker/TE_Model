@@ -4,7 +4,7 @@
 # Distribution Modules
 import matplotlib.pyplot as plt
 import os, sys
-from scipy.optimize import fsolve, fmin
+from scipy.optimize import fsolve, fmin, fminbound
 import numpy as np
 import time
 
@@ -78,35 +78,40 @@ def optim(apar):
 
     return 1. / hx_jets.power_net
 
-x0 = np.array([hx_jets.exh.jets.H, hx_jets.exh.jets.D,
-               hx_jets.exh.jets.spacing]) 
+x0 = np.array([5.5e-2, 2.e-3, 1.6e-2]) 
+# initial guess for fmin
+
+x1 = np.array([2.5e-2, 1.e-3, 5.e-3])
+# minimum bound for fminbound
+x2 = np.array([7.e-2, 4.e-3, 3.e-2])
 
 t0 = time.clock()
 
 # Find min using downhill simplex algorithm
-xmin1 = fmin(optim, x0)
+#xmin1 = fmin(optim, x0)
+xminbound1 = fminbound(optim, x1, x2)
 t1 = time.clock() - t0
 
 print "xmin1 =", xmin1
 print "power_net =", hx_jets.power_net 
 
-print "Switching to numerical model."
-print "Elapsed time solving xmin1:", t1 
+# print "Switching to numerical model."
+# print "Elapsed time solving xmin1:", t1 
 
-# Find min again using the numerical model.  The analytical model
-# should run first to provide a better initial guess.
-hx.te_pair.method = 'numerical'
+# # Find min again using the numerical model.  The analytical model
+# # should run first to provide a better initial guess.
+# hx.te_pair.method = 'numerical'
 
-xmin2 = fmin(optim, xmin1)
-t2 = time.clock() - t1
+# xmin2 = fmin(optim, xmin1)
+# t2 = time.clock() - t1
 
-print "xmin2 =", xmin2
-print "power_net =", hx_jets.power_net 
+# print "xmin2 =", xmin2
+# print "power_net =", hx_jets.power_net 
 
-print "Elapsed time solving xmin2:", t2
+# print "Elapsed time solving xmin2:", t2
 
-t = time.clock() - t0
+# t = time.clock() - t0
 
-print """Total elapsed time =""", t
+# print """Total elapsed time =""", t
 
 
