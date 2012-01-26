@@ -16,10 +16,10 @@ class JetArray(object):
         Table 8.2.
         self.spacing : distance (m) between adjacent jets"""
         
-        self.D = 2.e-3
+        self.D = 2.4e-3
         self.H = 5.5e-2
         self.K = 0.5
-        self.spacing = 1.1e-2
+        self.spacing = 1.3e-2
         
     def set_number(self):
         """Sets number of jets based on jet spacing and overall size
