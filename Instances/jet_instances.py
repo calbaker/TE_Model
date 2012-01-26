@@ -55,7 +55,7 @@ hx_jets.cool.T_outlet = 310.
 
 H = np.linspace(4., 8., 25) * 1e-2
 # range of annular height to be used for getting results
-D = np.linspace(1, 4., 26) * 0.001
+D = np.linspace(2, 4., 26) * 0.001
 # range of jet diameter
 X = np.linspace(5., 20., 26) * 0.001
 # range of jet spacing
@@ -68,8 +68,8 @@ hx_jets.set_mdot_charge()
 
 def set_values():
     hx_jets.exh.jets.H = 5.5e-2
-    hx_jets.exh.jets.D = 2.e-3
-    hx_jets.exh.jets.spacing = 1.6e-2
+    hx_jets.exh.jets.D = 2.4e-3
+    hx_jets.exh.jets.spacing = 1.3e-2
 
 set_values()
 

@@ -85,13 +85,13 @@ def fprime():
 x0 = np.array([5.5e-2, 2.e-3, 1.6e-2]) 
 # initial guess for fmin
 
-xb = [(2.5e-2, 7.e-2),(2.e-3, 4.e-3), (5.e-3, 3.e-2)]
+xb = [(2.0e-2, 7.e-2),(2.0e-3, 4.e-3), (5.e-3, 1.5e-2)]
 
 t0 = time.clock()
 
 # Find min using downhill simplex algorithm
 #xmin1 = fmin(optim, x0)
-xmin1 = fmin_tnc(optim,x0,fprime,approx_grad=True,bounds=xb)
+xmin1 = fmin_tnc(optim,x0,fprime,approx_grad=True,bounds=xb,xtol=0.01)
 
 t1 = time.clock() - t0
 
