@@ -30,6 +30,7 @@ class JetArray(object):
         self.N_streamwise : number of jets in streamwise direction
         self.N_transverse : number of jets in transverse direction
         self.N : total number of jets in array
+        self.area : area (m^2) of a jet unit cell
 
         Variables that must be set to run this method
         ---------
@@ -39,6 +40,7 @@ class JetArray(object):
         self.N_streamwise = self.length / self.spacing
         self.N_transverse = self.width / self.spacing
         self.N = self.N_streamwise * self.N_transverse 
+        self.area = self.spacing**2 
         
     def set_annulus(self):
         """Sets variables related to annulus geometry.
@@ -63,7 +65,7 @@ class JetArray(object):
 
         Sets the following variables
         -------------------------------
-        self.area : flow area (m^2) for single jet 
+        self.flow_area : flow area (m^2) for single jet 
         self.V : velocity through jet orifice (m/s)
         self.h_loss : head loss (m^2/s^2) through jet orifice
         self.deltaP : pressure drop (kPa) thorugh jet orifice
@@ -74,8 +76,8 @@ class JetArray(object):
         self.Vdot : volume flow rate (m^3/s) of fluid passing through jet
         array""" 
 
-        self.area = np.pi * self.D**2 / 4. 
-        self.V = self.Vdot / (self.area * self.N) 
+        self.flow_area = np.pi * self.D**2 / 4. 
+        self.V = self.Vdot / (self.flow_area * self.N) 
         self.h_loss = self.K * self.V**2 / 2.
         self.deltaP = self.h_loss * self.rho * 0.001
 
