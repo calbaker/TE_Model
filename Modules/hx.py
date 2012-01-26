@@ -49,10 +49,14 @@ class HX(object):
         self.init_arrays()
 
     def init_arrays(self):
-        # initializing arrays for tracking variables at nodes
+        """Initializes a whole bunch of arrays for storing node
+        values."""
+
         ZEROS = np.zeros(self.nodes)
         self.Qdot_nodes = ZEROS.copy()
         # initialize array for storing heat transfer (kW) in each node 
+        
+        self.exh.Vdot_nodes = ZEROS.copy()
 
         self.exh.T_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
@@ -300,6 +304,7 @@ class HX(object):
         happens in every node."""
         self.Qdot_nodes[i] = self.Qdot_node
         # storing node heat transfer in array
+        self.exh.Vdot_nodes[i] = self.exh.Vdot
         self.q_h_nodes[i] = self.q_h
         self.q_c_nodes[i] = self.q_c
         self.te_pair.q_h_nodes[i] = self.te_pair.q_h
