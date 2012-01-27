@@ -68,7 +68,6 @@ class Harmonica(object):
         self.width = self.hx1.width + 2. * self.hx2.length 
 
         self.hx2.exh.T_inlet = self.hx1.exh.T_nodes.mean()
-        self.hx2.exh.fins = 65
         self.hx2.set_mdot_charge()
         self.hx2.solve_hx()
 
