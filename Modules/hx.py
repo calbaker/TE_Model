@@ -46,7 +46,6 @@ class HX(object):
         self.cummins = engine.Engine()
 
         self.fix_geometry()
-        self.init_arrays()
 
     def init_arrays(self):
         """Initializes a whole bunch of arrays for storing node
@@ -219,6 +218,8 @@ class HX(object):
             
     def solve_hx(self,**kwargs): # solve parallel flow heat exchanger
         """solves for performance of entire HX"""
+
+        self.init_arrays()
         if 'verbose' in kwargs:
             self.verbose = kwargs['verbose']
         else:
