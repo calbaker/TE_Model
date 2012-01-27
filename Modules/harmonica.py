@@ -52,9 +52,11 @@ class Harmonica(object):
         same where appropriate."""  
         
         self.hx1.height = self.height
+        self.hx1.exh.height = self.height
         self.hx1.length = self.length
         self.hx2.width = self.hx1.length
         self.hx2.height = self.hx1.height
+        self.hx2.exh.height = self.hx1.height
 
     def solve_harmonica(self):
         """Solves both hx instances and sums the result."""
@@ -62,6 +64,8 @@ class Harmonica(object):
         self.fix_geometry()
         self.hx1.set_mdot_charge()
         self.hx1.solve_hx()
+
+        self.width = self.hx1.width + 2. * self.hx2.length 
 
         self.hx2.exh.T_inlet = self.hx1.exh.T_nodes.mean()
         self.hx2.exh.fins = 65

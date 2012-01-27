@@ -18,14 +18,22 @@ hohner = harmonica.Harmonica()
 hohner.hx1.te_pair.method = 'analytical'
 hohner.hx2.te_pair.method = 'analytical'
 
+hohner.height = 2.e-2
+hohner.hx2.length = 0.1
+hohner.hx2.exh.fins = 1000.
+hohner.hx2.exh.enhancement = 'none'
 
-height = np.linspace(1,5,25) * 1e-2
+height = np.linspace(1,5,10) * 1e-2
 power_net = np.zeros(height.size)
 
 for i in range(height.size):
+    if i%5 == 0:
+        print "Solving node", i, "of", height.size
     hohner.height = height[i]
     hohner.solve_harmonica()
-    power_net = hohner.power_net
+    power_net[i] = hohner.power_net
+
+print power_net.max()
     
 # Plot configuration
 FONTSIZE = 20

@@ -18,7 +18,9 @@ hohner = harmonica.Harmonica()
 hohner.hx1.te_pair.method = 'analytical'
 hohner.hx2.te_pair.method = 'analytical'
 
-hohner.height = 3.e-2
+hohner.height = 2.e-2
+hohner.hx2.length = 0.1
+hohner.hx2.exh.fins = 100.
 
 hohner.solve_harmonica()
 
