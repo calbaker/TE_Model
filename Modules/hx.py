@@ -302,11 +302,11 @@ class HX(object):
         self.exh.entropy0)) * self.exh.mdot ) 
         # availability (kJ/kg) of exhaust
 
-        self.cool.enthalpy_nodes = ( self.cool.c_p_nodes *
-        (self.cool.T_nodes - self.T0) + self.cool.enthalpy0) 
+        self.cool.enthalpy_nodes = ( self.cool.c_p *
+        (self.cool.T_nodes - self.T0) + self.cool.enthalpy0)  
         # enthalpy (kJ/kg*K) of coolant
-        self.cool.entropy_nodes = ( self.cool.c_p_nodes *
-        np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 ) 
+        self.cool.entropy_nodes = ( self.cool.c_p *
+        np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 )  
 
         self.cool.availability_flow_nodes = (
         (self.cool.enthalpy_nodes - self.cool.enthalpy0 - self.T0 *
