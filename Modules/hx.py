@@ -63,6 +63,8 @@ class HX(object):
         # initializing array for storing temperature (K) in each node 
         self.exh.h_nodes = ZEROS.copy()
         self.exh.f_nodes = ZEROS.copy()
+        self.exh.deltaP_nodes = ZEROS.copy()
+        self.exh.Wdot_nodes = ZEROS.copy()
         self.exh.Nu_nodes = ZEROS.copy()
         self.exh.c_p_nodes = ZEROS.copy()
         self.exh.entropy_nodes = ZEROS.copy()
@@ -70,10 +72,6 @@ class HX(object):
 
         self.cool.T_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
-        self.cool.h_nodes = ZEROS.copy()
-        self.cool.f_nodes = ZEROS.copy()
-        self.cool.Nu_nodes = ZEROS.copy()
-        self.cool.c_p_nodes = ZEROS.copy()
         self.cool.entropy_nodes = ZEROS.copy()
         self.cool.enthalpy_nodes = ZEROS.copy()
 
@@ -126,11 +124,17 @@ class HX(object):
 
     def fix_geometry(self):
         """Makes sure that common geometry like width and length is
-        the same between exh, cool, and the overal heat exchanger."""
+        the same between exh, cool, and the overal heat exchanger.
+
+        Notes: Exhaust duct length is equal to node_length because
+        everything about the exhaust is evaluated in each node, but
+        coolant duct length is equal to total length because the
+        coolant has constant properties throughout the hx."""
+
         self.cool.width = self.width
         self.cool.length = self.length
         self.exh.width = self.width
-        self.exh.length = self.length
+        self.exh.length = self.length / self.nodes 
 
     def set_mdot_charge(self):
         """Sets exhaust mass flow rate. Eventually, this should be a
@@ -275,6 +279,7 @@ class HX(object):
         # heat exchanger effectiveness
         self.te_pair.power_total = self.te_pair.power_nodes.sum()
         # total TE power output (kW)
+        self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
         self.Wdot_pumping = ( self.exh.Wdot_pumping +
         self.cool.Wdot_pumping ) 
         # total pumping power requirement (kW) 
@@ -314,7 +319,7 @@ class HX(object):
         happens in every node."""
         self.Qdot_nodes[i] = self.Qdot_node
         # storing node heat transfer in array
-        self.exh.Vdot_nodes[i] = self.exh.Vdot
+
         self.q_h_nodes[i] = self.q_h
         self.q_c_nodes[i] = self.q_c
         self.te_pair.q_h_nodes[i] = self.te_pair.q_h
@@ -323,18 +328,20 @@ class HX(object):
         self.error_cold_nodes[i] = self.error_cold
 
         self.exh.T_nodes[i] = self.exh.T
-        self.exh.h_nodes[i] = self.exh.h
+
+        self.exh.Vdot_nodes[i] = self.exh.Vdot
         self.exh.f_nodes[i] = self.exh.f
+        self.exh.deltaP_nodes[i] = self.exh.deltaP
+        self.exh.Wdot_nodes[i] = self.exh.Wdot_pumping
+
         self.exh.Nu_nodes[i] = self.exh.Nu_D
         self.exh.c_p_nodes[i] = self.exh.c_p 
+        self.exh.h_nodes[i] = self.exh.h
+
         self.exh.entropy_nodes[i] = self.exh.entropy
         self.exh.enthalpy_nodes[i] = self.exh.enthalpy
 
-        self.cool.h_nodes[i] = self.cool.h
         self.cool.T_nodes[i] = self.cool.T
-        self.cool.f_nodes[i] = self.cool.f
-        self.cool.Nu_nodes[i] = self.cool.Nu_D
-        self.cool.c_p_nodes[i] = self.cool.c_p
 
         self.te_pair.T_h_nodes[i] = self.te_pair.T_h
         # hot side temperature (K) of TEM at each node 
