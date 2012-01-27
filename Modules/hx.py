@@ -247,7 +247,7 @@ class HX(object):
         for i in np.arange(self.nodes):
             if self.verbose == True:
                 print "\nSolving node", i
-            if self.arrangment == 'harmonica':
+            if self.arrangement == 'harmonica':
                 self.exh.mdot = self.exh.mdot[i]
             self.solve_node(i)
             self.store_node_values(i)

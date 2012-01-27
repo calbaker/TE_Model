@@ -2,10 +2,10 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-from scipy.optimize import fsolve
+from scipy.optimize import fsolve, fmin_tnc, fmin
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -16,8 +16,8 @@ import harmonica
 reload(harmonica)
 
 hohner = harmonica.Harmonica()
-
-hohner.height = 1.e-2
+hohner.hx1.te_pair.method = 'analytical'
+hohner.hx2.te_pair.method = 'analytical'
 
 hohner.solve_harmonica()
 
