@@ -4,7 +4,7 @@
 # Distribution Modules
 import matplotlib.pyplot as plt
 import os, sys
-from scipy.optimize import fsolve, fmin_tnc
+from scipy.optimize import fsolve, fmin
 import numpy as np
 import time
 
@@ -76,7 +76,12 @@ def optim(apar):
     hx_jets.set_constants()
     hx_jets.solve_hx()
 
-    return 1. / hx_jets.power_net
+    if hx_jets.power_net <= 0:
+        minpar = 1.e3
+    else:
+        minpar = 1. / hx_jets.power_net
+
+    return minpar
 
 def fprime():
     """dummy function"""
@@ -90,8 +95,8 @@ xb = [(2.0e-2, 7.e-2),(2.0e-3, 4.e-3), (5.e-3, 1.5e-2)]
 t0 = time.clock()
 
 # Find min using downhill simplex algorithm
-#xmin1 = fmin(optim, x0)
-xmin1 = fmin_tnc(optim,x0,fprime,approx_grad=True,bounds=xb,xtol=0.01)
+xmin1 = fmin(optim, x0)
+# xmin1 = fmin_tnc(optim,x0,fprime,approx_grad=True,bounds=xb,xtol=0.01)
 
 t1 = time.clock() - t0
 
@@ -101,8 +106,8 @@ print "power_net =", hx_jets.power_net
 print "Switching to numerical model."
 print "Elapsed time solving xmin1:", t1 
 
-# # Find min again using the numerical model.  The analytical model
-# # should run first to provide a better initial guess.
+# Find min again using the numerical model.  The analytical model
+# should run first to provide a better initial guess.
 # hx.te_pair.method = 'numerical'
 
 # xmin2 = fmin(optim, xmin1)
