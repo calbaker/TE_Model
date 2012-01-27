@@ -44,7 +44,7 @@ hx_fins.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_fins.te_pair.Ptype.area +
                             hx_fins.te_pair.Ntype.area) )  
 
-# hx_fins.te_pair.method = "analytical"
+hx_fins.te_pair.method = "analytical"
 hx_fins.type = 'counter'
 hx_fins.exh.enhancement = "straight fins"
 hx_fins.exh.fin.thickness = 5.e-3
@@ -73,7 +73,7 @@ for i in np.arange(np.size(hx_fins.exh.fin_array)):
     hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error, x0=hx_fins.cool.T_outlet)
     hx_fins.power_net_array[i] = hx_fins.power_net
     hx_fins.Wdot_pumping_array[i] = hx_fins.Wdot_pumping
-    hx_fins.Qdot_array[i] = hx_fins.Qdot
+    hx_fins.Qdot_array[i] = hx_fins.Qdot_total
     hx_fins.te_pair.power_array[i] = hx_fins.te_pair.power_total
     hx_fins.exh.fin.spacings[i] = hx_fins.exh.fin.spacing
 
