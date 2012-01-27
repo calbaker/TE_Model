@@ -31,6 +31,7 @@ class Harmonica(object):
     
         self.hx1 = hx.HX()
         self.hx2 = hx.HX()
+        self.hx1.arrangement = 'harmonica'
 
         self.height = 1.e-2
         self.length = 1. 
