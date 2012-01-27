@@ -96,7 +96,6 @@ class HX(object):
         self.te_pair.eta_nodes = ZEROS.copy()
 
         self.exh.velocity_nodes = ZEROS.copy()
-        self.exh.mdot_nodes = ZEROS.copy()
 
     def setup(self):
         """Sets up variables that must be defined before running
@@ -244,7 +243,7 @@ class HX(object):
         self.te_pair.Ntype.set_prop_fit()
 
         if self.arrangement == 'harmonica':
-            self.exh.mdot_nodes = np.arange(self.nodes, 0, self.nodes
+            self.exh.mdot_nodes = np.linspace(self.nodes, 0, self.nodes
             + 1) / self.nodes * self.exh.mdot
 
         # for loop iterates of nodes of HX in streamwise direction
@@ -252,7 +251,7 @@ class HX(object):
             if self.verbose == True:
                 print "\nSolving node", i
             if self.arrangement == 'harmonica':
-                self.exh.mdot = self.exh.mdot[i]
+                self.exh.mdot = self.exh.mdot_nodes[i]
             self.solve_node(i)
             self.store_node_values(i)
 
@@ -280,10 +279,11 @@ class HX(object):
         self.te_pair.power_total = self.te_pair.power_nodes.sum()
         # total TE power output (kW)
         self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
-        self.Wdot_pumping = ( self.exh.Wdot_pumping +
-        self.cool.Wdot_pumping ) 
+        self.Wdot_pumping = ( self.exh.Wdot_total +
+        self.cool.Wdot_pumping )  
         # total pumping power requirement (kW) 
-        self.power_net = self.te_pair.power_total - self.Wdot_pumping 
+        self.power_net = ( self.te_pair.power_total -
+        self.Wdot_pumping ) 
         
         self.set_availability()
 
