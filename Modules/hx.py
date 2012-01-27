@@ -45,6 +45,8 @@ class HX(object):
         self.plate = platewall.PlateWall()
         self.cummins = engine.Engine()
 
+        self.arrangment = 'single'
+
         self.fix_geometry()
 
     def init_arrays(self):
@@ -96,6 +98,7 @@ class HX(object):
         self.te_pair.eta_nodes = ZEROS.copy()
 
         self.exh.velocity_nodes = ZEROS.copy()
+        self.exh.mdot_nodes = ZEROS.copy()
 
     def setup(self):
         """Sets up variables that must be defined before running
@@ -236,10 +239,16 @@ class HX(object):
         self.te_pair.Ptype.set_prop_fit()
         self.te_pair.Ntype.set_prop_fit()
 
+        if self.arangement == 'harmonica':
+            self.exh.mdot_nodes = np.arange(self.nodes, 0, self.nodes
+            + 1) / self.nodes * self.exh.mdot
+
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
             if self.verbose == True:
                 print "\nSolving node", i
+            if self.arrangment == 'harmonica':
+                self.exh.mdot = self.exh.mdot[i]
             self.solve_node(i)
             self.store_node_values(i)
 
