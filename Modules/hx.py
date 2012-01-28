@@ -130,7 +130,7 @@ class HX(object):
         coolant duct length is equal to total length because the
         coolant has constant properties throughout the hx."""
 
-        if self.arrangement != 'harmonica':
+        if self.arrangement != 'harmonica2':
             self.cool.width = self.width
             self.cool.length = self.length
         self.exh.width = self.width

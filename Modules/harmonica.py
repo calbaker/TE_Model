@@ -5,7 +5,7 @@
 import time
 import numpy as np
 import matplotlib.pyplot as mpl
-from scipy.optimize import fsolve,fmin
+from scipy.optimize import fmin
 
 # User Defined Modules
 # In this directory
@@ -25,13 +25,13 @@ class Harmonica(object):
         ------------------
         self.height : height (m) of harmonica hx
         self.length : overall length (m) of harmonica hx
-        self.hx2.exh.enhancement : see self.exh.__doc__
         self.hx2.length : length (m) of side-flow hx
         self.hx2.nodes : number of nodes in hx2"""
     
         self.hx1 = hx.HX()
         self.hx2 = hx.HX()
         self.hx1.arrangement = 'harmonica'
+        self.hx2.arrangement = 'harmonica2'
 
         self.height = 1.e-2
         self.length = 1. 
@@ -42,7 +42,6 @@ class Harmonica(object):
         self.hx1.type = 'parallel'
         self.hx2.type = 'parallel'
 
-        self.hx2.exh.enhancement = "straight fins"
         self.hx2.length = 0.05
         self.hx2.nodes = 5
         
@@ -61,7 +60,6 @@ class Harmonica(object):
     def solve_harmonica(self):
         """Solves both hx instances and sums the result."""
         
-        self.fix_geometry()
         self.hx1.set_mdot_charge()
         self.hx1.solve_hx()
 
@@ -71,9 +69,10 @@ class Harmonica(object):
         self.hx2.set_mdot_charge()
         self.hx2.solve_hx()
 
+        self.Qdot = ( self.hx1.Qdot_total + 2. * self.hx2.Qdot_total )  
         self.Wdot_pumping = ( self.hx1.Wdot_pumping +
-        self.hx2.Wdot_pumping ) 
+                              2. * self.hx2.Wdot_pumping ) 
         self.power_total = ( self.hx1.te_pair.power_total +
-        self.hx2.te_pair.power_total ) 
+                             2. * self.hx2.te_pair.power_total ) 
         self.power_net = self.power_total - self.Wdot_pumping
         
