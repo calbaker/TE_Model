@@ -31,6 +31,8 @@ hx_ducts0.te_pair.length = length
 hx_ducts0.te_pair.Ntype.material = 'MgSi'
 hx_ducts0.te_pair.Ptype.material = 'HMS'
 
+area = 0.002**2
+
 hx_ducts0.te_pair.Ptype.area = area                           
 hx_ducts0.te_pair.Ntype.area = hx_ducts0.te_pair.Ptype.area * area_ratio
 hx_ducts0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
