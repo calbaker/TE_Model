@@ -23,7 +23,6 @@ class Harmonica(object):
 
         Sets
         ------------------
-        self.height : height (m) of harmonica hx
         self.length : overall length (m) of harmonica hx
         self.hx2.length : length (m) of side-flow hx
         self.hx2.nodes : number of nodes in hx2"""
@@ -33,7 +32,6 @@ class Harmonica(object):
         self.hx1.arrangement = 'harmonica'
         self.hx2.arrangement = 'harmonica2'
 
-        self.height = 1.e-2
         self.length = 1. 
         self.hx1.exh.T_inlet = 800.
         self.hx1.cool.T_inlet = 300. 
