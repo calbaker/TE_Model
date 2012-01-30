@@ -18,18 +18,32 @@ hohner = harmonica.Harmonica()
 hohner.hx1.te_pair.method = 'analytical'
 hohner.hx2.te_pair.method = 'analytical'
 
-hohner.height = 2.e-2
-hohner.hx2.length = 0.1
-hohner.hx2.exh.fins = 1000.
-hohner.hx2.exh.enhancement = 'none'
+hohner.length = 0.5
 
-height = np.linspace(1,5,10) * 1e-2
-power_net = np.zeros(height.size)
+hohner.hx1.length = hohner.length
 
-for i in range(height.size):
+hohner.hx1.exh.height = 5.e-2
+hohner.hx1.width = 5.e-2
+
+hohner.hx2.width = hohner.hx1.length
+
+hohner.hx2.cool.width = hohner.hx1.cool.width
+hohner.hx2.cool.length = hohner.hx1.cool.length
+
+hohner.hx2.length = 35.e-2
+hohner.hx2.exh.height = 5.e-2
+
+hohner.hx2.exh.enhancement = 'straight fins'
+hohner.hx2.exh.fin.thickness = 0.001
+hohner.hx2.exh.fins = 200.
+
+indvar = np.arange(150,250,1) 
+power_net = np.zeros(indvar.size)
+
+for i in range(indvar.size):
     if i%5 == 0:
-        print "Solving node", i, "of", height.size
-    hohner.height = height[i]
+        print "iteration", i, "of", indvar.size
+    hohner.hx2.exh.fins = indvar[i]
     hohner.solve_harmonica()
     power_net[i] = hohner.power_net
 
@@ -51,8 +65,8 @@ plt.rcParams['figure.subplot.top'] = 0.9
 plt.close('all')
 
 plt.figure()
-plt.plot(height * 100., power_net)
-plt.xlabel("Exhaust duct height (cm)")
+plt.plot(indvar, power_net)
+plt.xlabel("Interesting Independent Variable")
 plt.ylabel("Net power (kW)")
 plt.grid()
 

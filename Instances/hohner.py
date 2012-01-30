@@ -18,11 +18,11 @@ hohner = harmonica.Harmonica()
 hohner.hx1.te_pair.method = 'analytical'
 hohner.hx2.te_pair.method = 'analytical'
 
-hohner.length = 0.5
+hohner.length = 1. 
 
 hohner.hx1.length = hohner.length
 
-hohner.hx1.exh.height = 4.e-2
+hohner.hx1.exh.height = 10.e-2
 hohner.hx1.width = 10.e-2
 
 hohner.hx2.width = hohner.hx1.length
@@ -30,12 +30,12 @@ hohner.hx2.width = hohner.hx1.length
 hohner.hx2.cool.width = hohner.hx1.cool.width
 hohner.hx2.cool.length = hohner.hx1.cool.length
 
-hohner.hx2.length = 35.e-2
-hohner.hx2.exh.height = 4.e-2
+hohner.hx2.length = 20.e-2
+hohner.hx2.exh.height = 10.e-2
 
 hohner.hx2.exh.enhancement = 'straight fins'
 hohner.hx2.exh.fin.thickness = 0.001
-hohner.hx2.exh.fins = 200.
+hohner.hx2.exh.fins = 200
 
 hohner.solve_harmonica()
 
@@ -51,6 +51,9 @@ print "------"
 print "harmonica power:", hohner.power_total * 1.e3 
 print "hx1 power:", hohner.hx1.te_pair.power_total * 1.e3
 print "hx2 power:", hohner.hx2.te_pair.power_total * 1.e3
-
+print "------"
 print "outlet temperature:", hohner.hx2.exh.T_outlet
+print "------"
+print "volume", hohner.length * hohner.width * hohner.hx1.exh.height 
+print "hx2 volume", hohner.hx2.length * hohner.hx2.width * hohner.hx2.exh.height 
 
