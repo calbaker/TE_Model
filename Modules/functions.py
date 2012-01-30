@@ -7,9 +7,9 @@ def set_flow_geometry(self,width):
     geometry stuff."""
     self.perimeter = 2.*(self.height + width) 
     # wetted perimeter (m) of flow
-    self.area = self.height * width # cross-section area (m^2) of
+    self.flow_area = self.height * width # cross-section area (m^2) of
         # exhaust flow
-    self.D = 4. * self.area / self.perimeter
+    self.D = 4. * self.flow_area / self.perimeter
     # coolant hydraulic diameter (m)
 
 def set_Re_dependents(self):
