@@ -61,16 +61,16 @@ class Harmonica(object):
         self.hx1.set_mdot_charge()
         self.hx1.solve_hx()
 
-        self.width = self.hx1.width + 2. * self.hx2.length 
+        self.width = self.hx1.width + hx2.length 
 
         self.hx2.exh.T_inlet = self.hx1.exh.T_nodes.mean()
         self.hx2.set_mdot_charge()
         self.hx2.solve_hx()
 
-        self.Qdot = ( self.hx1.Qdot_total + 2. * self.hx2.Qdot_total )  
+        self.Qdot = ( self.hx1.Qdot_total + self.hx2.Qdot_total )  
         self.Wdot_pumping = ( self.hx1.Wdot_pumping +
-                              2. * self.hx2.Wdot_pumping ) 
+                              self.hx2.Wdot_pumping ) 
         self.power_total = ( self.hx1.te_pair.power_total +
-                             2. * self.hx2.te_pair.power_total ) 
+                             self.hx2.te_pair.power_total ) 
         self.power_net = self.power_total - self.Wdot_pumping
         
