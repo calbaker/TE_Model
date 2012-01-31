@@ -13,6 +13,8 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
+import enhancement
+reload(enhancement)
 
 area = (0.002)**2
 leg_length = 3.27e-4
@@ -21,9 +23,9 @@ area_ratio = 0.683
 fill_fraction = 2.38e-2
 
 hx_osf = hx.HX()
-hx_osf.width = 30.e-2
-hx_osf.exh.height = 3.5e-2
-hx_osf.length = 1.
+hx_osf.width = 1.
+hx_osf.exh.height = 2.5e-2
+hx_osf.length = 40.e-2
 hx_osf.te_pair.I = current
 hx_osf.te_pair.length = leg_length
 
@@ -38,9 +40,7 @@ hx_osf.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 
 hx_osf.te_pair.method = 'analytical'
 hx_osf.type = 'counter'
-hx_osf.exh.enhancement = "straight fins"
-hx_osf.exh.fin.thickness = 5.e-3
-hx_osf.exh.fins = 32
+hx_osf.exh.enhancement = enhancement.OffsetStripFin()
 
 hx_osf.exh.T_inlet = 800.
 hx_osf.cool.T_inlet_set = 300.
@@ -73,9 +73,14 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 plt.legend(loc='center left')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('../Plots/temp '+hx_osf.type+str(hx_osf.exh.fins)+'.png')
-plt.savefig('../Plots/temp '+hx_osf.type+str(hx_osf.exh.fins)+'.pdf')
 
 # plt.show()
 
-print hx_osf.power_net
+print "power net:", hx_osf.power_net * 1000., 'kW'
+print "power raw:", hx_osf.te_pair.power_total * 1000., 'kW'
+print "pumping power:", hx_osf.Wdot_pumping * 1000., 'kW'
+hx_osf.exh.volume = hx_osf.exh.height * hx_osf.exh.width * hx_osf.length
+print "exhaust volume:", hx_osf.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_osf.power_net / hx_osf.exh.volume, 'kW/m^3'
+
+
