@@ -216,6 +216,7 @@ class OffsetStripFin(object):
 
         self.t = 0.001
         self.l = 0.01
+        self.s = 0.001
 
     def set_params(self,exh):
         """Sets parameters used to calculate friction factor and
@@ -238,7 +239,6 @@ class OffsetStripFin(object):
         more stuff that needs to be documented"""
         
         self.h = exh.height - self.t
-        self.s = 0.001
 
         self.alpha = self.s / self.h
         self.delta = self.t / self.l
