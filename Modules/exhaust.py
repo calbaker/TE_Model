@@ -88,7 +88,7 @@ class Exhaust(prop.ideal_gas):
             # coefficient of convection (kW/m^2-K)
 
         else:
-            self.solve_enhancement()
+            self.solve_enhancement(self)
 
         self.Wdot_pumping = self.Vdot * self.deltaP 
         # pumping power (kW)

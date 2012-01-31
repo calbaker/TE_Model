@@ -21,6 +21,18 @@ class BejanPorous(object):
         self.K = 2.e-7
         self.Nu_D = 6. 
     
+    def solve_enhancement(self,exh):
+        self.Re_K = self.velocity * self.K**0.5 / self.nu 
+        # Re based on permeability from Bejan Eq. 12.11    
+        self.f = 1. / self.Re_K + 0.55 # Darcy Law, Bejan
+        # Eq. 12.14.  It turns out that f is pretty close to 0.55 
+        self.k = self.k_matrix
+        self.deltaP = ( self.f * self.perimeter * self.length /
+                    self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )   
+        # pressure drop (kPa) 
+        self.h = self.Nu_D * self.k / self.D 
+        # coefficient of convection (kW/m^2-K)
+        
 class MancinPorous(object):            
     """Class for modeling porous media according to Mancin."""
 
@@ -34,6 +46,25 @@ class MancinPorous(object):
         self.k = self.k_matrix
         self.Nu_D = 4.93
         # Nu for porous media parallel plates with T_w = const.  Bejan Eq. 12.77
+
+    def solve_enhancement(self):
+        self.G = self.rho * self.velocity 
+        # Mass velocity from Mancin et al.
+        self.D_pore = 0.0122 * self.PPI**(-0.849) 
+        # hydraulic diameter (m?) of porous media based on Mancin
+        # et al.  
+        self.Re_K = ( self.D_pore * self.G / (self.mu * self.porosity) )
+        # Re of porous media from Mancin et al.
+        self.F = ( (1.765 * self.Re_K**(-0.1014) * self.porosity**2 /
+                    self.PPI**(0.6)) ) 
+        # friction factor from Mancin et al. 
+        self.f = self.F 
+        # possibly wrong assignment but gets code to shut up and run 
+        self.deltaP = ( self.length * 2. * self.F * self.G**2 /
+                        (self.D_pore * self.rho) * 0.001 )  
+        # pressure drop from Mancin et al.
+        self.h = self.Nu_D * self.k_matrix / self.D 
+        # coefficient of convection (kW/m^2-K)
 
 class IdealFin(object):
     """Class for modeling fin.  This class finds the necessary fin
@@ -160,6 +191,12 @@ class JetArray(object):
         self.Nu_D = ( 0.285 * self.Re_D**0.710 * self.Pr**0.33 *
         (self.H / self.D)**-0.123 * (self.spacing / self.D)**-0.725 )  
         
+    def solve_enhancement(self,exh):
+        self.set_number()
+        self.set_annulus()
+        self.set_flow()
+        self.set_Nu_D()
+
 class OffsetStripFin(object):
     """Class for modeling offset strip fins. Uses correlations from:
  
@@ -223,10 +260,7 @@ class OffsetStripFin(object):
         self.Re_D**1.340 * self.alpha**0.504 * self.delta**0.456 *
         self.gamma**-1.055)**0.1 ) 
 
-def solve_flow(self):
-    
-    if ( isinstance(self.enhancement, enhancement.OffsetStripFin) ==
-        True: ) 
+    def sovlve_enhancement(self,exh):
         self.set_params()
         self.set_f()
         self.deltaP = ( self.f * self.perimeter * self.length /
@@ -237,39 +271,3 @@ def solve_flow(self):
                    self.Pr**0.667 )
         self.Nu_D = self.h * self.D / self.k
     
-    if isinstance(self.enhancement, enhancement.BejanPorous) == True: 
-        self.Re_K = self.velocity * self.K**0.5 / self.nu 
-        # Re based on permeability from Bejan Eq. 12.11    
-        self.f = 1. / self.Re_K + 0.55 # Darcy Law, Bejan
-        # Eq. 12.14.  It turns out that f is pretty close to 0.55 
-        self.k = self.k_matrix
-        self.deltaP = ( self.f * self.perimeter * self.length /
-                    self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )   
-        # pressure drop (kPa) 
-        self.h = self.Nu_D * self.k / self.D 
-        # coefficient of convection (kW/m^2-K)
-        
-    if isinstance(self.enhancement, enhancement.MancinPorous) == True:
-        self.G = self.rho * self.velocity 
-        # Mass velocity from Mancin et al.
-        self.D_pore = 0.0122 * self.PPI**(-0.849) 
-        # hydraulic diameter (m?) of porous media based on Mancin
-        # et al.  
-        self.Re_K = ( self.D_pore * self.G / (self.mu * self.porosity) )
-        # Re of porous media from Mancin et al.
-        self.F = ( (1.765 * self.Re_K**(-0.1014) * self.porosity**2 /
-                    self.PPI**(0.6)) ) 
-        # friction factor from Mancin et al. 
-        self.f = self.F 
-        # possibly wrong assignment but gets code to shut up and run 
-        self.deltaP = ( self.length * 2. * self.F * self.G**2 /
-                        (self.D_pore * self.rho) * 0.001 )  
-        # pressure drop from Mancin et al.
-        self.h = self.Nu_D * self.k_matrix / self.D 
-        # coefficient of convection (kW/m^2-K)
-
-    if isinstance(self.enhancement, enhancement.JetArray) == True:
-        self.set_number()
-        self.set_annulus()
-        self.set_flow()
-        self.set_Nu_D()
