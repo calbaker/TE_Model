@@ -34,7 +34,7 @@ class Transient_HX(hx.HX):
         self.plate_hot.solve_transient(self.exh.T, T_h)
         # hot side heat flux coming from plate into TE devices
         self.tem.T_h_goal = T_h
-        self.tem.solve_tem()
+        self.tem.solve_te_pair()
         self.error_hot = (self.plate_hot.q_c - self.tem.q_h) / self.tem.q_h
         return self.error_hot
 
@@ -96,7 +96,7 @@ class Transient_HX(hx.HX):
 	# guess at cold side tem temperature (K)
 	self.tem.T_h_goal = self.exh.T
 	# guess at hot side TEM temperature (K)
-	self.tem.solve_tem()
+	self.tem.solve_te_pair()
 	self.set_convection()
 	self.q = self.U * (self.cool.T - self.exh.T)
 	self.tem.T_h_goal = self.q / self.U_hot + self.exh.T
@@ -112,7 +112,7 @@ class Transient_HX(hx.HX):
 
             self.tem.T_h_goal = spopt.fsolve(self.get_error_hot_trans,
     x0=self.tem.T_h_goal)
-            # self.tem.solve_tem()
+            # self.tem.solve_te_pair()
 
             self.tem.T_c = spopt.fsolve(self.get_error_cold,
     x0=self.tem.T_c)

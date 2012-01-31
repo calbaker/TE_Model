@@ -179,7 +179,7 @@ class TE_Pair(object):
         self.Ntype.method = self.method
         self.Ptype.method = self.method
 
-    def solve_tem(self):
+    def solve_te_pair(self):
         """solves legs and combines results of leg pair"""
         self.Ptype.T_h_goal = self.T_h_goal
         self.Ntype.T_h_goal = self.T_h_goal

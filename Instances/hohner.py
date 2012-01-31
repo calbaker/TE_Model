@@ -13,10 +13,13 @@ if cmd_folder not in sys.path:
 
 import harmonica
 reload(harmonica)
+import enhancement
+reload(enhancement)
 
 hohner = harmonica.Harmonica()
 hohner.hx1.te_pair.method = 'analytical'
 hohner.hx2.te_pair.method = 'analytical'
+hohner.hx2.exh.enhancement = enhancement.OffsetStripFin()
 
 hohner.length = 1. 
 
@@ -33,9 +36,6 @@ hohner.hx2.cool.length = hohner.hx1.cool.length
 hohner.hx2.length = 20.e-2
 hohner.hx2.exh.height = 10.e-2
 
-hohner.hx2.exh.enhancement = 'straight fins'
-hohner.hx2.exh.fin.thickness = 0.001
-hohner.hx2.exh.fins = 200
 
 hohner.solve_harmonica()
 

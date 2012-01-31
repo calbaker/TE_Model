@@ -176,14 +176,14 @@ class HX(object):
         T_h = T_h
         self.q_h = self.U_hot * (T_h - self.exh.T)
         self.te_pair.T_h_goal = T_h
-        self.te_pair.solve_tem()
+        self.te_pair.solve_te_pair()
         self.error_hot = (self.q_h - self.te_pair.q_h) / self.te_pair.q_h
 
         T_c = T_arr[1]
         T_c = T_c
         self.q_c = self.U_cold * (self.cool.T - T_c)
         self.te_pair.T_c = T_c
-        self.te_pair.solve_tem()
+        self.te_pair.solve_te_pair()
         self.error_cold = (self.q_c - self.te_pair.q_c) / self.te_pair.q_c
 
         self.error = np.array([self.error_hot, self.error_cold])
@@ -203,7 +203,7 @@ class HX(object):
             # guess at cold side tem temperature (K)
             self.te_pair.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
-            self.te_pair.solve_tem()
+            self.te_pair.solve_te_pair()
             self.set_convection()
             self.q = self.U * (self.cool.T - self.exh.T)
             self.te_pair.T_h_goal = self.q / self.U_hot + self.exh.T
