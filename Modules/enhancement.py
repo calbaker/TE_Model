@@ -238,7 +238,7 @@ class OffsetStripFin(object):
         more stuff that needs to be documented"""
         
         self.h = exh.height - self.t
-        self.s = self.h
+        self.s = 0.001
 
         self.alpha = self.s / self.h
         self.delta = self.t / self.l

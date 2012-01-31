@@ -133,6 +133,7 @@ class HX(object):
         if self.arrangement != 'harmonica2':
             self.cool.width = self.width
             self.cool.length = self.length
+
         self.exh.width = self.width
         self.exh.length = self.length / self.nodes 
 
