@@ -28,7 +28,7 @@ area_ratio = 0.705
 fill_fraction = 2.07e-2
 
 hx_inst = hx.HX()
-# hx_inst.te_pair.method = 'analytical'
+hx_inst.te_pair.method = 'analytical'
 hx_inst.width = 30.e-2
 hx_inst.exh.height = 3.5e-2
 hx_inst.cool.mdot = 1.
@@ -110,5 +110,9 @@ plt.savefig('../Plots/' + hx_inst.te_pair.method + '/' + 'availability.pdf')
 
 # plt.show()
 
-print hx_inst.power_net
-
+print "power net:", hx_inst.power_net * 1000., 'kW'
+print "power raw:", hx_inst.te_pair.power_total * 1000., 'kW'
+print "pumping power:", hx_inst.Wdot_pumping * 1000., 'kW'
+hx_inst.exh.volume = hx_inst.exh.height * hx_inst.exh.width * hx_inst.length
+print "exhaust volume:", hx_inst.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_inst.power_net / hx_inst.exh.volume, 'kW/m^3'
