@@ -41,6 +41,8 @@ hx_osf.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 hx_osf.te_pair.method = 'analytical'
 hx_osf.type = 'counter'
 hx_osf.exh.enhancement = enhancement.OffsetStripFin()
+hx_osf.exh.enhancement.t = 5.e-3
+hx_osf.exh.enhancement.s = 0.001
 
 hx_osf.exh.T_inlet = 800.
 hx_osf.cool.T_inlet_set = 300.
