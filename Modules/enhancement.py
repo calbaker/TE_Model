@@ -217,7 +217,7 @@ class OffsetStripFin(object):
         self.t = 0.001
         self.l = 0.01
 
-    def set_params(self):
+    def set_params(self,exh):
         """Sets parameters used to calculate friction factor and
         Colburn factor.  See Manglik and Bergles Fig. 1.
 
@@ -237,16 +237,17 @@ class OffsetStripFin(object):
 
         more stuff that needs to be documented"""
         
-        self.h = self.height - self.t
+        self.h = exh.height - self.t
         self.s = self.h
 
         self.alpha = self.s / self.h
         self.delta = self.t / self.l
         self.gamma = self.t / self.s 
+
         self.D = ( 4. * self.s * self.h * self.l / (2. * (self.s *
         self.l + self.h * self.l + self.t * self.h) + self.t * self.s)
         )
-        self.Re_D = self.velocity * self.D / self.nu
+        self.Re_D = exh.velocity * self.D / exh.nu
 
     def set_f(self):
         """Sets friction factor, f."""
@@ -260,14 +261,15 @@ class OffsetStripFin(object):
         self.Re_D**1.340 * self.alpha**0.504 * self.delta**0.456 *
         self.gamma**-1.055)**0.1 ) 
 
-    def sovlve_enhancement(self,exh):
-        self.set_params()
+    def solve_enhancement(self,exh):
+        self.set_params(exh)
         self.set_f()
-        self.deltaP = ( self.f * self.perimeter * self.length /
-                    self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )  
+        exh.f = self.f
+        exh.deltaP = ( self.f * exh.perimeter * exh.length /
+                    exh.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )  
         # pressure drop (kPa)
         self.set_j()
-        self.h = ( self.j * self.mdot / self.flow_area * self.c_p /
-                   self.Pr**0.667 )
-        self.Nu_D = self.h * self.D / self.k
+        exh.h = ( self.j * exh.mdot / exh.flow_area * exh.c_p /
+                   exh.Pr**0.667 )
+        exh.Nu_D = self.h * self.D / exh.k
     

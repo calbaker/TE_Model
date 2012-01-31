@@ -53,8 +53,6 @@ class Exhaust(prop.ideal_gas):
 
         self.Nu_coeff = 0.023
 
-        self.solve_enhancement = (
-        types.MethodType(enhancement.set_flow_geometry, self) )
         self.set_flow_geometry = (
         types.MethodType(functions.set_flow_geometry, self) )
         self.set_Re = (
@@ -88,7 +86,7 @@ class Exhaust(prop.ideal_gas):
             # coefficient of convection (kW/m^2-K)
 
         else:
-            self.solve_enhancement(self)
+            self.enhancement.solve_enhancement(self)
 
         self.Wdot_pumping = self.Vdot * self.deltaP 
         # pumping power (kW)
