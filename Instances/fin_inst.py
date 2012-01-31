@@ -21,9 +21,9 @@ area_ratio = 0.683
 fill_fraction = 2.38e-2
 
 hx_fins0 = hx.HX()
-hx_fins0.width = 30.e-2
+hx_fins0.width = 1.
 hx_fins0.exh.height = 3.5e-2
-hx_fins0.length = 1.
+hx_fins0.length = 0.3
 hx_fins0.te_pair.I = current
 hx_fins0.te_pair.length = leg_length
 
