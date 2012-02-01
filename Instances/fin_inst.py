@@ -13,6 +13,8 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
+import enhancement
+reload(enhancement)
 
 area = (0.002)**2
 leg_length = 3.27e-4
@@ -38,9 +40,10 @@ hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 
 hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
-hx_fins0.exh.enhancement = "straight fins"
-hx_fins0.exh.fin.thickness = 5.e-3
-hx_fins0.exh.fins = 32
+hx_fins0.exh.enhancement = enhancement.IdealFin()
+hx_fins0.exh.enhancement.thickness = 5.e-3
+# hx_fins0.exh.fins = 32 # this is deprecated and I need to work out
+# what it should be
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.
@@ -71,10 +74,10 @@ plt.xlabel('Distance Along HX (cm)')
 plt.ylabel('Temperature (K)')
 #plt.title('Temperature v. Distance, '+hx_fins0.type)
 plt.grid()
-plt.legend(loc='center left')
+# plt.legend(loc='center left')
 plt.subplots_adjust(bottom=0.15)
-plt.savefig('../Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.png')
-plt.savefig('../Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.pdf')
+# plt.savefig('../Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.png')
+# plt.savefig('../Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.pdf')
 
 # plt.show()
 
