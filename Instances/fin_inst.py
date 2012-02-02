@@ -1,3 +1,4 @@
+
 # Chad Baker
 # Created on 2011 Feb 10
 
@@ -23,9 +24,9 @@ area_ratio = 0.683
 fill_fraction = 2.38e-2
 
 hx_fins0 = hx.HX()
-hx_fins0.width = 1.
+hx_fins0.width = 0.3
 hx_fins0.exh.height = 3.5e-2
-hx_fins0.length = 0.3
+hx_fins0.length = 1.
 hx_fins0.te_pair.I = current
 hx_fins0.te_pair.length = leg_length
 
@@ -41,9 +42,8 @@ hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = enhancement.IdealFin()
-hx_fins0.exh.enhancement.thickness = 5.e-3
-# hx_fins0.exh.fins = 32 # this is deprecated and I need to work out
-# what it should be
+hx_fins0.exh.enhancement.thickness = 1.e-3
+hx_fins0.exh.enhancement.N = 1 
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.
@@ -81,4 +81,11 @@ plt.subplots_adjust(bottom=0.15)
 
 # plt.show()
 
-print hx_fins0.power_net
+print "power net:", hx_fins0.power_net * 1000., 'W'
+print "power raw:", hx_fins0.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx_fins0.Wdot_pumping * 1000., 'W'
+hx_fins0.exh.volume = hx_fins0.exh.height * hx_fins0.exh.width * hx_fins0.length
+print "exhaust volume:", hx_fins0.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_fins0.power_net / hx_fins0.exh.volume, 'kW/m^3'
+
+

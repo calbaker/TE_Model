@@ -83,29 +83,29 @@ class IdealFin(object):
         self.k = 0.2
         self.N = 32
 
-    def set_h(self,exh):
-        """Determines effective heat transfer coefficient of fin."""
-        self.h_base = ( 2. * self.eta * exh.h * exh.height /
-        self.thickness )
-        exh.h_unfinned = exh.h
-        exh.h = self.h_base
-
     def set_geometry(self,exh):
         """Fixes appropriate geometrical parameters."""
 
         self.height = exh.height / 2
         # height of fin pair such that their tips meet in the
         # middle and are adiabatic.  
-        self.length = exh.length
         self.spacing = ( (exh.width - self.N *  self.thickness) /
         (self.N + 1.) )  
-        exh.flow_perimeter = ( 2. * ((exh.width - self.N *
-        self.thickness) / (self.N + 1.) + exh.height) )   
+        exh.perimeter = ( 2. * ((exh.width - self.N *
+        self.thickness) / (self.N + 1.) + exh.height) * (self.N + 1.) )   
         # perimeter of new duct formed by fins with constant overal duct width
         exh.flow_area = ( (exh.width - self.N * self.thickness) /
-        (self.N + 1.) * exh.height )  
+        (self.N + 1.) * exh.height * (self.N + 1.) )  
         # flow area (m^2) of new duct formed by fin    
-        exh.D = 4. * exh.flow_area / exh.flow_perimeter
+        exh.D = 4. * exh.flow_area / exh.perimeter
+
+    def set_h(self,exh):
+        """Determines effective heat transfer coefficient of fin."""
+        self.h_base = ( 2. * self.eta * exh.h * exh.height /
+        self.thickness )
+        exh.h_unfinned = exh.h
+        exh.h = ( (self.N * self.h_base * self.thickness *
+        exh.node_length) + exh.h_unfinned * (
 
     def set_eta(self,exh):
         """Determines fin efficiency"""
@@ -114,14 +114,14 @@ class IdealFin(object):
         self.eta = ( np.tanh(self.m * self.height) / (self.m *
         self.height) ) 
 
-        exh.deltaP = ( exh.f * exh.perimeter * exh.length /
+        exh.deltaP = ( exh.f * exh.perimeter * exh.node_length /
         exh.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )    
         # pressure drop (kPa)
  
     def solve_enhancement(self,exh):
         """Runs all the other methods that need to run."""
         self.set_geometry(exh)
-        exh.k = exh.k_air
+        exh.velocity = exh.Vdot / exh.flow_area
         exh.set_Re_dependents()
         exh.h = exh.Nu_D * exh.k / exh.D
         # coefficient of convection (kW/m^2-K) 
