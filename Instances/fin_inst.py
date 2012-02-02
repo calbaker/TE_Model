@@ -42,8 +42,8 @@ hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = enhancement.IdealFin()
-hx_fins0.exh.enhancement.thickness = 1.e-3
-hx_fins0.exh.enhancement.N = 1 
+hx_fins0.exh.enhancement.thickness = 5.e-3
+hx_fins0.exh.enhancement.N = 32 
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.

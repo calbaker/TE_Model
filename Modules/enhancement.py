@@ -104,8 +104,10 @@ class IdealFin(object):
         self.h_base = ( 2. * self.eta * exh.h * exh.height /
         self.thickness )
         exh.h_unfinned = exh.h
-        exh.h = ( (self.N * self.h_base * self.thickness *
-        exh.node_length) + exh.h_unfinned * (
+
+        exh.h = ( (exh.h_unfinned * (exh.width - self.N *
+        self.thickness) + self.h_base * self.N * self.thickness) /
+        exh.width )  
 
     def set_eta(self,exh):
         """Determines fin efficiency"""
