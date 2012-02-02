@@ -76,35 +76,60 @@ class IdealFin(object):
         Sets
         ------------------
         self.thickness : thickness (m) of fin
-        self.k : thermal conductivity (kW/m-K) of fin material"""
+        self.k : thermal conductivity (kW/m-K) of fin material
+        self.N : number of fins in duct in spanwise direction"""
 
         self.thickness = 5.e-3
         self.k = 0.2
-
-    def set_eta(self,exh):
-        """Determines fin efficiency"""
-        exh.set_Re_dependents()
-        exh.deltaP = ( exh.f * exh.perimeter * exh.length /
-                        exh.flow_area * (0.5*exh.rho * exh.velocity**2) * 0.001 ) 
-        # pressure drop (kPa)
-        exh.h = exh.Nu_D * exh.k / exh.D 
-        # coefficient of convection (kW/m^2-K)
-        
-        self.m = np.sqrt(2. * exh.h / (self.k * self.thickness))
-        self.eta = ( np.tanh(self.m * exh.height) / (self.m *
-        exh.height) )
+        self.N = 32
 
     def set_h(self,exh):
         """Determines effective heat transfer coefficient of fin."""
-        self.set_eta(exh)
         self.h_base = ( 2. * self.eta * exh.h * exh.height /
         self.thickness )
         exh.h_unfinned = exh.h
         exh.h = self.h_base
 
+    def set_geometry(self,exh):
+        """Fixes appropriate geometrical parameters."""
+
+        self.height = exh.height / 2
+        # height of fin pair such that their tips meet in the
+        # middle and are adiabatic.  
+        self.length = exh.length
+        self.spacing = ( (exh.width - self.N *  self.thickness) /
+        (self.N + 1.) )  
+        exh.flow_perimeter = ( 2. * ((exh.width - self.N *
+        self.thickness) / (self.N + 1.) + exh.height) )   
+        # perimeter of new duct formed by fins with constant overal duct width
+        exh.flow_area = ( (exh.width - self.N * self.thickness) /
+        (self.N + 1.) * exh.height )  
+        # flow area (m^2) of new duct formed by fin    
+        exh.D = 4. * exh.flow_area / exh.flow_perimeter
+
+    def set_eta(self,exh):
+        """Determines fin efficiency"""
+        # maybe I need to reset velocity here. 
+        self.m = np.sqrt(2. * exh.h / (exh.k * self.thickness))
+        self.eta = ( np.tanh(self.m * self.height) / (self.m *
+        self.height) ) 
+
+        exh.deltaP = ( exh.f * exh.perimeter * exh.length /
+        exh.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )    
+        # pressure drop (kPa)
+ 
     def solve_enhancement(self,exh):
         """Runs all the other methods that need to run."""
+        self.set_geometry(exh)
+        exh.k = exh.k_air
+        exh.set_Re_dependents()
+        exh.h = exh.Nu_D * exh.k / exh.D
+        # coefficient of convection (kW/m^2-K) 
+        self.h = exh.h
+        self.set_eta(exh) 
         self.set_h(exh)
+        self.h = ( (self.h * (exh.width - self.N *  self.thickness) +
+        self.h_base * self.N * self.thickness) / exh.width )   
         
 class JetArray(object):
     """Class for modeling impinging jet array."""
