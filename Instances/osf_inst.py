@@ -24,8 +24,8 @@ fill_fraction = 2.38e-2
 
 hx_osf = hx.HX()
 hx_osf.width = 1.
-hx_osf.exh.height = 2.5e-2
-hx_osf.length = 40.e-2
+hx_osf.exh.height = 3.5e-2
+hx_osf.length = 0.3
 hx_osf.te_pair.I = current
 hx_osf.te_pair.length = leg_length
 
@@ -42,7 +42,7 @@ hx_osf.te_pair.method = 'analytical'
 hx_osf.type = 'counter'
 hx_osf.exh.enhancement = enhancement.OffsetStripFin()
 hx_osf.exh.enhancement.t = 5.e-3
-hx_osf.exh.enhancement.s = 0.001
+hx_osf.exh.enhancement.s = 0.004
 
 hx_osf.exh.T_inlet = 800.
 hx_osf.cool.T_inlet_set = 300.
@@ -63,6 +63,8 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
+plt.close()
+
 plt.figure()
 plt.plot(hx_osf.x * 100., hx_osf.exh.T_nodes, '-r', label='Exhaust')
 plt.plot(hx_osf.x * 100., hx_osf.te_pair.T_h_nodes, '-g', label='TE_PAIR Hot Side')
@@ -78,9 +80,9 @@ plt.subplots_adjust(bottom=0.15)
 
 # plt.show()
 
-print "power net:", hx_osf.power_net * 1000., 'kW'
-print "power raw:", hx_osf.te_pair.power_total * 1000., 'kW'
-print "pumping power:", hx_osf.Wdot_pumping * 1000., 'kW'
+print "power net:", hx_osf.power_net * 1000., 'W'
+print "power raw:", hx_osf.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx_osf.Wdot_pumping * 1000., 'W'
 hx_osf.exh.volume = hx_osf.exh.height * hx_osf.exh.width * hx_osf.length
 print "exhaust volume:", hx_osf.exh.volume * 1000., 'L'
 print "exhaust power density:", hx_osf.power_net / hx_osf.exh.volume, 'kW/m^3'
