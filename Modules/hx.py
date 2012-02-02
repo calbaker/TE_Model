@@ -135,7 +135,7 @@ class HX(object):
             self.cool.length = self.length
 
         self.exh.width = self.width
-        self.exh.length = self.length / self.nodes 
+        self.exh.length = self.length 
 
     def set_mdot_charge(self):
         """Sets exhaust mass flow rate. Eventually, this should be a
@@ -233,6 +233,7 @@ class HX(object):
         else:
             self.verbose = False
         self.set_constants()
+        self.exh.node_length = self.node_length
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
         # into and out of the heat exchanger.

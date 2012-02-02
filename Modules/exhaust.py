@@ -79,7 +79,7 @@ class Exhaust(prop.ideal_gas):
         
         if self.enhancement == None:
             self.set_Re_dependents()
-            self.deltaP = ( self.f * self.perimeter * self.length /
+            self.deltaP = ( self.f * self.perimeter * self.node_length /
             self.flow_area * (0.5*self.rho * self.velocity**2) * 0.001 ) 
             # pressure drop (kPa)
             self.h = self.Nu_D * self.k / self.D 

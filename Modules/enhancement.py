@@ -246,6 +246,13 @@ class OffsetStripFin(object):
         self.alpha = self.s / self.h
         self.delta = self.t / self.l
         self.gamma = self.t / self.s
+        self.area_frac : fraction of original area still available
+        for flow 
+        self.flow_area : actual flow area (m^2)
+        self.velocity : actual velocity (m/s) based on flow area
+        self.area_enh : heat transfer area enhancment factor
+        self.rows : number of rows of offset strip fins in streamwise
+        direction 
 
         more stuff that needs to be documented"""
         
@@ -255,10 +262,21 @@ class OffsetStripFin(object):
         self.delta = self.t / self.l
         self.gamma = self.t / self.s 
 
+        self.rows = exh.length / self.l
+
+        self.area_frac = ( (self.s * self.h) / ((self.h + self.t) *
+        (self.s + self.t)) )  
+
+        self.area_enh = ( (self.h * self.t +  self.h * self.l + self.s
+        * self.l) / ((self.t + self.s) * self.l) )
+
         self.D = ( 4. * self.s * self.h * self.l / (2. * (self.s *
         self.l + self.h * self.l + self.t * self.h) + self.t * self.s)
         )
-        self.Re_D = exh.velocity * self.D / exh.nu
+
+        self.flow_area = exh.flow_area * self.area_frac 
+        self.velocity = exh.velocity / self.area_frac
+        self.Re_D = self.velocity * self.D / exh.nu
 
     def set_f(self):
         """Sets friction factor, f."""
@@ -277,10 +295,10 @@ class OffsetStripFin(object):
         self.set_f()
         exh.f = self.f
         exh.deltaP = ( self.f * exh.perimeter * exh.length /
-                    exh.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )  
+                    self.flow_area * (0.5 * exh.rho * self.velocity**2) * 0.001 )  
         # pressure drop (kPa)
         self.set_j()
-        exh.h = ( self.j * exh.mdot / exh.flow_area * exh.c_p /
+        exh.h = ( self.j * exh.mdot / self.flow_area * exh.c_p /
                    exh.Pr**0.667 )
         exh.Nu_D = self.h * self.D / exh.k
     
