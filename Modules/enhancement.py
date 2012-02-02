@@ -291,6 +291,8 @@ class OffsetStripFin(object):
         self.gamma**-1.055)**0.1 ) 
 
     def solve_enhancement(self,exh):
+        """Solves all the stuff for this class.
+        self.h comes from Thermal Design by HoSung Lee, eq. 5.230"""
         self.set_params(exh)
         self.set_f()
         exh.f = self.f
@@ -298,7 +300,9 @@ class OffsetStripFin(object):
                     self.flow_area * (0.5 * exh.rho * self.velocity**2) * 0.001 )  
         # pressure drop (kPa)
         self.set_j()
-        exh.h = ( self.j * exh.mdot / self.flow_area * exh.c_p /
+        self.h_conv = ( self.j * exh.mdot / self.flow_area * exh.c_p /
                    exh.Pr**0.667 )
-        exh.Nu_D = self.h * self.D / exh.k
+        exh.h = self.h_conv # may need to be multiplied by area_enh
+
+        exh.Nu_D = exh.h * exh.D / exh.k
     
