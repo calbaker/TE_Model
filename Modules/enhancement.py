@@ -79,9 +79,9 @@ class IdealFin(object):
         self.k : thermal conductivity (kW/m-K) of fin material
         self.N : number of fins in duct in spanwise direction"""
 
-        self.thickness = 5.e-3
-        self.k = 0.2
-        self.N = 32
+        self.thickness = 1.e-3
+        self.k = 200.
+        self.N = 17
 
     def set_geometry(self,exh):
         """Fixes appropriate geometrical parameters."""
@@ -101,20 +101,24 @@ class IdealFin(object):
 
     def set_h(self,exh):
         """Determines effective heat transfer coefficient of fin."""
-        self.h_base = ( 2. * self.eta * exh.h * exh.height /
-        self.thickness )
         exh.h_unfinned = exh.h
 
+        self.effectiveness = self.eta * 2. * self.height / self.thickness
+        self.h_base = self.effectiveness * exh.h 
         exh.h = ( (exh.h_unfinned * (exh.width - self.N *
         self.thickness) + self.h_base * self.N * self.thickness) /
         exh.width )  
 
     def set_eta(self,exh):
-        """Determines fin efficiency"""
-        # maybe I need to reset velocity here. 
-        self.m = np.sqrt(2. * exh.h / (exh.k * self.thickness))
-        self.eta = ( np.tanh(self.m * self.height) / (self.m *
-        self.height) ) 
+        """Determines fin efficiency
+        Sets
+        ------------------
+        self.beta : dimensionless fin parameter
+        self.xi : beta times fin length (self.height)
+        self.eta : fin efficiency"""
+        self.beta = np.sqrt(2. * exh.h / (self.k * self.thickness)) 
+        self.xi = self.beta * self.height
+        self.eta = np.tanh(self.xi) / self.xi
 
         exh.deltaP = ( exh.f * exh.perimeter * exh.node_length /
         exh.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )    
