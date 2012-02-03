@@ -37,7 +37,7 @@ hx_fins.exh.bypass = 0.
 hx_fins.exh.height = 3.5e-2
 hx_fins.length = 1.
 hx_fins.te_pair.I = current
-hx_fins.te_pair.length = length
+hx_fins.te_pair.length = leg_length
 
 hx_fins.te_pair.Ntype.material = 'MgSi'
 hx_fins.te_pair.Ptype.material = 'HMS'
