@@ -187,7 +187,8 @@ class HX(object):
         self.te_pair.solve_te_pair()
         self.error_cold = (self.q_c - self.te_pair.q_c) / self.te_pair.q_c
 
-        self.error = np.array([self.error_hot, self.error_cold]).reshape(2)
+        self.error = np.array([self.error_hot,
+        self.error_cold]).reshape(2) 
         return self.error
 
     def solve_node(self,i):
@@ -400,25 +401,13 @@ class HX(object):
 	
 	time.clock()
 
-	self.te_pair.method = 'analytical'
-	self.xmin1 = fmin(self.get_inv_power, self.x0)
+	self.xmin = fmin(self.get_inv_power, self.x0)
 	t1 = time.clock() 
-	print """xmin1 found. Switching to numerical model.
-	Elapsed time solving xmin1 =""", t1
+	print """Elapsed time solving xmin1 =""", t1
 
-	self.te_pair.method = 'numerical'
-	self.xmin2 = fmin(self.get_inv_power, self.xmin1)
-	t2 = time.clock() - t1
-	print """xmin2 found.
-	Elapsed time solving xmin2 =""", t2
+	print """Writing to output/optimize/xmin"""
 
-	t = time.clock()
-	print """Total elapsed time =""", t 
-
-	print """Writing to output/optimize/xmin1 and output/optimize/xmin2"""
-
-	np.savetxt('output/optimize/'+self.xmin_file+'1', self.xmin1)
-	np.savetxt('output/optimize/'+self.xmin_file+'2', self.xmin2)
+	np.savetxt('output/optimize/'+self.xmin_file+'1', self.xmin)
 
     def get_T_inlet_error(self, T_outlet):
 	"""Returns error for coolant inlet temperature from desired
