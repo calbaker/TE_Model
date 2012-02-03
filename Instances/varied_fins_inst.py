@@ -62,7 +62,7 @@ hx_fins.cool.T_outlet = 310.
 hx_fins.set_mdot_charge()
 hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error, x0=hx_fins.cool.T_outlet)
 
-hx_fins.exh.fin_array = np.arange(5, 22, 2)
+hx_fins.exh.fin_array = np.arange(15, 42, 2)
 # array for varied exhaust duct height (m)
 array_size = np.size(hx_fins.exh.fin_array)
 hx_fins.power_net_array = np.zeros(array_size)
