@@ -13,6 +13,8 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
+import enhancement
+reload(enhancement)
 
 # Output from xmin2
 # 6.834534389943245358e-01
@@ -26,6 +28,13 @@ length = 3.27e-4
 current = 13.9
 area_ratio = 0.683
 fill_fraction = 2.38e-2
+
+# from full_scale_inst.py
+leg_area = (0.002)**2
+leg_length = 1.03e-3
+current = 4.63
+area_ratio = 0.705
+fill_fraction = 2.07e-2
 
 hx_fins = hx.HX()
 hx_fins.width = 30.e-2
@@ -46,9 +55,9 @@ hx_fins.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 
 hx_fins.te_pair.method = "analytical"
 hx_fins.type = 'counter'
-hx_fins.exh.enhancement = "straight fins"
-hx_fins.exh.fin.thickness = 5.e-3
-hx_fins.exh.fins = 10
+hx_fins.exh.enhancement = enhancement.IdealFin()
+hx_fins.exh.enhancement.thickness = 5.e-3
+hx_fins.exh.enhancement.N = 10
 
 hx_fins.exh.T_inlet = 800.
 hx_fins.exh.P = 100.
@@ -58,26 +67,25 @@ hx_fins.cool.T_outlet = 310.
 hx_fins.set_mdot_charge()
 hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error, x0=hx_fins.cool.T_outlet)
 
-hx_fins.exh.fin_array = np.arange(20, 42, 2)
+hx_fins.exh.fin_array = np.arange(5, 22, 2)
 # array for varied exhaust duct height (m)
 array_size = np.size(hx_fins.exh.fin_array)
 hx_fins.power_net_array = np.zeros(array_size)
 hx_fins.Wdot_pumping_array = np.zeros(array_size)
 hx_fins.Qdot_array = np.zeros(array_size)
 hx_fins.te_pair.power_array = np.zeros(array_size)
-hx_fins.exh.fin.spacings = np.zeros(np.size(hx_fins.exh.fin_array)) 
+hx_fins.exh.enhancement.spacings = np.zeros(np.size(hx_fins.exh.fin_array)) 
 
 for i in np.arange(np.size(hx_fins.exh.fin_array)):
-    hx_fins.exh.fins = hx_fins.exh.fin_array[i]
-    print "\nSolving for", hx_fins.exh.fins, "fins\n"
+    hx_fins.exh.enhancement.N = hx_fins.exh.fin_array[i]
+    print "Solving for", hx_fins.exh.enhancement.N, "fins\n"
     hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error, x0=hx_fins.cool.T_outlet)
     hx_fins.power_net_array[i] = hx_fins.power_net
     hx_fins.Wdot_pumping_array[i] = hx_fins.Wdot_pumping
     hx_fins.Qdot_array[i] = hx_fins.Qdot_total
     hx_fins.te_pair.power_array[i] = hx_fins.te_pair.power_total
-    hx_fins.exh.fin.spacings[i] = hx_fins.exh.fin.spacing
+    hx_fins.exh.enhancement.spacings[i] = hx_fins.exh.enhancement.spacing
 
-print "\nProgram finished."
 print "\nPlotting..."
 
 # Plot configuration
@@ -92,13 +100,13 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.close('all')
 
 plt.figure()
-plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.Qdot_array / 10., 'db', 
+plt.plot(hx_fins.exh.enhancement.spacings * 100., hx_fins.Qdot_array / 10., 'db', 
          label=r'$\dot{Q}/10$') 
-plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.te_pair.power_array, 'og',
+plt.plot(hx_fins.exh.enhancement.spacings * 100., hx_fins.te_pair.power_array, 'og',
          label='TE_PAIR')
-plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.power_net_array, 'sr', 
+plt.plot(hx_fins.exh.enhancement.spacings * 100., hx_fins.power_net_array, 'sr', 
          label='$P_{net}$')  
-plt.plot(hx_fins.exh.fin.spacings * 100., hx_fins.Wdot_pumping_array, '*k',
+plt.plot(hx_fins.exh.enhancement.spacings * 100., hx_fins.Wdot_pumping_array, '*k',
          label='Pumping')
 plt.grid()
 plt.xticks(rotation=40)
