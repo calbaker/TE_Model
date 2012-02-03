@@ -187,7 +187,7 @@ class HX(object):
         self.te_pair.solve_te_pair()
         self.error_cold = (self.q_c - self.te_pair.q_c) / self.te_pair.q_c
 
-        self.error = np.array([self.error_hot, self.error_cold])
+        self.error = np.array([self.error_hot, self.error_cold]).reshape(2)
         return self.error
 
     def solve_node(self,i):
@@ -380,8 +380,12 @@ class HX(object):
 	self.set_constants()
 	self.solve_hx()
 
-	# 1/power_net 
-	return 1. / (self.te_pair.power_total)
+        if self.te_pair.power_total > 0:
+            minpar = 1. / self.te_pair.power_total
+        else:
+            minpar = np.abs(self.te_pair.power_total)
+
+	return minpar
 
     def optimize(self):
 	"""Uses fmin to find optimal set of:
