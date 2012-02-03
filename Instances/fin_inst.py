@@ -17,13 +17,11 @@ reload(hx)
 import enhancement
 reload(enhancement)
 
-area = (0.002)**2
-
 leg_area = (0.002)**2
-leg_length = 1.00e-3
-current = 4.49
-area_ratio = 0.640
-fill_fraction = 2.40e-2
+area_ratio = 0.703
+fill_fraction = 3.12e-2
+leg_length = 6.01e-4
+current = 7.77
 
 hx_fins0 = hx.HX()
 hx_fins0.width = 0.3
@@ -35,7 +33,7 @@ hx_fins0.te_pair.length = leg_length
 hx_fins0.te_pair.Ntype.material = 'MgSi'
 hx_fins0.te_pair.Ptype.material = 'HMS'
 
-hx_fins0.te_pair.Ptype.area = area                           
+hx_fins0.te_pair.Ptype.area = leg_area                           
 hx_fins0.te_pair.Ntype.area = hx_fins0.te_pair.Ptype.area * area_ratio
 hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_fins0.te_pair.Ptype.area +
