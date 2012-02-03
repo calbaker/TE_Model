@@ -18,17 +18,12 @@ import enhancement
 reload(enhancement)
 
 area = (0.002)**2
-# leg_length = 3.27e-4
-# current = 13.9
-# area_ratio = 0.683
-# fill_fraction = 2.38e-2
 
-# from full_scale_inst.py
 leg_area = (0.002)**2
-leg_length = 1.03e-3
-current = 4.63
-area_ratio = 0.705
-fill_fraction = 2.07e-2
+leg_length = 1.00e-3
+current = 4.49
+area_ratio = 0.640
+fill_fraction = 2.40e-2
 
 hx_fins0 = hx.HX()
 hx_fins0.width = 0.3
@@ -50,7 +45,7 @@ hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = enhancement.IdealFin()
 hx_fins0.exh.enhancement.thickness = 1.e-3
-hx_fins0.exh.enhancement.N = 10
+hx_fins0.exh.enhancement.N = 17
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.
