@@ -53,14 +53,14 @@ hx_fins0.cool.T_outlet = 310.
 hx_fins0.set_mdot_charge()
 hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error, x0=hx_fins0.cool.T_outlet)
 
-def get_minpar(param):
+def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
     apar[0] : number of fins
     apar[1] : fin thickness (m)"""
     
     hx_fins0.exh.enhancement.N = apar[0]
-    hx_fins0.exh.enhancement.thickness = apar[1]
-    hx_fins0.exh.solve_hx()
+    # hx_fins0.exh.enhancement.thickness = apar[1]
+    hx_fins0.solve_hx()
 
     if hx_fins0.power_net < 0:
         minpar = np.abs(hx_fins0.power_net)
@@ -69,5 +69,5 @@ def get_minpar(param):
     
     return minpar
 
-x0 = np.array([45, 0.001])
+x0 = np.array([45])
 xmin = fmin(get_minpar, x0)
