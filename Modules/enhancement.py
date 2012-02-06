@@ -80,8 +80,8 @@ class IdealFin(object):
         self.N : number of fins in duct in spanwise direction"""
 
         self.thickness = 1.e-3
-        self.k = 200.
-        self.N = 17
+        self.k = 0.2
+        self.N = 45
 
     def set_geometry(self,exh):
         """Fixes appropriate geometrical parameters."""
@@ -156,7 +156,7 @@ class JetArray(object):
         self.K = 0.5
         self.spacing = 1.3e-2
         
-    def set_number(self):
+    def set_number(self,exh):
         """Sets number of jets based on jet spacing and overall size
         of jet array.
 
@@ -172,12 +172,12 @@ class JetArray(object):
         self.width : width (m) of jet array in transverse direction
         self.length : length (m) of jet array in streamwise direction""" 
 
-        self.N_streamwise = self.length / self.spacing
-        self.N_transverse = self.width / self.spacing
+        self.N_streamwise = exh.length / self.spacing
+        self.N_transverse = exh.width / self.spacing
         self.N = self.N_streamwise * self.N_transverse 
         self.area = self.spacing**2 
         
-    def set_annulus(self):
+    def set_annulus(self,exh):
         """Sets variables related to annulus geometry.
 
         Requires
@@ -191,11 +191,11 @@ class JetArray(object):
         self.ann_perimeter
         self.ann_velocity"""
 
-        self.ann_area = self.width * self.H
-        self.ann_perimeter = 2. * (self.width + self.H)
-        self.ann_velocity = self.Vdot / self.ann_area / 2. 
+        self.ann_area = exh.width * self.H
+        self.ann_perimeter = 2. * (exh.width + self.H)
+        self.ann_velocity = exh.Vdot / self.ann_area / 2. 
 
-    def set_flow(self):
+    def set_flow(self,exh):
         """Determines pressure drop through jet array. 
 
         Sets the following variables
@@ -212,11 +212,11 @@ class JetArray(object):
         array""" 
 
         self.flow_area = np.pi * self.D**2 / 4. 
-        self.V = self.Vdot / (self.flow_area * self.N) 
+        self.V = exh.Vdot / (self.flow_area * self.N) 
         self.h_loss = self.K * self.V**2 / 2.
-        self.deltaP = self.h_loss * self.rho * 0.001
+        exh.deltaP = self.h_loss * exh.rho * 0.001
 
-    def set_Nu_D(self):
+    def set_Nu_D(self,exh):
         """Sets Nusselt number and some other variables
 
         Sets the following variables
@@ -229,15 +229,17 @@ class JetArray(object):
         self.nu : viscosity (m^2 / s) of fluid
         self.Pr : Prandtl number of fluid"""
 
-        self.Re_D = self.V * self.D / self.nu
-        self.Nu_D = ( 0.285 * self.Re_D**0.710 * self.Pr**0.33 *
+        self.Re_D = self.V * self.D / exh.nu
+        exh.Nu_D = ( 0.285 * self.Re_D**0.710 * exh.Pr**0.33 *
         (self.H / self.D)**-0.123 * (self.spacing / self.D)**-0.725 )  
         
     def solve_enhancement(self,exh):
-        self.set_number()
-        self.set_annulus()
-        self.set_flow()
-        self.set_Nu_D()
+        self.set_number(exh)
+        self.set_annulus(exh)
+        self.set_flow(exh)
+        self.set_Nu_D(exh)
+        exh.h = exh.Nu_D * exh.k / self.D
+        exh.f = 37.
 
 class OffsetStripFin(object):
     """Class for modeling offset strip fins. Uses correlations from:
@@ -254,11 +256,14 @@ class OffsetStripFin(object):
         Sets
         ------------------
         self.t : thickness (m) of fin strip
-        self.l : length (m) of fin"""
+        self.l : length (m) of fin
+        self.s : pitch (m) of fin
+        self.k : thermal conductivity (W/m/K) of osf material""" 
 
         self.t = 0.001
         self.l = 0.01
         self.s = 0.001
+        self.k = 0.2
 
     def set_params(self,exh):
         """Sets parameters used to calculate friction factor and
@@ -323,7 +328,8 @@ class OffsetStripFin(object):
 
     def solve_enhancement(self,exh):
         """Solves all the stuff for this class.
-        self.h comes from Thermal Design by HoSung Lee, eq. 5.230"""
+        self.h comes from Thermal Design by HoSung Lee, eq. 5.230
+        self.eta_fin : fin efficiency"""
         self.set_params(exh)
         self.set_f()
         exh.f = self.f
@@ -333,7 +339,13 @@ class OffsetStripFin(object):
         self.set_j()
         self.h_conv = ( self.j * exh.mdot / self.flow_area * exh.c_p /
                    exh.Pr**0.667 )
-        exh.h = self.h_conv # may need to be multiplied by area_enh
+        self.beta = np.sqrt(2. * self.h_conv / (self.k * self.t))   
+        self.xi = self.beta * self.h / 2. 
+        self.eta_fin = np.tanh(self.xi) / self.xi
+        self.effectiveness = self.eta_fin * self.h / self.t
+        self.h_base = self.h_conv * self.effectiveness
+        exh.h = ( (self.h_base * self.t + self.h_conv * self.s) /
+        (self.s + self.t) ) 
 
         exh.Nu_D = exh.h * exh.D / exh.k
     

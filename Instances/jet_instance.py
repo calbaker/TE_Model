@@ -14,6 +14,8 @@ if cmd_folder not in sys.path:
 
 import hx
 reload(hx)
+import enhancement
+reload(enhancement)
     
 # parameters from xmin2
 # 7.049488398024472691e-01
@@ -28,7 +30,7 @@ area_ratio = 0.705
 fill_fraction = 2.07e-2
 
 hx_jets = hx.HX()
-hx_jets.exh.enhancement = 'jet array'
+hx_jets.exh.enhancement = enhancement.JetArray()
 hx_jets.te_pair.method = 'analytical'
 hx_jets.width = 30.e-2
 hx_jets.exh.height = 3.5e-2
