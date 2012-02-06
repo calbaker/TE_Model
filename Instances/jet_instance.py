@@ -113,5 +113,10 @@ plt.savefig('../Plots/' + hx_jets.te_pair.method + '/' + 'availability.pdf')
 
 # plt.show()
 
-print hx_jets.power_net
+print "power net:", hx_jets.power_net * 1000., 'W'
+print "power raw:", hx_jets.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx_jets.Wdot_pumping * 1000., 'W'
+hx_jets.exh.volume = hx_jets.exh.height * hx_jets.exh.width * hx_jets.length
+print "exhaust volume:", hx_jets.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_jets.power_net / hx_jets.exh.volume, 'kW/m^3'
 
