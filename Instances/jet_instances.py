@@ -15,6 +15,8 @@ if cmd_folder not in sys.path:
 
 import hx
 reload(hx)
+import enhancement
+reload(enhancement)
     
 # parameters from xmin2
 # 7.049488398024472691e-01
@@ -29,7 +31,7 @@ area_ratio = 0.705
 fill_fraction = 2.07e-2
 
 hx_jets = hx.HX()
-hx_jets.exh.enhancement = 'jet array'
+hx_jets.exh.enhancement = enhancement.JetArray()
 hx_jets.te_pair.method = 'analytical'
 hx_jets.width = 30.e-2
 hx_jets.exh.height = 3.5e-2
@@ -67,39 +69,39 @@ power_net_X = np.zeros(X.size)
 hx_jets.set_mdot_charge()
 
 def set_values():
-    hx_jets.exh.jets.H = 5.5e-2
-    hx_jets.exh.jets.D = 2.4e-3
-    hx_jets.exh.jets.spacing = 1.3e-2
+    hx_jets.exh.enhancement.H = 5.5e-2
+    hx_jets.exh.enhancement.D = 2.4e-3
+    hx_jets.exh.enhancement.spacing = 1.3e-2
 
 set_values()
 
 for i in range(H.size):
-    hx_jets.exh.jets.H = H[i]
+    hx_jets.exh.enhancement.H = H[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
     power_net_H[i] = hx_jets.power_net
     if i%5 == 0:
-        print "loop 1, iteration", i, "of", H.size
+        print "loop 1 of 3, iteration", i, "of", H.size
 
 set_values()
     
 for i in range(D.size):
-    hx_jets.exh.jets.D = D[i]
+    hx_jets.exh.enhancement.D = D[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
     power_net_D[i] = hx_jets.power_net
     if i%5 == 0:
-        print "loop 2, iteration", i, "of", D.size
+        print "loop 2 of 3, iteration", i, "of", D.size
 
 set_values()
     
 for i in range(X.size):
-    hx_jets.exh.jets.spacing = X[i]
+    hx_jets.exh.enhancement.spacing = X[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
     power_net_X[i] = hx_jets.power_net
     if i%5 == 0:
-        print "loop 3, iteration", i, "of", X.size
+        print "loop 3 of 3, iteration", i, "of", X.size
 
 print "\nProgram finished."
 print "\nPlotting..."
