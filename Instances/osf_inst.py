@@ -16,23 +16,23 @@ reload(hx)
 import enhancement
 reload(enhancement)
 
-area = (0.002)**2
-leg_length = 3.27e-4
-current = 13.9
-area_ratio = 0.683
-fill_fraction = 2.38e-2
+leg_area = (0.002)**2
+area_ratio = 0.719
+fill_fraction = 2.84e-2
+leg_length = 3.5e-4
+current = 13.3
 
 hx_osf = hx.HX()
-hx_osf.width = 1.
+hx_osf.width = 0.3
 hx_osf.exh.height = 3.5e-2
-hx_osf.length = 0.3
+hx_osf.length = 1.
 hx_osf.te_pair.I = current
 hx_osf.te_pair.length = leg_length
 
 hx_osf.te_pair.Ntype.material = 'MgSi'
 hx_osf.te_pair.Ptype.material = 'HMS'
 
-hx_osf.te_pair.Ptype.area = area                           
+hx_osf.te_pair.Ptype.area = leg_area
 hx_osf.te_pair.Ntype.area = hx_osf.te_pair.Ptype.area * area_ratio
 hx_osf.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_osf.te_pair.Ptype.area +
@@ -41,8 +41,8 @@ hx_osf.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 hx_osf.te_pair.method = 'analytical'
 hx_osf.type = 'counter'
 hx_osf.exh.enhancement = enhancement.OffsetStripFin()
-hx_osf.exh.enhancement.t = 5.e-3
-hx_osf.exh.enhancement.s = 0.004
+hx_osf.exh.enhancement.t = 0.5e-3
+hx_osf.exh.enhancement.s = 0.001
 
 hx_osf.exh.T_inlet = 800.
 hx_osf.cool.T_inlet_set = 300.
