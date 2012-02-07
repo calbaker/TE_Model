@@ -28,7 +28,7 @@ area_ratio = 0.705
 fill_fraction = 2.07e-2
 
 hx_inst = hx.HX()
-hx_inst.te_pair.method = 'analytical'
+hx_inst.te_pair.method = 'numerical'
 hx_inst.width = 30.e-2
 hx_inst.exh.height = 3.5e-2
 hx_inst.cool.mdot = 1.
