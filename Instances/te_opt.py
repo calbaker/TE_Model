@@ -30,7 +30,7 @@ te_pair.Ptype.area = area
 te_pair.Ntype.area = te_pair.Ptype.area * area_ratio
 te_pair.length = length
 te_pair.area_void = 0.
-te_pair.method = 'numerical'
+te_pair.method = 'analytical'
 te_pair.set_constants()
 te_pair.Ptype.set_prop_fit()
 te_pair.Ntype.set_prop_fit()
