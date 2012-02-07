@@ -54,7 +54,9 @@ hx_fins0.cool.T_inlet_set = 300.
 hx_fins0.cool.T_outlet = 310.
 
 hx_fins0.set_mdot_charge()
-hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error, x0=hx_fins0.cool.T_outlet)
+hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error,
+                                x0=hx_fins0.cool.T_outlet)
+hx_fins0.optimize()
 
 def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
@@ -84,6 +86,7 @@ P_pumping = np.zeros(aspect_array.size)
 for i in range(aspect_array.size):
     hx_fins0.width = width_array[i]
     hx_fins0.length = length_array[i]
+    hx_fins.optimize()
     xmin = fmin(get_minpar, x0)
     P_net[i] = hx_fins0.power_net
     P_raw[i] = hx_fins0.te_pair.power_total
