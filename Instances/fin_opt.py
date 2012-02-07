@@ -19,10 +19,10 @@ reload(enhancement)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.703
-fill_fraction = 3.12e-2
-leg_length = 6.01e-4
-current = 7.77
+area_ratio = 0.719
+fill_fraction = 2.84e-2
+leg_length = 3.5e-4
+current = 13.3
 
 hx_fins0 = hx.HX()
 hx_fins0.width = 0.3
@@ -71,3 +71,10 @@ def get_minpar(apar):
 
 x0 = np.array([45])
 xmin = fmin(get_minpar, x0)
+
+print "power net:", hx_fins0.power_net * 1000., 'W'
+print "power raw:", hx_fins0.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx_fins0.Wdot_pumping * 1000., 'W'
+hx_fins0.exh.volume = hx_fins0.exh.height * hx_fins0.exh.width * hx_fins0.length
+print "exhaust volume:", hx_fins0.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_fins0.power_net / hx_fins0.exh.volume, 'kW/m^3'
