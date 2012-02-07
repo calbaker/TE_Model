@@ -86,7 +86,7 @@ P_pumping = np.zeros(aspect_array.size)
 for i in range(aspect_array.size):
     hx_fins0.width = width_array[i]
     hx_fins0.length = length_array[i]
-    hx_fins.optimize()
+    hx_fins0.optimize()
     xmin = fmin(get_minpar, x0)
     P_net[i] = hx_fins0.power_net
     P_raw[i] = hx_fins0.te_pair.power_total
