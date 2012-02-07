@@ -39,7 +39,7 @@ hx_ducts0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_ducts0.te_pair.Ptype.area +
                             hx_ducts0.te_pair.Ntype.area) )  
 
-# hx_ducts0.te_pair.method = 'analytical'
+hx_ducts0.te_pair.method = 'analytical'
 hx_ducts0.type = 'counter'
 
 hx_ducts0.exh.T_inlet = 800.
@@ -99,6 +99,11 @@ plt.savefig('../Plots/temp '+hx_ducts0.type+str(ducts)+'.pdf')
 
 # plt.show()
 
-print hx_ducts0.power_net
+print "power net:", hx_ducts0.power_net * 1000., 'W'
+print "power raw:", hx_ducts0.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx_ducts0.Wdot_pumping * 1000., 'W'
+hx_ducts0.exh.volume = hx_ducts0.exh.height * hx_ducts0.exh.width * hx_ducts0.length
+print "exhaust volume:", hx_ducts0.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_ducts0.power_net / hx_ducts0.exh.volume, 'kW/m^3'
 
 # hx_ducts0.optimize()
