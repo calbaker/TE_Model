@@ -5,7 +5,7 @@
 import time
 import numpy as np
 import matplotlib.pyplot as mpl
-from scipy.optimize import fsolve,fmin
+from scipy.optimize import fsolve, fmin_l_bfgs_b
 
 # User Defined Modules
 # In this directory
@@ -34,6 +34,7 @@ class HX(object):
         self.x = np.linspace(0, self.length, self.nodes)
         self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
+        self.xb = [(0.,2.), (0.001,0.1), (0.001,0.01), (0.5,10.0)] 
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
@@ -397,11 +398,16 @@ class HX(object):
 	based on minimizing the inverse of power.  This may be a bad
 	method if net power is negative.
 
-	self.x0 must be defined elsewhere"""
+	self.x0 and self.xb must be defined elsewhere"""
 	
 	time.clock()
 
-	self.xmin = fmin(self.get_inv_power, self.x0)
+        # dummy function
+        def fprime():
+            return 1
+
+	self.xmin = fmin_l_bfgs_b(self.get_inv_power, self.x0, fprime,
+	approx_grad=True, bounds=self.xb) 
 	t1 = time.clock() 
 	print """Elapsed time solving xmin1 =""", t1
 
