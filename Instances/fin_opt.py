@@ -40,7 +40,7 @@ hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_fins0.te_pair.Ptype.area +
                             hx_fins0.te_pair.Ntype.area) )  
 
-hx_fins0.te_pair.method = 'analytical'
+hx_fins0.te_pair.method = 'numerical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = enhancement.IdealFin()
 hx_fins0.exh.enhancement.thickness = 1.e-3

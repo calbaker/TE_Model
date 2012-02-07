@@ -38,7 +38,7 @@ hx_osf.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hx_osf.te_pair.Ptype.area +
                             hx_osf.te_pair.Ntype.area) )  
 
-hx_osf.te_pair.method = 'analytical'
+hx_osf.te_pair.method = 'numerical'
 hx_osf.type = 'counter'
 hx_osf.exh.enhancement = enhancement.OffsetStripFin()
 hx_osf.exh.enhancement.t = 0.5e-3
