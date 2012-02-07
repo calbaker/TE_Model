@@ -213,13 +213,11 @@ class TE_Pair(object):
         self.R_internal = ( self.Ntype.R_internal +
         self.Ptype.R_internal )
 
-    def set_TEproperties(self):
+    def set_TEproperties(self, T_props):
         """Sets properties for both legs based on temperature of
         module."""
-        self.Ntype.T_props = self.T_props
-        self.Ptype.T_props = self.T_props
-        self.Ntype.set_TEproperties()
-        self.Ptype.set_TEproperties()
+        self.Ntype.set_TEproperties(T_props)
+        self.Ptype.set_TEproperties(T_props)
 
     def set_ZT(self):
         """Sets ZT based on whatever properties were used last."""

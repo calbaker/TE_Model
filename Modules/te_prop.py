@@ -62,7 +62,7 @@ def set_prop_fit(self):
 def set_TEproperties(self,T_props):
     """Sets thermal and electrical properties, as a function of
     temperature if self.T_props is used."""
-
+    
     if self.material == 'HMS':
         self.alpha = ( np.polyval(self.alpha_params, T_props) *
         1.e-6 )
