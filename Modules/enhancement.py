@@ -311,6 +311,7 @@ class OffsetStripFin(object):
         )
 
         self.flow_area = exh.flow_area * self.area_frac 
+        exh.flow_area = self.flow_area
         self.velocity = exh.velocity / self.area_frac
         self.Re_D = self.velocity * self.D / exh.nu
 
