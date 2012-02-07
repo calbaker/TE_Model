@@ -22,10 +22,11 @@ reload(hx)
 # 4.634972529966798760e+00
 
 leg_area = (0.002)**2
-leg_length = 1.03e-3
-current = 4.63
-area_ratio = 0.705
-fill_fraction = 2.07e-2
+
+area_ratio = 0.659
+fill_fraction = 2.13e-2
+leg_length = 1.10e-3
+current = 4.10
 
 hx_inst = hx.HX()
 hx_inst.te_pair.method = 'numerical'
@@ -115,4 +116,4 @@ print "power raw:", hx_inst.te_pair.power_total * 1000., 'W'
 print "pumping power:", hx_inst.Wdot_pumping * 1000., 'W'
 hx_inst.exh.volume = hx_inst.exh.height * hx_inst.exh.width * hx_inst.length
 print "exhaust volume:", hx_inst.exh.volume * 1000., 'L'
-print "exhaust power density:", hx_inst.power_net / hx_inst.exh.volume, 'W/m^3'
+print "exhaust power density:", hx_inst.power_net / hx_inst.exh.volume, 'kW/m^3'
