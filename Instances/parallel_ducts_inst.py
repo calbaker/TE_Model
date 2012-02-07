@@ -88,7 +88,7 @@ for i in np.arange(np.size(ducts)):
     
     print "Finished solving for", ducts[i], "ducts\n"
     
-    hx_ducts.Qdot_array[i] = hx_ducts.Qdot * ducts[i]
+    hx_ducts.Qdot_array[i] = hx_ducts.Qdot_total * ducts[i]
     hx_ducts.te_pair.power_array[i] = hx_ducts.te_pair.power_total * ducts[i]
     hx_ducts.power_net_array[i] = hx_ducts.power_net * ducts[i]
     hx_ducts.Wdot_pumping_array[i] = hx_ducts.Wdot_pumping * ducts[i]
