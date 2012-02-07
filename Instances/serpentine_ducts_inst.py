@@ -110,3 +110,4 @@ fig.savefig('../Plots/power v s ducts.png')
 
 plt.show()
 
+
