@@ -4,7 +4,7 @@
 # Distribution Modules
 import matplotlib.pyplot as plt
 import os, sys
-from scipy.optimize import fsolve, fmin
+from scipy.optimize import fsolve, fmin, fmin_tnc
 import numpy as np
 import time
 
@@ -16,6 +16,8 @@ if cmd_folder not in sys.path:
 
 import hx
 reload(hx)
+import enhancement
+reload(enhancement)
     
 # parameters from xmin2
 # 7.049488398024472691e-01
@@ -30,7 +32,7 @@ area_ratio = 0.705
 fill_fraction = 2.07e-2
 
 hx_jets = hx.HX()
-hx_jets.exh.enhancement = 'jet array'
+hx_jets.exh.enhancement = enhancement.JetArray()
 hx_jets.te_pair.method = 'analytical'
 hx_jets.width = 30.e-2
 hx_jets.exh.height = 3.5e-2
@@ -62,22 +64,22 @@ def optim(apar):
 
     Arguments
     -------------
-    apar[0] : hx_jets.exh.jets.H, height annulus between jet and
+    apar[0] : hx_jets.exh.enhancement.H, height annulus between jet and
     impinging surface
-    apar[1] : hx_jets.exh.jets.D, jet diameter
-    apar[2] : hx_jets.exh.jets.spacing, distance between adjacent jets 
+    apar[1] : hx_jets.exh.enhancement.D, jet diameter
+    apar[2] : hx_jets.exh.enhancement.spacing, distance between adjacent jets 
     """
     apar = np.asarray(apar)
 
-    hx_jets.exh.jets.H = apar[0] 
-    hx_jets.exh.jets.D = apar[1]
-    hx_jets.exh.jets.spacing = apar[2]
+    hx_jets.exh.enhancement.H = apar[0] 
+    hx_jets.exh.enhancement.D = apar[1]
+    hx_jets.exh.enhancement.spacing = apar[2]
 
     hx_jets.set_constants()
     hx_jets.solve_hx()
 
     if hx_jets.power_net <= 0:
-        minpar = 1.e3
+        minpar = hx_jets.power_net
     else:
         minpar = 1. / hx_jets.power_net
 
@@ -87,16 +89,16 @@ def fprime():
     """dummy function"""
     return 1
 
-x0 = np.array([5.5e-2, 2.e-3, 1.6e-2]) 
+x0 = np.array([0.5e-2, 4.0e-3, 1.6e-2]) 
 # initial guess for fmin
 
-xb = [(2.0e-2, 7.e-2),(2.0e-3, 4.e-3), (5.e-3, 1.5e-2)]
+xb = [(0.1e-2, 2.e-2),(1.0e-3, 1.2e-2), (5.e-3, 1.5e-2)]
 
 t0 = time.clock()
 
 # Find min using downhill simplex algorithm
-xmin1 = fmin(optim, x0)
-# xmin1 = fmin_tnc(optim,x0,fprime,approx_grad=True,bounds=xb,xtol=0.01)
+# xmin1 = fmin(optim, x0)
+xmin1 = fmin_tnc(optim,x0,fprime,approx_grad=True,bounds=xb,xtol=0.01)
 
 t1 = time.clock() - t0
 
@@ -121,5 +123,12 @@ print "Elapsed time solving xmin1:", t1
 # t = time.clock() - t0
 
 # print """Total elapsed time =""", t
+
+print "power net:", hx_jets.power_net * 1000., 'W'
+print "power raw:", hx_jets.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx_jets.Wdot_pumping * 1000., 'W'
+hx_jets.exh.volume = hx_jets.exh.height * hx_jets.exh.width * hx_jets.length
+print "exhaust volume:", hx_jets.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_jets.power_net / hx_jets.exh.volume, 'kW/m^3'
 
 

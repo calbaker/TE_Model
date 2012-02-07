@@ -32,6 +32,7 @@ fill_fraction = 2.07e-2
 
 hx_jets = hx.HX()
 hx_jets.exh.enhancement = enhancement.JetArray()
+
 hx_jets.te_pair.method = 'analytical'
 hx_jets.width = 30.e-2
 hx_jets.exh.height = 3.5e-2
@@ -55,23 +56,23 @@ hx_jets.exh.T_inlet = 800.
 hx_jets.cool.T_inlet_set = 300.
 hx_jets.cool.T_outlet = 310.
 
-H = np.linspace(4., 8., 25) * 1e-2
+H = np.linspace(0.5, 4., 25) * 1e-2
 # range of annular height to be used for getting results
-D = np.linspace(2, 4., 26) * 0.001
+D = np.linspace(1, 4., 26) * 0.001
 # range of jet diameter
 X = np.linspace(5., 20., 26) * 0.001
 # range of jet spacing
 
-power_net_H = np.zeros(H.size)
-power_net_D = np.zeros(D.size)
-power_net_X = np.zeros(X.size)
+power_net_HD = np.zeros([H.size,D.size])
+power_net_DX = np.zeros(D.size)
+power_net_XH = np.zeros(X.size)
 
 hx_jets.set_mdot_charge()
 
 def set_values():
-    hx_jets.exh.enhancement.H = 5.5e-2
-    hx_jets.exh.enhancement.D = 2.4e-3
-    hx_jets.exh.enhancement.spacing = 1.3e-2
+    hx_jets.exh.enhancement.spacing = 0.5e-2
+    hx_jets.exh.enhancement.D = 1.0e-3
+    hx_jets.exh.enhancement.H = 1.0e-2
 
 set_values()
 
@@ -139,5 +140,5 @@ plt.xlabel('Jet Spacing (cm)')
 plt.ylabel('Net Power')
 plt.grid()
 
-plt.show()
+# plt.show()
 
