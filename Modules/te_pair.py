@@ -34,7 +34,7 @@ class Leg(object):
     
         self.I = 0.5 
         self.segments = 25 
-        self.length = 1.e-2 
+        self.length = 1.e-3
         self.area = (3.e-3)**2. 
         self.T_h_goal = 550. 
         self.T_c = 350. 
@@ -160,7 +160,7 @@ class TE_Pair(object):
         self.Ptype.material = 'HMS'
         self.Ntype.material = 'MgSi'
         self.area_void = (1.e-3)**2 # void area (m^2)
-        self.length = 2.e-3 # default leg height (m)
+        self.length = 1.e-3 # default leg height (m)
         self.segments = 25
         self.method = "numerical"
 
