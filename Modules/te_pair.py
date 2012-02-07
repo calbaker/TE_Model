@@ -237,11 +237,12 @@ class TE_Pair(object):
         self.ZT)**0.5 - 1.) / ((1. + self.ZT)**0.5 + self.T_c /
         self.T_h_goal) )
                 
-    def set_area(self,area_ratio):
-        "Sets new N-type and P-type area based on desired area ratio.
-        Ensures that sum of N-type and P-type area is constant."""
+    def set_area(self):
+        """Sets new N-type and P-type area based on desired area
+        ratio. Ensures that sum of N-type and P-type area is
+        constant.""" 
         area = self.Ntype.area + self.Ptype.area
-        self.Ptype.area = area / (1. + area_ratio)
+        self.Ptype.area = area / (1. + self.area_ratio)
         self.Ntype.area = area - self.Ptype.area
 
     def set_A_opt(self):
