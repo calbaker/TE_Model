@@ -64,7 +64,7 @@ hx_ducts0.height = ( ducts * hx_ducts0.exh.height + (ducts + 1) *
 hx_ducts0.cool.T_outlet = fsolve(hx_ducts0.get_T_inlet_error, x0=hx_ducts0.cool.T_outlet) 
     
 hx_ducts0.Qdot_total = hx_ducts0.Qdot_total * ducts
-hx_ducts0.te_pair.power = hx_ducts0.te_pair.power_total * ducts
+hx_ducts0.te_pair.power_total = hx_ducts0.te_pair.power_total * ducts
 hx_ducts0.power_net = hx_ducts0.power_net * ducts
 hx_ducts0.Wdot_pumping = hx_ducts0.Wdot_pumping * ducts
 
