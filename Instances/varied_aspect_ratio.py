@@ -2,10 +2,10 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-from scipy.optimize import fsolve
+from scipy.optimize import fsolve, fmin
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -24,9 +24,13 @@ leg_length = 3.5e-4
 current = 13.3
 
 hx_fins0 = hx.HX()
+
+hx_fins0.length = 1.
 hx_fins0.width = 0.3
 hx_fins0.exh.height = 3.5e-2
-hx_fins0.length = 1.
+
+hx_fins0.footprint = hx_fins0.length * hx_fins0.width
+
 hx_fins0.te_pair.I = current
 hx_fins0.te_pair.length = leg_length
 
@@ -43,7 +47,7 @@ hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = enhancement.IdealFin()
 hx_fins0.exh.enhancement.thickness = 1.e-3
-hx_fins0.exh.enhancement.N = 59
+hx_fins0.exh.enhancement.N = 17
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.
@@ -52,8 +56,38 @@ hx_fins0.cool.T_outlet = 310.
 hx_fins0.set_mdot_charge()
 hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error, x0=hx_fins0.cool.T_outlet)
 
-print "\nProgram finished."
-print "\nPlotting..."
+def get_minpar(apar):
+    """Returns parameter to be minimized as a function of apar.
+    apar[0] : number of fins
+    apar[1] : fin thickness (m)"""
+    
+    hx_fins0.exh.enhancement.N = apar[0]
+    # hx_fins0.exh.enhancement.thickness = apar[1]
+    hx_fins0.solve_hx()
+
+    if hx_fins0.power_net < 0:
+        minpar = np.abs(hx_fins0.power_net)
+    else:
+        minpar = 1. / hx_fins0.power_net
+    
+    return minpar
+
+x0 = np.array([45])
+
+length_array = np.linspace(0.2, 2, 15)
+width_array = hx_fins0.footprint / length_array 
+aspect_array = length_array / width_array
+P_net = np.zeros(aspect_array.size)
+P_raw = np.zeros(aspect_array.size)
+P_pumping = np.zeros(aspect_array.size)
+
+for i in range(aspect_array.size):
+    hx_fins0.width = width_array[i]
+    hx_fins0.length = length_array[i]
+    xmin = fmin(get_minpar, x0)
+    P_net[i] = hx_fins0.power_net
+    P_raw[i] = hx_fins0.te_pair.power_total
+    P_pumping[i] = hx_fins0.Wdot_pumping
 
 # Plot configuration
 FONTSIZE = 20
@@ -64,28 +98,16 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
+plt.close('all')
+
 plt.figure()
-plt.plot(hx_fins0.x * 100., hx_fins0.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx_fins0.x * 100., hx_fins0.te_pair.T_h_nodes, '-g', label='TE_PAIR Hot Side')
-plt.plot(hx_fins0.x * 100., hx_fins0.te_pair.T_c_nodes, '-k', label='TE_PAIR Cold Side')
-plt.plot(hx_fins0.x * 100., hx_fins0.cool.T_nodes, '-b', label='Coolant')
-
-plt.xlabel('Distance Along HX (cm)')
-plt.ylabel('Temperature (K)')
-#plt.title('Temperature v. Distance, '+hx_fins0.type)
+plt.plot(aspect_array, P_net * 1000., label=r"P$_{net}$")
+plt.plot(aspect_array, P_raw * 1000., label=r"P$_{raw}$")
+plt.plot(aspect_array, P_pumping * 1000., label=r"P$_{pump}$")
+plt.xlabel("Aspect Ratio")
+plt.ylabel("Net Power (W)")
 plt.grid()
-# plt.legend(loc='center left')
-plt.subplots_adjust(bottom=0.15)
-# plt.savefig('../Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.png')
-# plt.savefig('../Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.pdf')
+plt.legend()
 
-# plt.show()
-
-print "power net:", hx_fins0.power_net * 1000., 'W'
-print "power raw:", hx_fins0.te_pair.power_total * 1000., 'W'
-print "pumping power:", hx_fins0.Wdot_pumping * 1000., 'W'
-hx_fins0.exh.volume = hx_fins0.exh.height * hx_fins0.exh.width * hx_fins0.length
-print "exhaust volume:", hx_fins0.exh.volume * 1000., 'L'
-print "exhaust power density:", hx_fins0.power_net / hx_fins0.exh.volume, 'kW/m^3'
-
-
+plt.savefig("../Plots/power v. aspect ratio.pdf")
+plt.savefig("../Plots/power v. aspect ratio.png")
