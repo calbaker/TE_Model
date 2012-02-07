@@ -2,10 +2,10 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-from scipy.optimize import fsolve
+from scipy.optimize import fsolve, fmin
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -51,7 +51,23 @@ hx_osf.cool.T_outlet = 310.
 hx_osf.set_mdot_charge()
 hx_osf.cool.T_outlet = fsolve(hx_osf.get_T_inlet_error, x0=hx_osf.cool.T_outlet)
 
-print "\nProgram finished."
+def get_minpar(apar):
+    """Returns parameter to be minimized as a function of apar.
+    apar[0] : number of fins"""
+    
+    hx_osf.exh.enhancement.s = apar[0]
+    hx_osf.solve_hx()
+
+    if hx_osf.power_net < 0:
+        minpar = np.abs(hx_osf.power_net)
+    else:
+        minpar = 1. / hx_osf.power_net
+    
+    return minpar
+
+x0 = np.array([0.005])
+xmin = fmin(get_minpar, x0)
+
 print "\nPlotting..."
 
 # Plot configuration
