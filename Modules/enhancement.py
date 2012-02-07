@@ -91,13 +91,13 @@ class IdealFin(object):
         # middle and are adiabatic.  
         self.spacing = ( (exh.width - self.N *  self.thickness) /
         (self.N + 1.) )  
-        exh.perimeter = ( 2. * ((exh.width - self.N *
+        self.perimeter = ( 2. * ((exh.width - self.N *
         self.thickness) / (self.N + 1.) + exh.height) * (self.N + 1.) )   
         # perimeter of new duct formed by fins with constant overal duct width
-        exh.flow_area = ( (exh.width - self.N * self.thickness) /
+        self.flow_area = ( (exh.width - self.N * self.thickness) /
         (self.N + 1.) * exh.height * (self.N + 1.) )  
         # flow area (m^2) of new duct formed by fin    
-        exh.D = 4. * exh.flow_area / exh.perimeter
+        exh.D = 4. * self.flow_area / self.perimeter
 
     def set_h(self,exh):
         """Determines effective heat transfer coefficient of fin."""
@@ -120,14 +120,14 @@ class IdealFin(object):
         self.xi = self.beta * self.height
         self.eta = np.tanh(self.xi) / self.xi
 
-        exh.deltaP = ( exh.f * exh.perimeter * exh.node_length /
-        exh.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )    
+        exh.deltaP = ( exh.f * self.perimeter * exh.node_length /
+        self.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )    
         # pressure drop (kPa)
  
     def solve_enhancement(self,exh):
         """Runs all the other methods that need to run."""
         self.set_geometry(exh)
-        exh.velocity = exh.Vdot / exh.flow_area
+        exh.velocity = exh.Vdot / self.flow_area
         exh.set_Re_dependents()
         exh.h = exh.Nu_D * exh.k / exh.D
         # coefficient of convection (kW/m^2-K) 
@@ -311,7 +311,6 @@ class OffsetStripFin(object):
         )
 
         self.flow_area = exh.flow_area * self.area_frac 
-        exh.flow_area = self.flow_area
         self.velocity = exh.velocity / self.area_frac
         self.Re_D = self.velocity * self.D / exh.nu
 
