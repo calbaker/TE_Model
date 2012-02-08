@@ -29,7 +29,7 @@ leg_length = 1.10e-3
 current = 4.10
 
 hx_inst = hx.HX()
-hx_inst.te_pair.method = 'numerical'
+hx_inst.te_pair.method = 'analytical'
 hx_inst.width = 30.e-2
 hx_inst.exh.height = 3.5e-2
 hx_inst.cool.mdot = 1.
