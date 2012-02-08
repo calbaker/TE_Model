@@ -25,8 +25,11 @@ current = 13.3
 
 hx_fins0 = hx.HX()
 
-hx_fins0.length = 1.
-hx_fins0.width = 0.3
+length = 1.
+width = 0.3
+
+hx_fins0.length = length
+hx_fins0.width = width
 hx_fins0.exh.height = 3.5e-2
 
 hx_fins0.footprint = hx_fins0.length * hx_fins0.width
@@ -56,8 +59,6 @@ hx_fins0.cool.T_outlet = 310.
 hx_fins0.set_mdot_charge()
 hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error,
                                 x0=hx_fins0.cool.T_outlet)
-hx_fins0.optimize()
-
 def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
     apar[0] : number of fins
@@ -76,7 +77,11 @@ def get_minpar(apar):
 
 x0 = np.array([45])
 
-length_array = np.linspace(0.2, 2, 15)
+hx_fins0.optimize()
+hx_fins0.exh.enhancement.N = fmin(get_minpar, x0)
+N_fins = hx_fins0.exh.enhancement.N
+
+length_array = np.linspace(0.2, 2, 5)
 width_array = hx_fins0.footprint / length_array 
 aspect_array = length_array / width_array
 P_net = np.zeros(aspect_array.size)
@@ -84,10 +89,12 @@ P_raw = np.zeros(aspect_array.size)
 P_pumping = np.zeros(aspect_array.size)
 
 for i in range(aspect_array.size):
+    print "iteration", i, "of", aspect_array.size
     hx_fins0.width = width_array[i]
     hx_fins0.length = length_array[i]
+    hx_fins0.exh.enhancement.N = ( N_fins * hx_fins0.width / width )  
+    #    xmin = fmin(get_minpar, x0)
     hx_fins0.optimize()
-    xmin = fmin(get_minpar, x0)
     P_net[i] = hx_fins0.power_net
     P_raw[i] = hx_fins0.te_pair.power_total
     P_pumping[i] = hx_fins0.Wdot_pumping
@@ -104,9 +111,9 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.close('all')
 
 plt.figure()
-plt.plot(aspect_array, P_net * 1000., label=r"P$_{net}$")
-plt.plot(aspect_array, P_raw * 1000., label=r"P$_{raw}$")
-plt.plot(aspect_array, P_pumping * 1000., label=r"P$_{pump}$")
+plt.plot(aspect_array, P_net * 1000., 'sk', label=r"P$_{net}$")
+plt.plot(aspect_array, P_raw * 1000., 'xr', label=r"P$_{raw}$")
+plt.plot(aspect_array, P_pumping * 1000., 'ob', label=r"P$_{pump}$")
 plt.xlabel("Aspect Ratio")
 plt.ylabel("Net Power (W)")
 plt.grid()
