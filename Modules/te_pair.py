@@ -123,9 +123,9 @@ class Leg(object):
             (self.J * self.T[j-1] * self.alpha - self.q[j-1]) )
             # determines temperature of current segment based on
             # properties evaluated at previous segment
-            self.dq = ( (self.rho * self.J * self.J * (1 + self.alpha
-        * self.alpha * self.T[j-1] / (self.rho * self.k)) - self.J *
-        self.alpha * self.q[j-1] / self.k) ) 
+            self.dq = ( (self.rho * self.J**2. * (1. + self.alpha *
+        self.alpha * self.T[j-1] / (self.rho * self.k)) - self.J *
+        self.alpha * self.q[j-1] / self.k) )  
             self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
             self.V_segment[j] = ( self.alpha * (self.T[j] -
         self.T[j-1]) + self.J * self.rho * self.segment_length )
