@@ -368,7 +368,7 @@ class HX(object):
 	leg ratio, fill fraction, length, and current.  Use with
 	scipy.optimize.fmin to find optimal set of input parameters."""
 	# unpack guess vector
-	apar=np.asarray(apar)
+	apar = np.array(apar)
 	self.te_pair.leg_ratio     = apar[0]
 	self.te_pair.fill_fraction = apar[1]
 	self.te_pair.length        = apar[2]
