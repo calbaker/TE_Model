@@ -30,7 +30,7 @@ te_pair.Ptype.area = area
 te_pair.Ntype.area = te_pair.Ptype.area * area_ratio
 te_pair.length = length
 te_pair.area_void = 0.
-te_pair.method = 'analytical'
+te_pair.method = 'numerical'
 te_pair.set_constants()
 te_pair.Ptype.set_prop_fit()
 te_pair.Ntype.set_prop_fit()
@@ -42,6 +42,7 @@ def get_minpar(apar):
     te_pair.area_ratio = apar[1]
 
     te_pair.set_area()
+    te_pair.set_constants()
     te_pair.solve_te_pair()
 
     if te_pair.P > 0:
@@ -50,24 +51,33 @@ def get_minpar(apar):
         minpar = -te_pair.P
     return minpar
 
-T_h_goal = np.linspace(400, 600., 100)
+T_h_goal = np.linspace(450, 600., 100)
 T_props = (T_h_goal + T_h_goal[0]) / 2.
 
-A_opt = np.zeros(np.size(T_props))
-I_opt = np.zeros(np.size(T_props))
-eta_opt = np.zeros(np.size(T_props))
+A_opt = np.zeros(T_props.size)
+A_opt_theory = np.zeros(T_props.size)
+I_opt = np.zeros(T_props.size)
+eta_opt = np.zeros(T_props.size)
+eta_opt_theory = np.zeros(T_props.size)
 
 x0 = np.array([5., 0.7])
 
-for i in range(np.size(T_props)):
+for i in range(T_props.size):
     te_pair.T_props = T_props[i]
     te_pair.T_h_goal = T_h_goal[i]
     xmin = fmin(get_minpar, x0)
-    I_opt[i] = te_pair.I
-    A_opt[i] = te_pair.area_ratio
+    I_opt[i] = xmin[0]
+    A_opt[i] = xmin[1]
     eta_opt[i] = te_pair.eta
+
+    te_pair.set_eta_max()
+    eta_opt_theory[i] = te_pair.eta_max
+
+    te_pair.set_A_opt()
+    A_opt_theory[i] = te_pair.A_opt
+
     if i%5 == 0:
-        print "Solved", i, "of", np.size(T_props)
+        print "Solved", i, "of", T_props.size
 
 # Plot configuration
 FONTSIZE = 15
@@ -84,18 +94,31 @@ plt.close('all')
 
 fig1 = plt.figure()
 plt.plot(T_h_goal, I_opt)
-plt.xlabel(r'$T_h$ (K)')
-plt.ylabel("I (A)")
+plt.xlabel(r'T$_h$ (K)')
+plt.ylabel(r"I$_{opt}$ (A)")
+plt.ylim(ymin=0)
 plt.grid()
+plt.savefig("../Plots/te_opt/current.pdf")
+plt.savefig("../Plots/te_opt/current.png")
 
 fig2 = plt.figure()
-plt.plot(T_h_goal, A_opt)
-plt.xlabel(r"$T_h$ (K)")
+plt.plot(T_h_goal, A_opt, label='numerical')
+plt.plot(T_h_goal, A_opt_theory, label='theoretical')
+plt.xlabel(r"T$_h$ (K)")
 plt.ylabel("N/P Area Ratio")
+plt.ylim(ymin=0)
 plt.grid()
+plt.legend(loc='lower right')
+plt.savefig("../Plots/te_opt/area.pdf")
+plt.savefig("../Plots/te_opt/area.png")
 
 fig3 = plt.figure()
-plt.plot(T_h_goal, eta_opt)
-plt.xlabel(r"$T_h$ (K)")
+plt.plot(T_h_goal, eta_opt * 100., label='numerical')
+plt.plot(T_h_goal, eta_opt_theory * 100., label='theoretical')
+plt.xlabel(r"T$_h$ (K)")
 plt.ylabel("Efficiency")
+plt.ylim(ymin=0)
 plt.grid()
+plt.legend(loc='lower right')
+plt.savefig("../Plots/te_opt/eta.pdf")
+plt.savefig("../Plots/te_opt/eta.png")
