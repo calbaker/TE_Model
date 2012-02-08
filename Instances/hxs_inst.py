@@ -14,6 +14,8 @@ if cmd_folder not in sys.path:
 
 import hx_series 
 reload(hx_series)
+import enhancement 
+reload(enhancement)
     
 leg_area = (0.002)**2
 
@@ -43,6 +45,9 @@ hxs.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 
 hxs.type = 'parallel'
 hxs.setup()
+hxs.exh.enhancement = enhancement.IdealFin()
+hxs.exh.enhancement.thickness = 1.e-3
+hxs.exh.enhancement.N = 60
 
 hxs.exh.T_inlet = 800.
 hxs.cool.T_inlet = 300.
