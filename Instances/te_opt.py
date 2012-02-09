@@ -80,13 +80,13 @@ for i in range(T_props.size):
         print "Solved", i, "of", T_props.size
 
 # Plot configuration
-FONTSIZE = 15
+FONTSIZE = 25
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
 plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 2.5
+plt.rcParams['lines.linewidth'] = 3.5
 plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
@@ -106,7 +106,7 @@ plt.plot(T_h_goal, A_opt, label='numerical')
 plt.plot(T_h_goal, A_opt_theory, label='theoretical')
 plt.xlabel(r"T$_h$ (K)")
 plt.ylabel("N/P Area Ratio")
-plt.ylim(ymin=0)
+plt.ylim(0.6, 0.8)
 plt.grid()
 plt.legend(loc='lower right')
 plt.savefig("../Plots/te_opt/area.pdf")
@@ -117,7 +117,7 @@ plt.plot(T_h_goal, eta_opt * 100., label='numerical')
 plt.plot(T_h_goal, eta_opt_theory * 100., label='theoretical')
 plt.xlabel(r"T$_h$ (K)")
 plt.ylabel("Efficiency")
-plt.ylim(ymin=0)
+plt.ylim(0,5)
 plt.grid()
 plt.legend(loc='lower right')
 plt.savefig("../Plots/te_opt/eta.pdf")
