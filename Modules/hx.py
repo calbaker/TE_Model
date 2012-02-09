@@ -32,6 +32,7 @@ class HX(object):
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
         self.x = np.linspace(0, self.length, self.nodes)
+        self.opt_iter = 0 # counter for optimization iterations
         self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xb = [(None,None), (0.001,None), (None,None), (None,None)] 
@@ -370,6 +371,9 @@ class HX(object):
 	leg ratio, fill fraction, length, and current.  Use with
 	scipy.optimize.fmin to find optimal set of input parameters."""
 	# unpack guess vector
+        self.opt_iter = self.opt_iter + 1
+        if self.opt_iter % 10 == 0:
+            print "optimizaton iteration", self.opt_iter
 	apar = np.array(apar)
         current_only = args
         if current_only == True:
