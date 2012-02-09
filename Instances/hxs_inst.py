@@ -45,9 +45,9 @@ hxs.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 
 hxs.type = 'parallel'
 hxs.setup()
-hxs.exh.enhancement = enhancement.IdealFin()
-hxs.exh.enhancement.thickness = 1.e-3
-hxs.exh.enhancement.N = 60
+# hxs.exh.enhancement = enhancement.IdealFin()
+# hxs.exh.enhancement.thickness = 1.e-3
+# hxs.exh.enhancement.N = 60
 
 hxs.exh.T_inlet = 800.
 hxs.cool.T_inlet = 300.
