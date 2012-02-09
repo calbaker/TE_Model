@@ -35,7 +35,7 @@ class HX(object):
         self.opt_iter = 0 # counter for optimization iterations
         self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
-        self.xb = [(None,None), (0.001,None), (None,None), (None,None)] 
+        self.xb = [(0.5,0.9), (0.001,0.3), (1.e-3,20.e-3), (0.1,20.)] 
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
@@ -48,7 +48,6 @@ class HX(object):
         self.cummins = engine.Engine()
 
         self.arrangement = 'single'
-        self.current_only = False 
         # allows optimization to use all 4 variables.  
 
         self.fix_geometry()
@@ -366,7 +365,7 @@ class HX(object):
 
         self.exh.velocity_nodes[i] = self.exh.velocity
 
-    def get_inv_power(self,apar,args):
+    def get_inv_power(self,apar):
 	"""Method for returning inverse of net power as a function of
 	leg ratio, fill fraction, length, and current.  Use with
 	scipy.optimize.fmin to find optimal set of input parameters."""
@@ -375,21 +374,18 @@ class HX(object):
         if self.opt_iter % 25 == 0:
             print "optimizaton iteration", self.opt_iter
 	apar = np.array(apar)
-        current_only = args
-        if current_only == True:
-            self.te_pair.I = apar[0]
-        else:
-            self.te_pair.leg_ratio     = apar[0]
-            self.te_pair.fill_fraction = apar[1]
-            self.te_pair.length        = apar[2]
-            self.te_pair.I             = apar[3]
 
-            # reset surrogate variables
-            self.te_pair.Ntype.area = ( self.te_pair.leg_ratio *
-            self.te_pair.Ptype.area )
-            self.te_pair.area_void = ( (1. -
-            self.te_pair.fill_fraction) / self.te_pair.fill_fraction *
-            (self.te_pair.Ptype.area + self.te_pair.Ntype.area) )  
+        self.te_pair.leg_ratio     = apar[0]
+        self.te_pair.fill_fraction = apar[1]
+        self.te_pair.length        = apar[2]
+        self.te_pair.I             = apar[3]
+            
+        # reset surrogate variables
+        self.te_pair.Ntype.area = ( self.te_pair.leg_ratio *
+        self.te_pair.Ptype.area ) 
+        self.te_pair.area_void = ( (1. - self.te_pair.fill_fraction) /
+        self.te_pair.fill_fraction * (self.te_pair.Ptype.area +
+        self.te_pair.Ntype.area) )   
 
 	self.set_constants()
 	self.solve_hx()
@@ -418,8 +414,7 @@ class HX(object):
         def fprime():
             return 1
 
-	self.xmin = fmin(self.get_inv_power, self.x0,
-	args=[self.current_only], xtol=self.xtol)
+	self.xmin = fmin(self.get_inv_power, self.x0, xtol=self.xtol)
 	t1 = time.clock() 
 	print """Elapsed time solving xmin1 =""", t1
 
