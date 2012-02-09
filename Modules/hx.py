@@ -372,7 +372,7 @@ class HX(object):
 	scipy.optimize.fmin to find optimal set of input parameters."""
 	# unpack guess vector
         self.opt_iter = self.opt_iter + 1
-        if self.opt_iter % 10 == 0:
+        if self.opt_iter % 25 == 0:
             print "optimizaton iteration", self.opt_iter
 	apar = np.array(apar)
         current_only = args
