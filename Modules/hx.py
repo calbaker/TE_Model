@@ -418,7 +418,8 @@ class HX(object):
         def fprime():
             return 1
 
-	self.xmin = fmin(self.get_inv_power, self.x0, args=[self.current_only])
+	self.xmin = fmin(self.get_inv_power, self.x0,
+	args=[self.current_only], xtol=self.xtol)
 	t1 = time.clock() 
 	print """Elapsed time solving xmin1 =""", t1
 
