@@ -134,8 +134,8 @@ class Leg(object):
             self.P_flux_segment[j] = self.J * self.V_segment[j]
             self.T_h = self.T[-1]
             self.q_h = self.q[-1]
-            error = (self.T_h - self.T_h_goal) / self.T_h_goal
-        return error
+            self.error = (self.T_h - self.T_h_goal) / self.T_h_goal
+        return self.error
 
     def set_ZT(self):
         """Sets ZT based on formula
