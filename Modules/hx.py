@@ -387,7 +387,6 @@ class HX(object):
         self.te_pair.fill_fraction * (self.te_pair.Ptype.area +
         self.te_pair.Ntype.area) )   
 
-	self.set_constants()
 	self.solve_hx()
 
         if self.te_pair.power_total > 0:
@@ -435,3 +434,16 @@ class HX(object):
 	self.solve_hx()
 	error = self.cool.T_inlet_set - self.cool.T_inlet
 	return error
+    
+    def get_inv_power_v_I(self,current):
+        """Returns inverse of power for varied current."""
+        
+        self.te_pair.I = current
+        self.solve_hx()
+
+        if self.te_pair.power_total > 0:
+            minpar = 1. / self.te_pair.power_total
+        else:
+            minpar = np.abs(self.te_pair.power_total)
+
+	return minpar
