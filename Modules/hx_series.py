@@ -3,6 +3,7 @@
 
 # Distribution Modules
 import numpy as np
+from scipy.optimize import fmin
 
 # User Defined Modules
 # In this directory
@@ -27,8 +28,9 @@ class HX_Series(hx.HX):
     def setup(self):
         """not sure what this should do yet.  It's an ad hoc method
         for now.""" 
-        
-        self.hx_zone = np.empty(shape=self.N, dtype='object')
+
+        self.x = np.linspace(0, self.length, self.nodes)
+        self.hx_zone = np.array([hx.HX() for i in range(self.N)])
         self.init_arrays()
     
         try:
@@ -37,7 +39,6 @@ class HX_Series(hx.HX):
             self.exh.enhancement = None
 
         for i in range(self.N):
-            self.hx_zone[i] = hx.HX()
             self.hx_zone[i].type = self.type
             self.hx_zone[i].length = self.length / self.N
             self.hx_zone[i].width = self.width
@@ -76,7 +77,8 @@ class HX_Series(hx.HX):
             self.hx_zone[i].te_pair.area_void = (
             self.hx_zone[0].te_pair.area_void ) 
 
-            self.hx_zone[i].optimize()
+            self.hx_zone[i].te_pair.I = ( 
+            fmin(self.hx_zone[i].get_inv_power_v_I, self.hx_zone[i-1].te_pair.I) )
 
         self.cat_zones()
 
@@ -87,6 +89,14 @@ class HX_Series(hx.HX):
     def cat_zones(self):
         """Concatenates all the arrays of the hx_zones."""
         
+        self.exh.enthalpy_nodes = np.zeros(self.nodes)
+        self.exh.entropy_nodes = np.zeros(self.nodes)
+        self.exh.availability_flow_nodes = np.zeros(self.nodes)
+
+        self.cool.enthalpy_nodes = np.zeros(self.nodes)
+        self.cool.entropy_nodes = np.zeros(self.nodes)
+        self.cool.availability_flow_nodes = np.zeros(self.nodes)
+
         self.power_net_zones = np.zeros(self.N)
         self.te_pair.power_total_zones = np.zeros(self.N)
         self.Wdot_pumping_zones = np.zeros(self.N)
@@ -137,10 +147,17 @@ class HX_Series(hx.HX):
 
             self.exh.velocity_nodes[start:end] = self.hx_zone[i].exh.velocity_nodes
         
+            self.exh.enthalpy_nodes[start:end] = (
+            self.hx_zone[i].exh.enthalpy_nodes ) 
+            self.exh.entropy_nodes[start:end] = (
+            self.hx_zone[i].exh.entropy_nodes ) 
             self.exh.availability_flow_nodes[start:end] = (
             self.hx_zone[i].exh.availability_flow_nodes ) 
+
             self.cool.enthalpy_nodes[start:end] = (
             self.hx_zone[i].cool.enthalpy_nodes ) 
+            self.cool.entropy_nodes[start:end] = (
+            self.hx_zone[i].cool.entropy_nodes ) 
             self.cool.availability_flow_nodes[start:end] = (
             self.hx_zone[i].cool.availability_flow_nodes ) 
 
