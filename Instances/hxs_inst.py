@@ -45,7 +45,7 @@ hxs.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
                            (hxs.te_pair.Ptype.area +
                             hxs.te_pair.Ntype.area) )  
 
-hxs.type = 'parallel'
+hxs.type = 'counter'
 hxs.exh.enhancement = enhancement.IdealFin()
 hxs.exh.enhancement.thickness = 1.e-3
 hxs.exh.enhancement.N = 60
@@ -53,7 +53,7 @@ hxs.exh.enhancement.N = 60
 hxs.setup()
 
 hxs.exh.T_inlet = 800.
-hxs.cool.T_inlet = 300.
+hxs.cool.T_outlet = 310.
 
 hxs.set_mdot_charge()
 # hxs.cool.T_outlet = fsolve(hxs.get_T_inlet_error, x0=hxs.cool.T_outlet)

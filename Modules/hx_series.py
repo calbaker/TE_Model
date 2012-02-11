@@ -55,7 +55,10 @@ class HX_Series(hx.HX):
         """ad hoc method for now."""
         
         self.hx_zone[0].exh.T_inlet = self.exh.T_inlet 
-        self.hx_zone[0].cool.T_inlet = self.cool.T_inlet
+        if self.type == 'parallel':
+            self.hx_zone[0].cool.T_inlet = self.cool.T_inlet
+        if self.type == 'counter':
+            self.hx_zone[0].cool.T_outlet = self.cool.T_outlet
         
         self.hx_zone[0].exh.mdot = self.exh.mdot
 
@@ -65,8 +68,14 @@ class HX_Series(hx.HX):
             print "Solving zone", i, "of", self.N - 1
             self.hx_zone[i].exh.mdot = self.exh.mdot
             self.hx_zone[i].exh.T_inlet = self.hx_zone[i-1].exh.T_outlet  
-            self.hx_zone[i].cool.T_inlet = (
-        self.hx_zone[i-1].cool.T_outlet ) 
+
+            if self.type == 'parallel':
+                self.hx_zone[i].cool.T_inlet = (
+                self.hx_zone[i-1].cool.T_outlet )  
+            else:
+                self.hx_zone[i].cool.T_outlet = (
+                self.hx_zone[i-1].cool.T_inlet )  
+
             self.hx_zone[i].x0 = self.hx_zone[i-1].te_pair.I
             self.hx_zone[i].current_only = True
 
@@ -101,13 +110,13 @@ class HX_Series(hx.HX):
         self.te_pair.power_total_zones = np.zeros(self.N)
         self.Wdot_pumping_zones = np.zeros(self.N)
 
+        self.Qdot_nodes = np.hstack([i.Qdot_nodes for i in self.hx_zone])
+        # storing node heat transfer in array
+
         for i in range(self.N):
             start = i * self.hx_zone[i].nodes
             end = (i + 1.) * self.hx_zone[i].nodes
             
-            self.Qdot_nodes[start:end] = self.hx_zone[i].Qdot_nodes
-            # storing node heat transfer in array
-
             self.q_h_nodes[start:end] = self.hx_zone[i].q_h_nodes
             self.q_c_nodes[start:end] = self.hx_zone[i].q_c_nodes
             self.te_pair.q_h_nodes[start:end] = self.hx_zone[i].te_pair.q_h_nodes
