@@ -5,7 +5,7 @@
 import time
 import numpy as np
 import matplotlib.pyplot as mpl
-from scipy.optimize import fsolve, fmin
+from scipy.optimize import fsolve, fmin_tnc
 
 # User Defined Modules
 # In this directory
@@ -31,9 +31,7 @@ class HX(object):
         # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
-        self.x = np.linspace(0, self.length, self.nodes)
         self.opt_iter = 0 # counter for optimization iterations
-        self.xtol = 0.01
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xb = [(0.5,0.9), (0.001,0.3), (1.e-3,20.e-3), (0.1,20.)] 
         self.xmin_file = 'xmin'
@@ -110,6 +108,7 @@ class HX(object):
 
     def set_constants(self):
         """Sets constants used at the HX level."""
+        self.x = np.linspace(0, self.length, self.nodes)
         self.node_length = self.length / self.nodes
         # length (m) of each node
         self.area = self.node_length * self.width * self.cool.ducts 
@@ -218,8 +217,7 @@ class HX(object):
 
         self.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
         self.T_guess = self.T_guess.reshape(2)
-        self.T_arr = fsolve(self.get_error, x0=self.T_guess,
-        xtol=self.xtol) 
+        self.T_arr = fsolve(self.get_error, x0=self.T_guess)
         self.te_pair.T_h_goal = self.T_arr[0]
         self.te_pair.T_c = self.T_arr[1]
         self.Qdot_node = -self.q_h * self.area
@@ -405,7 +403,8 @@ class HX(object):
         def fprime():
             return 1
 
-	self.xmin = fmin(self.get_inv_power, self.x0, xtol=self.xtol)
+	self.xmin = fmin_tnc(self.get_inv_power, self.x0, fprime=None,
+	approx_grad=True)
 	t1 = time.clock() 
 	print """Elapsed time solving xmin1 =""", t1
 
