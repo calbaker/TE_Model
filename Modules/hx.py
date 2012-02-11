@@ -133,10 +133,8 @@ class HX(object):
         coolant duct length is equal to total length because the
         coolant has constant properties throughout the hx."""
 
-        if self.arrangement != 'harmonica2':
-            self.cool.width = self.width
-            self.cool.length = self.length
-
+        self.cool.width = self.width
+        self.cool.length = self.length
         self.exh.width = self.width
         self.exh.length = self.length 
 
@@ -249,16 +247,10 @@ class HX(object):
         self.te_pair.Ptype.set_prop_fit()
         self.te_pair.Ntype.set_prop_fit()
 
-        if self.arrangement == 'harmonica':
-            self.exh.mdot_nodes = np.linspace(self.nodes, 0, self.nodes
-            + 1) / self.nodes * self.exh.mdot
-
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
             if self.verbose == True:
                 print "\nSolving node", i
-            if self.arrangement == 'harmonica':
-                self.exh.mdot = self.exh.mdot_nodes[i]
             self.solve_node(i)
             self.store_node_values(i)
 
