@@ -36,6 +36,8 @@ class HX(object):
         self.xb = [(0.5,2.), (0.,1.), (1.e-4,20.e-3), (0.1,None)] 
         # initial guess and bounds for x where entries are N/P area,
         # fill fraction, leg length (m), and current (A)
+        self.xtol_fmin = 1.
+        self.xtol_fsolve = 1.
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
@@ -219,7 +221,8 @@ class HX(object):
 
         self.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
         self.T_guess = self.T_guess.reshape(2)
-        self.T_arr = fsolve(self.get_error, x0=self.T_guess)
+        self.T_arr = fsolve(self.get_error, x0=self.T_guess,
+        xtol=self.xtol_fsolve) 
         self.te_pair.T_h_goal = self.T_arr[0]
         self.te_pair.T_c = self.T_arr[1]
         self.Qdot_node = -self.q_h * self.area
@@ -406,7 +409,7 @@ class HX(object):
             return 1
 
 	self.xmin = fmin_tnc(self.get_inv_power, self.x0, fprime=None,
-	approx_grad=True)
+	approx_grad=True, xtol=self.xtol_fmin)[0]
 	t1 = time.clock() 
 	print """Elapsed time solving xmin1 =""", t1
 
