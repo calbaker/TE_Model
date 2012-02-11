@@ -33,7 +33,9 @@ class HX(object):
                         # model
         self.opt_iter = 0 # counter for optimization iterations
         self.x0 = np.array([.7,0.02,0.001,4.])
-        self.xb = [(0.5,0.9), (0.001,0.3), (1.e-3,20.e-3), (0.1,20.)] 
+        self.xb = [(0.5,2.), (0.,1.), (1.e-4,20.e-3), (0.1,None)] 
+        # initial guess and bounds for x where entries are N/P area,
+        # fill fraction, leg length (m), and current (A)
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
