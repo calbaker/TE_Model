@@ -1,4 +1,3 @@
-
 # Chad Baker
 # Created on 2011 Feb 10
 
@@ -19,10 +18,10 @@ reload(enhancement)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.719
-fill_fraction = 2.84e-2
-leg_length = 3.5e-4
-current = 13.3
+area_ratio = 0.717
+fill_fraction = 2.98e-2
+leg_length = 3.50e-4
+current = 13.6
 
 hx_fins0 = hx.HX()
 hx_fins0.width = 0.3
@@ -34,11 +33,7 @@ hx_fins0.te_pair.length = leg_length
 hx_fins0.te_pair.Ntype.material = 'MgSi'
 hx_fins0.te_pair.Ptype.material = 'HMS'
 
-hx_fins0.te_pair.Ptype.area = leg_area                           
-hx_fins0.te_pair.Ntype.area = hx_fins0.te_pair.Ptype.area * area_ratio
-hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_fins0.te_pair.Ptype.area +
-                            hx_fins0.te_pair.Ntype.area) )  
+hx_fins0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
@@ -53,8 +48,6 @@ hx_fins0.cool.T_outlet = 310.
 hx_fins0.set_mdot_charge()
 hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error,
                                 x0=hx_fins0.cool.T_outlet)
-hx_fins0.optimize()
-
 def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
     apar[0] : number of fins

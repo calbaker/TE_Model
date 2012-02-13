@@ -18,10 +18,10 @@ reload(enhancement)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.719
-fill_fraction = 2.84e-2
-leg_length = 3.5e-4
-current = 13.3
+area_ratio = 0.717
+fill_fraction = 2.98e-2
+leg_length = 3.50e-4
+current = 13.6
 
 hx_fins0 = hx.HX()
 hx_fins0.x0 = np.array([area_ratio, fill_fraction, leg_length,
@@ -35,17 +35,13 @@ hx_fins0.te_pair.length = leg_length
 hx_fins0.te_pair.Ntype.material = 'MgSi'
 hx_fins0.te_pair.Ptype.material = 'HMS'
 
-hx_fins0.te_pair.Ptype.area = leg_area                           
-hx_fins0.te_pair.Ntype.area = hx_fins0.te_pair.Ptype.area * area_ratio
-hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_fins0.te_pair.Ptype.area +
-                            hx_fins0.te_pair.Ntype.area) )  
+hx_fins0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enhancement = enhancement.IdealFin()
 hx_fins0.exh.enhancement.thickness = 1.e-3
-hx_fins0.exh.enhancement.N = 59
+hx_fins0.exh.enhancement.N = 60
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.
