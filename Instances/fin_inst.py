@@ -2,7 +2,7 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
 from scipy.optimize import fsolve
@@ -24,6 +24,8 @@ leg_length = 3.5e-4
 current = 13.3
 
 hx_fins0 = hx.HX()
+hx_fins0.x0 = np.array([area_ratio, fill_fraction, leg_length,
+                        current]) 
 hx_fins0.width = 0.3
 hx_fins0.exh.height = 3.5e-2
 hx_fins0.length = 1.
