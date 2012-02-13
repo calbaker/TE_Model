@@ -258,3 +258,22 @@ class TE_Pair(object):
         self.Ntype.set_power_factor()
         self.Ptype.set_power_factor()
         self.power_max = self.Ntype.power_max + self.Ptype.power_max 
+    
+    def set_all_areas(self, leg_area, area_ratio, fill_fraction):
+        """Sets leg areas and void area based on leg area ratio and
+        fill fraction. 
+
+        Arguments
+        ----------------
+        leg_area : base area of P-type leg
+        area_ratio : N/P area ratio
+        fill_fraction : fraction of area taken up by legs"""
+
+        self.area_ratio = area_ratio
+        self.fill_fraction = fill_fraction
+
+        self.Ptype.area = leg_area                           
+        self.Ntype.area = self.Ptype.area * area_ratio
+        self.area_void = ( (1. - fill_fraction) / fill_fraction *
+        (self.Ptype.area + self.Ntype.area) )  
+        
