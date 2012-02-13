@@ -42,7 +42,7 @@ class Leg(object):
         self.q = np.zeros(self.segments) 
         self.V_segment = np.zeros(self.segments) 
         self.P_flux_segment = np.zeros(self.segments) 
-        self.xtol = 0.01 
+        self.xtol = 1.
 
         self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
         self) 
