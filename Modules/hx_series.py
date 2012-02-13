@@ -62,7 +62,12 @@ class HX_Series(hx.HX):
         
         self.hx_zone[0].exh.mdot = self.exh.mdot
 
-        self.hx_zone[0].optimize()
+        self.hx_zone[0].te_pair.Ntype.area = 2.87e-6
+        self.hx_zone[0].te_pair.Ptype.area = 4.e-6
+        self.hx_zone[0].te_pair.area_void = 2.35e-4
+        self.hx_zone[0].te_pair.I = 13.3
+        # self.hx_zone[0].optimize()
+        self.hx_zone[0].solve_hx()
 
         for i in range(1,self.N):
             print "Solving zone", i, "of", self.N - 1
@@ -72,7 +77,7 @@ class HX_Series(hx.HX):
             if self.type == 'parallel':
                 self.hx_zone[i].cool.T_inlet = (
                 self.hx_zone[i-1].cool.T_outlet )  
-            else:
+            if self.type == 'counter':
                 self.hx_zone[i].cool.T_outlet = (
                 self.hx_zone[i-1].cool.T_inlet )  
 
@@ -85,9 +90,12 @@ class HX_Series(hx.HX):
             self.hx_zone[0].te_pair.Ptype.area )
             self.hx_zone[i].te_pair.area_void = (
             self.hx_zone[0].te_pair.area_void ) 
+            self.hx_zone[i].te_pair.I = (
+            self.hx_zone[0].te_pair.I ) 
 
-            self.hx_zone[i].te_pair.I = ( 
-            fmin(self.hx_zone[i].get_inv_power_v_I, self.hx_zone[i-1].te_pair.I) )
+            self.hx_zone[i].solve_hx()
+            # self.hx_zone[i].te_pair.I = ( 
+            # fmin(self.hx_zone[i].get_inv_power_v_I, self.hx_zone[i-1].te_pair.I) )
 
         self.cat_zones()
 
