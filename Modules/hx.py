@@ -5,7 +5,7 @@
 import time
 import numpy as np
 import matplotlib.pyplot as mpl
-from scipy.optimize import fsolve, fmin_tnc
+from scipy.optimize import fsolve, fmin#_l_bfgs_b
 
 # User Defined Modules
 # In this directory
@@ -36,7 +36,7 @@ class HX(object):
         self.xb = [(0.5,2.), (0.,1.), (1.e-4,20.e-3), (0.1,None)] 
         # initial guess and bounds for x where entries are N/P area,
         # fill fraction, leg length (m), and current (A)
-        self.xtol_fmin = 1.
+        self.xtol_fmin = 0.1
         self.xtol_fsolve = 1.
         self.xmin_file = 'xmin'
         self.T0 = 300.
@@ -368,6 +368,7 @@ class HX(object):
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 25 == 0:
             print "optimizaton iteration", self.opt_iter
+            print "net power", self.power_net
 	apar = np.array(apar)
 
         self.te_pair.leg_ratio     = apar[0]
@@ -408,14 +409,22 @@ class HX(object):
         def fprime():
             return 1
 
-	self.xmin = fmin_tnc(self.get_inv_power, self.x0, fprime=None,
-	approx_grad=True, xtol=self.xtol_fmin)[0]
+        self.xmin = fmin(self.get_inv_power, self.x0)
+	# self.xmin = fmin_l_bfgs_b(self.get_inv_power, self.x0, fprime=None,
+	# approx_grad=True, bounds=self.xb)
 	t1 = time.clock() 
-	print """Elapsed time solving xmin1 =""", t1
 
+        print "power net:", self.power_net * 1000., 'W'
+        print "power raw:", self.te_pair.power_total * 1000., 'W'
+        print "pumping power:", self.Wdot_pumping * 1000., 'W'
+        self.exh.volume = self.exh.height * self.exh.width * self.length
+        print "exhaust volume:", self.exh.volume * 1000., 'L'
+        print "exhaust power density:", self.power_net / self.exh.volume, 'kW/m^3'
+
+	print """Elapsed time solving xmin1 =""", t1
 	print """Writing to output/optimize/xmin"""
 
-	np.savetxt('output/optimize/'+self.xmin_file+'1', self.xmin)
+	np.savetxt('output/optimize/'+self.xmin_file, self.xmin)
 
     def get_T_inlet_error(self, T_outlet):
 	"""Returns error for coolant inlet temperature from desired
