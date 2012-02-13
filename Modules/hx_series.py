@@ -62,6 +62,7 @@ class HX_Series(hx.HX):
         
         self.hx_zone[0].exh.mdot = self.exh.mdot
 
+        self.hx_zone[0].te_pair.length = 3.5e-4
         self.hx_zone[0].te_pair.Ntype.area = 2.87e-6
         self.hx_zone[0].te_pair.Ptype.area = 4.e-6
         self.hx_zone[0].te_pair.area_void = 2.35e-4
@@ -84,6 +85,8 @@ class HX_Series(hx.HX):
             self.hx_zone[i].x0 = self.hx_zone[i-1].te_pair.I
             self.hx_zone[i].current_only = True
 
+            self.hx_zone[i].te_pair.length = (
+            self.hx_zone[0].te_pair.length )
             self.hx_zone[i].te_pair.Ntype.area = (
             self.hx_zone[0].te_pair.Ntype.area )
             self.hx_zone[i].te_pair.Ptype.area = (
