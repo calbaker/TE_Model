@@ -18,86 +18,82 @@ reload(enhancement)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.719
-fill_fraction = 2.84e-2
-leg_length = 3.5e-4
-current = 13.3
+area_ratio = 0.717
+fill_fraction = 2.98e-2
+leg_length = 3.50e-4
+current = 13.6
 
-hx_fins0 = hx.HX()
+hx1 = hx.HX()
 
 length = 1.
 width = 0.3
 
-hx_fins0.length = length
-hx_fins0.width = width
-hx_fins0.exh.height = 3.5e-2
+hx1.length = length
+hx1.width = width
+hx1.exh.height = 3.5e-2
 
-hx_fins0.footprint = hx_fins0.length * hx_fins0.width
+hx1.footprint = hx1.length * hx1.width
 
-hx_fins0.te_pair.I = current
-hx_fins0.te_pair.length = leg_length
+hx1.te_pair.I = current
+hx1.te_pair.length = leg_length
 
-hx_fins0.te_pair.Ntype.material = 'MgSi'
-hx_fins0.te_pair.Ptype.material = 'HMS'
+hx1.te_pair.Ntype.material = 'MgSi'
+hx1.te_pair.Ptype.material = 'HMS'
 
-hx_fins0.te_pair.Ptype.area = leg_area                           
-hx_fins0.te_pair.Ntype.area = hx_fins0.te_pair.Ptype.area * area_ratio
-hx_fins0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_fins0.te_pair.Ptype.area +
-                            hx_fins0.te_pair.Ntype.area) )  
+hx1.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
-hx_fins0.te_pair.method = 'analytical'
-hx_fins0.type = 'counter'
-hx_fins0.exh.enhancement = enhancement.IdealFin()
-hx_fins0.exh.enhancement.thickness = 1.e-3
-hx_fins0.exh.enhancement.N = 17
+hx1.te_pair.method = 'analytical'
+hx1.type = 'counter'
+hx1.exh.enhancement = enhancement.IdealFin()
+hx1.exh.enhancement.thickness = 1.e-3
+hx1.exh.enhancement.N = 60
 
-hx_fins0.exh.T_inlet = 800.
-hx_fins0.cool.T_inlet_set = 300.
-hx_fins0.cool.T_outlet = 310.
+hx1.exh.T_inlet = 800.
+hx1.cool.T_inlet_set = 300.
+hx1.cool.T_outlet = 310.
 
-hx_fins0.set_mdot_charge()
-hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error,
-                                x0=hx_fins0.cool.T_outlet)
+hx1.set_mdot_charge()
+hx1.cool.T_outlet = fsolve(hx1.get_T_inlet_error,
+                                x0=hx1.cool.T_outlet)
 def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
-    apar[0] : number of fins
-    apar[1] : fin thickness (m)"""
+    apar[0] : number of fins"""
     
-    hx_fins0.exh.enhancement.N = apar[0]
-    # hx_fins0.exh.enhancement.thickness = apar[1]
-    hx_fins0.solve_hx()
+    hx1.exh.enhancement.N = apar[0]
+    hx1.solve_hx()
 
-    if hx_fins0.power_net < 0:
-        minpar = np.abs(hx_fins0.power_net)
+    if hx1.power_net < 0:
+        minpar = np.abs(hx1.power_net)
     else:
-        minpar = 1. / hx_fins0.power_net
+        minpar = 1. / hx1.power_net
     
     return minpar
 
-x0 = np.array([45])
+x0 = np.array([60])
 
-hx_fins0.optimize()
-hx_fins0.exh.enhancement.N = fmin(get_minpar, x0)
-N_fins = hx_fins0.exh.enhancement.N
+hx1.exh.enhancement.N = 60
+N_fins = hx1.exh.enhancement.N
 
-length_array = np.linspace(0.2, 2, 5)
-width_array = hx_fins0.footprint / length_array 
+length_array = np.linspace(0.2, 2, 10)
+width_array = hx1.footprint / length_array 
 aspect_array = length_array / width_array
 P_net = np.zeros(aspect_array.size)
 P_raw = np.zeros(aspect_array.size)
 P_pumping = np.zeros(aspect_array.size)
 
 for i in range(aspect_array.size):
-    print "iteration", i, "of", aspect_array.size
-    hx_fins0.width = width_array[i]
-    hx_fins0.length = length_array[i]
-    hx_fins0.exh.enhancement.N = ( N_fins * hx_fins0.width / width )  
+    print "iteration", i+1, "of", aspect_array.size
+    hx1.width = width_array[i]
+    hx1.length = length_array[i]
+    hx1.exh.enhancement.N = ( N_fins * (hx1.width / width)**1.5 )  
     #    xmin = fmin(get_minpar, x0)
-    hx_fins0.optimize()
-    P_net[i] = hx_fins0.power_net
-    P_raw[i] = hx_fins0.te_pair.power_total
-    P_pumping[i] = hx_fins0.Wdot_pumping
+    # hx1.optimize()
+    hx1.solve_hx()
+    print hx1.exh.enhancement.N
+    print hx1.exh.enhancement.spacing
+    P_net[i] = hx1.power_net
+    P_raw[i] = hx1.te_pair.power_total
+    P_pumping[i] = hx1.Wdot_pumping
 
 # Plot configuration
 FONTSIZE = 20
@@ -111,13 +107,14 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.close('all')
 
 plt.figure()
-plt.plot(aspect_array, P_net * 1000., 'sk', label=r"P$_{net}$")
-plt.plot(aspect_array, P_raw * 1000., 'xr', label=r"P$_{raw}$")
-plt.plot(aspect_array, P_pumping * 1000., 'ob', label=r"P$_{pump}$")
+plt.plot(aspect_array, P_net * 1000., '-sk', label=r"P$_{net}$")
+plt.plot(aspect_array, P_raw * 1000., '--xr', label=r"P$_{raw}$")
+plt.plot(aspect_array, P_pumping * 1000., '-.ob', label=r"P$_{pump}$")
 plt.xlabel("Aspect Ratio")
 plt.ylabel("Net Power (W)")
 plt.grid()
 plt.legend()
+plt.subplots_adjust(bottom=0.12, left=0.15)
 
 plt.savefig("../Plots/power v. aspect ratio.pdf")
 plt.savefig("../Plots/power v. aspect ratio.png")
