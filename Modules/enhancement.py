@@ -319,6 +319,7 @@ class OffsetStripFin(object):
         )
 
         self.flow_area = exh.flow_area * self.area_frac 
+        self.perimeter = 4. * self.flow_area / self.D
         self.velocity = exh.velocity / self.area_frac
         self.Re_D = self.velocity * self.D / exh.nu
 
@@ -341,7 +342,7 @@ class OffsetStripFin(object):
         self.set_params(exh)
         self.set_f()
         exh.f = self.f
-        exh.deltaP = ( self.f * exh.perimeter * exh.node_length /
+        exh.deltaP = ( self.f * self.perimeter * exh.node_length /
                     exh.flow_area * (0.5 * exh.rho * self.velocity**2) * 0.001 )  
         # pressure drop (kPa)
         self.set_j()
