@@ -2,6 +2,7 @@
 # Distribution libraries
 import numpy as np
 
+
 class BejanPorous(object):
     """Class for modeling porous media according to Bejan."""
 
@@ -33,6 +34,7 @@ class BejanPorous(object):
         self.h = self.Nu_D * self.k / self.D 
         # coefficient of convection (kW/m^2-K)
         
+
 class MancinPorous(object):            
     """Class for modeling porous media according to Mancin."""
 
@@ -45,7 +47,8 @@ class MancinPorous(object):
         self.K = 2.e-7
         self.k = self.k_matrix
         self.Nu_D = 4.93
-        # Nu for porous media parallel plates with T_w = const.  Bejan Eq. 12.77
+        # Nu for porous media parallel plates with T_w = const.  Bejan
+        # Eq. 12.77 
 
     def solve_enhancement(self):
         self.G = self.rho * self.velocity 
@@ -65,6 +68,7 @@ class MancinPorous(object):
         # pressure drop from Mancin et al.
         self.h = self.Nu_D * self.k_matrix / self.D 
         # coefficient of convection (kW/m^2-K)
+
 
 class IdealFin(object):
     """Class for modeling fin."""
@@ -91,13 +95,12 @@ class IdealFin(object):
         # middle and are adiabatic.  
         self.spacing = ( (exh.width - self.N *  self.thickness) /
         (self.N + 1.) )  
-        self.perimeter = ( 2. * ((exh.width - self.N *
-        self.thickness) / (self.N + 1.) + exh.height) * (self.N + 1.) )   
+        self.perimeter = ( 2. * (self.spacing + exh.height) * (self.N
+        + 1.) )    
         # perimeter of new duct formed by fins with constant overal duct width
-        self.flow_area = ( (exh.width - self.N * self.thickness) /
-        (self.N + 1.) * exh.height * (self.N + 1.) )  
+        self.flow_area = self.spacing * exh.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin    
-        exh.D = 4. * self.flow_area / self.perimeter
+        self.D = 4. * self.flow_area / self.perimeter
 
     def set_h(self,exh):
         """Determines effective heat transfer coefficient of fin."""
@@ -137,6 +140,7 @@ class IdealFin(object):
         self.h = ( (self.h * (exh.width - self.N *  self.thickness) +
         self.h_base * self.N * self.thickness) / exh.width )   
         
+
 class JetArray(object):
     """Class for modeling impinging jet array."""
 
@@ -240,6 +244,9 @@ class JetArray(object):
         self.set_Nu_D(exh)
         exh.h = exh.Nu_D * exh.k / self.D
         exh.f = 37.
+        # this might need to be changed, or it might be a dummy
+        # variable just to keep the code from complaining.  
+
 
 class OffsetStripFin(object):
     """Class for modeling offset strip fins. Uses correlations from:
