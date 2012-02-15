@@ -377,9 +377,8 @@ class HX(object):
         self.te_pair.I             = apar[3]
             
         # reset surrogate variables
-        self.te_pair.Ntype.area = ( 
         self.te_pair.set_all_areas(self.te_pair.Ptype.area,
-        self.te_pair.area_ratio, self.te_pair.fill_fraction) ) 
+        self.te_pair.area_ratio, self.te_pair.fill_fraction) 
 
 	self.solve_hx()
 
