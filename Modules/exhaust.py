@@ -21,7 +21,7 @@ class Exhaust(prop.ideal_gas):
         """Sets the following constants:
         self.porous : determines whether porous metal foam is used as
         heat transfer enhancement.  Default is 'no'.  
-        self.enhancement : determines what method of heat transfer
+        self.enh : determines what method of heat transfer
         enhancement, if any, is used.  Default is 'none'.
         self.T_ref : reference restricted dead state temperature (K)
         for availability calculations.
@@ -37,6 +37,8 @@ class Exhaust(prop.ideal_gas):
         in Bejan model  
         self.Nu_coeff : coefficient used in Nusselt number calculation
         
+        self.enh_lib : class attribute copy of enhancement library
+
         Binds the following methods from functions.py:
         set_flow_geometry
         set_Re
@@ -46,6 +48,7 @@ class Exhaust(prop.ideal_gas):
 
         super(Exhaust, self).__init__()
 
+        self.enh_lib = enhancement
         self.T_ref = 300.
         self.P = 101.
         self.height = 1.5e-2
@@ -73,11 +76,11 @@ class Exhaust(prop.ideal_gas):
         self.k = self.k_air
         
         try:
-            self.enhancement
+            self.enh
         except AttributeError:
-            self.enhancement = None
+            self.enh = None
         
-        if self.enhancement == None:
+        if self.enh == None:
             self.set_Re_dependents()
             self.deltaP = ( self.f * self.perimeter * self.node_length /
             self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 ) 
@@ -86,7 +89,7 @@ class Exhaust(prop.ideal_gas):
             # coefficient of convection (kW/m^2-K)
 
         else:
-            self.enhancement.solve_enhancement(self)
+            self.enh.solve_enh(self)
 
         self.Wdot_pumping = self.Vdot * self.deltaP 
         # pumping power (kW)

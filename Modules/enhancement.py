@@ -22,7 +22,7 @@ class BejanPorous(object):
         self.K = 2.e-7
         self.Nu_D = 6. 
     
-    def solve_enhancement(self,exh):
+    def solve_enh(self,exh):
         self.Re_K = self.velocity * self.K**0.5 / self.nu 
         # Re based on permeability from Bejan Eq. 12.11    
         self.f = 1. / self.Re_K + 0.55 # Darcy Law, Bejan
@@ -50,7 +50,7 @@ class MancinPorous(object):
         # Nu for porous media parallel plates with T_w = const.  Bejan
         # Eq. 12.77 
 
-    def solve_enhancement(self):
+    def solve_enh(self):
         self.G = self.rho * self.velocity 
         # Mass velocity from Mancin et al.
         self.D_pore = 0.0122 * self.PPI**(-0.849) 
@@ -127,7 +127,7 @@ class IdealFin(object):
         self.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )    
         # pressure drop (kPa)
  
-    def solve_enhancement(self,exh):
+    def solve_enh(self,exh):
         """Runs all the other methods that need to run."""
         self.set_geometry(exh)
         exh.velocity = exh.Vdot / self.flow_area
@@ -237,7 +237,7 @@ class JetArray(object):
         exh.Nu_D = ( 0.285 * self.Re_D**0.710 * exh.Pr**0.33 *
         (self.H / self.D)**-0.123 * (self.spacing / self.D)**-0.725 )  
         
-    def solve_enhancement(self,exh):
+    def solve_enh(self,exh):
         self.set_number(exh)
         self.set_annulus(exh)
         self.set_flow(exh)
@@ -333,7 +333,7 @@ class OffsetStripFin(object):
         self.Re_D**1.340 * self.alpha**0.504 * self.delta**0.456 *
         self.gamma**-1.055)**0.1 ) 
 
-    def solve_enhancement(self,exh):
+    def solve_enh(self,exh):
         """Solves all the stuff for this class.
         self.h comes from Thermal Design by HoSung Lee, eq. 5.230
         self.eta_fin : fin efficiency"""
