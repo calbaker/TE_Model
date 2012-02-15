@@ -25,8 +25,9 @@ class BejanPorous(object):
     def solve_enh(self,exh):
         self.Re_K = self.velocity * self.K**0.5 / self.nu 
         # Re based on permeability from Bejan Eq. 12.11    
-        self.f = 1. / self.Re_K + 0.55 # Darcy Law, Bejan
-        # Eq. 12.14.  It turns out that f is pretty close to 0.55 
+        self.f = 1. / self.Re_K + 0.55 
+        # Darcy Law, Bejan Eq. 12.14.  It turns out that f is pretty
+        # close to 0.55  
         self.k = self.k_matrix
         self.deltaP = ( self.f * self.perimeter * self.length /
                     self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )   
