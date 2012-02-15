@@ -86,7 +86,6 @@ for i in range(aspect_array.size):
     hx1.length = length_array[i]
     x0 = ( N_fins * (hx1.width / width)**2. )
     xmin = fmin(get_minpar, x0)
-    # hx1.optimize()
     hx1.solve_hx()
     print "exhaust velocity:", hx1.exh.velocity, "m/s"
     print "fin spacing:", hx1.exh.enhancement.spacing * 100., "cm"
@@ -103,14 +102,15 @@ plt.rcParams['legend.fontsize'] = FONTSIZE
 plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
+plt.rcParams['lines.markersize'] = 3.
 
 plt.close('all')
 
 plt.figure()
-plt.plot(aspect_array, P_net * 1000., '-sk', label=r"P$_{net}$")
-plt.plot(aspect_array, P_raw * 1000., '--xr', label=r"P$_{raw}$")
+plt.plot(aspect_array, P_net * 1000., '-sg', label=r"P$_{net}$")
+plt.plot(aspect_array, P_raw * 1000., '--xk', label=r"P$_{raw}$")
 plt.plot(aspect_array, P_pumping * 1000., '-.ob', label=r"P$_{pump}$")
-plt.plot(aspect_array, Q_hot * 100., ':oy', label=r"$\dot{Q}_{hot}$/10")
+plt.plot(aspect_array, Q_hot * 100., ':or', label=r"$\dot{Q}_{hot}$/10")
 plt.plot(np.ones(100) * 1. / 0.3, np.linspace(0,1800,100), '--k')
 plt.xlabel("Aspect Ratio")
 plt.ylabel("Net Power (W)")
