@@ -13,8 +13,6 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
-import enhancement
-reload(enhancement)
 
 leg_area = (0.002)**2
 area_ratio = 0.719
@@ -40,9 +38,9 @@ hx_osf.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
 
 hx_osf.te_pair.method = 'numerical'
 hx_osf.type = 'counter'
-hx_osf.exh.enhancement = enhancement.OffsetStripFin()
-hx_osf.exh.enhancement.t = 0.5e-3
-hx_osf.exh.enhancement.s = 0.001
+hx_osf.exh.enh = enh_lib.OffsetStripFin()
+hx_osf.exh.enh.t = 0.5e-3
+hx_osf.exh.enh.s = 0.001
 
 hx_osf.exh.T_inlet = 800.
 hx_osf.cool.T_inlet_set = 300.
@@ -55,7 +53,7 @@ def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
     apar[0] : number of fins"""
     
-    hx_osf.exh.enhancement.s = apar[0]
+    hx_osf.exh.enh.s = apar[0]
     hx_osf.solve_hx()
 
     if hx_osf.power_net < 0:

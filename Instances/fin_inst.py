@@ -13,8 +13,6 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
-import enhancement
-reload(enhancement)
 
 leg_area = (0.002)**2
 
@@ -39,9 +37,9 @@ hx_fins0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
-hx_fins0.exh.enhancement = enhancement.IdealFin()
-hx_fins0.exh.enhancement.thickness = 1.e-3
-hx_fins0.exh.enhancement.N = 60
+hx_fins0.exh.enh = hx_fins0.enh_lib.IdealFin()
+hx_fins0.exh.enh.thickness = 1.e-3
+hx_fins0.exh.enh.N = 60
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.
