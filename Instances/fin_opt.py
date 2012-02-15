@@ -1,3 +1,4 @@
+
 # Chad Baker
 # Created on 2011 Feb 10
 
@@ -35,9 +36,9 @@ hx_fins0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
-hx_fins0.exh.enh = enh_lib.IdealFin()
+hx_fins0.exh.enh = hx_fins0.exh.enh_lib.IdealFin()
 hx_fins0.exh.enh.thickness = 1.e-3
-hx_fins0.exh.enh.N = int(60)
+hx_fins0.exh.enh.N = 60
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.
@@ -48,11 +49,9 @@ hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error,
                                 x0=hx_fins0.cool.T_outlet)
 def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
-    apar[0] : number of fins
-    apar[1] : fin thickness (m)"""
+    apar[0] : number of fins"""
     
     hx_fins0.exh.enh.N = apar[0]
-    # hx_fins0.exh.enh.thickness = apar[1]
     hx_fins0.solve_hx()
 
     if hx_fins0.power_net < 0:
@@ -64,6 +63,8 @@ def get_minpar(apar):
 
 x0 = np.array([59])
 xmin = fmin(get_minpar, x0)
+
+print "fins:", hx_fins0.exh.enh.N
 
 print "power net:", hx_fins0.power_net * 1000., 'W'
 print "power raw:", hx_fins0.te_pair.power_total * 1000., 'W'
