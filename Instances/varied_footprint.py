@@ -8,7 +8,7 @@ import os,sys
 from scipy.optimize import fsolve, fmin
 
 # User Defined Modules
-cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+cmd_folder = os.path.dirname('../Modules/')
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
@@ -69,8 +69,6 @@ def get_minpar(apar):
     
     return minpar
 
-x0 = np.array([60])
-
 hx1.exh.enhancement.N = 60
 N_fins = hx1.exh.enhancement.N
 
@@ -80,20 +78,22 @@ aspect_array = length_array / width_array
 P_net = np.zeros(aspect_array.size)
 P_raw = np.zeros(aspect_array.size)
 P_pumping = np.zeros(aspect_array.size)
+Q_hot = np.zeros(aspect_array.size)
 
 for i in range(aspect_array.size):
-    print "iteration", i+1, "of", aspect_array.size
+    print "\niteration", i+1, "of", aspect_array.size
     hx1.width = width_array[i]
     hx1.length = length_array[i]
-    hx1.exh.enhancement.N = ( N_fins * (hx1.width / width)**1.5 )  
-    #    xmin = fmin(get_minpar, x0)
+    x0 = ( N_fins * (hx1.width / width)**2. )
+    xmin = fmin(get_minpar, x0)
     # hx1.optimize()
     hx1.solve_hx()
-    print hx1.exh.enhancement.N
-    print hx1.exh.enhancement.spacing
+    print "exhaust velocity:", hx1.exh.velocity, "m/s"
+    print "fin spacing:", hx1.exh.enhancement.spacing * 100., "cm"
     P_net[i] = hx1.power_net
     P_raw[i] = hx1.te_pair.power_total
     P_pumping[i] = hx1.Wdot_pumping
+    Q_hot[i] = hx1.Qdot_total
 
 # Plot configuration
 FONTSIZE = 20
@@ -110,11 +110,22 @@ plt.figure()
 plt.plot(aspect_array, P_net * 1000., '-sk', label=r"P$_{net}$")
 plt.plot(aspect_array, P_raw * 1000., '--xr', label=r"P$_{raw}$")
 plt.plot(aspect_array, P_pumping * 1000., '-.ob', label=r"P$_{pump}$")
+plt.plot(aspect_array, Q_hot * 100., ':oy', label=r"$\dot{Q}_{hot}$/10")
+plt.plot(np.ones(100) * 1. / 0.3, np.linspace(0,1800,100), '--k')
 plt.xlabel("Aspect Ratio")
 plt.ylabel("Net Power (W)")
+plt.ylim(0,4000)
 plt.grid()
 plt.legend()
 plt.subplots_adjust(bottom=0.12, left=0.15)
+
+ax = plt.axes()
+ax.annotate("default",
+            xy=(3.33, 0), xycoords='data',
+            xytext=(5, 750), textcoords='data',
+            arrowprops=dict(arrowstyle="->",
+                            connectionstyle="arc3"),
+            )
 
 plt.savefig("../Plots/power v. aspect ratio.pdf")
 plt.savefig("../Plots/power v. aspect ratio.png")
