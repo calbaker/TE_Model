@@ -16,10 +16,10 @@ reload(hx)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.717
-fill_fraction = 2.98e-2
-leg_length = 3.50e-4
-current = 13.6
+area_ratio = 0.721
+fill_fraction = 3.13e-2
+leg_length = 3.45e-4
+current = 13.5
 
 hx_fins0 = hx.HX()
 hx_fins0.x0 = np.array([area_ratio, fill_fraction, leg_length,
@@ -46,7 +46,8 @@ hx_fins0.cool.T_inlet_set = 300.
 hx_fins0.cool.T_outlet = 310.
 
 hx_fins0.set_mdot_charge()
-hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error, x0=hx_fins0.cool.T_outlet)
+hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error,
+                                x0=hx_fins0.cool.T_outlet, xtol=0.01)
 
 print "\nProgram finished."
 print "\nPlotting..."
