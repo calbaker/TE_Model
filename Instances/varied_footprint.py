@@ -72,7 +72,7 @@ def get_minpar(apar):
 hx1.exh.enhancement.N = 60
 N_fins = hx1.exh.enhancement.N
 
-length_array = np.linspace(0.2, 2, 10)
+length_array = np.linspace(0.2, 2, 20)
 width_array = hx1.footprint / length_array 
 aspect_array = length_array / width_array
 P_net = np.zeros(aspect_array.size)
