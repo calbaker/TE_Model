@@ -36,8 +36,8 @@ class HX(object):
         self.xb = [(0.5,2.), (0.,1.), (1.e-4,20.e-3), (0.1,None)] 
         # initial guess and bounds for x where entries are N/P area,
         # fill fraction, leg length (m), and current (A)
-        self.xtol_fmin = 0.1
-        self.xtol_fsolve = 1.
+        self.xtol_fmin = 0.01
+        self.xtol_fsolve = 0.01
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
@@ -406,7 +406,7 @@ class HX(object):
         def fprime():
             return 1
 
-        self.xmin = fmin(self.get_inv_power, self.x0)
+        self.xmin = fmin(self.get_inv_power, self.x0, xtol=self.xtol_fmin)
 	# self.xmin = fmin_l_bfgs_b(self.get_inv_power, self.x0, fprime=None,
 	# approx_grad=True, bounds=self.xb)
 	t1 = time.clock() 
