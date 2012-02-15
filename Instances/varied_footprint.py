@@ -54,7 +54,6 @@ hx1.set_mdot_charge()
 def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
     apar[0] : number of fins"""
-    
     hx1.exh.enh.N = apar[0]
     hx1.solve_hx()
 
@@ -66,7 +65,7 @@ def get_minpar(apar):
     return minpar
 
 x0 = 80
-hx1.exh.enh.N = fmin(get_minpar, x0)
+hx1.exh.enh.N = fmin(get_minpar, x0, xtol=0.01)
 N_fins = hx1.exh.enh.N
 
 length_array = np.linspace(0.2, 2, 20)
@@ -77,24 +76,32 @@ P_raw = np.zeros(aspect_array.size)
 P_pumping = np.zeros(aspect_array.size)
 Q_hot = np.zeros(aspect_array.size)
 fin_array = np.zeros(aspect_array.size)
+spacing_array = np.zeros(aspect_array.size)
 
 for i in range(aspect_array.size):
     print "\niteration", i+1, "of", aspect_array.size
     hx1.width = width_array[i]
     hx1.length = length_array[i]
+
     if i > 0:
-        x0 = fin_array[i-1]
+        x0 = np.abs(fin_array[i-1])
     else:
-        x0 = ( N_fins * (hx1.width / width)**2. )
+        x0 = N_fins
+
     xmin = fmin(get_minpar, x0)
-    print "flow:", hx1.exh.flow
-    print "fin spacing:", hx1.exh.enh.spacing * 100., "cm"
+
     fin_array[i] = xmin
+    spacing_array[i] = hx1.exh.enh.spacing
     P_net[i] = hx1.power_net
     P_raw[i] = hx1.te_pair.power_total
     P_pumping[i] = hx1.Wdot_pumping
     Q_hot[i] = hx1.Qdot_total
 
+    print "net power", P_net[i]
+    print "flow:", hx1.exh.flow
+    print "fin spacing:", spacing_array[i]
+    print "number of fins:", fin_array[i]
+    
 # Plot configuration
 FONTSIZE = 20
 plt.rcParams['axes.labelsize'] = FONTSIZE
