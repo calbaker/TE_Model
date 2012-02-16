@@ -78,7 +78,9 @@ print "exhaust power density:", hx1.power_net / hx1.exh.volume, 'kW/m^3'
 
 hx1.footprint = hx1.width * hx1.length
 
-length_array = np.linspace(0.2, 2, 10)
+length_array = np.linspace(0.2, 1.5, 20)
+# this parameter controls the number of iterations 
+
 width_array = hx1.footprint / length_array 
 aspect_array = length_array / width_array
 P_net = np.zeros(aspect_array.size)
