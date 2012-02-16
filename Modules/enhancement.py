@@ -82,11 +82,11 @@ class IdealFin(object):
         ------------------
         self.thickness : thickness (m) of fin
         self.k : thermal conductivity (kW/m-K) of fin material
-        self.N : number of fins in duct in spanwise direction"""
+        self.spacing : distance between adjacent fin edges"""
 
         self.thickness = 1.e-3
         self.k = 0.2
-        self.N = 45
+        self.spacing = 0.003
 
     def set_geometry(self,exh):
         """Fixes appropriate geometrical parameters."""
@@ -94,6 +94,8 @@ class IdealFin(object):
         self.height = exh.height / 2
         # height of fin pair such that their tips meet in the
         # middle and are adiabatic.  
+        self.N = ( (exh.width / self.spacing - 1.) / (1. +
+        self.thickness / self.spacing) ) 
         self.spacing = ( (exh.width - self.N *  self.thickness) /
         (self.N + 1.) )  
         self.perimeter = ( 2. * (self.spacing + exh.height) * (self.N

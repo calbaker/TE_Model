@@ -5,7 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-from scipy.optimize import fsolve, fmin
+from scipy.optimize import fminbound, fmin
 
 # User Defined Modules
 cmd_folder = os.path.dirname('../Modules/')
@@ -51,10 +51,10 @@ hx1.cool.T_outlet = 310.
 
 hx1.set_mdot_charge()
 
-def get_minpar(apar):
+def get_minpar(spacing):
     """Returns parameter to be minimized as a function of apar.
     apar[0] : number of fins"""
-    hx1.exh.enh.N = apar[0]
+    hx1.exh.enh.spacing = spacing
     hx1.solve_hx()
 
     if hx1.power_net < 0:
@@ -64,11 +64,15 @@ def get_minpar(apar):
     
     return minpar
 
-x0 = 80
-hx1.exh.enh.N = fmin(get_minpar, x0, xtol=0.01)
-N_fins = hx1.exh.enh.N
+# hx1.exh.enh.spacing = fminbound(get_minpar, 1.e-3, 10.e-3,
+# xtol=0.01)
+x0 = np.array([3.e-3])
+hx1.exh.enh.spacing = fmin(get_minpar, x0)
 
-length_array = np.linspace(0.2, 2, 20)
+N_fins = hx1.exh.enh.N
+print "Default number of fins:", N_fins
+
+length_array = np.linspace(0.2, 2, 10)
 width_array = hx1.footprint / length_array 
 aspect_array = length_array / width_array
 P_net = np.zeros(aspect_array.size)
@@ -88,9 +92,11 @@ for i in range(aspect_array.size):
     else:
         x0 = N_fins
 
-    xmin = fmin(get_minpar, x0)
+        # hx1.exh.enh.spacing = fminbound(get_minpar, 1.e-3, 15.e-3,
+        # xtol=0.01)
+        hx1.exh.enh.spacing = fmin(get_minpar, x0=3.e-3, xtol=0.01)
 
-    fin_array[i] = xmin
+    fin_array[i] = hx1.exh.enh.N
     spacing_array[i] = hx1.exh.enh.spacing
     P_net[i] = hx1.power_net
     P_raw[i] = hx1.te_pair.power_total
@@ -98,6 +104,9 @@ for i in range(aspect_array.size):
     Q_hot[i] = hx1.Qdot_total
 
     print "net power", P_net[i]
+    print "raw power", P_raw[i]
+    print "pumping power", P_pumping[i]
+    print "Q_hot", Q_hot[i]
     print "flow:", hx1.exh.flow
     print "fin spacing:", spacing_array[i]
     print "number of fins:", fin_array[i]
