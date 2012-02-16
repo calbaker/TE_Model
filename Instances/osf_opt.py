@@ -15,10 +15,11 @@ import hx
 reload(hx)
 
 leg_area = (0.002)**2
-area_ratio = 0.719
-fill_fraction = 2.84e-2
-leg_length = 3.5e-4
-current = 13.3
+
+area_ratio = 0.740
+fill_fraction = 3.01e-2
+leg_length = 3.18e-4
+current = 14.1
 
 hx_osf_opt = hx.HX()
 hx_osf_opt.width = 0.55
