@@ -24,10 +24,10 @@ class HX(object):
 
     def __init__(self):
         """Geometry and constants"""
-        self.width = 10.e-2
+        self.width = 0.55
         # width (cm*10**-2) of HX duct. This model treats duct as
         # parallel plates for simpler modeling. 
-        self.length = 20.e-2
+        self.length = 0.55
         # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
