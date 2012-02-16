@@ -30,17 +30,13 @@ hx_osf0.te_pair.length = leg_length
 hx_osf0.te_pair.Ntype.material = 'MgSi'
 hx_osf0.te_pair.Ptype.material = 'HMS'
 
-hx_osf0.te_pair.Ptype.area = leg_area
-hx_osf0.te_pair.Ntype.area = hx_osf0.te_pair.Ptype.area * area_ratio
-hx_osf0.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_osf0.te_pair.Ptype.area +
-                            hx_osf0.te_pair.Ntype.area) )  
+hx_osf0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction) 
 
 hx_osf0.te_pair.method = 'analytical'
 hx_osf0.type = 'counter'
 hx_osf0.exh.enh = hx_osf0.exh.enh_lib.OffsetStripFin()
 hx_osf0.exh.enh.t = 0.5e-3
-hx_osf0.exh.enh.s = 0.001
+hx_osf0.exh.enh.s = 0.005
 
 hx_osf0.exh.T_inlet = 800.
 hx_osf0.cool.T_inlet_set = 300.
