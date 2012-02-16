@@ -16,15 +16,15 @@ reload(hx)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.721
-fill_fraction = 3.13e-2
-leg_length = 3.45e-4
-current = 13.5
+area_ratio = 0.745
+fill_fraction = 3.10e-2
+leg_length = 3.56e-4
+current = 13.0
 
 hx_fins_opt = hx.HX()
-hx_fins_opt.width = 0.3
+hx_fins_opt.width = 0.55
 hx_fins_opt.exh.height = 3.5e-2
-hx_fins_opt.length = 1.
+hx_fins_opt.length = 0.55
 hx_fins_opt.te_pair.I = current
 hx_fins_opt.te_pair.length = leg_length
 
@@ -64,6 +64,7 @@ x0 = 2.72e-3
 xmin = fmin(get_minpar, x0)
 
 print "fins:", hx_fins_opt.exh.enh.N
+print "spacing:", hx_fins_opt.exh.enh.spacing
 
 print "power net:", hx_fins_opt.power_net * 1000., 'W'
 print "power raw:", hx_fins_opt.te_pair.power_total * 1000., 'W'

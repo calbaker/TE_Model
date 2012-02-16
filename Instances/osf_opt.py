@@ -21,9 +21,9 @@ leg_length = 3.5e-4
 current = 13.3
 
 hx_osf_opt = hx.HX()
-hx_osf_opt.width = 0.3
+hx_osf_opt.width = 0.55
 hx_osf_opt.exh.height = 3.5e-2
-hx_osf_opt.length = 1.
+hx_osf_opt.length = 0.55
 hx_osf_opt.te_pair.I = current
 hx_osf_opt.te_pair.length = leg_length
 

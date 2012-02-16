@@ -15,15 +15,16 @@ import hx
 reload(hx)
 
 leg_area = (0.002)**2
+
 area_ratio = 0.719
 fill_fraction = 2.84e-2
 leg_length = 3.5e-4
 current = 13.3
 
 hx_osf0 = hx.HX()
-hx_osf0.width = 0.3
+hx_osf0.width = 0.55
 hx_osf0.exh.height = 3.5e-2
-hx_osf0.length = 1.
+hx_osf0.length = hx_osf0.width
 hx_osf0.te_pair.I = current
 hx_osf0.te_pair.length = leg_length
 
@@ -36,7 +37,7 @@ hx_osf0.te_pair.method = 'analytical'
 hx_osf0.type = 'counter'
 hx_osf0.exh.enh = hx_osf0.exh.enh_lib.OffsetStripFin()
 hx_osf0.exh.enh.t = 0.5e-3
-hx_osf0.exh.enh.s = 0.005
+hx_osf0.exh.enh.s = 3.19e-3
 
 hx_osf0.exh.T_inlet = 800.
 hx_osf0.cool.T_inlet_set = 300.
