@@ -39,7 +39,7 @@ hx_fins0.te_pair.method = 'analytical'
 hx_fins0.type = 'counter'
 hx_fins0.exh.enh = hx_fins0.exh.enh_lib.IdealFin()
 hx_fins0.exh.enh.thickness = 1.e-3
-hx_fins0.exh.enh.N = 80
+hx_fins0.exh.enh.spacing = 2.69e-3
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.

@@ -1,4 +1,3 @@
-
 # Chad Baker
 # Created on 2011 Feb 10
 
@@ -18,7 +17,7 @@ reload(hx)
 leg_area = (0.002)**2
 
 area_ratio = 0.721
-fill_fraction = 2.98e-2
+fill_fraction = 3.13e-2
 leg_length = 3.45e-4
 current = 13.5
 
@@ -49,9 +48,9 @@ hx_fins_opt.cool.T_outlet = fsolve(hx_fins_opt.get_T_inlet_error,
                                 x0=hx_fins_opt.cool.T_outlet)
 def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
-    apar[0] : number of fins"""
+    apar : fin spacing"""
     
-    hx_fins_opt.exh.enh.N = apar[0]
+    hx_fins_opt.exh.enh.spacing = apar
     hx_fins_opt.solve_hx()
 
     if hx_fins_opt.power_net < 0:
@@ -61,12 +60,12 @@ def get_minpar(apar):
     
     return minpar
 
-x0 = np.array([59])
+x0 = 2.72e-3
 xmin = fmin(get_minpar, x0)
 
 print "fins:", hx_fins_opt.exh.enh.N
 
-print "power net:", hx_fins_opt.power_net * 1000., 'W'
+print "\npower net:", hx_fins_opt.power_net * 1000., 'W'
 print "power raw:", hx_fins_opt.te_pair.power_total * 1000., 'W'
 print "pumping power:", hx_fins_opt.Wdot_pumping * 1000., 'W'
 hx_fins_opt.exh.volume = hx_fins_opt.exh.height * hx_fins_opt.exh.width * hx_fins_opt.length
