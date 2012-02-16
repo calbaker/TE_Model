@@ -10,3 +10,10 @@ Clean up everything to look nicer.
 Move enhancement stuff to separate file to clean up hx.py
 Add enhancement stuff for impinging jet and jet arrays
 Eventually add scimath.units to make it better.  
+
+NOTES (as of 2012-02-16):
+
+near square footprint is best for osf and fins
+increasing height seems to improve performance
+need to model titanium fins and such
+check what happens with variation in nodes and segments
