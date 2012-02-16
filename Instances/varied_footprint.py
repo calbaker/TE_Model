@@ -46,6 +46,7 @@ hx1.cool.T_outlet = 310.
 hx1.set_mdot_charge()
 hx1.cool.T_outlet = fsolve(hx1.get_T_inlet_error,
                                 x0=hx1.cool.T_outlet)
+
 def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
     apar : fin spacing"""
@@ -65,7 +66,15 @@ x0 = 2.72e-3
 xmin = fmin(get_minpar, x0)
 
 N_fins = hx1.exh.enh.N
+
 print "Default number of fins:", N_fins
+
+print "power net:", hx1.power_net * 1000., 'W'
+print "power raw:", hx1.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx1.Wdot_pumping * 1000., 'W'
+hx1.exh.volume = hx1.exh.height * hx1.exh.width * hx1.length
+print "exhaust volume:", hx1.exh.volume * 1000., 'L'
+print "exhaust power density:", hx1.power_net / hx1.exh.volume, 'kW/m^3'
 
 hx1.footprint = hx1.width * hx1.length
 
@@ -84,12 +93,7 @@ for i in range(aspect_array.size):
     hx1.width = width_array[i]
     hx1.length = length_array[i]
 
-    if i > 0:
-        x0 = np.abs(fin_array[i-1])
-    else:
-        x0 = N_fins
-
-        hx1.exh.enh.spacing = fmin(get_minpar, x0=3.e-3, xtol=0.01)
+    hx1.exh.enh.spacing = fmin(get_minpar, x0=3.e-3, xtol=0.01)
 
     fin_array[i] = hx1.exh.enh.N
     spacing_array[i] = hx1.exh.enh.spacing
