@@ -65,7 +65,7 @@ xmin = fmin(get_minpar, x0)
 
 print "fins:", hx_fins_opt.exh.enh.N
 
-print "\npower net:", hx_fins_opt.power_net * 1000., 'W'
+print "power net:", hx_fins_opt.power_net * 1000., 'W'
 print "power raw:", hx_fins_opt.te_pair.power_total * 1000., 'W'
 print "pumping power:", hx_fins_opt.Wdot_pumping * 1000., 'W'
 hx_fins_opt.exh.volume = hx_fins_opt.exh.height * hx_fins_opt.exh.width * hx_fins_opt.length
