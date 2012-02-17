@@ -36,8 +36,8 @@ hx_osf_opt.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 hx_osf_opt.te_pair.method = 'analytical'
 hx_osf_opt.type = 'counter'
 hx_osf_opt.exh.enh = hx_osf_opt.exh.enh_lib.OffsetStripFin()
-hx_osf_opt.exh.enh.t = 0.5e-3
-hx_osf_opt.exh.enh.s = 0.001
+hx_osf_opt.exh.enh.thickness = 0.5e-3
+hx_osf_opt.exh.enh.spacing = 0.001
 
 hx_osf_opt.exh.T_inlet = 800.
 hx_osf_opt.cool.T_inlet_set = 300.

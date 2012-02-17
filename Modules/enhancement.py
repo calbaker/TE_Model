@@ -15,7 +15,6 @@ class BejanPorous(object):
         self.K = 2.e-7
         self.Nu_D : Nu for porous media parallel plates with const
         heat flux.  Bejan Eq. 12.77"""
-
         self.porosity = 0.92
         self.k_matrix = 5.8e-3
         self.PPI = 10.
@@ -30,7 +29,7 @@ class BejanPorous(object):
         # close to 0.55  
         self.k = self.k_matrix
         self.deltaP = ( self.f * self.perimeter * self.length /
-                    self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )   
+        self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )    
         # pressure drop (kPa) 
         self.h = self.Nu_D * self.k / self.D 
         # coefficient of convection (kW/m^2-K)
@@ -144,6 +143,116 @@ class IdealFin(object):
         self.h_base * self.N * self.thickness) / exh.width )   
         
 
+class OffsetStripFin(object):
+    """Class for modeling offset strip fins. Uses correlations from:
+ 
+    Manglik, Raj M., and Arthur E. Bergles, 'Heat Transfer and
+    Pressure Drop Correlations for the Rectangular Offset Strip Fin
+    Compact Heat Exchanger', Experimental Thermal and Fluid Science,
+    10 (1995), 171-180 <doi:10.1016/0894-1777(94)00096-Q>."""
+
+    def __init__(self):
+        """Sets constants and things that need to be guessed to
+        execute as a standalone model.
+
+        Sets
+        ------------------
+        self.thickness : thickness (m) of fin strip
+        self.l : length (m) of fin
+        self.spacing : pitch (m) of fin
+        self.k : thermal conductivity (W/m/K) of osf material""" 
+
+        self.thickness = 0.001
+        self.l = 0.01
+        self.spacing = 0.001
+        self.k = 0.2
+
+    def set_params(self,exh):
+        """Sets parameters used to calculate friction factor and
+        Colburn factor.  See Manglik and Bergles Fig. 1.
+
+        Requires
+        -------------------
+        self.height
+        self.thickness : thickness (m) of fin strip
+        self.l : length (m) of fin
+
+        Sets
+        --------------------
+        self.h : vertical gap (m) between fins and hx walls
+        self.spacing : horizontal gap (m) between fins  
+        self.alpha = self.spacing / self.h
+        self.delta = self.thickness / self.l
+        self.gamma = self.thickness / self.spacing
+        self.area_frac : fraction of original area still available
+        for flow 
+        self.flow_area : actual flow area (m^2)
+        self.velocity : actual velocity (m/s) based on flow area
+        self.area_enh : heat transfer area enhancment factor
+        self.rows : number of rows of offset strip fins in streamwise
+        direction 
+
+        more stuff that needs to be documented"""
+        
+        self.h = exh.height - self.thickness
+
+        self.alpha = self.spacing / self.h
+        self.delta = self.thickness / self.l
+        self.gamma = self.thickness / self.spacing 
+
+        self.rows = exh.length / self.l
+
+        self.area_frac = ( (self.spacing * self.h) / ((self.h + self.thickness) *
+        (self.spacing + self.thickness)) )  
+
+        self.area_enh = ( (self.h * self.thickness +  self.h * self.l + self.spacing
+        * self.l) / ((self.thickness + self.spacing) * self.l) )
+
+        self.D = ( 4. * self.spacing * self.h * self.l / (2. * (self.spacing *
+        self.l + self.h * self.l + self.thickness * self.h) + self.thickness * self.spacing)
+        )
+
+        self.flow_area = exh.flow_area * self.area_frac 
+        self.perimeter = 4. * self.flow_area / self.D
+        # check this calculation at some point ??? 
+        self.velocity = exh.velocity / self.area_frac
+        self.Re_D = self.velocity * self.D / exh.nu
+
+    def set_f(self):
+        """Sets friction factor, f."""
+        self.f = ( 9.6243 * self.Re_D**-0.7422 * self.alpha**-0.1856 *
+        self.delta**0.3053 * self.gamma**-0.2659 ) 
+
+    def set_j(self):
+        """Sets Colburn factor, j."""
+        self.j = ( 0.6522 * self.Re_D**-0.5403 * self.alpha**-0.1541 *
+        self.delta**0.1499 * self.gamma**-0.0678 * (1. + 5.269e-5 *
+        self.Re_D**1.340 * self.alpha**0.504 * self.delta**0.456 *
+        self.gamma**-1.055)**0.1 ) 
+
+    def solve_enh(self,exh):
+        """Solves all the stuff for this class.
+        self.h comes from Thermal Design by HoSung Lee, eq. 5.230
+        self.eta_fin : fin efficiency"""
+        self.spacinget_params(exh)
+        self.spacinget_f()
+        exh.f = self.f
+        exh.deltaP = ( self.f * self.perimeter * exh.node_length /
+                    exh.flow_area * (0.5 * exh.rho * self.velocity**2) * 0.001 )  
+        # pressure drop (kPa)
+        self.spacinget_j()
+        self.h_conv = ( self.j * exh.mdot / self.flow_area * exh.c_p /
+                   exh.Pr**0.667 )
+        self.beta = np.sqrt(2. * self.h_conv / (self.k * self.thickness))   
+        self.xi = self.beta * self.h / 2. 
+        self.eta_fin = np.tanh(self.xi) / self.xi
+        self.effectiveness = self.eta_fin * self.h / self.thickness
+        self.h_base = self.h_conv * self.effectiveness
+        exh.h = ( (self.h_base * self.thickness + self.h_conv * self.spacing) /
+        (self.spacing + self.thickness) ) 
+
+        exh.Nu_D = exh.h * exh.D / exh.k
+    
 class JetArray(object):
     """Class for modeling impinging jet array."""
 
@@ -251,113 +360,3 @@ class JetArray(object):
         # variable just to keep the code from complaining.  
 
 
-class OffsetStripFin(object):
-    """Class for modeling offset strip fins. Uses correlations from:
- 
-    Manglik, Raj M., and Arthur E. Bergles, 'Heat Transfer and
-    Pressure Drop Correlations for the Rectangular Offset Strip Fin
-    Compact Heat Exchanger', Experimental Thermal and Fluid Science,
-    10 (1995), 171-180 <doi:10.1016/0894-1777(94)00096-Q>."""
-
-    def __init__(self):
-        """Sets constants and things that need to be guessed to
-        execute as a standalone model.
-
-        Sets
-        ------------------
-        self.t : thickness (m) of fin strip
-        self.l : length (m) of fin
-        self.s : pitch (m) of fin
-        self.k : thermal conductivity (W/m/K) of osf material""" 
-
-        self.t = 0.001
-        self.l = 0.01
-        self.s = 0.001
-        self.k = 0.2
-
-    def set_params(self,exh):
-        """Sets parameters used to calculate friction factor and
-        Colburn factor.  See Manglik and Bergles Fig. 1.
-
-        Requires
-        -------------------
-        self.height
-        self.t : thickness (m) of fin strip
-        self.l : length (m) of fin
-
-        Sets
-        --------------------
-        self.h : vertical gap (m) between fins and hx walls
-        self.s : horizontal gap (m) between fins  
-        self.alpha = self.s / self.h
-        self.delta = self.t / self.l
-        self.gamma = self.t / self.s
-        self.area_frac : fraction of original area still available
-        for flow 
-        self.flow_area : actual flow area (m^2)
-        self.velocity : actual velocity (m/s) based on flow area
-        self.area_enh : heat transfer area enhancment factor
-        self.rows : number of rows of offset strip fins in streamwise
-        direction 
-
-        more stuff that needs to be documented"""
-        
-        self.h = exh.height - self.t
-
-        self.alpha = self.s / self.h
-        self.delta = self.t / self.l
-        self.gamma = self.t / self.s 
-
-        self.rows = exh.length / self.l
-
-        self.area_frac = ( (self.s * self.h) / ((self.h + self.t) *
-        (self.s + self.t)) )  
-
-        self.area_enh = ( (self.h * self.t +  self.h * self.l + self.s
-        * self.l) / ((self.t + self.s) * self.l) )
-
-        self.D = ( 4. * self.s * self.h * self.l / (2. * (self.s *
-        self.l + self.h * self.l + self.t * self.h) + self.t * self.s)
-        )
-
-        self.flow_area = exh.flow_area * self.area_frac 
-        self.perimeter = 4. * self.flow_area / self.D
-        # check this calculation at some point ??? 
-        self.velocity = exh.velocity / self.area_frac
-        self.Re_D = self.velocity * self.D / exh.nu
-
-    def set_f(self):
-        """Sets friction factor, f."""
-        self.f = ( 9.6243 * self.Re_D**-0.7422 * self.alpha**-0.1856 *
-        self.delta**0.3053 * self.gamma**-0.2659 ) 
-
-    def set_j(self):
-        """Sets Colburn factor, j."""
-        self.j = ( 0.6522 * self.Re_D**-0.5403 * self.alpha**-0.1541 *
-        self.delta**0.1499 * self.gamma**-0.0678 * (1. + 5.269e-5 *
-        self.Re_D**1.340 * self.alpha**0.504 * self.delta**0.456 *
-        self.gamma**-1.055)**0.1 ) 
-
-    def solve_enh(self,exh):
-        """Solves all the stuff for this class.
-        self.h comes from Thermal Design by HoSung Lee, eq. 5.230
-        self.eta_fin : fin efficiency"""
-        self.set_params(exh)
-        self.set_f()
-        exh.f = self.f
-        exh.deltaP = ( self.f * self.perimeter * exh.node_length /
-                    exh.flow_area * (0.5 * exh.rho * self.velocity**2) * 0.001 )  
-        # pressure drop (kPa)
-        self.set_j()
-        self.h_conv = ( self.j * exh.mdot / self.flow_area * exh.c_p /
-                   exh.Pr**0.667 )
-        self.beta = np.sqrt(2. * self.h_conv / (self.k * self.t))   
-        self.xi = self.beta * self.h / 2. 
-        self.eta_fin = np.tanh(self.xi) / self.xi
-        self.effectiveness = self.eta_fin * self.h / self.t
-        self.h_base = self.h_conv * self.effectiveness
-        exh.h = ( (self.h_base * self.t + self.h_conv * self.s) /
-        (self.s + self.t) ) 
-
-        exh.Nu_D = exh.h * exh.D / exh.k
-    
