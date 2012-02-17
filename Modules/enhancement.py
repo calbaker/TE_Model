@@ -234,13 +234,13 @@ class OffsetStripFin(object):
         """Solves all the stuff for this class.
         self.h comes from Thermal Design by HoSung Lee, eq. 5.230
         self.eta_fin : fin efficiency"""
-        self.spacinget_params(exh)
-        self.spacinget_f()
+        self.set_params(exh)
+        self.set_f()
         exh.f = self.f
         exh.deltaP = ( self.f * self.perimeter * exh.node_length /
                     exh.flow_area * (0.5 * exh.rho * self.velocity**2) * 0.001 )  
         # pressure drop (kPa)
-        self.spacinget_j()
+        self.set_j()
         self.h_conv = ( self.j * exh.mdot / self.flow_area * exh.c_p /
                    exh.Pr**0.667 )
         self.beta = np.sqrt(2. * self.h_conv / (self.k * self.thickness))   
