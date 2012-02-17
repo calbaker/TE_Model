@@ -36,12 +36,13 @@ hx2.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 hx2.te_pair.method = 'analytical'
 hx2.type = 'counter'
 
-hx2.exh.enh = hx2.exh.enh_lib.OffsetStripFin()
-hx2.exh.enh.thickness = 3.e-3
+hx2.exh.enh = hx2.exh.enh_lib.IdealFin()
+hx2.exh.enh.thickness = 2.e-3
 hx2.exh.enh.spacing = 3.19e-3
 hx2.exh.enh.k = 0.02
 
 hx2.plate.k = 0.02 # for Ti
+hx2.plate.thickness = .125 * 2.54e-2
 
 hx2.exh.T_inlet = 800.
 hx2.cool.T_inlet_set = 300.
