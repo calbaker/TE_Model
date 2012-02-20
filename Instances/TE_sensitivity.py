@@ -62,12 +62,12 @@ leg_height_array = np.linspace(0.1e-3, 1e-3, 20)
 power_net_array = np.zeros([current_array.size, fill_array.size,
                             leg_height_array.size]) 
 
-for i in range(current_array):
+for i in range(current_array.size):
     hx11.te_pair.I = current_array[i]
-    for j in range(fill_array):
+    for j in range(fill_array.size):
         fill_fraction = fill_array[j]
         hx11.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)             
-        for k in range(leg_height_array):
+        for k in range(leg_height_array.size):
             hx11.te_pair.length = leg_height_array[k]
             hx11.solve_hx()
             
