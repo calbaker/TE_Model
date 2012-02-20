@@ -5,7 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-from scipy.optimize import fsolve
+from scipy.optimize import fsolve, fmin
 
 # User Defined Modules
 cmd_folder = os.path.dirname('../Modules/')
@@ -55,15 +55,42 @@ hx2.cool.T_outlet = fsolve(hx2.get_T_inlet_error,
 hx2.footprint = hx2.width * hx2.length
 hx2.exh.volume_spec = 10.e-3
 
-width_array = 
-
-for i in range(
-    hx2.width = 
-    hx2.length = 
-
-    hx2.exh.height = hx2.exh.volume_spec / (hx2.width * hx2.length)  
+def get_minpar(spacing):
+    """Returns parameter to be minimized as a function of apar.
+    apar : fin spacing"""
     
+    hx2.exh.enh.spacing = spacing
     hx2.solve_hx()
+
+    if hx2.power_net < 0:
+        minpar = np.abs(hx2.power_net)
+    else:
+        minpar = 1. / hx2.power_net
+    
+    return minpar
+
+length_array = np.linspace(0.2, 0.9, 16)
+width_array = np.linspace(0.3, 0.9, 15)
+
+power_net_array = np.zeros([length_array.size, width_array.size])
+spacing_array = np.zeros([length_array.size, width_array.size])
+x0 = 3.e-3
+
+for i in range(length_array.size):
+    for j in range(width_array.size):
+        iter = i * width_array.size + j
+        itermax = length_array.size * width_array.size
+        print "iteration", iter, "of", itermax
+
+        hx2.length = length_array[i]
+        hx2.width = width_array[j]
+
+        hx2.exh.height = hx2.exh.volume_spec / (hx2.width * hx2.length)  
+    
+        hx2.exh.enh.spacing = fmin(get_minpar, x0)
+        
+        power_net_array[i,j] = hx2.power_net
+        spacing_array[i,j] = hx2.exh.enh.spacing
 
 print "\nPlotting..."
 
@@ -78,5 +105,31 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close('all')
 
+plt.figure()
+x_2d, y_2d = np.meshgrid(length_array * 100., width_array * 100.)
+TICKS = np.linspace(800, power_net_array.max() * 1.e3, 12)
+LEVELS = np.linspace(800, power_net_array.max() * 1.e3, 12)
+FCS = plt.contourf(x_2d, y_2d, power_net_array.T * 1.e3, levels=LEVELS) 
+CB = plt.colorbar(FCS, orientation='vertical', format='%.0f', ticks=TICKS)
+CB.set_label(r'Power')
+plt.grid()
+plt.xlabel('Length (cm)')
+plt.ylabel('Width (cm)')
+plt.subplots_adjust(bottom=0.15)
+plt.subplots_adjust(left=0.15)
+plt.subplots_adjust(right=0.7)
+
+plt.figure()
+# TICKS = np.linspace(800, power_net_array.max() * 1.e3, 12)
+# LEVELS = np.linspace(800, power_net_array.max() * 1.e3, 12)
+FCS = plt.contourf(x_2d, y_2d, spacing_array.T * 1.e3)#, levels=LEVELS) 
+CB = plt.colorbar(FCS, orientation='vertical')#, format='%.0f', ticks=TICKS)
+CB.set_label(r'Fin Spacing (mm)')
+plt.grid()
+plt.xlabel('Length (cm)')
+plt.ylabel('Width (cm)')
+plt.subplots_adjust(bottom=0.15)
+plt.subplots_adjust(left=0.15)
+plt.subplots_adjust(right=0.7)
 
 # plt.show()
