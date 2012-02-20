@@ -16,15 +16,17 @@ reload(hx)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.740
-fill_fraction = 3.01e-2
-leg_length = 3.18e-4
-current = 14.1
+area_ratio = 0.800
+fill_fraction = 2.49e-2
+leg_length = 3.57e-4
+current = 13.0
 
 hx_osf_Ti_opt = hx.HX()
-hx_osf_Ti_opt.width = 0.55
-hx_osf_Ti_opt.exh.height = 3.5e-2
-hx_osf_Ti_opt.length = 0.55
+
+hx_osf_Ti_opt.length = 48.e-2
+hx_osf_Ti_opt.width = 73.e-2
+hx_osf_Ti_opt.exh.height = 2.8e-2
+
 hx_osf_Ti_opt.te_pair.I = current
 hx_osf_Ti_opt.te_pair.length = leg_length
 
@@ -38,8 +40,8 @@ hx_osf_Ti_opt.type = 'counter'
 
 hx_osf_Ti_opt.exh.enh = hx_osf_Ti_opt.exh.enh_lib.OffsetStripFin()
 hx_osf_Ti_opt.exh.enh.k = 0.02
-hx_osf_Ti_opt.exh.enh.t = 2.e-3
-hx_osf_Ti_opt.exh.enh.s = 0.001
+hx_osf_Ti_opt.exh.enh.thickness = 1.5e-3
+hx_osf_Ti_opt.exh.enh.spacing = 5.e-3
 
 hx_osf_Ti_opt.plate.k = 0.02
 hx_osf_Ti_opt.plate.thickness = 0.125 * 2.54e-2
@@ -55,7 +57,7 @@ def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
     apar[0] : number of fins"""
     
-    hx_osf_Ti_opt.exh.enh.s = apar[0]
+    hx_osf_Ti_opt.exh.enh.spacing = apar[0]
     hx_osf_Ti_opt.solve_hx()
 
     if hx_osf_Ti_opt.power_net < 0:
@@ -94,6 +96,7 @@ plt.subplots_adjust(bottom=0.15)
 
 # plt.show()
 
+print "\nfin spacing:", hx_osf_Ti_opt.exh.enh.spacing
 print "\npower net:", hx_osf_Ti_opt.power_net * 1000., 'W'
 print "power raw:", hx_osf_Ti_opt.te_pair.power_total * 1000., 'W'
 print "pumping power:", hx_osf_Ti_opt.Wdot_pumping * 1000., 'W'
