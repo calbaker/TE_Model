@@ -69,8 +69,8 @@ def get_minpar(spacing):
     
     return minpar
 
-length_array = np.linspace(0.2, 0.9, 16)
-width_array = np.linspace(0.3, 0.9, 15)
+length_array = np.linspace(0.2, 0.9, 26)
+width_array = np.linspace(0.3, 0.9, 25)
 
 power_net_array = np.zeros([length_array.size, width_array.size])
 spacing_array = np.zeros([length_array.size, width_array.size])
@@ -118,6 +118,7 @@ plt.ylabel('Width (cm)')
 plt.subplots_adjust(bottom=0.15)
 plt.subplots_adjust(left=0.15)
 plt.subplots_adjust(right=0.7)
+plt.savefig('../Plots/volume_varied/power_net.pdf')
 
 plt.figure()
 # TICKS = np.linspace(800, power_net_array.max() * 1.e3, 12)
@@ -131,5 +132,6 @@ plt.ylabel('Width (cm)')
 plt.subplots_adjust(bottom=0.15)
 plt.subplots_adjust(left=0.15)
 plt.subplots_adjust(right=0.7)
+plt.savefig('../Plots/volume_varied/fin spacing.pdf')
 
 # plt.show()
