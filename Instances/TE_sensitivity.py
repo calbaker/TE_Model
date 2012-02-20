@@ -55,9 +55,10 @@ hx11.cool.T_outlet = 310.
 hx11.set_mdot_charge()
 hx11.cool.T_outlet = fsolve(hx11.get_T_inlet_error,
                                   x0=hx11.cool.T_outlet) 
+
 current_array = np.linspace(10, 14, 15)
-fill_array = np.linspace(1.5, 3.5, 16)
-leg_height_array = np.linspace(0.1e-3, 1e-3, 20) 
+fill_array = np.linspace(1.5, 3.5, 16) * 1.e-2
+leg_height_array = np.linspace(0.1, 1, 20) * 1.e-3
 
 power_net_array = np.zeros([current_array.size, fill_array.size,
                             leg_height_array.size]) 
