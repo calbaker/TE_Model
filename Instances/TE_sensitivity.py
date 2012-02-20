@@ -63,10 +63,20 @@ power_net_array = np.zeros([current_array.size, fill_array.size,
                             leg_height_array.size]) 
 
 for i in range(current_array):
-    hx11
+    hx11.te_pair.I = current_array[i]
     for j in range(fill_array):
+        fill_fraction = fill_array[j]
+        hx11.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)             
         for k in range(leg_height_array):
+            hx11.te_pair.length = leg_height_array[k]
+            hx11.solve_hx()
             
+            power_net_array[i,j,k] = hx11.power_net
+
+np.save('../data/TE_sensitivity/power_net', power_net_array) 
+np.save('../data/TE_sensitivity/current', current_array) 
+np.save('../data/TE_sensitivity/fill_fraction', fill_fraction) 
+np.save('../data/TE_sensitivity/leg_height', leg_height_array) 
 
 print "\nProgram finished."
 print "\nPlotting..."
