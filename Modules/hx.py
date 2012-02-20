@@ -360,7 +360,7 @@ class HX(object):
 
         self.exh.velocity_nodes[i] = self.exh.velocity
 
-    def get_inv_power(self,apar):
+    def get_inv_power_TE(self,apar):
 	"""Method for returning inverse of net power as a function of
 	leg ratio, fill fraction, length, and current.  Use with
 	scipy.optimize.fmin to find optimal set of input parameters."""
@@ -389,7 +389,7 @@ class HX(object):
 
 	return minpar
 
-    def optimize(self):
+    def optimize_TE(self):
 	"""Uses fmin to find optimal set of:
 	I) tem.leg_ratio
 	II) tem.fill_fraction
@@ -406,7 +406,8 @@ class HX(object):
         def fprime():
             return 1
 
-        self.xmin = fmin(self.get_inv_power, self.x0, xtol=self.xtol_fmin)
+        self.xmin = fmin(self.get_inv_power_TE, self.x0,
+                         xtol=self.xtol_fmin) 
 	# self.xmin = fmin_l_bfgs_b(self.get_inv_power, self.x0, fprime=None,
 	# approx_grad=True, bounds=self.xb)
 	t1 = time.clock() 
