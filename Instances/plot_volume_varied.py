@@ -5,10 +5,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-length_array = np.load('../data/volume_varied/length_array')
-width_array = np.load('../data/volume_varied/width_array')
-spacing_array = np.load('../data/volume_varied/spacing_array')
-power_net_array = np.load('../data/volume_varied/power_net_array')
+dirpath = '../data/volume_varied/'
+
+length_array = np.load(dirpath + 'length_array')
+width_array = np.load(dirpath + 'width_array')
+spacing_array = np.load(dirpath + 'spacing_array')
+power_net_array = np.load(dirpath + 'power_net_array')
 
 print "\nPlotting..."
 

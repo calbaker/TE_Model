@@ -92,6 +92,12 @@ for i in range(length_array.size):
         power_net_array[i,j] = hx2.power_net
         spacing_array[i,j] = hx2.exh.enh.spacing
 
+dirpath = '../data/volume_varied/'
+np.save(dirpath + 'length_array', length_array)
+np.save(dirpath + 'width_array', width_array)
+np.save(dirpath + 'spacing_array', spacing_array)
+np.save(dirpath + 'power_net_array', power_net_array)
+
 print "\nPlotting..."
 
 # Plot configuration
