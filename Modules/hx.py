@@ -50,8 +50,6 @@ class HX(object):
         self.cummins = engine.Engine()
 
         self.arrangement = 'single'
-        # allows optimization to use all 4 variables.  
-
         self.fix_geometry()
 
     def init_arrays(self):
@@ -375,6 +373,11 @@ class HX(object):
         self.te_pair.fill_fraction = apar[1]
         self.te_pair.length        = apar[2]
         self.te_pair.I             = apar[3]
+        
+        if isinstance(self.exh.enh, self.exh.enh_lib.OffsetStripFin) == True:
+            self.exh.enh.spacing = apar[4]
+        if isinstance(self.exh.enh, self.exh.enh_lib.IdealFin) == True:
+            self.exh.enh.spacing = apar[4]
             
         # reset surrogate variables
         self.te_pair.set_all_areas(self.te_pair.Ptype.area,
@@ -383,13 +386,13 @@ class HX(object):
 	self.solve_hx()
 
         if self.te_pair.power_total > 0:
-            minpar = 1. / self.te_pair.power_total
+            minpar = 1. / self.power_net
         else:
-            minpar = np.abs(self.te_pair.power_total)
+            minpar = np.abs(self.power_net)
 
 	return minpar
 
-    def optimize_TE(self):
+    def optimize(self):
 	"""Uses fmin to find optimal set of:
 	I) tem.leg_ratio
 	II) tem.fill_fraction
@@ -405,6 +408,11 @@ class HX(object):
         # dummy function that might be used with minimization 
         def fprime():
             return 1
+
+        if isinstance(self.exh.enh, self.exh.enh_lib.OffsetStripFin) == True:
+            self.x0 = np.append(self.x0, self.exh.enh.spacing) 
+        if isinstance(self.exh.enh, self.exh.enh_lib.IdealFin) == True:
+            self.x0 = np.append(self.x0, self.exh.enh.spacing) 
 
         self.xmin = fmin(self.get_inv_power_TE, self.x0,
                          xtol=self.xtol_fmin) 

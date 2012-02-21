@@ -49,6 +49,7 @@ class Exhaust(prop.ideal_gas):
         super(Exhaust, self).__init__()
 
         self.enh_lib = enhancement
+        self.enh = None
         self.T_ref = 300.
         self.P = 101.
         self.height = 1.5e-2
@@ -74,11 +75,6 @@ class Exhaust(prop.ideal_gas):
         self.velocity = self.Vdot / self.flow_area # velocity (m/s) of exhaust
 
         self.k = self.k_air
-        
-        try:
-            self.enh
-        except AttributeError:
-            self.enh = None
         
         if self.enh == None:
             self.set_Re_dependents()
