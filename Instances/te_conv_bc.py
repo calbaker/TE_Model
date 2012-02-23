@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time, os, sys
+from scipy.optimize import fsolve
 
 # local user modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -9,8 +10,6 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import te_pair
 reload(te_pair)
-
-t0 = time.clock()
 
 length = 1.e-3
 current = 3.5
@@ -33,25 +32,45 @@ te_pair.method = 'numerical'
 te_pair.set_constants()
 te_pair.Ptype.set_prop_fit()
 te_pair.Ntype.set_prop_fit()
-te_pair.solve_te_pair()
 
-T_h_goal = np.linspace(400, 600., 100)
-T_props = (T_h_goal + T_h_goal[0]) / 2.
+T_guess = np.array([700., 350.])
 
-A_opt = np.zeros(np.size(T_props))
-xi_opt = np.zeros(np.size(T_props))
-eta_max = np.zeros(np.size(T_props))
-abc = np.zeros([np.size(T_props),3])
+class _Exh(object):
 
-for i in range(np.size(T_props)):
-    te_pair.T_props = T_props[i]
-    te_pair.set_A_opt()
-    A_opt[i] = te_pair.A_opt
+    def __init__(self):
+        self.T = 800.
+        self.h = 0.5
 
-for i in range(np.size(T_h_goal)):
-    te_pair.T_h_goal = T_h_goal[i]
-    te_pair.set_eta_max()
-    eta_max[i] = te_pair.eta_max
+
+class _Cool(object):
+    
+    def __init__(self):
+        self.T = 300.
+        self.h = 0.5
+
+exh = _Exh()
+cool = _Cool()
+
+def get_error(T_arr):
+    T_h = T_arr[0]
+    exh.q = exh.h * (T_h - exh.T)
+    te_pair.T_h_goal = T_h
+    te_pair.solve_te_pair()
+    error_hot = (exh.q - te_pair.q_h) / te_pair.q_h
+    
+    T_c = T_arr[1]
+    cool.q = cool.h * (cool.T - T_c)
+    te_pair.T_c = T_c
+    te_pair.solve_te_pair()
+    error_cold = (exh.q - te_pair.q_c) / te_pair.q_c
+    
+    te_pair.error = np.array([error_hot, error_cold]).reshape(2)  
+    return te_pair.error
+
+T_arr = fsolve(get_error, x0=T_guess) 
+
+print "T_h:", T_arr[0]
+print "T_c:", T_arr[1]
 
 # Plot configuration
 FONTSIZE = 15
@@ -65,23 +84,3 @@ plt.rcParams['lines.markersize'] = 10
 plt.rcParams['axes.formatter.limits'] = -3,3
 
 plt.close('all')
-
-fig1 = plt.figure()
-plt.plot(T_props, A_opt, '-k')
-plt.xlabel('Property Evaluation Temperature (K)')
-plt.ylabel(r'Optimal $\frac{A_n}{A_p}$')
-plt.ylim(0,0.75)
-plt.grid()
-plt.subplots_adjust(left=0.15)
-plt.savefig('../Plots/area_ratio_v_T.pdf')
-plt.savefig('../Plots/area_ratio_v_T.png')
-
-fig3 = plt.figure()
-plt.plot(T_h_goal, eta_max*100., '-k')
-plt.xlabel('TE Hot Side Temperature (K)')
-plt.ylabel(r'$\eta_{max}$(%)')
-plt.grid()
-plt.subplots_adjust(left=0.15)
-plt.savefig('../Plots/eta_max_v_T.pdf')
-plt.savefig('../Plots/eta_max_v_T.png')
-
