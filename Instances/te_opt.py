@@ -1,3 +1,8 @@
+"""Plots theoretical and numerically determined optimum area ratio
+efficiency as a function of hot side temperature.  Also, plots
+numerically determined optimal current as a function of hot side
+temperature."""
+
 # distribution modules
 import numpy as np
 import matplotlib.pyplot as plt
