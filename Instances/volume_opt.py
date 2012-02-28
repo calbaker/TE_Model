@@ -59,27 +59,21 @@ def get_minpar(apar):
     """Returns parameter to be minimized as a function of apar.
     apar : fin spacing"""
     
-    hx2.exh.enh.spacing = apar[0]
-    hx2.width = apar[1]
-    hx2.length = apar[2]
+    hx2.width = apar[0]
+    hx2.length = apar[1]
 
     hx2.exh.height = hx2.exh.volume_spec / (hx2.width * hx2.length)  
     
-    hx2.solve_hx()
+    hx2.optimize()
 
     if hx2.power_net < 0:
         minpar = np.abs(hx2.power_net)
     else:
         minpar = 1. / hx2.power_net
     
-    # print "fin spacing:", hx2.exh.enh.spacing
-    # print "length:", hx2.length
-    # print "width:", hx2.width
-    # print "power net:", hx2.power_net * 1000., 'W'
-
     return minpar
 
-x0 = np.array([2.72e-3, 0.5, 0.5])
+x0 = np.array([0.5, 0.5])
 
 xmin = fmin(get_minpar, x0)
 
