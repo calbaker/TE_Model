@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import os,sys
 from scipy.optimize import fsolve
 from mayavi import mlab
+from mayavi.api import Engine
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -40,9 +41,15 @@ mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(power_net_array),
                                                               power_net_array.shape)[2],
                                  vmin=VMIN
                         )
-mlab.colorbar(title='Power (kW)')
+axes = mlab.axes(ranges=[current_array.min(), current_array.max(),
+                                 fill_array.min(), fill_array.max(),
+                                 leg_height_array.min(),
+                                 leg_height_array.max()]) 
+
+mlab.colorbar(title='Power (kW)', nb_colors=12, orientation='vertical')
 mlab.xlabel('Current (A)')
-mlab.ylabel('Fill Fraction (A)')
+mlab.ylabel('Fill Fraction (%)')
 mlab.zlabel('Leg Height (mm)')
 
 mlab.outline()
+
