@@ -1,5 +1,5 @@
 # Chad Baker
-# Created on 2011 Feb 10
+c# Created on 2011 Feb 10
 
 # Distribution Modules
 import numpy as np
@@ -55,8 +55,8 @@ hx2.cool.T_outlet = fsolve(hx2.get_T_inlet_error,
 hx2.footprint = hx2.width * hx2.length
 hx2.exh.volume_spec = 10.e-3
 
-length_array = np.linspace(0.2, 0.9, 26)
-width_array = np.linspace(0.3, 0.9, 25)
+length_array = np.linspace(0.2, 0.9, 10)
+width_array = np.linspace(0.3, 0.9, 11)
 
 spacing_array = np.zeros([length_array.size, width_array.size])
 leg_ratio_array = np.zeros([length_array.size, width_array.size])
