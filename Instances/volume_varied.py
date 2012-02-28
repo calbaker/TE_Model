@@ -1,5 +1,5 @@
 # Chad Baker
-c# Created on 2011 Feb 10
+# Created on 2011 Feb 10
 
 # Distribution Modules
 import numpy as np
