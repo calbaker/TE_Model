@@ -55,26 +55,17 @@ hx2.cool.T_outlet = fsolve(hx2.get_T_inlet_error,
 hx2.footprint = hx2.width * hx2.length
 hx2.exh.volume_spec = 10.e-3
 
-def get_minpar(spacing):
-    """Returns parameter to be minimized as a function of apar.
-    apar : fin spacing"""
-    
-    hx2.exh.enh.spacing = spacing
-    hx2.solve_hx()
-
-    if hx2.power_net < 0:
-        minpar = np.abs(hx2.power_net)
-    else:
-        minpar = 1. / hx2.power_net
-    
-    return minpar
-
 length_array = np.linspace(0.2, 0.9, 26)
 width_array = np.linspace(0.3, 0.9, 25)
 
-power_net_array = np.zeros([length_array.size, width_array.size])
 spacing_array = np.zeros([length_array.size, width_array.size])
-x0 = 3.e-3
+leg_ratio_array = np.zeros([length_array.size, width_array.size])
+fill_fraction_array = np.zeros([length_array.size, width_array.size])
+leg_length_array = np.zeros([length_array.size, width_array.size])
+current_array = np.zeros([length_array.size, width_array.size])
+
+power_net_array = np.zeros([length_array.size, width_array.size])
+
 
 for i in range(length_array.size):
     for j in range(width_array.size):
@@ -87,15 +78,23 @@ for i in range(length_array.size):
 
         hx2.exh.height = hx2.exh.volume_spec / (hx2.width * hx2.length)  
     
-        hx2.exh.enh.spacing = fmin(get_minpar, x0)
+        hx2.optimize()
         
-        power_net_array[i,j] = hx2.power_net
         spacing_array[i,j] = hx2.exh.enh.spacing
+        leg_ratio_array[i,j] = hx2.xmin[0]
+        fill_fraction_array[i,j] = hx2.xmin[1]
+        leg_length_array[i,j] = hx2.xmin[2]
+        current_array[i,j] = hx2.xmin[3]
+        power_net_array[i,j] = hx2.power_net
 
 dirpath = '../data/volume_varied/'
 np.save(dirpath + 'length_array', length_array)
 np.save(dirpath + 'width_array', width_array)
 np.save(dirpath + 'spacing_array', spacing_array)
+np.save(dirpath + 'spacing_array', leg_ratio_array)
+np.save(dirpath + 'spacing_array', fill_fraction_array)
+np.save(dirpath + 'spacing_array', leg_length_array)
+np.save(dirpath + 'spacing_array', current_array)
 np.save(dirpath + 'power_net_array', power_net_array)
 
 print "\nPlotting..."
