@@ -398,6 +398,7 @@ class HX(object):
 	II) tem.fill_fraction
 	III) hx.te_pair.length
 	IV) hx.te_pair.I
+        V) fin spacing if appropriate
 	based on minimizing the inverse of power.  This may be a bad
 	method if net power is negative.
 
@@ -409,10 +410,11 @@ class HX(object):
         def fprime():
             return 1
 
-        if isinstance(self.exh.enh, self.exh.enh_lib.OffsetStripFin) == True:
-            self.x0 = np.append(self.x0, self.exh.enh.spacing) 
-        if isinstance(self.exh.enh, self.exh.enh_lib.IdealFin) == True:
-            self.x0 = np.append(self.x0, self.exh.enh.spacing) 
+        if self.x0.size < 5:
+            if isinstance(self.exh.enh, self.exh.enh_lib.OffsetStripFin) == True:
+                self.x0 = np.append(self.x0, self.exh.enh.spacing) 
+            if isinstance(self.exh.enh, self.exh.enh_lib.IdealFin) == True:
+                self.x0 = np.append(self.x0, self.exh.enh.spacing) 
 
         self.xmin = fmin(self.get_inv_power_TE, self.x0,
                          xtol=self.xtol_fmin) 
@@ -428,9 +430,6 @@ class HX(object):
         print "exhaust power density:", self.power_net / self.exh.volume, 'kW/m^3'
 
 	print """Elapsed time solving xmin1 =""", t1
-	print """Writing to output/optimize/xmin"""
-
-	np.savetxt('output/optimize/'+self.xmin_file, self.xmin)
 
     def get_T_inlet_error(self, T_outlet):
 	"""Returns error for coolant inlet temperature from desired
