@@ -74,10 +74,11 @@ for i in range(current_array.size):
             
             power_net_array[i,j,k] = hx11.power_net
 
-np.save('../data/TE_sensitivity/power_net_array', power_net_array) 
-np.save('../data/TE_sensitivity/current_array', current_array) 
-np.save('../data/TE_sensitivity/fill_array', fill_array) 
-np.save('../data/TE_sensitivity/leg_height_array', leg_height_array) 
+data_dir = '../data/TE_sensitivity/'
+np.save(data_dir + 'power_net_array', power_net_array) 
+np.save(data_dir + 'current_array', current_array) 
+np.save(data_dir + 'fill_array', fill_array) 
+np.save(data_dir + 'leg_height_array', leg_height_array) 
 
 print "\nProgram finished."
 print "\nPlotting..."
