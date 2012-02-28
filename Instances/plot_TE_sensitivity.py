@@ -14,8 +14,8 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
     
 dirpath = '../data/TE_sensitivity/'
-current_array = np.load(dirpath+'current_array.npy')
-fill_array = np.load(dirpath+'fill_array.npy')
+current_array = np.load(dirpath+'current_array.npy') 
+fill_array = np.load(dirpath+'fill_array.npy') * 100.
 leg_height_array = np.load(dirpath+'leg_height_array.npy') * 1.e3
 
 power_net_array = np.load(dirpath+'power_net_array.npy') 
