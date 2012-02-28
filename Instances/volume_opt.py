@@ -64,6 +64,13 @@ def get_minpar(apar):
 
     hx2.exh.height = hx2.exh.volume_spec / (hx2.width * hx2.length)  
     
+    try:
+        hx2.xmin
+    except AttributeError:
+        hx2.xmin = None
+    if hx2.xmin != None:
+        hx2.x0 = hx2.xmin
+        
     hx2.optimize()
 
     if hx2.power_net < 0:

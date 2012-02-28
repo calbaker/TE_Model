@@ -78,6 +78,9 @@ for i in range(length_array.size):
 
         hx2.exh.height = hx2.exh.volume_spec / (hx2.width * hx2.length)  
     
+        if i > 0:
+            hx2.x0 = hx2.xmin
+
         hx2.optimize()
         
         spacing_array[i,j] = hx2.exh.enh.spacing
