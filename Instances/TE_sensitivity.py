@@ -58,7 +58,7 @@ hx11.cool.T_outlet = fsolve(hx11.get_T_inlet_error,
 
 current_array = np.linspace(10, 14, 15)
 fill_array = np.linspace(1.5, 3.5, 16) * 1.e-2
-leg_height_array = np.linspace(0.1, 1, 20) * 1.e-3
+leg_height_array = np.linspace(0.1, 0.6, 17) * 1.e-3
 
 power_net_array = np.zeros([current_array.size, fill_array.size,
                             leg_height_array.size]) 
