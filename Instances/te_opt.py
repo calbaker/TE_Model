@@ -22,7 +22,7 @@ te_pair = te_pair.TE_Pair()
 te_pair.I = current
 te_pair.Ntype.material = 'MgSi'
 te_pair.Ptype.material = 'HMS'
-te_pair.T_h_goal = 500.
+te_pair.T_h_goal = 633.
 te_pair.T_c = 300.
 te_pair.Ptype.node = 0
 te_pair.Ntype.node = 0
@@ -51,7 +51,7 @@ def get_minpar(apar):
         minpar = -te_pair.P
     return minpar
 
-T_h_goal = np.linspace(450, 600., 100)
+T_h_goal = np.linspace(500, 750., 25)
 T_props = (T_h_goal + T_h_goal[0]) / 2.
 
 A_opt = np.zeros(T_props.size)
