@@ -23,18 +23,21 @@ power_net_array = np.load(dirpath+'power_net_array.npy')
 VMIN = 0.9 * power_net_array.max()
 
 mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(power_net_array),
-                            plane_orientation='x_axes',
-                            slice_index=current_array.size / 2,
+                                 plane_orientation='x_axes',
+                                 slice_index=np.unravel_index(power_net_array.argmax(),
+                                                              power_net_array.shape)[0],
                                  vmin=VMIN
                         )
 mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(power_net_array),
-                            plane_orientation='y_axes',
-                            slice_index=fill_array.size / 2,
+                                 plane_orientation='y_axes',
+                                 slice_index=np.unravel_index(power_net_array.argmax(),
+                                                              power_net_array.shape)[1],
                                  vmin=VMIN
-                        )
+                                 )
 mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(power_net_array),
-                            plane_orientation='z_axes',
-                            slice_index=leg_height_array.size / 2,
+                                 plane_orientation='z_axes',
+                                 slice_index=np.unravel_index(power_net_array.argmax(),
+                                                              power_net_array.shape)[2],
                                  vmin=VMIN
                         )
 mlab.colorbar(title='Power (kW)')
