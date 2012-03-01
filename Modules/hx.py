@@ -31,7 +31,6 @@ class HX(object):
         # length (m) of HX duct
         self.nodes = 25 # number of nodes for numerical heat transfer
                         # model
-        self.opt_iter = 0 # counter for optimization iterations
         self.x0 = np.array([.7,0.02,0.001,4.])
         self.xb = [(0.5,2.), (0.,1.), (1.e-4,20.e-3), (0.1,None)] 
         # initial guess and bounds for x where entries are N/P area,
@@ -41,6 +40,13 @@ class HX(object):
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
+
+        self.apar_list = [
+            ['te_pair','leg_ratio'],     
+            ['te_pair','fill_fraction'],
+            ['te_pair','length'],        
+            ['te_pair','I']
+            ]
 
         # initialization of sub classes
         self.cool = coolant.Coolant()
@@ -358,7 +364,7 @@ class HX(object):
 
         self.exh.velocity_nodes[i] = self.exh.velocity
 
-    def get_inv_power_TE(self,apar):
+    def get_minpar(self, apar):
 	"""Method for returning inverse of net power as a function of
 	leg ratio, fill fraction, length, and current.  Use with
 	scipy.optimize.fmin to find optimal set of input parameters."""
@@ -369,16 +375,9 @@ class HX(object):
             print "net power", self.power_net
 	apar = np.array(apar)
 
-        self.te_pair.leg_ratio     = apar[0]
-        self.te_pair.fill_fraction = apar[1]
-        self.te_pair.length        = apar[2]
-        self.te_pair.I             = apar[3]
-        
-        if isinstance(self.exh.enh, self.exh.enh_lib.OffsetStripFin) == True:
-            self.exh.enh.spacing = apar[4]
-        if isinstance(self.exh.enh, self.exh.enh_lib.IdealFin) == True:
-            self.exh.enh.spacing = apar[4]
-            
+        for i in range(apar.size):
+            vars(self)[self.apar_list[i]] = apar[i]
+
         # reset surrogate variables
         self.te_pair.set_all_areas(self.te_pair.Ptype.area,
         self.te_pair.area_ratio, self.te_pair.fill_fraction) 
@@ -398,9 +397,11 @@ class HX(object):
 	II) tem.fill_fraction
 	III) hx.te_pair.length
 	IV) hx.te_pair.I
-        V) fin spacing if appropriate
-	based on minimizing the inverse of power.  This may be a bad
-	method if net power is negative.
+        V) fin spacing if value for initial guess is given in kwarg
+        ...maybe some others as determined by kwargs
+
+	This is based on minimizing the inverse of power.  This may be
+	a bad method if net power is negative.
 
 	self.x0 and self.xb must be defined elsewhere"""
 	
@@ -410,18 +411,20 @@ class HX(object):
         def fprime():
             return 1
 
-        if self.x0.size < 5:
-            if isinstance(self.exh.enh, self.exh.enh_lib.OffsetStripFin) == True:
-                self.x0 = np.append(self.x0, self.exh.enh.spacing) 
-            if isinstance(self.exh.enh, self.exh.enh_lib.IdealFin) == True:
-                self.x0 = np.append(self.x0, self.exh.enh.spacing) 
+        self.opt_iter = 0
 
-        self.xmin = fmin(self.get_inv_power_TE, self.x0,
-                         xtol=self.xtol_fmin) 
+        self.x0 = np.zeros(len(self.apar_list))
+
+        for i in range(self.x0.size):
+            self.x0[i] = vars(self)[self.apar_list[i]]
+
+        self.xmin = fmin(self.get_minpar, self.x0,
+                         xtol=self.xtol_fmin)  
 	# self.xmin = fmin_l_bfgs_b(self.get_inv_power, self.x0, fprime=None,
 	# approx_grad=True, bounds=self.xb)
 	t1 = time.clock() 
-
+        
+        print "xmin:", self.xmin 
         print "power net:", self.power_net * 1000., 'W'
         print "power raw:", self.te_pair.power_total * 1000., 'W'
         print "pumping power:", self.Wdot_pumping * 1000., 'W'
