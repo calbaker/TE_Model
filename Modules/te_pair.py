@@ -154,6 +154,9 @@ class TE_Pair(object):
 
     def __init__(self):
         """sets constants and defines leg instances"""
+        self.leg_ratio = 0.7
+        self.fill_fraction = 0.02
+        self.length = 1.e-3
         self.I = 1. # electrical current (Amps)
         self.Ptype = Leg() # p-type instance of leg
         self.Ntype = Leg() # n-type instance of leg
