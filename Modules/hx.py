@@ -20,12 +20,6 @@ reload(coolant)
 import platewall
 reload(platewall)
 
-def get_nested_attr(vars_dict, attrs):
-    inst = vars_dict[attrs[0]]
-    return operator.attrgetter('.'.join(attrs[1:]))(inst)
-
-def set_nested_attr(vars_dict, attrs, value):
-    setattr(get_nested_attr(vars_dict, attrs[0:-1]), attrs[-1], value)
 
 class HX(object):
     """class for handling HX system"""
@@ -50,10 +44,10 @@ class HX(object):
         # temperature (K) at restricted dead state
 
         self.apar_list = [
-            ['te_pair.leg_ratio'],     
-            ['te_pair.fill_fraction'],
-            ['te_pair.length'],        
-            ['te_pair.I']
+            'te_pair.leg_ratio',     
+            'te_pair.fill_fraction',
+            'te_pair.length',        
+            'te_pair.I'
             ]
 
         # initialization of sub classes
@@ -384,7 +378,7 @@ class HX(object):
 	apar = np.array(apar)
 
         for i in range(apar.size):
-            operator.attrgetter('.'.join(self.apar_list[i]))(self)
+            operator.attrgetter(self.apar_list[i])(self)
 
         # reset surrogate variables
         self.te_pair.set_all_areas(self.te_pair.Ptype.area,
@@ -426,7 +420,7 @@ class HX(object):
         self.get_apar = []
 
         for i in range(self.x0.size):
-            self.x0[i] = operator.attrgetter('.'.join(self.apar_list[i][:]))(self)
+            self.x0[i] = operator.attrgetter(self.apar_list[i])(self)
 
         self.xmin = fmin(self.get_minpar, self.x0,
                          xtol=self.xtol_fmin)  
@@ -434,7 +428,9 @@ class HX(object):
 	# approx_grad=True, bounds=self.xb)
 	t1 = time.clock() 
         
-        print "xmin:", self.xmin 
+        for i in range(self.x0.size):
+            print self.apar_list[i] + ':', self.xmin[i]
+
         print "power net:", self.power_net * 1000., 'W'
         print "power raw:", self.te_pair.power_total * 1000., 'W'
         print "pumping power:", self.Wdot_pumping * 1000., 'W'
