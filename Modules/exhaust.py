@@ -13,12 +13,16 @@ reload(functions)
 import enhancement
 reload(enhancement)
 
+
 class Exhaust(prop.ideal_gas):
-    """Class for modeling convection and flow of engine exhaust
-    through heat exchanger."""
+    """
+    Class for modeling convection and flow of engine exhaust
+    through heat exchanger.
+    """
 
     def __init__(self):
-        """Sets the following constants:
+        """
+        Sets the following constants:
         self.porous : determines whether porous metal foam is used as
         heat transfer enhancement.  Default is 'no'.  
         self.enh : determines what method of heat transfer
@@ -44,7 +48,8 @@ class Exhaust(prop.ideal_gas):
         set_Re
         set_Re_dependents
         
-        Also initializes super class"""
+        Also initializes super class
+        """
 
         super(Exhaust, self).__init__()
 
