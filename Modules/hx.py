@@ -85,6 +85,8 @@ class HX(object):
         # initializing array for storing temperature (K) in each node 
         self.cool.entropy_nodes = ZEROS.copy()
         self.cool.enthalpy_nodes = ZEROS.copy()
+        self.cool.deltaP_nodes = ZEROS.copy()
+        self.cool.Wdot_nodes = ZEROS.copy()
 
         self.U_nodes = ZEROS.copy()
         self.U_hot_nodes = self.U_nodes.copy()
@@ -126,8 +128,8 @@ class HX(object):
         self.te_pair.set_constants()
         self.leg_pairs = int(self.area / self.te_pair.area)
         # Number of TEM leg pairs per node
-        self.x_dim = np.arange(self.node_length/2, self.length +
-        self.node_length/2, self.node_length)   
+        self.x_dim = np.arange(self.node_length / 2, self.length +
+        self.node_length / 2, self.node_length)   
         # x coordinate (m)
         self.fix_geometry()
         self.exh.set_flow_geometry(self.exh.width) 
@@ -252,6 +254,7 @@ class HX(object):
             self.cool.T = self.cool.T_inlet
         elif self.type == 'counter':
             self.cool.T = self.cool.T_outlet  
+        self.cool.node_length = self.node_length
             
         self.te_pair.Ptype.set_prop_fit()
         self.te_pair.Ntype.set_prop_fit()
@@ -284,12 +287,16 @@ class HX(object):
         self.effectiveness = ( self.Qdot_total / (self.exh.C *
         (self.exh.T_inlet - self.cool.T_inlet)) )
         # heat exchanger effectiveness
+
         self.te_pair.power_total = self.te_pair.power_nodes.sum()
         # total TE power output (kW)
+
         self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
+        self.cool.Wdot_total = self.cool.Wdot_nodes.sum()
         self.Wdot_pumping = ( self.exh.Wdot_total +
-        self.cool.Wdot_pumping )  
+                              self.cool.Wdot_total )  
         # total pumping power requirement (kW) 
+
         self.power_net = ( self.te_pair.power_total -
         self.Wdot_pumping ) 
         
@@ -350,6 +357,8 @@ class HX(object):
         self.exh.enthalpy_nodes[i] = self.exh.enthalpy
 
         self.cool.T_nodes[i] = self.cool.T
+        self.cool.deltaP_nodes[i] = self.cool.deltaP
+        self.cool.Wdot_nodes[i] = self.cool.Wdot_pumping
 
         self.te_pair.T_h_nodes[i] = self.te_pair.T_h
         # hot side temperature (K) of TEM at each node 
@@ -433,7 +442,7 @@ class HX(object):
         for i in range(self.x0.size):
             varname = '.'.join(self.apar_list[i][1:])
             varval = (
-                operator.attrgetter(varname)(self)
+                operator.attrgetter()(self)
         ) 
             print varname + ":", varval
 

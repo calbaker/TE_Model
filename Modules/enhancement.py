@@ -1,4 +1,5 @@
-"""Module for modeling fins in exhaust side of heat exhanger"""
+"""Module for modeling fins in exhaust or coolant side of heat
+exchanger""" 
 # Distribution libraries
 import numpy as np
 
@@ -21,7 +22,7 @@ class BejanPorous(object):
         self.K = 2.e-7
         self.Nu_D = 6. 
     
-    def solve_enh(self,exh):
+    def solve_enh(self,flow):
         self.Re_K = self.velocity * self.K**0.5 / self.nu 
         # Re based on permeability from Bejan Eq. 12.11    
         self.f = 1. / self.Re_K + 0.55 
@@ -87,60 +88,60 @@ class IdealFin(object):
         self.k = 0.2
         self.spacing = 0.003
 
-    def set_geometry(self,exh):
+    def set_geometry(self,flow):
         """Fixes appropriate geometrical parameters."""
 
-        self.height = exh.height / 2
+        self.height = flow.height / 2
         # height of fin pair such that their tips meet in the
         # middle and are adiabatic.  
-        self.N = ( (exh.width / self.spacing - 1.) / (1. +
+        self.N = ( (flow.width / self.spacing - 1.) / (1. +
         self.thickness / self.spacing) ) 
-        self.spacing = ( (exh.width - self.N *  self.thickness) /
+        self.spacing = ( (flow.width - self.N *  self.thickness) /
         (self.N + 1.) )  
-        self.perimeter = ( 2. * (self.spacing + exh.height) * (self.N
+        self.perimeter = ( 2. * (self.spacing + flow.height) * (self.N
         + 1.) )    
         # perimeter of new duct formed by fins with constant overal duct width
-        self.flow_area = self.spacing * exh.height * (self.N + 1.)
+        self.flow_area = self.spacing * flow.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin    
         self.D = 4. * self.flow_area / self.perimeter
 
-    def set_h(self,exh):
-        """Determines effective heat transfer coefficient of fin."""
-        exh.h_unfinned = exh.h
-
-        self.effectiveness = self.eta * 2. * self.height / self.thickness
-        self.h_base = self.effectiveness * exh.h 
-        exh.h = ( (exh.h_unfinned * (exh.width - self.N *
-        self.thickness) + self.h_base * self.N * self.thickness) /
-        exh.width )  
-
-    def set_eta(self,exh):
+    def set_eta(self,flow):
         """Determines fin efficiency
         Sets
         ------------------
         self.beta : dimensionless fin parameter
         self.xi : beta times fin length (self.height)
         self.eta : fin efficiency"""
-        self.beta = np.sqrt(2. * exh.h / (self.k * self.thickness)) 
+        self.beta = np.sqrt(2. * flow.h / (self.k * self.thickness)) 
         self.xi = self.beta * self.height
         self.eta = np.tanh(self.xi) / self.xi
 
-        exh.deltaP = ( exh.f * self.perimeter * exh.node_length /
-        self.flow_area * (0.5 * exh.rho * exh.velocity**2) * 0.001 )    
+    def set_h_and_P(self,flow):
+        """Determines effective heat transfer coefficient of fin."""
+        flow.h_unfinned = flow.h
+
+        self.effectiveness = self.eta * 2. * self.height / self.thickness
+        self.h_base = self.effectiveness * flow.h 
+        flow.h = ( (flow.h_unfinned * (flow.width - self.N *
+        self.thickness) + self.h_base * self.N * self.thickness) /
+        flow.width )  
+
+        flow.deltaP = ( flow.f * self.perimeter * flow.node_length /
+        self.flow_area * (0.5 * flow.rho * flow.velocity**2) * 0.001 )    
         # pressure drop (kPa)
- 
-    def solve_enh(self,exh):
+
+    def solve_enh(self,flow):
         """Runs all the other methods that need to run."""
-        self.set_geometry(exh)
-        exh.velocity = exh.Vdot / self.flow_area
-        exh.set_Re_dependents()
-        exh.h = exh.Nu_D * exh.k / exh.D
+        self.set_geometry(flow)
+        flow.velocity = flow.Vdot / self.flow_area
+        flow.set_Re_dependents()
+        flow.h = flow.Nu_D * flow.k / flow.D
         # coefficient of convection (kW/m^2-K) 
-        self.h = exh.h
-        self.set_eta(exh) 
-        self.set_h(exh)
-        self.h = ( (self.h * (exh.width - self.N *  self.thickness) +
-        self.h_base * self.N * self.thickness) / exh.width )   
+        self.h = flow.h
+        self.set_eta(flow) 
+        self.set_h_and_P(flow)
+        self.h = ( (self.h * (flow.width - self.N *  self.thickness) +
+        self.h_base * self.N * self.thickness) / flow.width )   
         
 
 class OffsetStripFin(object):
@@ -167,7 +168,7 @@ class OffsetStripFin(object):
         self.spacing = 0.001
         self.k = 0.2
 
-    def set_params(self,exh):
+    def set_params(self,flow):
         """Sets parameters used to calculate friction factor and
         Colburn factor.  See Manglik and Bergles Fig. 1.
 
@@ -194,13 +195,13 @@ class OffsetStripFin(object):
 
         more stuff that needs to be documented"""
         
-        self.h = exh.height - self.thickness
+        self.h = flow.height - self.thickness
 
         self.alpha = self.spacing / self.h
         self.delta = self.thickness / self.l
         self.gamma = self.thickness / self.spacing 
 
-        self.rows = exh.length / self.l
+        self.rows = flow.length / self.l
 
         self.area_frac = ( (self.spacing * self.h) / ((self.h + self.thickness) *
         (self.spacing + self.thickness)) )  
@@ -212,11 +213,11 @@ class OffsetStripFin(object):
         self.l + self.h * self.l + self.thickness * self.h) + self.thickness * self.spacing)
         )
 
-        self.flow_area = exh.flow_area * self.area_frac 
+        self.flow_area = flow.flow_area * self.area_frac 
         self.perimeter = 4. * self.flow_area / self.D
         # check this calculation at some point ??? 
-        self.velocity = exh.velocity / self.area_frac
-        self.Re_D = self.velocity * self.D / exh.nu
+        self.velocity = flow.velocity / self.area_frac
+        self.Re_D = self.velocity * self.D / flow.nu
 
     def set_f(self):
         """Sets friction factor, f."""
@@ -230,28 +231,28 @@ class OffsetStripFin(object):
         self.Re_D**1.340 * self.alpha**0.504 * self.delta**0.456 *
         self.gamma**-1.055)**0.1 ) 
 
-    def solve_enh(self,exh):
+    def solve_enh(self,flow):
         """Solves all the stuff for this class.
         self.h comes from Thermal Design by HoSung Lee, eq. 5.230
         self.eta_fin : fin efficiency"""
-        self.set_params(exh)
+        self.set_params(flow)
         self.set_f()
-        exh.f = self.f
-        exh.deltaP = ( self.f * self.perimeter * exh.node_length /
-                    exh.flow_area * (0.5 * exh.rho * self.velocity**2) * 0.001 )  
+        flow.f = self.f
+        flow.deltaP = ( self.f * self.perimeter * flow.node_length /
+                    flow.flow_area * (0.5 * flow.rho * self.velocity**2) * 0.001 )  
         # pressure drop (kPa)
         self.set_j()
-        self.h_conv = ( self.j * exh.mdot / self.flow_area * exh.c_p /
-                   exh.Pr**0.667 )
+        self.h_conv = ( self.j * flow.mdot / self.flow_area * flow.c_p /
+                   flow.Pr**0.667 )
         self.beta = np.sqrt(2. * self.h_conv / (self.k * self.thickness))   
         self.xi = self.beta * self.h / 2. 
         self.eta_fin = np.tanh(self.xi) / self.xi
         self.effectiveness = self.eta_fin * self.h / self.thickness
         self.h_base = self.h_conv * self.effectiveness
-        exh.h = ( (self.h_base * self.thickness + self.h_conv * self.spacing) /
+        flow.h = ( (self.h_base * self.thickness + self.h_conv * self.spacing) /
         (self.spacing + self.thickness) ) 
 
-        exh.Nu_D = exh.h * exh.D / exh.k
+        flow.Nu_D = flow.h * flow.D / flow.k
     
 class JetArray(object):
     """Class for modeling impinging jet array."""
@@ -272,7 +273,7 @@ class JetArray(object):
         self.K = 0.5
         self.spacing = 0.5e-2
         
-    def set_number(self,exh):
+    def set_number(self,flow):
         """Sets number of jets based on jet spacing and overall size
         of jet array.
 
@@ -288,12 +289,12 @@ class JetArray(object):
         self.width : width (m) of jet array in transverse direction
         self.length : length (m) of jet array in streamwise direction""" 
 
-        self.N_streamwise = exh.length / self.spacing
-        self.N_transverse = exh.width / self.spacing
+        self.N_streamwise = flow.length / self.spacing
+        self.N_transverse = flow.width / self.spacing
         self.N = self.N_streamwise * self.N_transverse 
         self.area = self.spacing**2 
         
-    def set_annulus(self,exh):
+    def set_annulus(self,flow):
         """Sets variables related to annulus geometry.
 
         Requires
@@ -307,11 +308,11 @@ class JetArray(object):
         self.ann_perimeter
         self.ann_velocity"""
 
-        self.ann_area = exh.width * self.H
-        self.ann_perimeter = 2. * (exh.width + self.H)
-        self.ann_velocity = exh.Vdot / self.ann_area / 2. 
+        self.ann_area = flow.width * self.H
+        self.ann_perimeter = 2. * (flow.width + self.H)
+        self.ann_velocity = flow.Vdot / self.ann_area / 2. 
 
-    def set_flow(self,exh):
+    def set_flow(self,flow):
         """Determines pressure drop through jet array. 
 
         Sets the following variables
@@ -328,11 +329,11 @@ class JetArray(object):
         array""" 
 
         self.flow_area = np.pi * self.D**2 / 4. 
-        self.V = exh.Vdot / (self.flow_area * self.N) 
+        self.V = flow.Vdot / (self.flow_area * self.N) 
         self.h_loss = self.K * self.V**2 / 2.
-        exh.deltaP = self.h_loss * exh.rho * 0.001
+        flow.deltaP = self.h_loss * flow.rho * 0.001
 
-    def set_Nu_D(self,exh):
+    def set_Nu_D(self,flow):
         """Sets Nusselt number and some other variables
 
         Sets the following variables
@@ -345,17 +346,17 @@ class JetArray(object):
         self.nu : viscosity (m^2 / s) of fluid
         self.Pr : Prandtl number of fluid"""
 
-        self.Re_D = self.V * self.D / exh.nu
-        exh.Nu_D = ( 0.285 * self.Re_D**0.710 * exh.Pr**0.33 *
+        self.Re_D = self.V * self.D / flow.nu
+        flow.Nu_D = ( 0.285 * self.Re_D**0.710 * flow.Pr**0.33 *
         (self.H / self.D)**-0.123 * (self.spacing / self.D)**-0.725 )  
         
-    def solve_enh(self,exh):
-        self.set_number(exh)
-        self.set_annulus(exh)
-        self.set_flow(exh)
-        self.set_Nu_D(exh)
-        exh.h = exh.Nu_D * exh.k / self.D
-        exh.f = 37.
+    def solve_enh(self,flow):
+        self.set_number(flow)
+        self.set_annulus(flow)
+        self.set_flow(flow)
+        self.set_Nu_D(flow)
+        flow.h = flow.Nu_D * flow.k / self.D
+        flow.f = 37.
         # this might need to be changed, or it might be a dummy
         # variable just to keep the code from complaining.  
 
