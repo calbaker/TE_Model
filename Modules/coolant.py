@@ -7,14 +7,26 @@ from scimath.units.api import *
 # In local directory
 import functions
 reload(functions)
+import enhancement
+reload(enhancement)
 
 
 class Coolant(object):
-    """class for coolant flow"""
+    """
+    class for coolant flow
+    """
 
     def __init__(self):
-        """sets constants and initiates class instances"""
+        """
+        sets constants and initiates class instances
+
+        self.enh_lib : class attribute copy of enhancement library
+        """
         super(Coolant, self).__init__()
+        
+        self.enh_lib = enhancement
+        self.enh = None        
+
         self.height = 1.e-2
         # height (m) of coolant duct
         self.mdot = 1.0
