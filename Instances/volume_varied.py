@@ -39,10 +39,17 @@ hx2.type = 'counter'
 hx2.exh.enh = hx2.exh.enh_lib.OffsetStripFin()
 hx2.exh.enh.thickness = 2.e-3
 hx2.exh.enh.spacing = 3.19e-3
-hx2.exh.enh.k = 0.02
+# hx2.exh.enh.k = 0.02
 
-hx2.plate.k = 0.02 # for Ti
-hx2.plate.thickness = .125 * 2.54e-2
+hx2.cool.enh = hx2.cool.enh_lib.IdealFin()
+hx2.cool.enh.thickness = 1.e-3
+hx2.cool.enh.spacing = 1.e-3
+
+hx2.apar_list.append(['self', 'cool', 'enh', 'spacing'])
+hx2.apar_list.append(['self', 'exh', 'enh', 'spacing'])
+
+# hx2.plate.k = 0.02 # for Ti
+# hx2.plate.thickness = .125 * 2.54e-2
 
 hx2.exh.T_inlet = 800.
 hx2.cool.T_inlet_set = 300.
