@@ -29,7 +29,7 @@ class BejanPorous(object):
         # Darcy Law, Bejan Eq. 12.14.  It turns out that f is pretty
         # close to 0.55  
         self.k = self.k_matrix
-        self.deltaP = ( self.f * self.perimeter * self.length /
+        self.deltaP = ( self.f * self.perimeter * self.node_length /
         self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )    
         # pressure drop (kPa) 
         self.h = self.Nu_D * self.k / self.D 
