@@ -40,6 +40,10 @@ hx2.exh.enh = hx2.exh.enh_lib.IdealFin()
 hx2.exh.enh.thickness = 2.e-3
 hx2.exh.enh.spacing = 3.19e-3
 
+hx2.cool.enh = hx2.cool.enh_lib.IdealFin()
+hx2.cool.enh.thickness = 1.e-3
+hx2.cool.enh.spacing = 1.e-3
+
 # hx2.exh.enh.k = 0.02
 
 # hx2.plate.k = 0.02 # for Ti
