@@ -442,7 +442,7 @@ class HX(object):
         for i in range(self.x0.size):
             varname = '.'.join(self.apar_list[i][1:])
             varval = (
-                operator.attrgetter()(self)
+                operator.attrgetter(varname)(self)
         ) 
             print varname + ":", varval
 
