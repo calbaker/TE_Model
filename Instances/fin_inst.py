@@ -44,7 +44,7 @@ hx_fins0.exh.enh.spacing = 1.26e-3
 
 hx_fins0.cool.enh = hx_fins0.cool.enh_lib.IdealFin()
 hx_fins0.cool.enh.thickness = 1.e-3
-hx_fins0.cool.enh.spacing = 1.26e-3
+hx_fins0.cool.enh.spacing = 1.e-3
 
 hx_fins0.exh.T_inlet = 800.
 hx_fins0.cool.T_inlet_set = 300.
