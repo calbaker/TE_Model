@@ -419,7 +419,6 @@ class HX(object):
         self.x0 = np.zeros(len(self.apar_list))
 
         for i in range(self.x0.size):
-            self.apar_str = '.'.join(self.apar_list[i][1:])
             self.x0[i] = (
             operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
             ) 
@@ -432,9 +431,9 @@ class HX(object):
         
         print '\n'
         for i in range(self.x0.size):
-            varname = self.apar_str
+            varname = '.'.join(self.apar_list[i][1:])
             varval = (
-                operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
+                operator.attrgetter(varname)(self)
         ) 
             print varname + ":", varval
 
