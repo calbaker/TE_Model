@@ -44,10 +44,10 @@ class HX(object):
         # temperature (K) at restricted dead state
 
         self.apar_list = [
-            'te_pair.leg_ratio',     
-            'te_pair.fill_fraction',
-            'te_pair.length',        
-            'te_pair.I'
+            ['self','te_pair','leg_ratio'],     
+            ['self','te_pair','fill_fraction'],
+            ['self','te_pair','length'],        
+            ['self','te_pair','I']
             ]
 
         # initialization of sub classes
@@ -378,7 +378,8 @@ class HX(object):
 	apar = np.array(apar)
 
         for i in range(apar.size):
-            operator.attrgetter(self.apar_list[i])(self)
+            setattr(operator.attrgetter('.'.join(self.apar_list[i][1:-1]))(self),
+            self.apar_list[i][-1], apar[i]) 
 
         # reset surrogate variables
         self.te_pair.set_all_areas(self.te_pair.Ptype.area,
@@ -417,10 +418,11 @@ class HX(object):
 
         self.x0 = np.zeros(len(self.apar_list))
 
-        self.get_apar = []
-
         for i in range(self.x0.size):
-            self.x0[i] = operator.attrgetter(self.apar_list[i])(self)
+            self.apar_str = '.'.join(self.apar_list[i][1:])
+            self.x0[i] = (
+            operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
+            ) 
 
         self.xmin = fmin(self.get_minpar, self.x0,
                          xtol=self.xtol_fmin)  
@@ -428,10 +430,15 @@ class HX(object):
 	# approx_grad=True, bounds=self.xb)
 	t1 = time.clock() 
         
+        print '\n'
         for i in range(self.x0.size):
-            print self.apar_list[i] + ':', self.xmin[i]
+            varname = self.apar_str
+            varval = (
+                operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
+        ) 
+            print varname + ":", varval
 
-        print "power net:", self.power_net * 1000., 'W'
+        print "\npower net:", self.power_net * 1000., 'W'
         print "power raw:", self.te_pair.power_total * 1000., 'W'
         print "pumping power:", self.Wdot_pumping * 1000., 'W'
         self.exh.volume = self.exh.height * self.exh.width * self.length
