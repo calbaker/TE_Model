@@ -28,8 +28,12 @@ hx_exp.x0 = np.array([area_ratio, fill_fraction, leg_length,
                         current]) 
 parallel_extrusions = 3.
 hx_exp.width = 0.1076 * parallel_extrusions
-hx_exp.exh.height = 3.5e-2
-hx_exp.length = 0.5
+hx_exp.exh.height = 21.e-3 * 2.
+
+hx_exp.cool.height = 21.e-3
+
+hx_exp.length = 24. * 2.54e-2
+
 hx_exp.te_pair.I = current
 hx_exp.te_pair.length = leg_length
 
@@ -40,6 +44,8 @@ hx_exp.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx_exp.te_pair.method = 'analytical'
 hx_exp.type = 'counter'
+
+hx_exp.plate.thickness = 5.08e-3
 
 hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin()
 hx_exp.exh.enh.thickness = 1.e-3
@@ -71,7 +77,7 @@ hx_exp.optimize()
 
 # length = fmin(get_minpar, x0=1.)
 
-print "\nPreparing plots."
+print "\nPreparing plots.\n"
 
 # Plot configuration
 FONTSIZE = 20
@@ -82,9 +88,6 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
-cost = ( parallel_extrusions * 6. * hx_exp.length * 75. ) 
-
-print "Material cost:", "$" + str(cost)
 print "power net:", hx_exp.power_net * 1000., 'W'
 print "power raw:", hx_exp.te_pair.power_total * 1000., 'W'
 print "pumping power:", hx_exp.Wdot_pumping * 1000., 'W'
