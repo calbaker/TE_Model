@@ -26,9 +26,10 @@ current = 13.0
 hx_exp = hx.HX()
 hx_exp.x0 = np.array([area_ratio, fill_fraction, leg_length,
                         current]) 
-hx_exp.width = 0.55
+parallel_extrusions = 3.
+hx_exp.width = 0.1076 * parallel_extrusions
 hx_exp.exh.height = 3.5e-2
-hx_exp.length = 0.55
+hx_exp.length = 0.5
 hx_exp.te_pair.I = current
 hx_exp.te_pair.length = leg_length
 
@@ -39,9 +40,14 @@ hx_exp.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx_exp.te_pair.method = 'analytical'
 hx_exp.type = 'counter'
+
 hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin()
 hx_exp.exh.enh.thickness = 1.e-3
-hx_exp.exh.enh.spacing = 1.26e-3
+hx_exp.exh.enh.spacing = 3.24e-3
+
+hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
+hx_exp.cool.enh.thickness = 1.e-3
+hx_exp.cool.enh.spacing = 3.24e-3
 
 hx_exp.exh.T_inlet = 800.
 hx_exp.cool.T_inlet_set = 300.
@@ -49,23 +55,23 @@ hx_exp.cool.T_outlet = 310.
 
 hx_exp.set_mdot_charge()
 
-def get_minpar(length):
-    """Returns inverse of net power for varied length."""
-    hx_exp.length = length
-    hx_exp.solve_hx()
+hx_exp.optimize()
+
+# def get_minpar(length):
+#     """Returns inverse of net power for varied length."""
+#     hx_exp.length = length
+#     hx_exp.solve_hx()
     
-    if hx_exp.power_net > 0:
-        minpar = 1. / hx_exp.power_net
-    else:
-        minpar = np.abs(hx_exp.power_net)
+#     if hx_exp.power_net > 0:
+#         minpar = 1. / hx_exp.power_net
+#     else:
+#         minpar = np.abs(hx_exp.power_net)
 
-    return minpar
+#     return minpar
 
-length = fmin(get_minpar, x0=1.)
+# length = fmin(get_minpar, x0=1.)
 
-
-print "\nProgram finished."
-print "\nPlotting..."
+print "\nPreparing plots."
 
 # Plot configuration
 FONTSIZE = 20
@@ -76,6 +82,9 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
+cost = ( parallel_extrusions * 6. * hx_exp.length * 75. ) 
+
+print "Material cost:", "$" + str(cost)
 print "power net:", hx_exp.power_net * 1000., 'W'
 print "power raw:", hx_exp.te_pair.power_total * 1000., 'W'
 print "pumping power:", hx_exp.Wdot_pumping * 1000., 'W'
