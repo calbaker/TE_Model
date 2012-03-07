@@ -27,13 +27,12 @@ current = 13.0
 hx_exp = hx.HX()
 hx_exp.x0 = np.array([area_ratio, fill_fraction, leg_length,
                         current]) 
-parallel_extrusions = 3.
-hx_exp.width = 0.1076 * parallel_extrusions
-hx_exp.exh.height = 21.e-3 * 2.
+hx_exp.width = 8. * 2.54e-2
+hx_exp.exh.height = 3. * 2.54e-2
 
-hx_exp.cool.height = 21.e-3
+hx_exp.cool.height = 1. * 2.54e-2
 
-hx_exp.length = 24. * 2.54e-2
+hx_exp.length = 10. * 2.54e-2
 
 hx_exp.te_pair.I = current
 hx_exp.te_pair.length = leg_length
@@ -46,15 +45,26 @@ hx_exp.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 hx_exp.te_pair.method = 'analytical'
 hx_exp.type = 'counter'
 
-hx_exp.plate.thickness = 5.08e-3
+hx_exp.plate.thickness = 0.125 * 2.54e-2
+hx_exp.plate.k = 0.02
 
-hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin()
-hx_exp.exh.enh.thickness = 1.e-3
-hx_exp.exh.enh.spacing = 3.24e-3
+spacing = 8.e-3
+thickness = 1.e-3
+
+hx_exp.exh.enh = hx_exp.exh.enh_lib.OffsetStripFin()
+hx_exp.exh.enh.thickness = thickness
+hx_exp.exh.enh.spacing = spacing
+hx_exp.exh.enh.k = 0.02
 
 hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
-hx_exp.cool.enh.thickness = 1.e-3
-hx_exp.cool.enh.spacing = 3.24e-3
+hx_exp.cool.enh.thickness = 2.e-3
+hx_exp.cool.enh.spacing = 5.e-3
+
+hx_exp.apar_list.append(['self','exh','enh','spacing'])
+hx_exp.apar_list.append(['self','exh','enh','thickness'])
+hx_exp.apar_list.append(['self','exh','enh','l'])
+hx_exp.apar_list.append(['self','exh','height'])
+# hx_exp.apar_list.append(['self','cool','enh','spacing'])
 
 hx_exp.exh.T_inlet = 800.
 hx_exp.cool.T_inlet_set = 300.
@@ -62,7 +72,7 @@ hx_exp.cool.T_outlet = 310.
 
 hx_exp.set_mdot_charge()
 
-hx_exp.optimize()
+hx_exp.solve_hx()
 
 # def get_minpar(length):
 #     """Returns inverse of net power for varied length."""
@@ -78,6 +88,13 @@ hx_exp.optimize()
 
 # length = fmin(get_minpar, x0=1.)
 
+print "power net:", hx_exp.power_net * 1000., 'W'
+print "power raw:", hx_exp.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx_exp.Wdot_pumping * 1000., 'W'
+hx_exp.exh.volume = hx_exp.exh.height * hx_exp.exh.width * hx_exp.length
+print "exhaust volume:", hx_exp.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_exp.power_net / hx_exp.exh.volume, 'kW/m^3'
+
 print "\nPreparing plots.\n"
 
 # Plot configuration
@@ -89,11 +106,22 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
-print "power net:", hx_exp.power_net * 1000., 'W'
-print "power raw:", hx_exp.te_pair.power_total * 1000., 'W'
-print "pumping power:", hx_exp.Wdot_pumping * 1000., 'W'
-hx_exp.exh.volume = hx_exp.exh.height * hx_exp.exh.width * hx_exp.length
-print "exhaust volume:", hx_exp.exh.volume * 1000., 'L'
-print "exhaust power density:", hx_exp.power_net / hx_exp.exh.volume, 'kW/m^3'
+plt.close()
 
+plt.figure()
+plt.plot(hx_exp.x * 100., hx_exp.exh.T_nodes, '-r', label='Exhaust')
+plt.plot(hx_exp.x * 100., hx_exp.te_pair.T_h_nodes, '-g', label='TE_PAIR Hot Side')
+plt.plot(hx_exp.x * 100., hx_exp.te_pair.T_c_nodes, '-k', label='TE_PAIR Cold Side')
+plt.plot(hx_exp.x * 100., hx_exp.cool.T_nodes, '-b', label='Coolant')
+
+plt.xlabel('Distance Along HX (cm)')
+plt.ylabel('Temperature (K)')
+#plt.title('Temperature v. Distance, '+hx_exp.type)
+plt.grid()
+# plt.legend(loc='center left')
+plt.subplots_adjust(bottom=0.15)
+# plt.savefig('../Plots/temp '+hx_exp.type+str(hx_exp.exh.fins)+'.png')
+# plt.savefig('../Plots/temp '+hx_exp.type+str(hx_exp.exh.fins)+'.pdf')
+
+# plt.show()
 
