@@ -44,7 +44,7 @@ class HX(object):
         # temperature (K) at restricted dead state
 
         self.apar_list = [
-            ['self','te_pair','leg_ratio'],     
+            ['self','te_pair','leg_area_ratio'],     
             ['self','te_pair','fill_fraction'],
             ['self','te_pair','length'],        
             ['self','te_pair','I']
@@ -392,7 +392,7 @@ class HX(object):
 
         # reset surrogate variables
         self.te_pair.set_all_areas(self.te_pair.Ptype.area,
-        self.te_pair.area_ratio, self.te_pair.fill_fraction) 
+        self.te_pair.leg_area_ratio, self.te_pair.fill_fraction) 
 
 	self.solve_hx()
 
@@ -411,7 +411,7 @@ class HX(object):
 
     def optimize(self):
 	"""Uses fmin to find optimal set of:
-	I) tem.leg_ratio
+	I) tem.leg_area_ratio
 	II) tem.fill_fraction
 	III) hx.te_pair.length
 	IV) hx.te_pair.I

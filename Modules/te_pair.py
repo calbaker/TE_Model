@@ -154,7 +154,7 @@ class TE_Pair(object):
 
     def __init__(self):
         """sets constants and defines leg instances"""
-        self.leg_ratio = 0.7
+        self.leg_area_ratio = 0.7
         self.fill_fraction = 0.02
         self.length = 1.e-3
         self.I = 1. # electrical current (Amps)
@@ -245,7 +245,7 @@ class TE_Pair(object):
         ratio. Ensures that sum of N-type and P-type area is
         constant.""" 
         area = self.Ntype.area + self.Ptype.area
-        self.Ptype.area = area / (1. + self.area_ratio)
+        self.Ptype.area = area / (1. + self.leg_area_ratio)
         self.Ntype.area = area - self.Ptype.area
 
     def set_A_opt(self):
@@ -262,21 +262,21 @@ class TE_Pair(object):
         self.Ptype.set_power_factor()
         self.power_max = self.Ntype.power_max + self.Ptype.power_max 
     
-    def set_all_areas(self, leg_area, area_ratio, fill_fraction):
+    def set_all_areas(self, leg_area, leg_area_ratio, fill_fraction):
         """Sets leg areas and void area based on leg area ratio and
         fill fraction. 
 
         Arguments
         ----------------
         leg_area : base area of P-type leg
-        area_ratio : N/P area ratio
+        leg_area_ratio : N/P area ratio
         fill_fraction : fraction of area taken up by legs"""
 
-        self.area_ratio = area_ratio
+        self.leg_area_ratio = leg_area_ratio
         self.fill_fraction = fill_fraction
 
         self.Ptype.area = leg_area                           
-        self.Ntype.area = self.Ptype.area * area_ratio
+        self.Ntype.area = self.Ptype.area * leg_area_ratio
         self.area_void = ( (1. - fill_fraction) / fill_fraction *
         (self.Ptype.area + self.Ntype.area) )  
         
