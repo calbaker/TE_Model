@@ -396,10 +396,16 @@ class HX(object):
 
 	self.solve_hx()
 
-        if self.te_pair.power_total > 0:
-            minpar = 1. / self.power_net
+        if apar.any() <= 0.: 
+            minpar = np.abs(self.power_net)**3 + 100.  
+            # penalizes negative parameters
+
+        elif self.power_net <= 0.:
+            minpar = np.abs(self.power_net)**3 + 100.
+            # penalizes negative power
+
         else:
-            minpar = np.abs(self.power_net)
+            minpar = 1. / self.power_net
 
 	return minpar
 
