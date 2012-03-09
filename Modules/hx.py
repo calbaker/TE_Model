@@ -42,6 +42,7 @@ class HX(object):
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
+        self.equal_width = True
 
         self.apar_list = [
             ['self','te_pair','leg_area_ratio'],     
@@ -144,9 +145,10 @@ class HX(object):
         coolant duct length is equal to total length because the
         coolant has constant properties throughout the hx."""
 
-        self.cool.width = self.width
+        if self.equal_width == True:
+            self.exh.width = self.width
+            self.cool.width = self.width
         self.cool.length = self.length
-        self.exh.width = self.width
         self.exh.length = self.length 
 
     def set_mdot_charge(self):
