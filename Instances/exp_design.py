@@ -19,20 +19,19 @@ reload(hx)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.745
-fill_fraction = 3.10e-2
-leg_length = 3.56e-4
+area_ratio = 0.900
+fill_fraction = 3.53e-2
+leg_length = 4.28e-4
 current = 13.0
 
 hx_exp = hx.HX()
-hx_exp.x0 = np.array([area_ratio, fill_fraction, leg_length,
-                        current]) 
-hx_exp.width = 8. * 2.54e-2
-hx_exp.exh.height = 3. * 2.54e-2
 
-hx_exp.cool.height = 1. * 2.54e-2
+hx_exp.width       = (20. - 0.640) * 2.54e-2
+hx_exp.exh.height  = (2.5 - 0.375) * 2.54e-2
+hx_exp.cool.height = 1.25 * 2.54e-2
+hx_exp.length      = 20. * 2.54e-2
 
-hx_exp.length = 10. * 2.54e-2
+hx_exp.plate.thickness = 0.375 * 2.54e-2
 
 hx_exp.te_pair.I = current
 hx_exp.te_pair.length = leg_length
@@ -45,26 +44,20 @@ hx_exp.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 hx_exp.te_pair.method = 'analytical'
 hx_exp.type = 'counter'
 
-hx_exp.plate.thickness = 0.125 * 2.54e-2
-hx_exp.plate.k = 0.02
-
-spacing = 8.e-3
-thickness = 1.e-3
+thickness = 0.080 * 2.54e-2
+spacing = (0.400 - 0.080) * 2.54e-2
 
 hx_exp.exh.enh = hx_exp.exh.enh_lib.OffsetStripFin()
 hx_exp.exh.enh.thickness = thickness
 hx_exp.exh.enh.spacing = spacing
-hx_exp.exh.enh.k = 0.02
+hx_exp.exh.enh.l = 3. / 8. * 2.54e-2
 
 hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
 hx_exp.cool.enh.thickness = 2.e-3
-hx_exp.cool.enh.spacing = 5.e-3
+hx_exp.cool.enh.spacing = 8.e-3
 
-hx_exp.apar_list.append(['self','exh','enh','spacing'])
-hx_exp.apar_list.append(['self','exh','enh','thickness'])
-hx_exp.apar_list.append(['self','exh','enh','l'])
-hx_exp.apar_list.append(['self','exh','height'])
-# hx_exp.apar_list.append(['self','cool','enh','spacing'])
+# hx_exp.apar_list.append(['self','exh','enh','l'])
+# hx_exp.apar_list.append(['self','length'])
 
 hx_exp.exh.T_inlet = 800.
 hx_exp.cool.T_inlet_set = 300.
