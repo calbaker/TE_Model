@@ -68,8 +68,8 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.figure()
 plt.plot(hx_fins0.x * 100., hx_fins0.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx_fins0.x * 100., hx_fins0.te_pair.T_h_nodes, '-g', label='TE_PAIR Hot Side')
-plt.plot(hx_fins0.x * 100., hx_fins0.te_pair.T_c_nodes, '-k', label='TE_PAIR Cold Side')
+plt.plot(hx_fins0.x * 100., hx_fins0.te_pair.T_h_nodes, '-g', label='TE Hot Side')
+plt.plot(hx_fins0.x * 100., hx_fins0.te_pair.T_c_nodes, '-k', label='TE Cold Side')
 plt.plot(hx_fins0.x * 100., hx_fins0.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')
@@ -78,6 +78,8 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 # plt.legend(loc='center left')
 plt.subplots_adjust(bottom=0.15)
+plt.ylim(ymax=950)
+plt.legend(loc="upper right")
 plt.savefig('../Plots/fin_inst/temp.png')
 plt.savefig('../Plots/fin_inst/temp.pdf')
 
