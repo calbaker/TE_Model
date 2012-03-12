@@ -78,8 +78,8 @@ plt.ylabel('Temperature (K)')
 plt.grid()
 # plt.legend(loc='center left')
 plt.subplots_adjust(bottom=0.15)
-# plt.savefig('../Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.png')
-# plt.savefig('../Plots/temp '+hx_fins0.type+str(hx_fins0.exh.fins)+'.pdf')
+plt.savefig('../Plots/fin_inst/temp.png')
+plt.savefig('../Plots/fin_inst/temp.pdf')
 
 # plt.show()
 
