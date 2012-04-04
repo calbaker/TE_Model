@@ -47,8 +47,6 @@ def get_minpar(apar):
     te_pair.leg_area_ratio = apar[1]
 
     te_pair.set_area()
-    print "p-type area =", te_pair.Ptype.area
-    print "n-type area =", te_pair.Ntype.area
     te_pair.set_constants()
     te_pair.solve_te_pair()
 
