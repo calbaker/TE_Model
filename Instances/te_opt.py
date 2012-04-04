@@ -44,16 +44,15 @@ te_pair.solve_te_pair()
 def get_minpar(apar):
     """Function for returning parameter to be minimized."""
     te_pair.I = apar[0]
-    te_pair.area_ratio = apar[1]
+    te_pair.leg_area_ratio = apar[1]
 
     te_pair.set_area()
+    print "p-type area =", te_pair.Ptype.area
+    print "n-type area =", te_pair.Ntype.area
     te_pair.set_constants()
     te_pair.solve_te_pair()
 
-    if te_pair.P > 0:
-        minpar = 1. / te_pair.P
-    else:
-        minpar = -te_pair.P
+    minpar = 1. / te_pair.P
     return minpar
 
 T_h_goal = np.linspace(500, 750., 25)
@@ -126,7 +125,7 @@ plt.plot(T_h_goal, eta_opt * 100., label='numerical')
 plt.plot(T_h_goal, eta_opt_theory * 100., label='theoretical')
 plt.xlabel(r"T$_h$ (K)")
 plt.ylabel("Efficiency (%)")
-plt.ylim(0,5)
+plt.ylim(0,8)
 plt.grid()
 plt.legend(loc='lower right')
 plt.subplots_adjust(bottom=0.15)
