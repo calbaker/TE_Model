@@ -66,7 +66,12 @@ def set_TEproperties(self,T_props):
     temperature if self.T_props is used."""
     
     # Materials with tabulated properties
+
     if self.material == 'HMS':
+        try: 
+            self.alpha_params
+        except AttributeError:
+            self.set_prop_fit()
         self.alpha = ( np.polyval(self.alpha_params, T_props) *
         1.e-6 )
         # Seebeck coefficient (V/K)        
@@ -78,6 +83,10 @@ def set_TEproperties(self,T_props):
         # electrical resistivity (Ohm-m)        
 
     if self.material == 'MgSi': 
+        try: 
+            self.alpha_params
+        except AttributeError:
+            self.set_prop_fit()
         self.alpha = np.polyval(self.alpha_params, T_props) * 1.e-6
         # Seebeck coefficient (V/K)        
         self.k = np.polyval(self.k_params, T_props)      

@@ -34,8 +34,6 @@ te_pair.Ntype.area = te_pair.Ptype.area * area_ratio
 te_pair.area_void = 0.
 te_pair.method = 'numerical'
 te_pair.set_constants()
-te_pair.Ptype.set_prop_fit()
-te_pair.Ntype.set_prop_fit()
 
 current_array = np.linspace(0.5, 15, 16)
 T_array = np.linspace(450, 800, 15)

@@ -258,9 +258,6 @@ class HX(object):
             self.cool.T = self.cool.T_outlet  
         self.cool.node_length = self.node_length
             
-        self.te_pair.Ptype.set_prop_fit()
-        self.te_pair.Ntype.set_prop_fit()
-
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
             if self.verbose == True:

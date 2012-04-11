@@ -17,7 +17,6 @@ area = (0.01)**2
 
 Ntype = te_pair.Leg()
 Ntype.material = 'MgSi'
-Ntype.set_prop_fit()
 Ntype.area = area
 Ntype.T_h_goal = 750.
 Ntype.T_c = 400.
@@ -25,7 +24,6 @@ Ntype.I = I
 
 Ptype = te_pair.Leg()
 Ptype.material = 'HMS'
-Ptype.set_prop_fit()
 Ptype.area = area * 22./14.
 Ptype.T_h_goal = 750.
 Ptype.T_c = 400.

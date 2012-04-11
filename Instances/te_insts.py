@@ -31,8 +31,6 @@ te_pair.length = length
 te_pair.area_void = 0.
 te_pair.method = 'numerical'
 te_pair.set_constants()
-te_pair.Ptype.set_prop_fit()
-te_pair.Ntype.set_prop_fit()
 te_pair.solve_te_pair()
 
 T_h_goal = np.linspace(400, 600., 100)

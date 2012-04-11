@@ -22,10 +22,8 @@ TE_PAIR = te_pair.TE_PAIRodule()
 TE_PAIR.I = I
 TE_PAIR.Ntype.area = area
 TE_PAIR.Ntype.material = 'MgSi'
-TE_PAIR.Ntype.set_prop_fit()
 TE_PAIR.Ptype.area = area * 2.
 TE_PAIR.Ptype.material = 'HMS'
-TE_PAIR.Ptype.set_prop_fit()
 
 TE_PAIR.T_h_goal = T_h_goal
 TE_PAIR.T_c = T_c

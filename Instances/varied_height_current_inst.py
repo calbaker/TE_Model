@@ -27,7 +27,6 @@ Ntype = te_pair.Leg()
 Ntype.node = 0
 Ntype.method = 'numerical'
 Ntype.material = 'MgSi'
-Ntype.set_prop_fit()
 Ntype.area = area
 Ntype.T_h_goal = T_h_goal
 Ntype.T_c = T_c
@@ -37,7 +36,6 @@ Ptype = te_pair.Leg()
 Ptype.node = 0
 Ptype.method = 'numerical'
 Ptype.material = 'HMS'
-Ptype.set_prop_fit()
 Ptype.area = area * 2.
 Ptype.T_h_goal = T_h_goal
 Ptype.T_c = T_c
