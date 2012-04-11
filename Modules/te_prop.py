@@ -6,6 +6,8 @@ import numpy as np
 def set_prop_fit(self):
     """Sets temperature fit curves for thermoelectric properties."""
 
+    print "running set_prop_fit"
+
     if self.material == "HMS":
         # Raw data taken from Luo et al. HMS is p-type
         poly_deg = 3
@@ -63,6 +65,7 @@ def set_TEproperties(self,T_props):
     """Sets thermal and electrical properties, as a function of
     temperature if self.T_props is used."""
     
+    # Materials with tabulated properties
     if self.material == 'HMS':
         self.alpha = ( np.polyval(self.alpha_params, T_props) *
         1.e-6 )
@@ -84,6 +87,8 @@ def set_TEproperties(self,T_props):
         self.rho = 1. / self.sigma
         # electrical resistivity (Ohm-m)        
 
+    # Materials with properties that are either constant or dependent
+    # on temperature by some convenient function.  
     # from CRC TE Handbook Table 12.1
     if self.material == 'ex1 n-type':
         self.k = 54. / T_props * 100.
