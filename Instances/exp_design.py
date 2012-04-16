@@ -1,5 +1,5 @@
 """This script runs the model for designs available from
-http://www.thermal-solutions.us/extrusions.html""" 
+heat sink usa""" 
 
 # Chad Baker
 # Created on 2011 Feb 10
