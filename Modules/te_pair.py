@@ -182,6 +182,49 @@ class TE_Pair(object):
         self.Ntype.method = self.method
         self.Ptype.method = self.method
 
+    def solve_te_pair_once(self):
+        """solves legs and combines results of leg pair"""
+        self.Ptype.T_h_goal = self.T_h_goal
+        self.Ntype.T_h_goal = self.T_h_goal
+        self.Ptype.T_c = self.T_c
+        self.Ntype.T_c = self.T_c
+        self.Ntype.solve_leg()
+        self.Ptype.solve_leg()
+        self.T_h = self.Ntype.T_h
+
+        self.q_h = ((self.Ptype.q_h * self.Ptype.area + self.Ntype.q_h
+        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
+        self.area_void)) * 0.001
+        # area averaged hot side heat flux (kW/m^2)
+        self.q_c = ((self.Ptype.q_c * self.Ptype.area + self.Ntype.q_c
+        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
+        self.area_void)) * 0.001
+
+    def get_error(self,T_arr):
+        """Returns hot and cold side error.  This doc string needs
+        work.""" 
+        T_h = T_arr[0]
+        T_c = T_arr[1]
+
+        self.q_h_conv = self.U_hot * (T_h - self.T_h_conv)
+        self.te_pair.T_h_goal = T_h
+
+        self.q_c_conv = self.U_cold * (self.T_c_conv - T_c)
+        self.te_pair.T_c = T_c
+
+        self.te_pair.solve_te_pair()
+
+        self.error_hot = ( (self.q_h - self.te_pair.q_h) /
+        self.te_pair.q_h )
+
+        self.error_cold = ( (self.q_c - self.te_pair.q_c) /
+        self.te_pair.q_c )
+ 
+        self.error = np.array([self.error_hot,
+        self.error_cold]).reshape(self.error.size)  
+
+        return self.error
+
     def solve_te_pair(self):
         """solves legs and combines results of leg pair"""
         self.Ptype.T_h_goal = self.T_h_goal
@@ -192,14 +235,8 @@ class TE_Pair(object):
         self.Ptype.solve_leg()
         self.T_h = self.Ntype.T_h
 
-        # Renaming stuff for use elsewhere
-        self.q_h = ((self.Ptype.q_h * self.Ptype.area + self.Ntype.q_h
-        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void)) * 0.001
-        # area averaged hot side heat flux (kW/m^2)
-        self.q_c = ((self.Ptype.q_c * self.Ptype.area + self.Ntype.q_c
-        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void)) * 0.001
+        fsolve(self.get_error, x0=self.T_guess, xtol=self.xtol_fsolve)  
+
         # area averaged hot side heat flux (kW/m^2)
         self.P = -(self.Ntype.P + self.Ptype.P) * 0.001 
         # power for the entire leg pair(kW). Negative sign makes this

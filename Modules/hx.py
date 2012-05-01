@@ -92,10 +92,10 @@ class HX(object):
         self.U_nodes = ZEROS.copy()
         self.U_hot_nodes = self.U_nodes.copy()
         self.U_cold_nodes = self.U_nodes.copy()
-        self.q_h_nodes = ZEROS.copy()
-        self.q_c_nodes = self.q_h_nodes.copy()
-        self.te_pair.q_h_nodes = self.q_h_nodes.copy()
-        self.te_pair.q_c_nodes = self.q_h_nodes.copy()
+        self.te_pair.q_h_conv_nodes = ZEROS.copy()
+        self.te_pair.q_c_conv_nodes = ZEROS.copy()
+        self.te_pair.q_h_nodes = ZEROS.copy()
+        self.te_pair.q_c_nodes = ZEROS.copy()
 
         self.error_hot_nodes = ZEROS.copy()
         self.error_cold_nodes = ZEROS.copy()
@@ -184,27 +184,6 @@ class HX(object):
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
 
-    def get_error(self,T_arr):
-        """Returns hot and cold side error.  This doc string needs
-        work.""" 
-        T_h = T_arr[0]
-        T_h = T_h
-        self.q_h = self.U_hot * (T_h - self.exh.T)
-        self.te_pair.T_h_goal = T_h
-        self.te_pair.solve_te_pair()
-        self.error_hot = (self.q_h - self.te_pair.q_h) / self.te_pair.q_h
-
-        T_c = T_arr[1]
-        T_c = T_c
-        self.q_c = self.U_cold * (self.cool.T - T_c)
-        self.te_pair.T_c = T_c
-        self.te_pair.solve_te_pair()
-        self.error_cold = (self.q_c - self.te_pair.q_c) / self.te_pair.q_c
-
-        self.error = np.array([self.error_hot,
-        self.error_cold]).reshape(2) 
-        return self.error
-
     def solve_node(self,i):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
@@ -222,6 +201,7 @@ class HX(object):
             self.te_pair.solve_te_pair()
             self.set_convection()
             self.q = self.U * (self.cool.T - self.exh.T)
+
             self.te_pair.T_h_goal = self.q / self.U_hot + self.exh.T
             self.te_pair.T_c = -self.q / self.U_cold + self.cool.T
         else:
@@ -229,12 +209,11 @@ class HX(object):
             self.te_pair.T_c = self.te_pair.T_c_nodes[i-1]
             self.te_pair.T_h_goal = self.te_pair.T_h_nodes[i-1] 
 
-        self.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
-        self.T_guess = self.T_guess.reshape(2)
-        self.T_arr = fsolve(self.get_error, x0=self.T_guess,
-        xtol=self.xtol_fsolve) 
-        self.te_pair.T_h_goal = self.T_arr[0]
-        self.te_pair.T_c = self.T_arr[1]
+        self.te_pair.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
+        self.te_pair.T_guess = self.te_pair.T_guess.reshape(2) 
+
+        self.te_pair.solve_te_pair()
+
         self.Qdot_node = -self.q_h * self.area
         # heat transfer on hot side of node, positive values indicates
         # heat transfer from hot to cold
@@ -334,8 +313,8 @@ class HX(object):
         self.Qdot_nodes[i] = self.Qdot_node
         # storing node heat transfer in array
 
-        self.q_h_nodes[i] = self.q_h
-        self.q_c_nodes[i] = self.q_c
+        self.te_pair.q_h_conv_nodes[i] = self.q_h
+        self.te_pair.q_c_conv_nodes[i] = self.q_c
         self.te_pair.q_h_nodes[i] = self.te_pair.q_h
         self.te_pair.q_c_nodes[i] = self.te_pair.q_c
         self.error_hot_nodes[i] = self.error_hot
