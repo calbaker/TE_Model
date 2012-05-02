@@ -38,7 +38,6 @@ class HX(object):
         # initial guess and bounds for x where entries are N/P area,
         # fill fraction, leg length (m), and current (A)
         self.xtol_fmin = 0.01
-        self.xtol_fsolve = 0.01
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
@@ -97,8 +96,8 @@ class HX(object):
         self.te_pair.q_h_nodes = ZEROS.copy()
         self.te_pair.q_c_nodes = ZEROS.copy()
 
-        self.error_hot_nodes = ZEROS.copy()
-        self.error_cold_nodes = ZEROS.copy()
+        self.te_pair.error_hot_nodes = ZEROS.copy()
+        self.te_pair.error_cold_nodes = ZEROS.copy()
 
         self.te_pair.T_c_nodes = ZEROS.copy()
         # initializing array for storing temperature (K) in each node 
@@ -198,10 +197,12 @@ class HX(object):
             # guess at cold side tem temperature (K)
             self.te_pair.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
-            self.te_pair.solve_te_pair()
+
+            self.te_pair.solve_te_pair_once()
+
             self.set_convection()
             self.q = self.U * (self.cool.T - self.exh.T)
-
+            
             self.te_pair.T_h_goal = self.q / self.U_hot + self.exh.T
             self.te_pair.T_c = -self.q / self.U_cold + self.cool.T
         else:
@@ -212,7 +213,14 @@ class HX(object):
         self.te_pair.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
         self.te_pair.T_guess = self.te_pair.T_guess.reshape(2) 
 
+        self.te_pair.U_hot = self.U_hot
+        self.te_pair.U_cold = self.U_cold
+        self.te_pair.T_h_conv = self.exh.T
+        self.te_pair.T_c_conv = self.cool.T
+
         self.te_pair.solve_te_pair()
+        self.q_h = self.te_pair.q_h
+        self.q_c = self.te_pair.q_c        
 
         self.Qdot_node = -self.q_h * self.area
         # heat transfer on hot side of node, positive values indicates
@@ -317,8 +325,8 @@ class HX(object):
         self.te_pair.q_c_conv_nodes[i] = self.q_c
         self.te_pair.q_h_nodes[i] = self.te_pair.q_h
         self.te_pair.q_c_nodes[i] = self.te_pair.q_c
-        self.error_hot_nodes[i] = self.error_hot
-        self.error_cold_nodes[i] = self.error_cold
+        self.te_pair.error_hot_nodes[i] = self.te_pair.error_hot
+        self.te_pair.error_cold_nodes[i] = self.te_pair.error_cold
 
         self.exh.T_nodes[i] = self.exh.T
 
