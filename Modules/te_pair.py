@@ -204,20 +204,10 @@ class TE_Pair(object):
         * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
         self.area_void)) * 0.001
         # area averaged hot side heat flux (kW/m^2)
-        self.P = -(self.Ntype.P + self.Ptype.P) * 0.001 
-        # power for the entire leg pair(kW). Negative sign makes this
-        # a positive number. Heat flux is negative so efficiency needs
-        # a negative sign also.  
-        self.P_flux = self.P / self.area
-        # power flux (kW / m^2) through leg pair
-        self.eta = -self.P / (self.q_h * self.area)
+
         self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
-        self.V = self.Ntype.V + self.Ptype.V
-        self.R_load = self.Ntype.R_load + self.Ptype.R_load
-        self.R_internal = ( self.Ntype.R_internal +
-        self.Ptype.R_internal )
 
     def get_error(self,T_arr):
         """Returns hot and cold side error.  This doc string needs
@@ -247,16 +237,21 @@ class TE_Pair(object):
 
     def solve_te_pair(self):
         """solves legs and combines results of leg pair"""
-        self.Ptype.T_h_goal = self.T_h_goal
-        self.Ntype.T_h_goal = self.T_h_goal
-        self.Ptype.T_c = self.T_c
-        self.Ntype.T_c = self.T_c
-        self.Ntype.solve_leg()
-        self.Ptype.solve_leg()
-        self.T_h = self.Ntype.T_h
-
         self.fsolve_output = fsolve(self.get_error, x0=self.T_guess,
         xtol=self.xtol_fsolve)
+
+        self.P = -(self.Ntype.P + self.Ptype.P) * 0.001 
+        # power for the entire leg pair(kW). Negative sign makes this
+        # a positive number. Heat flux is negative so efficiency needs
+        # a negative sign also.  
+        self.P_flux = self.P / self.area
+        # power flux (kW / m^2) through leg pair
+        self.eta = -self.P / (self.q_h * self.area)
+        self.V = self.Ntype.V + self.Ptype.V
+        self.R_load = self.Ntype.R_load + self.Ptype.R_load
+        self.R_internal = ( self.Ntype.R_internal +
+        self.Ptype.R_internal )
+
 
     def set_TEproperties(self, T_props):
         """Sets properties for both legs based on temperature of
