@@ -245,9 +245,9 @@ class OffsetStripFin(object):
         self.h_conv = ( self.j * flow.mdot / self.flow_area * flow.c_p /
                    flow.Pr**0.667 )
         self.beta = np.sqrt(2. * self.h_conv / (self.k * self.thickness))   
-        self.xi = self.beta * self.h / 2. 
+        self.xi = self.beta * self.height / 2. 
         self.eta_fin = np.tanh(self.xi) / self.xi
-        self.effectiveness = self.eta_fin * self.h / self.thickness
+        self.effectiveness = self.eta_fin * self.height / self.thickness
         self.h_base = self.h_conv * self.effectiveness
         flow.h = ( (self.h_base * self.thickness + self.h_conv * self.spacing) /
         (self.spacing + self.thickness) ) 
