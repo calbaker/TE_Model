@@ -35,7 +35,7 @@ hx_fins0.te_pair.Ptype.material = 'HMS'
 
 hx_fins0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
-hx_fins0.te_pair.method = 'analytical'
+hx_fins0.te_pair.method = 'numerical'
 hx_fins0.type = 'counter'
 
 hx_fins0.exh.enh = hx_fins0.exh.enh_lib.IdealFin()
