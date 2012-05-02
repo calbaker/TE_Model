@@ -187,11 +187,13 @@ class HX(object):
         """Solves for performance of streamwise slice of HX.  The
         argument i is an indexing variable from a for loop within the
         function solve_hx."""
-        self.te_pair.Ntype.node = i # used within tem.py
-        self.te_pair.Ptype.node = i
+
         if self.te_pair.method == 'numerical':
             print "Solving node", i
         
+        self.te_pair.T_h_conv = self.exh.T
+        self.te_pair.T_c_conv = self.cool.T
+
         if i == 0:
             self.te_pair.T_c = self.cool.T
             # guess at cold side tem temperature (K)
@@ -215,8 +217,6 @@ class HX(object):
 
         self.te_pair.U_hot = self.U_hot
         self.te_pair.U_cold = self.U_cold
-        self.te_pair.T_h_conv = self.exh.T
-        self.te_pair.T_c_conv = self.cool.T
 
         self.te_pair.solve_te_pair()
         self.q_h = self.te_pair.q_h
