@@ -49,14 +49,6 @@ class Leg(object):
         self.set_TEproperties = (
         types.MethodType(te_prop.set_TEproperties, self) )
     
-    def set_q_c_guess(self):
-        if self.node == 0:
-            self.q_c_guess = ( -self.k / self.length * (self.T_h_goal
-        - self.T_c) )   
-            # (W/m^2) guess for q[0] (W/m^2)
-        else:
-            self.q_c_guess = self.q_c
-
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
@@ -89,28 +81,35 @@ class Leg(object):
             self.R_internal = self.R_int_seg.sum()
 
         if self.method == "analytical":
-            self.T_h = self.T_h_goal
-            self.T_props = 0.5 * (self.T_h + self.T_c)
-            self.set_TEproperties(T_props=self.T_props)
-            delta_T = self.T_h - self.T_c
-            self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
-            self.length * self.k + self.J**2. * self.length * self.rho
-            / 2. ) 
-            self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
-            self.length * self.k - self.J**2 * self.length * self.rho )
-            self.P_flux = ( (self.alpha * delta_T * self.J + self.rho *
-            self.J**2 * self.length) ) 
-            self.P = self.P_flux  * self.area
-            self.eta = self.P / (self.q_h * self.area)
-            self.eta_check = ( (self.J * self.alpha * delta_T + self.rho *
-            self.J**2. * self.length) / (self.alpha * self.T_h * self.J -
-            delta_T / self.length * self.k + self.J**2 * self.length *
-            self.rho / 2.) )
-            self.V = -self.P / np.abs(self.I)
-            self.R_internal = self.rho * self.length / self.area
+            self.solve_leg_anal()
 
         self.R_load = - self.V / self.I
             
+    def solve_leg_anal(self):
+        """Analytically solves the leg based on lumped properties.  No
+        iteration is needed."""
+        self.T_h = self.T_h_goal
+        self.T_props = 0.5 * (self.T_h + self.T_c)
+        self.set_TEproperties(T_props=self.T_props)
+        delta_T = self.T_h - self.T_c
+        self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
+                     self.length * self.k + self.J**2. * self.length * self.rho
+                     / 2. ) 
+        self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
+                     self.length * self.k - self.J**2 * self.length * self.rho )
+        self.P_flux = ( (self.alpha * delta_T * self.J + self.rho *
+                         self.J**2 * self.length) ) 
+        self.P = self.P_flux  * self.area
+        self.eta = self.P / (self.q_h * self.area)
+        self.eta_check = ( (self.J * self.alpha * delta_T + self.rho *
+                            self.J**2. * self.length) / (self.alpha *
+                            self.T_h * self.J - delta_T / self.length
+                            * self.k + self.J**2 * self.length *
+                            self.rho / 2.) ) 
+        self.V = -self.P / np.abs(self.I)
+        self.R_internal = self.rho * self.length / self.area
+
+
     def get_T_h_error_numerical(self,q_c):
         """Solves leg once with no attempt to match hot side
         temperature BC. Used by solve_leg."""
