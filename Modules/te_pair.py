@@ -49,6 +49,10 @@ class Leg(object):
         self.set_TEproperties = (
         types.MethodType(te_prop.set_TEproperties, self) )
     
+    def set_q_c_guess(self):
+        self.solve_leg_anal()
+        self.q_c_guess = self.q_c
+
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
@@ -251,7 +255,8 @@ class TE_Pair(object):
         self.Ptype.solve_leg()
         self.T_h = self.Ntype.T_h
 
-        fsolve(self.get_error, x0=self.T_guess, xtol=self.xtol_fsolve)  
+        self.fsolve_output = fsolve(self.get_error, x0=self.T_guess,
+        xtol=self.xtol_fsolve)
 
     def set_TEproperties(self, T_props):
         """Sets properties for both legs based on temperature of
