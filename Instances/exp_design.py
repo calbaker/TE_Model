@@ -47,14 +47,14 @@ hx_exp.type = 'counter'
 thickness = 0.080 * 2.54e-2
 spacing = (0.400 - 0.080) * 2.54e-2
 
-hx_exp.exh.enh = hx_exp.exh.enh_lib.OffsetStripFin()
+hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin()
 hx_exp.exh.enh.thickness = thickness
-hx_exp.exh.enh.spacing = spacing
+hx_exp.exh.enh.spacing = (0.200 - 0.080) * 2.54e-2
 hx_exp.exh.enh.l = 3. / 8. * 2.54e-2
 
 hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
 hx_exp.cool.enh.thickness = thickness
-hx_exp.cool.enh.spacing = spacing
+hx_exp.cool.enh.spacing = (0.400 - 0.080) * 2.54e-2 
 
 # hx_exp.apar_list.append(['self','exh','enh','l'])
 # hx_exp.apar_list.append(['self','length'])
