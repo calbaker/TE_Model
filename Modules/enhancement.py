@@ -174,7 +174,7 @@ class OffsetStripFin(object):
 
         Requires
         -------------------
-        self.height
+        flow.height
         self.thickness : thickness (m) of fin strip
         self.l : length (m) of fin
 
