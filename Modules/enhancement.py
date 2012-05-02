@@ -180,9 +180,9 @@ class OffsetStripFin(object):
 
         Sets
         --------------------
-        self.h : vertical gap (m) between fins and hx walls
+        self.height : vertical gap (m) between fins and hx walls
         self.spacing : horizontal gap (m) between fins  
-        self.alpha = self.spacing / self.h
+        self.alpha = self.spacing / self.height
         self.delta = self.thickness / self.l
         self.gamma = self.thickness / self.spacing
         self.area_frac : fraction of original area still available
@@ -195,22 +195,22 @@ class OffsetStripFin(object):
 
         more stuff that needs to be documented"""
         
-        self.h = flow.height - self.thickness
+        self.height = flow.height - self.thickness
 
-        self.alpha = self.spacing / self.h
+        self.alpha = self.spacing / self.height
         self.delta = self.thickness / self.l
         self.gamma = self.thickness / self.spacing 
 
         self.rows = flow.length / self.l
 
-        self.area_frac = ( (self.spacing * self.h) / ((self.h + self.thickness) *
+        self.area_frac = ( (self.spacing * self.height) / ((self.height + self.thickness) *
         (self.spacing + self.thickness)) )  
 
-        self.area_enh = ( (self.h * self.thickness +  self.h * self.l + self.spacing
+        self.area_enh = ( (self.height * self.thickness +  self.height * self.l + self.spacing
         * self.l) / ((self.thickness + self.spacing) * self.l) )
 
-        self.D = ( 4. * self.spacing * self.h * self.l / (2. * (self.spacing *
-        self.l + self.h * self.l + self.thickness * self.h) + self.thickness * self.spacing)
+        self.D = ( 4. * self.spacing * self.height * self.l / (2. * (self.spacing *
+        self.l + self.height * self.l + self.thickness * self.height) + self.thickness * self.spacing)
         )
 
         self.flow_area = flow.flow_area * self.area_frac 
