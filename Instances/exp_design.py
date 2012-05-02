@@ -53,8 +53,8 @@ hx_exp.exh.enh.spacing = spacing
 hx_exp.exh.enh.l = 3. / 8. * 2.54e-2
 
 hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
-hx_exp.cool.enh.thickness = 2.e-3
-hx_exp.cool.enh.spacing = 8.e-3
+hx_exp.cool.enh.thickness = thickness
+hx_exp.cool.enh.spacing = spacing
 
 # hx_exp.apar_list.append(['self','exh','enh','l'])
 # hx_exp.apar_list.append(['self','length'])
