@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as mpl
 import time
 from scipy.optimize import fsolve
+from scipy.integrate import odeint
 
 # User defined modules
 import te_prop
@@ -66,17 +67,14 @@ class Leg(object):
 
         if self.method == "numerical":
             self.T[0] = self.T_c
+
             self.T_props = self.T[0]
             self.set_TEproperties(T_props=self.T_props)
-            self.set_q_c_guess()
-            self.q_c = fsolve(self.get_T_h_error_numerical,
-            x0=self.q_c_guess, xtol=self.xtol)  
-            # the previous line runs get_T_h_error_numerical with the
-            # correct value of q_c so there is no need to run it
-            # again.  In addition, get_T_h_error_numerical runs the
-            # finite difference method that solves for the
-            # temperature, heat flux, and power flux profile in the
-            # leg.  
+
+            # Do some stuff with integrate.odeint here
+            
+
+
             self.V = self.V_segment.sum()
             self.P = self.P_flux_segment.sum() * self.area
             # Power for the entire leg (W)
@@ -112,33 +110,6 @@ class Leg(object):
                             self.rho / 2.) ) 
         self.V = -self.P / np.abs(self.I)
         self.R_internal = self.rho * self.length / self.area
-
-
-    def get_T_h_error_numerical(self,q_c):
-        """Solves leg once with no attempt to match hot side
-        temperature BC. Used by solve_leg."""
-        self.q[0] = q_c
-        # for loop for iterating over segments
-        for j in range(1,self.segments):
-            self.T_props = self.T[j-1]
-            self.set_TEproperties(T_props=self.T_props)
-            self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
-            (self.J * self.T[j-1] * self.alpha - self.q[j-1]) )
-            # determines temperature of current segment based on
-            # properties evaluated at previous segment
-            self.dq = ( (self.rho * self.J**2. * (1. +
-        self.alpha**2. * self.T[j-1] / (self.rho * self.k)) - self.J *
-        self.alpha * self.q[j-1] / self.k) )   
-            self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
-            self.V_segment[j] = ( self.alpha * (self.T[j] -
-        self.T[j-1]) + self.J * self.rho * self.segment_length )
-            self.R_int_seg = ( self.rho * self.segment_length /
-        self.area )
-            self.P_flux_segment[j] = self.J * self.V_segment[j]
-            self.T_h = self.T[-1]
-            self.q_h = self.q[-1]
-            self.error = (self.T_h - self.T_h_goal) / self.T_h_goal
-        return self.error
 
     def set_ZT(self):
         """Sets ZT based on formula
