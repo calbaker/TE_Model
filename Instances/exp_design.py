@@ -41,7 +41,7 @@ hx_exp.te_pair.Ptype.material = 'HMS'
 
 hx_exp.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
-hx_exp.te_pair.method = 'analytical'
+hx_exp.te_pair.method = 'numerical'
 hx_exp.type = 'counter'
 
 thickness = 0.080 * 2.54e-2
