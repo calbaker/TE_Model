@@ -17,7 +17,7 @@ class Leg(object):
     def __init__(self):
         """Sets the following: 
         self.I : current (A) in TE leg pair
-        self.segments : number of segments for finite difference model
+        self.nodes : number of nodes for finite difference model
         self.length : leg length (m)
         self.area = : leg area (m^2)
         self.T_h_goal : hot side temperature (K) that matches HX BC
@@ -25,8 +25,8 @@ class Leg(object):
         self.T : initial array for temperature (K) for finite
         difference model
         self.q : initial array for heat flux (W/m^2)
-        self.V_segment : initial array for Seebeck voltage (V)
-        self.P_flux_segment : initial array for power flux in segment (W/m^2)
+        self.V_nodes : initial array for Seebeck voltage (V)
+        self.P_flux_nodes : initial array for power flux in node (W/m^2)
         self.xtol : tolerable fractional error in hot side temperature
 
         Binds the following methods:
@@ -34,15 +34,17 @@ class Leg(object):
         te_prop.set_TEproperties"""
     
         self.I = 0.5 
-        self.segments = 25 
+        self.nodes = 10 
         self.length = 1.e-3
         self.area = (3.e-3)**2. 
         self.T_h_goal = 550. 
         self.T_c = 350. 
-        self.T = np.zeros(self.segments) 
-        self.q = np.zeros(self.segments) 
-        self.V_segment = np.zeros(self.segments) 
-        self.P_flux_segment = np.zeros(self.segments) 
+
+        self.alpha_nodes = np.zeros(self.nodes)
+        self.rho_nodes = np.zeros(self.nodes)
+        self.k_nodes = np.zeros(self.nodes)
+        self.V_nodes = np.zeros(self.nodes) 
+        self.P_flux_nodes = np.zeros(self.nodes) 
         self.xtol = 1.
 
         self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
@@ -54,6 +56,29 @@ class Leg(object):
         self.solve_leg_anal()
         self.q_c_guess = self.q_c
 
+    def get_Yprime(self, y, x):
+        """Function for evaluating the derivatives of
+        temperature and heat flux w.r.t. x."""
+        
+        T = y[0]
+        q = y[1]
+        V = y[2]
+        R_int = y[3]
+        
+        self.T_props = T
+        self.set_TEproperties(self.T_props)
+
+        dT_dx = ( 1. / self.k * (self.J * T * self.alpha - q) )   
+
+        dq_dx = ( (self.rho * self.J**2. * (1. + self.alpha**2. * T /
+        (self.rho * self.k)) - self.J * self.alpha * q / self.k) )      
+
+        dV_dx = ( self.alpha * dT_dx + self.J * self.rho ) 
+        
+        dR_dx = ( self.rho / self.area )  
+
+        return dT_dx, dq_dx, dV_dx, dR_dx
+            
     def solve_leg(self):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
@@ -61,54 +86,37 @@ class Leg(object):
         the desired hot side temperature.  Hot side and cold side
         temperature as well as hot side heat flux must be
         specified.""" 
-        self.segment_length = self.length / self.segments
-        # length of each segment (m)
-        self.x = np.linspace(0., self.segment_length, self.segments) 
+        self.node_length = self.length / self.nodes
+        # length of each node (m)
+        self.x = np.linspace(0., self.length, self.nodes) 
 
         self.J = self.I / self.area # (Amps/m^2)
 
         if self.method == "numerical":
-            self.T = self.T_c
 
-            self.T_props = self.T
-            self.set_TEproperties(T_props=self.T_props)
-
-            # Do some stuff with integrate.odeint here
-            
-            def get_Yprime(y, x):
-                """Function for evaluating the derivatives of
-                temperature and heat flux w.r.t. x."""
-
-                self.T = y[0]
-                self.q = y[1]
-
-                self.dTdx = ( 1. / self.k * (self.J * self.T * self.alpha -
-                self.q) )  
-
-                self.dqdx = ( (self.rho * self.J**2. * (1. +
-                self.alpha**2. * self.T / (self.rho * self.k)) -
-                self.J * self.alpha * self.q / self.k) )     
-            
             self.set_q_c_guess()
             self.q_c = self.q_c_guess
-            y0 = np.array([self.T_c, self.q_c])
-            y = odeint(get_Yprime, y0=y0, t=self.x) 
+            self.y0 = np.array([self.T_c, self.q_c, 0, 0])
 
-        #         self.V_segment[j] = ( self.alpha * (self.T[j] -
-        # self.T[j-1]) + self.J * self.rho * self.segment_length )
-        #     self.R_int_seg = ( self.rho * self.segment_length /
-        # self.area )
-        #     self.P_flux_segment[j] = self.J * self.V_segment[j]
-            
-            self.V = self.V_segment.sum() 
-            self.P = self.P_flux_segment.sum() * self.area
+            self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x) 
+
+            self.T_nodes = self.y[:,0]
+            self.q_nodes = self.y[:,1]
+            self.V_nodes = self.y[:,2]
+            self.R_int_nodes = self.y[:,3]
+
+            self.V = self.V_nodes[-1] 
+            self.R_internal = self.R_int_nodes[-1]
+
+            self.P_flux = self.J * self.V
+            self.P = self.P_flux * self.area
             # Power for the entire leg (W)
-            self.eta = self.P / (self.q_h * self.area)
-            # Efficiency of leg
-#            self.R_internal = self.R_int_seg.sum()
+
+#             self.eta = self.P / (self.q_h * self.area)
+#             # Efficiency of leg
 
         if self.method == "analytical":
-            self.solve_leg_anal()
+            self.set_performance_anal()
 
         self.R_load = - self.V / self.I
             
@@ -124,6 +132,11 @@ class Leg(object):
                      / 2. ) 
         self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
                      self.length * self.k - self.J**2 * self.length * self.rho )
+
+    def set_performance_anal(self):
+        """Sets performance metrics after running solve_leg_anal.""" 
+
+        self.solve_leg_anal()
         self.P_flux = ( (self.alpha * delta_T * self.J + self.rho *
                          self.J**2 * self.length) ) 
         self.P = self.P_flux  * self.area
@@ -163,7 +176,7 @@ class TE_Pair(object):
         self.Ntype.material = 'MgSi'
         self.area_void = (1.e-3)**2 # void area (m^2)
         self.length = 1.e-3 # default leg height (m)
-        self.segments = 25
+        self.nodes = 10
         self.xtol_fsolve = 0.01
         self.method = "numerical"
 
@@ -172,8 +185,8 @@ class TE_Pair(object):
         self.area = self.Ntype.area + self.Ptype.area + self.area_void 
         self.Ntype.length = self.length
         self.Ptype.length = self.length
-        self.Ptype.segments = self.segments
-        self.Ntype.segments = self.segments
+        self.Ptype.nodes = self.nodes
+        self.Ntype.nodes = self.nodes
         self.Ptype.I = -self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient

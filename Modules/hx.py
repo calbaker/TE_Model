@@ -319,7 +319,7 @@ class HX(object):
         """Storing solved values in array to keep track of what
         happens in every node."""
         self.Qdot_nodes[i] = self.Qdot_node
-        # storing node heat transfer in array
+        # storing node hot side heat transfer in array
 
         self.te_pair.q_h_conv_nodes[i] = self.q_h
         self.te_pair.q_c_conv_nodes[i] = self.q_c
@@ -327,6 +327,13 @@ class HX(object):
         self.te_pair.q_c_nodes[i] = self.te_pair.q_c
         self.te_pair.error_hot_nodes[i] = self.te_pair.error_hot
         self.te_pair.error_cold_nodes[i] = self.te_pair.error_cold
+        self.te_pair.T_h_nodes[i] = self.te_pair.T_h
+        # hot side temperature (K) of TEM at each node 
+        self.te_pair.T_c_nodes[i] = self.te_pair.T_c
+        # cold side temperature (K) of TEM at each node.  
+
+        # this should eventually also store the node valuves for T, q, 
+        # and material properties in the te legs.
 
         self.exh.T_nodes[i] = self.exh.T
 
@@ -345,11 +352,6 @@ class HX(object):
         self.cool.T_nodes[i] = self.cool.T
         self.cool.deltaP_nodes[i] = self.cool.deltaP
         self.cool.Wdot_nodes[i] = self.cool.Wdot_pumping
-
-        self.te_pair.T_h_nodes[i] = self.te_pair.T_h
-        # hot side temperature (K) of TEM at each node 
-        self.te_pair.T_c_nodes[i] = self.te_pair.T_c
-        # cold side temperature (K) of TEM at each node.  
 
         self.U_nodes[i] = self.U
         self.U_hot_nodes[i] = self.U_hot
