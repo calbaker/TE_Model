@@ -27,7 +27,6 @@ class Leg(object):
         self.q : initial array for heat flux (W/m^2)
         self.V_nodes : initial array for Seebeck voltage (V)
         self.P_flux_nodes : initial array for power flux in node (W/m^2)
-        self.xtol : tolerable fractional error in hot side temperature
 
         Binds the following methods:
         te_prop.set_prop_fit
@@ -45,22 +44,29 @@ class Leg(object):
         self.k_nodes = np.zeros(self.nodes)
         self.V_nodes = np.zeros(self.nodes) 
         self.P_flux_nodes = np.zeros(self.nodes) 
-        self.xtol = 1.
+
+        self.set_constants()
 
         self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
         self) 
         self.set_TEproperties = (
         types.MethodType(te_prop.set_TEproperties, self) )
     
-    def set_q_c_guess(self):
-        self.solve_leg_anal()
+    def set_constants(self):
+        """sets a few parameters"""
+        self.node_length = self.length / self.nodes
+        # length of each node (m)
+        self.x = np.linspace(0., self.length, self.nodes) 
 
+        self.J = self.I / self.area # (Amps/m^2)
+
+    def set_q_c_guess(self):
         try:
-            self.q_c_conv
+            self.q_c 
         except AttributeError:
-            self.q_c_guess = self.q_c
-        else:
-            self.q_c_guess = self.q_c_conv
+            self.solve_leg_anal()
+
+        self.q_c_guess = self.q_c
 
     def get_Yprime(self, y, x):
         """Function for evaluating the derivatives of
@@ -92,24 +98,19 @@ class Leg(object):
         the desired hot side temperature.  Hot side and cold side
         temperature as well as hot side heat flux must be
         specified.""" 
-        self.node_length = self.length / self.nodes
-        # length of each node (m)
-        self.x = np.linspace(0., self.length, self.nodes) 
 
-        self.J = self.I / self.area # (Amps/m^2)
-
+        self.set_constants()
         if self.method == "numerical":
 
-            self.set_q_c_guess()
-            self.q_c = self.q_c_guess
             self.y0 = np.array([self.T_c, self.q_c, 0, 0])
-
             self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x) 
 
             self.T_nodes = self.y[:,0]
             self.q_nodes = self.y[:,1]
             self.V_nodes = self.y[:,2]
             self.R_int_nodes = self.y[:,3]
+            self.T_h = self.T_nodes[-1]
+            self.q_h = self.q_nodes[-1]
 
             self.V = self.V_nodes[-1] 
             self.R_internal = self.R_int_nodes[-1]
@@ -129,6 +130,7 @@ class Leg(object):
     def solve_leg_anal(self):
         """Analytically solves the leg based on lumped properties.  No
         iteration is needed."""
+
         self.T_h = self.T_h_goal
         self.T_props = 0.5 * (self.T_h + self.T_c)
         self.set_TEproperties(T_props=self.T_props)
@@ -139,10 +141,6 @@ class Leg(object):
         self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
                      self.length * self.k - self.J**2 * self.length * self.rho )
 
-    def set_performance_anal(self):
-        """Sets performance metrics after running solve_leg_anal.""" 
-
-        self.solve_leg_anal()
         self.P_flux = ( (self.alpha * delta_T * self.J + self.rho *
                          self.J**2 * self.length) ) 
         self.P = self.P_flux  * self.area
@@ -183,11 +181,11 @@ class TE_Pair(object):
         self.area_void = (1.e-3)**2 # void area (m^2)
         self.length = 1.e-3 # default leg height (m)
         self.nodes = 10
-        self.xtol_fsolve = 0.01
         self.method = "numerical"
 
     def set_constants(self):
         """Sets constants that are calculated."""
+
         self.area = self.Ntype.area + self.Ptype.area + self.area_void 
         self.Ntype.length = self.length
         self.Ptype.length = self.length
@@ -198,6 +196,8 @@ class TE_Pair(object):
         # material. Heat flux is negative because temperature gradient
         # is positive.  
         self.Ntype.I = self.I
+        self.Ntype.set_constants()
+        self.Ptype.set_constants()
         self.Ntype.method = self.method
         self.Ptype.method = self.method
 
@@ -224,36 +224,37 @@ class TE_Pair(object):
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
 
-    def get_error(self,T_arr):
+    def get_error(self,knob_arr):
         """Returns hot and cold side error.  This doc string needs
         work.""" 
-        T_h = T_arr[0]
-        T_c = T_arr[1]
 
-        self.q_h_conv = self.U_hot * (T_h - self.T_h_conv)
-        self.T_h_goal = T_h
-
-        self.q_c_conv = self.U_cold * (self.T_c_conv - T_c)
-        self.T_c = T_c
+        self.Ntype.q_c = knob_arr[0]
+        self.Ptype.q_c = knob_arr[1]
+        self.T_c = knob_arr[2]
 
         self.solve_te_pair_once()
 
-        self.error_hot = ( (self.q_h_conv - self.q_h) /
-        self.q_h )
+        self.q_c_conv = self.U_cold * (self.T_c_conv - self.T_c)
+        self.q_h_conv = - self.U_hot * (self.T_h_conv - self.T_h)
 
-        self.error_cold = ( (self.q_c_conv - self.q_c) /
-        self.q_c )
- 
-        self.error = np.array([self.error_hot,
-        self.error_cold])
+        T_error = self.Ntype.T_h - self.Ptype.T_h 
+        q_c_error = self.q_c - self.q_c_conv
+        q_h_error = self.q_h - self.q_h_conv
+
+        self.error = np.array([T_error, q_c_error, q_h_error])
         self.error = self.error.reshape(self.error.size)  
 
         return self.error
 
     def solve_te_pair(self):
         """solves legs and combines results of leg pair"""
-        self.fsolve_output = fsolve(self.get_error, x0=self.T_guess,
-        xtol=self.xtol_fsolve)
+                                 
+        self.Ntype.set_q_c_guess()
+        self.Ptype.set_q_c_guess()
+
+        knob_arr0 = np.array([self.T_c_conv, self.Ntype.q_c_guess,
+        self.Ptype.q_c_guess]) 
+        self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 
         self.P = -(self.Ntype.P + self.Ptype.P) * 0.001 
         # power for the entire leg pair(kW). Negative sign makes this
@@ -266,7 +267,6 @@ class TE_Pair(object):
         self.R_load = self.Ntype.R_load + self.Ptype.R_load
         self.R_internal = ( self.Ntype.R_internal +
         self.Ptype.R_internal )
-
 
     def set_TEproperties(self, T_props):
         """Sets properties for both legs based on temperature of
