@@ -68,9 +68,9 @@ class Leg(object):
         self.J = self.I / self.area # (Amps/m^2)
 
         if self.method == "numerical":
-            self.T[0] = self.T_c
+            self.T = self.T_c
 
-            self.T_props = self.T[0]
+            self.T_props = self.T
             self.set_TEproperties(T_props=self.T_props)
 
             # Do some stuff with integrate.odeint here
@@ -89,7 +89,8 @@ class Leg(object):
                 self.alpha**2. * self.T / (self.rho * self.k)) -
                 self.J * self.alpha * self.q / self.k) )     
             
-                
+            self.set_q_c_guess()
+            self.q_c = self.q_c_guess
             y0 = np.array([self.T_c, self.q_c])
             y = odeint(get_Yprime, y0=y0, t=self.x) 
 
@@ -104,7 +105,7 @@ class Leg(object):
             # Power for the entire leg (W)
             self.eta = self.P / (self.q_h * self.area)
             # Efficiency of leg
-            self.R_internal = self.R_int_seg.sum()
+#            self.R_internal = self.R_int_seg.sum()
 
         if self.method == "analytical":
             self.solve_leg_anal()
