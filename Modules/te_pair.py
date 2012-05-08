@@ -54,7 +54,13 @@ class Leg(object):
     
     def set_q_c_guess(self):
         self.solve_leg_anal()
-        self.q_c_guess = self.q_c
+
+        try:
+            self.q_c_conv
+        except AttributeError:
+            self.q_c_guess = self.q_c
+        else:
+            self.q_c_guess = self.q_c_conv
 
     def get_Yprime(self, y, x):
         """Function for evaluating the derivatives of
