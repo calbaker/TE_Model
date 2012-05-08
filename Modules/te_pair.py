@@ -63,6 +63,8 @@ class Leg(object):
         specified.""" 
         self.segment_length = self.length / self.segments
         # length of each segment (m)
+        self.x = np.linspace(0., self.segment_length, self.segments) 
+
         self.J = self.I / self.area # (Amps/m^2)
 
         if self.method == "numerical":
@@ -73,9 +75,31 @@ class Leg(object):
 
             # Do some stuff with integrate.odeint here
             
+            def get_Yprime(y, x):
+                """Function for evaluating the derivatives of
+                temperature and heat flux w.r.t. x."""
 
+                self.T = y[0]
+                self.q = y[1]
 
-            self.V = self.V_segment.sum()
+                self.dTdx = ( 1. / self.k * (self.J * self.T * self.alpha -
+                self.q) )  
+
+                self.dqdx = ( (self.rho * self.J**2. * (1. +
+                self.alpha**2. * self.T / (self.rho * self.k)) -
+                self.J * self.alpha * self.q / self.k) )     
+            
+                
+            y0 = np.array([self.T_c, self.q_c])
+            y = odeint(get_Yprime, y0=y0, t=self.x) 
+
+        #         self.V_segment[j] = ( self.alpha * (self.T[j] -
+        # self.T[j-1]) + self.J * self.rho * self.segment_length )
+        #     self.R_int_seg = ( self.rho * self.segment_length /
+        # self.area )
+        #     self.P_flux_segment[j] = self.J * self.V_segment[j]
+            
+            self.V = self.V_segment.sum() 
             self.P = self.P_flux_segment.sum() * self.area
             # Power for the entire leg (W)
             self.eta = self.P / (self.q_h * self.area)
