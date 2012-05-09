@@ -8,6 +8,7 @@ heat sink usa"""
 import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
+import time
 from scipy.optimize import fsolve, fmin
 
 # User Defined Modules
@@ -16,6 +17,8 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
+
+time0 = time.clock()
 
 leg_area = (0.002)**2
 
@@ -87,6 +90,9 @@ print "pumping power:", hx_exp.Wdot_pumping * 1000., 'W'
 hx_exp.exh.volume = hx_exp.exh.height * hx_exp.exh.width * hx_exp.length
 print "exhaust volume:", hx_exp.exh.volume * 1000., 'L'
 print "exhaust power density:", hx_exp.power_net / hx_exp.exh.volume, 'kW/m^3'
+
+elapsed = time.clock() - time0
+print "\nelapsed time:", elapsed, "s"
 
 print "\nPreparing plots.\n"
 
