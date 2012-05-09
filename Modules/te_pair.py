@@ -102,7 +102,6 @@ class Leg(object):
         temperature as well as hot side heat flux must be
         specified.""" 
 
-        print "running solve_leg_once"""
         self.q_c = q_c
         self.y0 = np.array([self.T_c, self.q_c, 0, 0])
 
