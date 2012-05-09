@@ -61,10 +61,13 @@ class Leg(object):
         self.J = self.I / self.area # (Amps/m^2)
 
     def set_q_c_guess(self):
-        try:
-            self.q_c 
-        except AttributeError:
-            self.solve_leg_anal()
+        """Sets guess for q_c to be used by iterative solutions.""" 
+        self.T_h = self.T_h_goal
+        self.T_props = 0.5 * (self.T_h + self.T_c)
+        self.set_TEproperties(T_props=self.T_props)
+        delta_T = self.T_h - self.T_c
+        self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
+                     self.length * self.k - self.J**2 * self.length * self.rho )
 
         self.q_c_guess = self.q_c
 
@@ -91,7 +94,7 @@ class Leg(object):
 
         return dT_dx, dq_dx, dV_dx, dR_dx
             
-    def solve_leg(self):
+    def solve_leg_once(self, q_c):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
         side heat flux and changes that heat flux until it results in
@@ -99,34 +102,41 @@ class Leg(object):
         temperature as well as hot side heat flux must be
         specified.""" 
 
-        self.set_constants()
-        if self.method == "numerical":
+        print "running solve_leg_once"""
+        self.q_c = q_c
+        self.y0 = np.array([self.T_c, self.q_c, 0, 0])
 
-            self.y0 = np.array([self.T_c, self.q_c, 0, 0])
-            self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x) 
+        self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x) 
 
-            self.T_nodes = self.y[:,0]
-            self.q_nodes = self.y[:,1]
-            self.V_nodes = self.y[:,2]
-            self.R_int_nodes = self.y[:,3]
-            self.T_h = self.T_nodes[-1]
-            self.q_h = self.q_nodes[-1]
+        self.T_nodes = self.y[:,0]
+        self.q_nodes = self.y[:,1]
+        self.V_nodes = self.y[:,2]
+        self.R_int_nodes = self.y[:,3]
 
-            self.V = self.V_nodes[-1] 
-            self.R_internal = self.R_int_nodes[-1]
+        self.T_h = self.T_nodes[-1]
+        self.q_h = self.q_nodes[-1]
 
-            self.P_flux = self.J * self.V
-            self.P = self.P_flux * self.area
-            # Power for the entire leg (W)
+        self.V = self.V_nodes[-1] 
+        self.R_internal = self.R_int_nodes[-1]
 
-#             self.eta = self.P / (self.q_h * self.area)
-#             # Efficiency of leg
+        self.P_flux = self.J * self.V
+        self.P = self.P_flux * self.area
+        # Power for the entire leg (W)
 
-        if self.method == "analytical":
-            self.set_performance_anal()
-
+        self.eta = self.P / (self.q_h * self.area)
+        # Efficiency of leg
         self.R_load = - self.V / self.I
+
+        self.T_h_error = self.T_h - self.T_h_goal
+        
+        return self.T_h_error
             
+    def solve_leg(self):
+        """Solves leg until specified hot side temperature is met.""" 
+
+        self.set_q_c_guess()
+        fsolve(self.solve_leg_once, x0=self.q_c_guess) 
+
     def solve_leg_anal(self):
         """Analytically solves the leg based on lumped properties.  No
         iteration is needed."""
@@ -152,6 +162,7 @@ class Leg(object):
                             self.rho / 2.) ) 
         self.V = -self.P / np.abs(self.I)
         self.R_internal = self.rho * self.length / self.area
+        self.R_load = - self.V / self.I
 
     def set_ZT(self):
         """Sets ZT based on formula
@@ -203,21 +214,18 @@ class TE_Pair(object):
 
     def solve_te_pair_once(self):
         """solves legs and combines results of leg pair"""
-        self.Ptype.T_h_goal = self.T_h_goal
-        self.Ntype.T_h_goal = self.T_h_goal
         self.Ptype.T_c = self.T_c
         self.Ntype.T_c = self.T_c
-        self.Ntype.solve_leg()
-        self.Ptype.solve_leg()
+
+        self.Ntype.solve_leg_once(self.Ntype.q_c)
+        self.Ptype.solve_leg_once(self.Ptype.q_c)
         self.T_h = self.Ntype.T_h
 
         self.q_h = ((self.Ptype.q_h * self.Ptype.area + self.Ntype.q_h
-        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void)) * 0.001
+        * self.Ntype.area) / (self.area)) * 0.001
         # area averaged hot side heat flux (kW/m^2)
         self.q_c = ((self.Ptype.q_c * self.Ptype.area + self.Ntype.q_c
-        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void)) * 0.001
+        * self.Ntype.area) / (self.area)) * 0.001
         # area averaged hot side heat flux (kW/m^2)
 
         self.h = self.q_h / (self.T_c - self.T_h) 
@@ -246,14 +254,18 @@ class TE_Pair(object):
 
         return self.error
 
-    def solve_te_pair(self):
-        """solves legs and combines results of leg pair"""
-                                 
+    def set_q_c_guess(self):
+        """Sets cold side guess for both Ntype and Ptype legs."""
         self.Ntype.set_q_c_guess()
         self.Ptype.set_q_c_guess()
 
-        knob_arr0 = np.array([self.T_c_conv, self.Ntype.q_c_guess,
-        self.Ptype.q_c_guess]) 
+    def solve_te_pair(self):
+        """solves legs and combines results of leg pair"""
+
+        self.set_q_c_guess()
+        knob_arr0 = np.array([self.Ntype.q_c_guess,
+        self.Ptype.q_c_guess, self.T_c_conv])  
+
         self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 
         self.P = -(self.Ntype.P + self.Ptype.P) * 0.001 
@@ -284,13 +296,12 @@ class TE_Pair(object):
         """Sets theoretical maximum efficiency with material
         properties evaluated at the average temperature based on
         Sherman's analysis."""
-        self.T_props = 0.5 * (self.T_h_goal + self.T_c)
+        self.T_props = 0.5 * (self.T_h + self.T_c)
         self.set_TEproperties(T_props=self.T_props)
         self.set_ZT()
-        delta_T = self.T_h_goal - self.T_c
-        self.eta_max = ( delta_T / self.T_h_goal * ((1. +
-        self.ZT)**0.5 - 1.) / ((1. + self.ZT)**0.5 + self.T_c /
-        self.T_h_goal) )
+        delta_T = self.T_h - self.T_c
+        self.eta_max = ( delta_T / self.T_h * ((1. + self.ZT)**0.5 -
+        1.) / ((1. + self.ZT)**0.5 + self.T_c / self.T_h) ) 
                 
     def set_area(self):
         """Sets new N-type and P-type area based on desired area
