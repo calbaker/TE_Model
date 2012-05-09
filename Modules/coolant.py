@@ -1,8 +1,6 @@
 # In python directory
 import properties as prop
 import types
-from scimath.units import * 
-from scimath.units.api import *
 
 # In local directory
 import functions
