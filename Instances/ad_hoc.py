@@ -69,13 +69,12 @@ hx0.solve_hx()
 
 power0 = hx0.power_net
 
-nodes_array = np.arange(15,55,1)
+nodes_array = np.arange(20,212,1)
 power = np.zeros(nodes_array.size) 
 
 for i in range(nodes_array.size):
     print "\nSolving", i+1, "of", nodes_array.size 
-    hx0.te_pair.segments = nodes_array[i]
-    hx0.init_arrays()
+    hx0.nodes = nodes_array[i]
     hx0.solve_hx()
     power[i] = hx0.power_net
 
@@ -100,11 +99,14 @@ plt.close()
 plt.figure()
 plt.plot(nodes_array, power_diff)
 
-plt.xlabel('TE Leg Nodes')
+plt.xlabel('Number of Streamwise Nodes')
 plt.ylabel('Change (%) in Power\nCompared to 25 Nodes')
 plt.grid()
 plt.subplots_adjust(bottom=0.12)
-plt.subplots_adjust(left=0.15)
+plt.subplots_adjust(left=0.20)
+
+plt.savefig("../Plots/ad_hoc/streamwise.pdf")
+plt.savefig("../Plots/ad_hoc/streamwise.png")
 
 plt.show()
 
