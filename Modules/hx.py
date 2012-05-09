@@ -37,7 +37,6 @@ class HX(object):
         self.xb = [(0.5,2.), (0.,1.), (1.e-4,20.e-3), (0.1,None)] 
         # initial guess and bounds for x where entries are N/P area,
         # fill fraction, leg length (m), and current (A)
-        self.xtol_fmin = 0.01
         self.xmin_file = 'xmin'
         self.T0 = 300.
         # temperature (K) at restricted dead state
@@ -64,51 +63,49 @@ class HX(object):
         """Initializes a whole bunch of arrays for storing node
         values."""
 
-        ZEROS = np.zeros(self.nodes)
-        self.Qdot_nodes = ZEROS.copy()
+        self.Qdot_nodes = np.zeros(self.nodes)
         # initialize array for storing heat transfer (kW) in each node 
         
-        self.exh.Vdot_nodes = ZEROS.copy()
+        self.exh.Vdot_nodes = np.zeros(self.nodes)
 
-        self.exh.T_nodes = ZEROS.copy()
+        self.exh.T_nodes = np.zeros(self.nodes)
         # initializing array for storing temperature (K) in each node 
-        self.exh.h_nodes = ZEROS.copy()
-        self.exh.f_nodes = ZEROS.copy()
-        self.exh.deltaP_nodes = ZEROS.copy()
-        self.exh.Wdot_nodes = ZEROS.copy()
-        self.exh.Nu_nodes = ZEROS.copy()
-        self.exh.c_p_nodes = ZEROS.copy()
-        self.exh.entropy_nodes = ZEROS.copy()
-        self.exh.enthalpy_nodes = ZEROS.copy()
+        self.exh.h_nodes = np.zeros(self.nodes)
+        self.exh.f_nodes = np.zeros(self.nodes)
+        self.exh.deltaP_nodes = np.zeros(self.nodes)
+        self.exh.Wdot_nodes = np.zeros(self.nodes)
+        self.exh.Nu_nodes = np.zeros(self.nodes)
+        self.exh.c_p_nodes = np.zeros(self.nodes)
+        self.exh.entropy_nodes = np.zeros(self.nodes)
+        self.exh.enthalpy_nodes = np.zeros(self.nodes)
 
-        self.cool.T_nodes = ZEROS.copy()
+        self.cool.T_nodes = np.zeros(self.nodes)
         # initializing array for storing temperature (K) in each node 
-        self.cool.entropy_nodes = ZEROS.copy()
-        self.cool.enthalpy_nodes = ZEROS.copy()
-        self.cool.deltaP_nodes = ZEROS.copy()
-        self.cool.Wdot_nodes = ZEROS.copy()
+        self.cool.entropy_nodes = np.zeros(self.nodes)
+        self.cool.enthalpy_nodes = np.zeros(self.nodes)
+        self.cool.deltaP_nodes = np.zeros(self.nodes)
+        self.cool.Wdot_nodes = np.zeros(self.nodes)
 
-        self.U_nodes = ZEROS.copy()
-        self.U_hot_nodes = self.U_nodes.copy()
-        self.U_cold_nodes = self.U_nodes.copy()
-        self.te_pair.q_h_conv_nodes = ZEROS.copy()
-        self.te_pair.q_c_conv_nodes = ZEROS.copy()
-        self.te_pair.q_h_nodes = ZEROS.copy()
-        self.te_pair.q_c_nodes = ZEROS.copy()
+        # self.U_nodes = np.zeros(self.nodes)
+        self.U_hot_nodes = np.zeros(self.nodes)
+        self.U_cold_nodes = np.zeros(self.nodes)
+        self.te_pair.q_h_conv_nodes = np.zeros(self.nodes)
+        self.te_pair.q_c_conv_nodes = np.zeros(self.nodes)
+        self.te_pair.q_h_nodes = np.zeros(self.nodes)
+        self.te_pair.q_c_nodes = np.zeros(self.nodes)
 
-        self.te_pair.error_hot_nodes = ZEROS.copy()
-        self.te_pair.error_cold_nodes = ZEROS.copy()
+        self.te_pair.error_nodes = np.zeros([3, self.nodes]) 
 
-        self.te_pair.T_c_nodes = ZEROS.copy()
+        self.te_pair.T_c_nodes = np.zeros(self.nodes)
         # initializing array for storing temperature (K) in each node 
-        self.te_pair.T_h_nodes = ZEROS.copy()
+        self.te_pair.T_h_nodes = np.zeros(self.nodes)
         # initializing array for storing temperature (K) in each node 
-        self.te_pair.h_nodes = self.U_nodes.copy()
+        self.te_pair.h_nodes = np.zeros(self.nodes)
 
-        self.te_pair.power_nodes = ZEROS.copy()
-        self.te_pair.eta_nodes = ZEROS.copy()
+        self.te_pair.power_nodes = np.zeros(self.nodes)
+        self.te_pair.eta_nodes = np.zeros(self.nodes)
 
-        self.exh.velocity_nodes = ZEROS.copy()
+        self.exh.velocity_nodes = np.zeros(self.nodes)
 
     def setup(self):
         """Sets up variables that must be defined before running
@@ -170,10 +167,12 @@ class HX(object):
         # node.  
         # TE stuff
 
-        self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.plate.R_contact + self.te_pair.R_thermal + self.plate.R_contact +
-        self.plate.R_thermal + self.cool.R_thermal )**-1 )    
-        # overall heat transfer coefficient (kW/m^2-K)
+        # self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
+        # self.plate.R_contact + self.te_pair.R_thermal + self.plate.R_contact +
+        # self.plate.R_thermal + self.cool.R_thermal )**-1 )    
+        # # overall heat transfer coefficient (kW/m^2-K)
+        # deprecated!!!!
+
         self.U_hot = ( (self.exh.R_thermal + self.plate.R_thermal +
         self.plate.R_contact)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE hot side and
@@ -189,10 +188,13 @@ class HX(object):
         function solve_hx."""
 
         if self.te_pair.method == 'numerical':
-            print "Solving node", i
+            if (i + 1) % 5 == 0:
+                print "Solving node", i
         
         self.te_pair.T_h_conv = self.exh.T
         self.te_pair.T_c_conv = self.cool.T
+
+        self.set_convection()
 
         if i == 0:
             self.te_pair.T_c = self.cool.T
@@ -200,20 +202,20 @@ class HX(object):
             self.te_pair.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
 
-            self.te_pair.solve_te_pair_once()
+            # self.te_pair.solve_te_pair_once() this line and
+            # follwoing commented lines can probably be removed !!!!! 
 
-            self.set_convection()
-            self.q = self.U * (self.cool.T - self.exh.T)
+            # self.set_convection()
+            # self.q = self.U * (self.cool.T - self.exh.T)
             
-            self.te_pair.T_h_goal = self.q / self.U_hot + self.exh.T
-            self.te_pair.T_c = -self.q / self.U_cold + self.cool.T
-        else:
-            self.set_convection()
-            self.te_pair.T_c = self.te_pair.T_c_nodes[i-1]
-            self.te_pair.T_h_goal = self.te_pair.T_h_nodes[i-1] 
+            # self.te_pair.T_h_goal = self.q / self.U_hot + self.exh.T
+        #     # self.te_pair.T_c = -self.q / self.U_cold + self.cool.T
+        # else:
+        #     self.set_convection()
+        #     self.te_pair.T_h_goal = self.te_pair.T_h_nodes[i-1] 
 
-        self.te_pair.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
-        self.te_pair.T_guess = self.te_pair.T_guess.reshape(2) 
+        # self.te_pair.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
+        # self.te_pair.T_guess = self.te_pair.T_guess.reshape(2) 
 
         self.te_pair.U_hot = self.U_hot
         self.te_pair.U_cold = self.U_cold
@@ -230,10 +232,6 @@ class HX(object):
         """solves for performance of entire HX"""
 
         self.init_arrays()
-        if 'verbose' in kwargs:
-            self.verbose = kwargs['verbose']
-        else:
-            self.verbose = False
         self.set_constants()
         self.exh.node_length = self.node_length
         self.exh.T = self.exh.T_inlet
@@ -247,8 +245,6 @@ class HX(object):
             
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
-            if self.verbose == True:
-                print "\nSolving node", i
             self.solve_node(i)
             self.store_node_values(i)
 
@@ -319,14 +315,20 @@ class HX(object):
         """Storing solved values in array to keep track of what
         happens in every node."""
         self.Qdot_nodes[i] = self.Qdot_node
-        # storing node heat transfer in array
+        # storing node hot side heat transfer in array
 
         self.te_pair.q_h_conv_nodes[i] = self.q_h
         self.te_pair.q_c_conv_nodes[i] = self.q_c
         self.te_pair.q_h_nodes[i] = self.te_pair.q_h
         self.te_pair.q_c_nodes[i] = self.te_pair.q_c
-        self.te_pair.error_hot_nodes[i] = self.te_pair.error_hot
-        self.te_pair.error_cold_nodes[i] = self.te_pair.error_cold
+        self.te_pair.error_nodes[:,i] = self.te_pair.error
+        self.te_pair.T_h_nodes[i] = self.te_pair.T_h
+        # hot side temperature (K) of TEM at each node 
+        self.te_pair.T_c_nodes[i] = self.te_pair.T_c
+        # cold side temperature (K) of TEM at each node.  
+
+        # this should eventually also store the node valuves for T, q, 
+        # and material properties in the te legs.
 
         self.exh.T_nodes[i] = self.exh.T
 
@@ -346,12 +348,7 @@ class HX(object):
         self.cool.deltaP_nodes[i] = self.cool.deltaP
         self.cool.Wdot_nodes[i] = self.cool.Wdot_pumping
 
-        self.te_pair.T_h_nodes[i] = self.te_pair.T_h
-        # hot side temperature (K) of TEM at each node 
-        self.te_pair.T_c_nodes[i] = self.te_pair.T_c
-        # cold side temperature (K) of TEM at each node.  
-
-        self.U_nodes[i] = self.U
+        #self.U_nodes[i] = self.U
         self.U_hot_nodes[i] = self.U_hot
         self.U_cold_nodes[i] = self.U_cold
 
@@ -424,8 +421,8 @@ class HX(object):
             operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
             ) 
 
-        self.xmin = fmin(self.get_minpar, self.x0,
-                         xtol=self.xtol_fmin)  
+        self.xmin = fmin(self.get_minpar, self.x0)
+
 	# self.xmin = fmin_l_bfgs_b(self.get_inv_power, self.x0, fprime=None,
 	# approx_grad=True, bounds=self.xb)
 	t1 = time.clock() 

@@ -8,7 +8,7 @@ heat sink usa"""
 import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-import time 
+import time
 from scipy.optimize import fsolve, fmin
 
 # User Defined Modules
@@ -17,6 +17,8 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
+
+time0 = time.clock()
 
 leg_area = (0.002)**2
 
