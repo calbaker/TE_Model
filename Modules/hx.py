@@ -188,7 +188,8 @@ class HX(object):
         function solve_hx."""
 
         if self.te_pair.method == 'numerical':
-            print "Solving node", i
+            if (i + 1) % 5 == 0:
+                print "Solving node", i
         
         self.te_pair.T_h_conv = self.exh.T
         self.te_pair.T_c_conv = self.cool.T
@@ -231,10 +232,6 @@ class HX(object):
         """solves for performance of entire HX"""
 
         self.init_arrays()
-        if 'verbose' in kwargs:
-            self.verbose = kwargs['verbose']
-        else:
-            self.verbose = False
         self.set_constants()
         self.exh.node_length = self.node_length
         self.exh.T = self.exh.T_inlet
@@ -248,8 +245,6 @@ class HX(object):
             
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
-            if self.verbose == True:
-                print "\nSolving node", i
             self.solve_node(i)
             self.store_node_values(i)
 
