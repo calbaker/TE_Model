@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as mpl
 import time
 from scipy.optimize import fsolve
+from scipy.integrate import odeint
 
 # User defined modules
 import te_prop
@@ -16,7 +17,7 @@ class Leg(object):
     def __init__(self):
         """Sets the following: 
         self.I : current (A) in TE leg pair
-        self.segments : number of segments for finite difference model
+        self.nodes : number of nodes for finite difference model
         self.length : leg length (m)
         self.area = : leg area (m^2)
         self.T_h_goal : hot side temperature (K) that matches HX BC
@@ -24,74 +25,121 @@ class Leg(object):
         self.T : initial array for temperature (K) for finite
         difference model
         self.q : initial array for heat flux (W/m^2)
-        self.V_segment : initial array for Seebeck voltage (V)
-        self.P_flux_segment : initial array for power flux in segment (W/m^2)
-        self.xtol : tolerable fractional error in hot side temperature
+        self.V_nodes : initial array for Seebeck voltage (V)
+        self.P_flux_nodes : initial array for power flux in node (W/m^2)
 
         Binds the following methods:
         te_prop.set_prop_fit
         te_prop.set_TEproperties"""
     
         self.I = 0.5 
-        self.segments = 25 
+        self.nodes = 10 
         self.length = 1.e-3
         self.area = (3.e-3)**2. 
         self.T_h_goal = 550. 
         self.T_c = 350. 
-        self.T = np.zeros(self.segments) 
-        self.q = np.zeros(self.segments) 
-        self.V_segment = np.zeros(self.segments) 
-        self.P_flux_segment = np.zeros(self.segments) 
-        self.xtol = 1.
+
+        self.alpha_nodes = np.zeros(self.nodes)
+        self.rho_nodes = np.zeros(self.nodes)
+        self.k_nodes = np.zeros(self.nodes)
+        self.V_nodes = np.zeros(self.nodes) 
+        self.P_flux_nodes = np.zeros(self.nodes) 
+
+        self.set_constants()
 
         self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
         self) 
         self.set_TEproperties = (
         types.MethodType(te_prop.set_TEproperties, self) )
     
+    def set_constants(self):
+        """sets a few parameters"""
+        self.node_length = self.length / self.nodes
+        # length of each node (m)
+        self.x = np.linspace(0., self.length, self.nodes) 
+
+        self.J = self.I / self.area # (Amps/m^2)
+
     def set_q_c_guess(self):
-        self.solve_leg_anal()
+        """Sets guess for q_c to be used by iterative solutions.""" 
+        self.T_h = self.T_h_goal
+        self.T_props = 0.5 * (self.T_h + self.T_c)
+        self.set_TEproperties(T_props=self.T_props)
+        delta_T = self.T_h - self.T_c
+        self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
+                     self.length * self.k - self.J**2 * self.length * self.rho )
+
         self.q_c_guess = self.q_c
 
-    def solve_leg(self):
+    def get_Yprime(self, y, x):
+        """Function for evaluating the derivatives of
+        temperature and heat flux w.r.t. x."""
+        
+        T = y[0]
+        q = y[1]
+        V = y[2]
+        R_int = y[3]
+        
+        self.T_props = T
+        self.set_TEproperties(self.T_props)
+
+        dT_dx = ( 1. / self.k * (self.J * T * self.alpha - q) )   
+
+        dq_dx = ( (self.rho * self.J**2. * (1. + self.alpha**2. * T /
+        (self.rho * self.k)) - self.J * self.alpha * q / self.k) )      
+
+        dV_dx = ( self.alpha * dT_dx + self.J * self.rho ) 
+        
+        dR_dx = ( self.rho / self.area )  
+
+        return dT_dx, dq_dx, dV_dx, dR_dx
+            
+    def solve_leg_once(self, q_c):
         """Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
         side heat flux and changes that heat flux until it results in
         the desired hot side temperature.  Hot side and cold side
         temperature as well as hot side heat flux must be
         specified.""" 
-        self.segment_length = self.length / self.segments
-        # length of each segment (m)
-        self.J = self.I / self.area # (Amps/m^2)
 
-        if self.method == "numerical":
-            self.T[0] = self.T_c
-            self.T_props = self.T[0]
-            self.set_TEproperties(T_props=self.T_props)
-            self.set_q_c_guess()
-            self.q_c = fsolve(self.get_T_h_error_numerical,
-            x0=self.q_c_guess, xtol=self.xtol)  
-            # the previous line runs get_T_h_error_numerical with the
-            # correct value of q_c so there is no need to run it
-            # again.  In addition, get_T_h_error_numerical runs the
-            # finite difference method that solves for the
-            # temperature, heat flux, and power flux profile in the
-            # leg.  
-            self.V = self.V_segment.sum()
-            self.P = self.P_flux_segment.sum() * self.area
-            # Power for the entire leg (W)
-            self.eta = self.P / (self.q_h * self.area)
-            # Efficiency of leg
-            self.R_internal = self.R_int_seg.sum()
+        self.q_c = q_c
+        self.y0 = np.array([self.T_c, self.q_c, 0, 0])
 
-        if self.method == "analytical":
-            self.solve_leg_anal()
+        self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x) 
 
+        self.T_nodes = self.y[:,0]
+        self.q_nodes = self.y[:,1]
+        self.V_nodes = self.y[:,2]
+        self.R_int_nodes = self.y[:,3]
+
+        self.T_h = self.T_nodes[-1]
+        self.q_h = self.q_nodes[-1]
+
+        self.V = self.V_nodes[-1] 
+        self.R_internal = self.R_int_nodes[-1]
+
+        self.P_flux = self.J * self.V
+        self.P = self.P_flux * self.area
+        # Power for the entire leg (W)
+
+        self.eta = self.P / (self.q_h * self.area)
+        # Efficiency of leg
         self.R_load = - self.V / self.I
+
+        self.T_h_error = self.T_h - self.T_h_goal
+        
+        return self.T_h_error
             
+    def solve_leg(self):
+        """Solves leg until specified hot side temperature is met.""" 
+
+        self.set_q_c_guess()
+        fsolve(self.solve_leg_once, x0=self.q_c_guess) 
+
     def solve_leg_anal(self):
         """Analytically solves the leg based on lumped properties.  No
         iteration is needed."""
+
         self.T_h = self.T_h_goal
         self.T_props = 0.5 * (self.T_h + self.T_c)
         self.set_TEproperties(T_props=self.T_props)
@@ -101,6 +149,7 @@ class Leg(object):
                      / 2. ) 
         self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
                      self.length * self.k - self.J**2 * self.length * self.rho )
+
         self.P_flux = ( (self.alpha * delta_T * self.J + self.rho *
                          self.J**2 * self.length) ) 
         self.P = self.P_flux  * self.area
@@ -112,33 +161,7 @@ class Leg(object):
                             self.rho / 2.) ) 
         self.V = -self.P / np.abs(self.I)
         self.R_internal = self.rho * self.length / self.area
-
-
-    def get_T_h_error_numerical(self,q_c):
-        """Solves leg once with no attempt to match hot side
-        temperature BC. Used by solve_leg."""
-        self.q[0] = q_c
-        # for loop for iterating over segments
-        for j in range(1,self.segments):
-            self.T_props = self.T[j-1]
-            self.set_TEproperties(T_props=self.T_props)
-            self.T[j] = ( self.T[j-1] + self.segment_length / self.k *
-            (self.J * self.T[j-1] * self.alpha - self.q[j-1]) )
-            # determines temperature of current segment based on
-            # properties evaluated at previous segment
-            self.dq = ( (self.rho * self.J**2. * (1. +
-        self.alpha**2. * self.T[j-1] / (self.rho * self.k)) - self.J *
-        self.alpha * self.q[j-1] / self.k) )   
-            self.q[j] = ( self.q[j-1] + self.dq * self.segment_length )
-            self.V_segment[j] = ( self.alpha * (self.T[j] -
-        self.T[j-1]) + self.J * self.rho * self.segment_length )
-            self.R_int_seg = ( self.rho * self.segment_length /
-        self.area )
-            self.P_flux_segment[j] = self.J * self.V_segment[j]
-            self.T_h = self.T[-1]
-            self.q_h = self.q[-1]
-            self.error = (self.T_h - self.T_h_goal) / self.T_h_goal
-        return self.error
+        self.R_load = - self.V / self.I
 
     def set_ZT(self):
         """Sets ZT based on formula
@@ -167,78 +190,82 @@ class TE_Pair(object):
         self.Ntype.material = 'MgSi'
         self.area_void = (1.e-3)**2 # void area (m^2)
         self.length = 1.e-3 # default leg height (m)
-        self.segments = 25
-        self.xtol_fsolve = 0.01
+        self.nodes = 10
         self.method = "numerical"
 
     def set_constants(self):
         """Sets constants that are calculated."""
+
         self.area = self.Ntype.area + self.Ptype.area + self.area_void 
         self.Ntype.length = self.length
         self.Ptype.length = self.length
-        self.Ptype.segments = self.segments
-        self.Ntype.segments = self.segments
+        self.Ptype.nodes = self.nodes
+        self.Ntype.nodes = self.nodes
         self.Ptype.I = -self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient
         # is positive.  
         self.Ntype.I = self.I
+        self.Ntype.set_constants()
+        self.Ptype.set_constants()
         self.Ntype.method = self.method
         self.Ptype.method = self.method
 
     def solve_te_pair_once(self):
         """solves legs and combines results of leg pair"""
-        self.Ptype.T_h_goal = self.T_h_goal
-        self.Ntype.T_h_goal = self.T_h_goal
         self.Ptype.T_c = self.T_c
         self.Ntype.T_c = self.T_c
-        self.Ntype.solve_leg()
-        self.Ptype.solve_leg()
+
+        self.Ntype.solve_leg_once(self.Ntype.q_c)
+        self.Ptype.solve_leg_once(self.Ptype.q_c)
         self.T_h = self.Ntype.T_h
 
         self.q_h = ((self.Ptype.q_h * self.Ptype.area + self.Ntype.q_h
-        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void)) * 0.001
+        * self.Ntype.area) / (self.area)) * 0.001
         # area averaged hot side heat flux (kW/m^2)
         self.q_c = ((self.Ptype.q_c * self.Ptype.area + self.Ntype.q_c
-        * self.Ntype.area) / (self.Ptype.area + self.Ntype.area +
-        self.area_void)) * 0.001
+        * self.Ntype.area) / (self.area)) * 0.001
         # area averaged hot side heat flux (kW/m^2)
 
         self.h = self.q_h / (self.T_c - self.T_h) 
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
 
-    def get_error(self,T_arr):
+    def get_error(self,knob_arr):
         """Returns hot and cold side error.  This doc string needs
         work.""" 
-        T_h = T_arr[0]
-        T_c = T_arr[1]
 
-        self.q_h_conv = self.U_hot * (T_h - self.T_h_conv)
-        self.T_h_goal = T_h
-
-        self.q_c_conv = self.U_cold * (self.T_c_conv - T_c)
-        self.T_c = T_c
+        self.Ntype.q_c = knob_arr[0]
+        self.Ptype.q_c = knob_arr[1]
+        self.T_c = knob_arr[2]
 
         self.solve_te_pair_once()
 
-        self.error_hot = ( (self.q_h_conv - self.q_h) /
-        self.q_h )
+        self.q_c_conv = self.U_cold * (self.T_c_conv - self.T_c)
+        self.q_h_conv = - self.U_hot * (self.T_h_conv - self.T_h)
 
-        self.error_cold = ( (self.q_c_conv - self.q_c) /
-        self.q_c )
- 
-        self.error = np.array([self.error_hot,
-        self.error_cold])
+        T_error = self.Ntype.T_h - self.Ptype.T_h 
+        q_c_error = self.q_c - self.q_c_conv
+        q_h_error = self.q_h - self.q_h_conv
+
+        self.error = np.array([T_error, q_c_error, q_h_error])
         self.error = self.error.reshape(self.error.size)  
 
         return self.error
 
+    def set_q_c_guess(self):
+        """Sets cold side guess for both Ntype and Ptype legs."""
+        self.Ntype.set_q_c_guess()
+        self.Ptype.set_q_c_guess()
+
     def solve_te_pair(self):
         """solves legs and combines results of leg pair"""
-        self.fsolve_output = fsolve(self.get_error, x0=self.T_guess,
-        xtol=self.xtol_fsolve)
+
+        self.set_q_c_guess()
+        knob_arr0 = np.array([self.Ntype.q_c_guess,
+        self.Ptype.q_c_guess, self.T_c_conv])  
+
+        self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 
         self.P = -(self.Ntype.P + self.Ptype.P) * 0.001 
         # power for the entire leg pair(kW). Negative sign makes this
@@ -251,7 +278,6 @@ class TE_Pair(object):
         self.R_load = self.Ntype.R_load + self.Ptype.R_load
         self.R_internal = ( self.Ntype.R_internal +
         self.Ptype.R_internal )
-
 
     def set_TEproperties(self, T_props):
         """Sets properties for both legs based on temperature of
@@ -269,13 +295,12 @@ class TE_Pair(object):
         """Sets theoretical maximum efficiency with material
         properties evaluated at the average temperature based on
         Sherman's analysis."""
-        self.T_props = 0.5 * (self.T_h_goal + self.T_c)
+        self.T_props = 0.5 * (self.T_h + self.T_c)
         self.set_TEproperties(T_props=self.T_props)
         self.set_ZT()
-        delta_T = self.T_h_goal - self.T_c
-        self.eta_max = ( delta_T / self.T_h_goal * ((1. +
-        self.ZT)**0.5 - 1.) / ((1. + self.ZT)**0.5 + self.T_c /
-        self.T_h_goal) )
+        delta_T = self.T_h - self.T_c
+        self.eta_max = ( delta_T / self.T_h * ((1. + self.ZT)**0.5 -
+        1.) / ((1. + self.ZT)**0.5 + self.T_c / self.T_h) ) 
                 
     def set_area(self):
         """Sets new N-type and P-type area based on desired area
