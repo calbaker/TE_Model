@@ -5,6 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
+import time
 from scipy.optimize import fsolve
 
 # User Defined Modules
@@ -21,6 +22,8 @@ fill_fraction = 3.01e-2
 leg_length = 3.18e-4
 current = 14.1
 
+time0 = time.clock()
+
 hx_osf0 = hx.HX()
 hx_osf0.x0 = np.array([area_ratio, fill_fraction, leg_length,
                         current]) 
@@ -36,7 +39,7 @@ hx_osf0.te_pair.Ptype.material = 'HMS'
 
 hx_osf0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction) 
 
-hx_osf0.te_pair.method = 'analytical'
+hx_osf0.te_pair.method = 'numerical'
 hx_osf0.type = 'counter'
 
 hx_osf0.exh.enh = hx_osf0.exh.enh_lib.OffsetStripFin()
@@ -52,9 +55,18 @@ hx_osf0.cool.T_inlet_set = 300.
 hx_osf0.cool.T_outlet = 310.
 
 hx_osf0.set_mdot_charge()
-hx_osf0.cool.T_outlet = fsolve(hx_osf0.get_T_inlet_error, x0=hx_osf0.cool.T_outlet)
+# hx_osf0.cool.T_outlet = fsolve(hx_osf0.get_T_inlet_error,
+#                                x0=hx_osf0.cool.T_outlet)
+
+hx_osf0.solve_hx()
+
 
 print "\nProgram finished."
+
+elapsed = time.clock() - time0
+
+print "elapsed time:", elapsed
+
 print "\nPlotting..."
 
 # Plot configuration
