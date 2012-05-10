@@ -28,9 +28,12 @@ hx_osf0 = hx.HX()
 hx_osf0.x0 = np.array([area_ratio, fill_fraction, leg_length,
                         current]) 
 
-hx_osf0.width = 0.55
-hx_osf0.exh.height = 3.5e-2
-hx_osf0.length = hx_osf0.width
+hx_osf0.width = 22. * 2.54e-2
+hx_osf0.length = 22. * 2.54e-2
+
+hx_osf0.exh.height = 1.25 * 2.54e-2
+hx_osf0.cool.height = 1. * 2.54e-2
+
 hx_osf0.te_pair.I = current
 hx_osf0.te_pair.length = leg_length
 
@@ -43,12 +46,13 @@ hx_osf0.te_pair.method = 'numerical'
 hx_osf0.type = 'counter'
 
 hx_osf0.exh.enh = hx_osf0.exh.enh_lib.OffsetStripFin()
-hx_osf0.exh.enh.thickness = 0.5e-3
-hx_osf0.exh.enh.spacing = 3.19e-3
+hx_osf0.exh.enh.thickness = 0.25 * 2.54e-2 
+hx_osf0.exh.enh.spacing = 0.25 * 2.54e-2 
+hx_osf0.exh.enh.l = 0.5 * 2.54e-2
 
 hx_osf0.cool.enh = hx_osf0.cool.enh_lib.IdealFin()
-hx_osf0.cool.enh.thickness = 1.e-3
-hx_osf0.cool.enh.spacing = 1.e-3
+hx_osf0.cool.enh.thickness = 0.1 * 2.54e-2 
+hx_osf0.cool.enh.spacing = 0.4 * 2.54e-2
 
 hx_osf0.exh.T_inlet = 800.
 hx_osf0.cool.T_inlet_set = 300.
