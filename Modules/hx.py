@@ -1,5 +1,9 @@
-# Chad Baker
-# Created on 2011 Feb 10
+"""
+Script defining HX class.  
+
+Chad Baker
+Created on 2011 Feb 10
+"""
 
 # Distribution Modules
 import time
@@ -22,10 +26,52 @@ reload(platewall)
 
 
 class HX(object):
-    """class for handling HX system"""
+
+    """Class definition for heat exchanger.
+
+    Class instances:
+
+    cool : coolant.Coolant instance
+    cummins : engine.Engine instance
+    exh : exhaust.Exhaust instance
+    plate : platewall.PlateWall instance
+    te_pair : te_pair.TE_pair instance
+
+    Methods:
+
+    fix_geometry
+    get_T_inlet_error
+    get_minpar
+    init_arrays
+    optimize
+    set_availability
+    set_constants
+    set_convection
+    set_mdot_charge
+    setup
+    solve_hx
+    solve_node
+    store_node_values
+    """
 
     def __init__(self):
-        """Geometry and constants"""
+
+        """Sets several attributes, including instance attributes.  
+
+        Instance attributes
+
+        self.cool = coolant.Coolant()
+        self.exh = exhaust.Exhaust()
+        self.te_pair = te_pair.TE_Pair()
+        self.plate = platewall.PlateWall()
+        self.cummins = engine.Engine()
+
+        Methods:
+
+        self.fix_geometry
+
+        """
+
         self.width = 0.55
         # width (cm*10**-2) of HX duct. This model treats duct as
         # parallel plates for simpler modeling. 
@@ -47,9 +93,11 @@ class HX(object):
             ['self','te_pair','fill_fraction'],
             ['self','te_pair','length'],        
             ['self','te_pair','I']
-            ]
+            ] 
+        # list of strings used to construct names of attributes to be
+        # optimized 
 
-        # initialization of sub classes
+        # initialization of instance attributes
         self.cool = coolant.Coolant()
         self.exh = exhaust.Exhaust()
         self.te_pair = te_pair.TE_Pair()
@@ -60,16 +108,14 @@ class HX(object):
         self.fix_geometry()
 
     def init_arrays(self):
-        """Initializes a whole bunch of arrays for storing node
-        values."""
+
+        """Initializes arrays for storing node values."""
 
         self.Qdot_nodes = np.zeros(self.nodes)
-        # initialize array for storing heat transfer (kW) in each node 
         
         self.exh.Vdot_nodes = np.zeros(self.nodes)
 
         self.exh.T_nodes = np.zeros(self.nodes)
-        # initializing array for storing temperature (K) in each node 
         self.exh.h_nodes = np.zeros(self.nodes)
         self.exh.f_nodes = np.zeros(self.nodes)
         self.exh.deltaP_nodes = np.zeros(self.nodes)
@@ -78,45 +124,58 @@ class HX(object):
         self.exh.c_p_nodes = np.zeros(self.nodes)
         self.exh.entropy_nodes = np.zeros(self.nodes)
         self.exh.enthalpy_nodes = np.zeros(self.nodes)
+        self.exh.velocity_nodes = np.zeros(self.nodes)
 
         self.cool.T_nodes = np.zeros(self.nodes)
-        # initializing array for storing temperature (K) in each node 
         self.cool.entropy_nodes = np.zeros(self.nodes)
         self.cool.enthalpy_nodes = np.zeros(self.nodes)
         self.cool.deltaP_nodes = np.zeros(self.nodes)
         self.cool.Wdot_nodes = np.zeros(self.nodes)
 
-        # self.U_nodes = np.zeros(self.nodes)
         self.U_hot_nodes = np.zeros(self.nodes)
         self.U_cold_nodes = np.zeros(self.nodes)
+
         self.te_pair.q_h_conv_nodes = np.zeros(self.nodes)
         self.te_pair.q_c_conv_nodes = np.zeros(self.nodes)
         self.te_pair.q_h_nodes = np.zeros(self.nodes)
         self.te_pair.q_c_nodes = np.zeros(self.nodes)
-
         self.te_pair.error_nodes = np.zeros([3, self.nodes]) 
-
         self.te_pair.T_c_nodes = np.zeros(self.nodes)
-        # initializing array for storing temperature (K) in each node 
         self.te_pair.T_h_nodes = np.zeros(self.nodes)
-        # initializing array for storing temperature (K) in each node 
         self.te_pair.h_nodes = np.zeros(self.nodes)
-
         self.te_pair.power_nodes = np.zeros(self.nodes)
         self.te_pair.eta_nodes = np.zeros(self.nodes)
 
-        self.exh.velocity_nodes = np.zeros(self.nodes)
-
     def setup(self):
-        """Sets up variables that must be defined before running
-        model.  Useful for terminal.  Not necessary elsewhere."""
+
+        """Sets attributes that must be defined before running model.
+
+        Methods:
+
+        self.set_mdot_charge
+        self.set_constants
+
+        Useful for terminal.  Not necessary elsewhere.
+
+        """
+
         self.exh.T = 800.
         self.cool.T = 300.
         self.set_mdot_charge()
         self.set_constants()
 
     def set_constants(self):
-        """Sets constants used at the HX level."""
+
+        """Sets constants used at the HX level.
+
+        Methods:
+
+        self.fix_geometry
+        self.exh.set_flow_geometry
+        self.cool.set_flow_geometry
+
+        """
+
         self.x = np.linspace(0, self.length, self.nodes)
         self.node_length = self.length / self.nodes
         # length (m) of each node
@@ -133,13 +192,13 @@ class HX(object):
         self.cool.set_flow_geometry(self.cool.width)
 
     def fix_geometry(self):
-        """Makes sure that common geometry like width and length is
-        the same between exh, cool, and the overal heat exchanger.
 
-        Notes: Exhaust duct length is equal to node_length because
-        everything about the exhaust is evaluated in each node, but
-        coolant duct length is equal to total length because the
-        coolant has constant properties throughout the hx."""
+        """Matches geometry of ducts.
+
+        Makes sure that common geometry like width and length is the
+        same between exh, cool, and the overal heat exchanger.
+
+        """
 
         if self.equal_width == True:
             self.exh.width = self.width
@@ -148,30 +207,41 @@ class HX(object):
         self.exh.length = self.length 
 
     def set_mdot_charge(self):
-        """Sets exhaust mass flow rate. Eventually, this should be a
-        function of speed, load, and EGR fraction.  Also, it should
-        come from experimental data.  Also, it should probably go
-        within the exhaust module."""
+
+        """Sets exhaust mass flow rate. 
+
+        Methods:
+
+        self.cummins.set_mdot_charge
+
+        Eventually, this should be a function of speed, load, and EGR
+        fraction.  Also, it should come from experimental data.  Also,
+        it should probably go within the exhaust module.  
+
+        """
+
         self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge
 
     def set_convection(self):
-        """Sets values for convection coefficients."""
+
+        """Sets values for convection coefficients. 
+        
+        Methods:
+
+        self.exh.set_flow
+        self.cool.set_flow
+        self.plate.set_h
+
+        """
+
         # Exhaust stuff
         self.exh.set_flow()
         # Coolant stuff
         self.cool.set_flow()
         # Wall stuff
         self.plate.set_h()
-        # The previous three commands need only execute once per
-        # node.  
-        # TE stuff
-
-        # self.U = ( (self.exh.R_thermal + self.plate.R_thermal +
-        # self.plate.R_contact + self.te_pair.R_thermal + self.plate.R_contact +
-        # self.plate.R_thermal + self.cool.R_thermal )**-1 )    
-        # # overall heat transfer coefficient (kW/m^2-K)
-        # deprecated!!!!
+        # The previous three commands need only execute once per node.
 
         self.U_hot = ( (self.exh.R_thermal + self.plate.R_thermal +
         self.plate.R_contact)**-1 )
@@ -183,14 +253,16 @@ class HX(object):
         # coolant  
 
     def solve_node(self,i):
-        """Solves for performance of streamwise slice of HX.  The
-        argument i is an indexing variable from a for loop within the
-        function solve_hx."""
-
-        if self.te_pair.method == 'numerical':
-            if (i + 1) % 5 == 0:
-                print "Solving node", i
         
+        """Solves for performance of streamwise slice of HX. 
+
+        Methods:
+
+        self.set_convection
+        self.te_pair.solve_te_pair
+
+        """
+
         self.te_pair.T_h_conv = self.exh.T
         self.te_pair.T_c_conv = self.cool.T
 
@@ -201,21 +273,6 @@ class HX(object):
             # guess at cold side tem temperature (K)
             self.te_pair.T_h_goal = self.exh.T
             # guess at hot side TEM temperature (K)
-
-            # self.te_pair.solve_te_pair_once() this line and
-            # follwoing commented lines can probably be removed !!!!! 
-
-            # self.set_convection()
-            # self.q = self.U * (self.cool.T - self.exh.T)
-            
-            # self.te_pair.T_h_goal = self.q / self.U_hot + self.exh.T
-        #     # self.te_pair.T_c = -self.q / self.U_cold + self.cool.T
-        # else:
-        #     self.set_convection()
-        #     self.te_pair.T_h_goal = self.te_pair.T_h_nodes[i-1] 
-
-        # self.te_pair.T_guess = np.array([self.te_pair.T_h_goal,self.te_pair.T_c])
-        # self.te_pair.T_guess = self.te_pair.T_guess.reshape(2) 
 
         self.te_pair.U_hot = self.U_hot
         self.te_pair.U_cold = self.U_cold
@@ -229,7 +286,18 @@ class HX(object):
         # heat transfer from hot to cold
             
     def solve_hx(self,**kwargs): # solve parallel flow heat exchanger
-        """solves for performance of entire HX"""
+
+        """Solves for performance of all stream-wise nodes. 
+
+        Methods:
+
+        self.init_arrays
+        self.set_constants
+        self.solve_node
+        self.store_node_values
+        self.set_availability 
+
+        """
 
         self.init_arrays()
         self.set_constants()
@@ -285,8 +353,9 @@ class HX(object):
         self.set_availability()
 
     def set_availability(self):
-        """Runs at end of analysis to determine availability of
-        coolant and exhaust everywhere."""
+
+        """Sets availability of exhaust and coolant along all nodes.
+        """
 
         # Availability analysis
         self.exh.enthalpy0 = self.exh.get_enthalpy(self.T0)
@@ -312,8 +381,14 @@ class HX(object):
         # availability (kJ/kg) of coolant
 
     def store_node_values(self,i):
-        """Storing solved values in array to keep track of what
-        happens in every node."""
+        
+        """Stores values of parameters of interest in node i.   
+
+        This should eventually also store the node valuves for T, q,
+        and material properties in the te legs.
+
+        """
+        
         self.Qdot_nodes[i] = self.Qdot_node
         # storing node hot side heat transfer in array
 
@@ -323,24 +398,20 @@ class HX(object):
         self.te_pair.q_c_nodes[i] = self.te_pair.q_c
         self.te_pair.error_nodes[:,i] = self.te_pair.error
         self.te_pair.T_h_nodes[i] = self.te_pair.T_h
-        # hot side temperature (K) of TEM at each node 
         self.te_pair.T_c_nodes[i] = self.te_pair.T_c
-        # cold side temperature (K) of TEM at each node.  
-
-        # this should eventually also store the node valuves for T, q, 
-        # and material properties in the te legs.
+        self.te_pair.power_nodes[i] = self.te_pair.P * self.leg_pairs
+        self.te_pair.eta_nodes[i] = self.te_pair.eta
+        self.te_pair.h_nodes[i] = self.te_pair.h
 
         self.exh.T_nodes[i] = self.exh.T
-
         self.exh.Vdot_nodes[i] = self.exh.Vdot
         self.exh.f_nodes[i] = self.exh.f
         self.exh.deltaP_nodes[i] = self.exh.deltaP
         self.exh.Wdot_nodes[i] = self.exh.Wdot_pumping
-
         self.exh.Nu_nodes[i] = self.exh.Nu_D
         self.exh.c_p_nodes[i] = self.exh.c_p 
         self.exh.h_nodes[i] = self.exh.h
-
+        self.exh.velocity_nodes[i] = self.exh.velocity
         self.exh.entropy_nodes[i] = self.exh.entropy
         self.exh.enthalpy_nodes[i] = self.exh.enthalpy
 
@@ -348,20 +419,23 @@ class HX(object):
         self.cool.deltaP_nodes[i] = self.cool.deltaP
         self.cool.Wdot_nodes[i] = self.cool.Wdot_pumping
 
-        #self.U_nodes[i] = self.U
         self.U_hot_nodes[i] = self.U_hot
         self.U_cold_nodes[i] = self.U_cold
 
-        self.te_pair.power_nodes[i] = self.te_pair.P * self.leg_pairs
-        self.te_pair.eta_nodes[i] = self.te_pair.eta
-        self.te_pair.h_nodes[i] = self.te_pair.h
-
-        self.exh.velocity_nodes[i] = self.exh.velocity
-
     def get_minpar(self, apar):
-	"""Method for returning inverse of net power as a function of
-	leg ratio, fill fraction, length, and current.  Use with
-	scipy.optimize.fmin to find optimal set of input parameters."""
+
+	"""Returns inverse of net power.
+
+        Methods:
+
+        self.solve_hx
+
+        Used by method self.optimize
+
+        Uses self.apar_list to determine which paramters are to be
+        varied in optimization.  Use with scipy.optimize.fmin to find
+        optimal set of input parameters."""
+
 	# unpack guess vector
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
@@ -393,18 +467,14 @@ class HX(object):
 	return minpar
 
     def optimize(self):
-	"""Uses fmin to find optimal set of:
-	I) tem.leg_area_ratio
-	II) tem.fill_fraction
-	III) hx.te_pair.length
-	IV) hx.te_pair.I
-        V) fin spacing if value for initial guess is given in kwarg
-        ...maybe some others as determined by kwargs
 
-	This is based on minimizing the inverse of power.  This may be
-	a bad method if net power is negative.
+	"""Finds optimal set of paramters in self.apar_list 
 
-	self.x0 and self.xb must be defined elsewhere"""
+        Methods:
+
+        self.get_minpar
+        
+        self.x0 and self.xb must be defined elsewhere."""
 	
 	time.clock()
 
@@ -423,8 +493,6 @@ class HX(object):
 
         self.xmin = fmin(self.get_minpar, self.x0)
 
-	# self.xmin = fmin_l_bfgs_b(self.get_inv_power, self.x0, fprime=None,
-	# approx_grad=True, bounds=self.xb)
 	t1 = time.clock() 
         
         print '\n'
@@ -445,13 +513,24 @@ class HX(object):
 	print """Elapsed time solving xmin1 =""", t1
 
     def get_T_inlet_error(self, T_outlet):
-	"""Returns error for coolant inlet temperature from desired
-	setpoint for the counter flow configuration in which the
+
+	"""Returns error for coolant inlet temperature. 
+
+        Error is determined relative to desired setpoint inlet
+	temperature for the counter flow configuration in which the
 	outlet coolant temperaure is specified.  Should be used with
 	fsolve to determine the correct inlet temperature for the
 	coolant.
 
-	Inputs: hx instance and outlet coolant temperature"""
+        Inputs:
+
+        self.cool.T_outlet
+
+        Methods:
+
+        self.solve_hx
+
+        """
 
 	self.cool.T_outlet = np.float(T_outlet)
 	self.solve_hx()

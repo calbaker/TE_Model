@@ -5,6 +5,49 @@ module properties.py in Properties.
 hx.py can be thought of as the parent library.  
 
 
+Explanation of documentation philosophy: 
+
+For class definitions, use the following: a one line summary, blank
+line, list of class instance attributes, and list of method attributes. 
+
+Example: 
+
+    """
+    Class definition for heat exchanger object.
+
+    Class instance attributes
+    -------------------------
+    cool : coolant.Coolant instance
+    cummins : engine.Engine instance
+    exh : exhaust.Exhaust instance
+    plate : platewall.PlateWall instance
+    te_pair : te_pair.TE_pair instance
+
+    Methods
+    -------
+    fix_geometry
+    get_T_inlet_error
+    get_minpar
+    init_arrays
+    optimize
+    set_availability
+    set_constants
+    set_convection
+    set_mdot_charge
+    setup
+    solve_hx
+    solve_node
+    store_node_values
+    """
+
+For method defitions, use the following: a one line summary, blank
+line, list of necessary inputs, list of instantiated classes, list of
+methods used.
+
+Units should be comments on the same line as a variable definition or
+on the line following a variable definition.
+
+
 To do:
 Clean up everything to look nicer.
 Move enhancement stuff to separate file to clean up hx.py
