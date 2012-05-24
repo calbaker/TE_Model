@@ -1,4 +1,4 @@
-"""Module for definining PlateWall class methods and parameters."""
+"""Contains PlateWall class."""
 
 # Created on 7 Nov 2011 by Chad Baker
 
@@ -6,10 +6,25 @@ import scipy.optimize as spopt
 import numpy as np
 
 class PlateWall(object):
-    """class for modeling metal walls of heat exchanger"""
+
+    """Class for metal walls of heat exchanger.
+
+    Methods:
+
+    __init__
+    init_standalone
+    set_h
+    setup_transient
+    solve_ss
+    solve_standalone
+    solve_transient
+
+    """ 
 
     def __init__(self):
-        """Initializes material properties and plate wall geometry defaults."""
+
+        """Initializes material properties and geometry defaults.""" 
+
         self.k = 200.e-3
         # thermal conductivity (kW/m-K) of Aluminum HX plate
         # (Incropera and DeWitt)  
@@ -26,23 +41,36 @@ class PlateWall(object):
         self.set_h()
 
     def set_h(self):
-        """Sets the effective convection coefficient which is the
-        inverse of thermal resistance."""
+
+        """Sets the effective convection coefficient."""
+
         self.h = self.k/self.thickness
         self.R_thermal = 1. / self.h
 
     def solve_ss(self):
-        """sets up for solve_transient"""
+
+        """Sets self.T_prev up for solve_transient."""
+
         self.T_prev = np.linspace(self.T_c, self.T_h, self.nodes)
 
     def init_standalone(self):
-        """initializes array for storying temperature"""
+
+        """Initializes array for storying temperature."""
+
         self.T = np.zeros([self.nodes, np.size(self.time)])
         self.T[:,0] = np.array(np.linspace(self.T_h, self.T_c,
         self.nodes)) 
 
     def setup_transient(self, h_exh):
-        """sets Fo and maybe other things.  See Mills Table 3.8""" 
+
+        """Sets Fo and maybe other things.  See Mills Table 3.8
+
+        Inputs:
+
+        h_exh : exhaust heat transfer coefficient
+
+        """  
+
         self.x_step = self.thickness / (self.nodes - 1.)
         self.x = np.linspace(0, 2. * self.x_step, self.nodes) 
         self.Fo = ( self.alpha * self.t_step / self.x_step**2) # Fourier number 
@@ -69,7 +97,16 @@ class PlateWall(object):
         self.coeff_mat2[-1, -1] = 1.
             
     def solve_standalone(self, T_exh, T_te_hot):
-        """Use this for standalone plate model."""
+
+        """Use this for standalone plate model.
+
+        Inputs:
+
+        T_exh : exhaust temperature (K)
+        T_te_hot : thermoelectric hot side temperature (K)
+
+        """
+
         self.T_bc = np.zeros(self.T.shape[0])
         self.T_bc[0] = T_exh
         self.T_bc[-1] = T_te_hot
@@ -80,9 +117,10 @@ class PlateWall(object):
         np.dot(self.coeff_mat2, self.T_bc) ) 
 
     def solve_transient(self, T_exh, T_te_hot):
-        """Similar to tem.solve_leg but simpler and maybe not
-        simpler. Time step should be the same as the residence time of
-        exhaust gas in a particular node in the heat exchanger.""" 
+
+        """This needs work. I have no idea what it does anymore, and
+        it's probably doing whatever it does poorly.""" 
+
         self.T_bc = np.zeros(self.T_prev.shape[0])
         self.T_bc[0] = T_exh
         self.T_bc[-1] = T_te_hot
