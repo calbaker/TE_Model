@@ -1,4 +1,4 @@
-"""Contains class for exhaust side of heat exhanger"""
+"""Contains class for exhaust side of heat exchanger"""
 
 # Distribution libraries
 import numpy as np
@@ -16,18 +16,20 @@ reload(enhancement)
 
 
 class Exhaust(prop.ideal_gas):
-    """
-    Class for modeling convection and flow of engine exhaust
-    through heat exchanger.
+
+    """Class for engine exhaust in heat exchanger.
 
     Methods:
+
+    __init__
+    set_fluid_props
 
     """
 
     def __init__(self):
 
         """
-        Sets a bunch of constants, binds methods, inits parent class 
+        Sets a bunch of constants, binds methods, inits parent class
 
         Binds these methods:
 
@@ -38,7 +40,9 @@ class Exhaust(prop.ideal_gas):
 
         self.enh_lib = enhancement - Used in hx.py 
 
-        Also initializes super class
+        Also initializes super class, which is ideal_gas from the
+        properties script.  I keep this script in ~/Documents/Python,
+        which is part of my python path.
 
         """
 

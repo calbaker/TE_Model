@@ -14,6 +14,12 @@ reload(enhancement)
 class Coolant(object):
     """
     class for coolant flow
+
+    Methods:
+
+    __init__ 
+    set_fluid_props
+    
     """
 
     def __init__(self):
