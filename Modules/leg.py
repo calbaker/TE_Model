@@ -12,32 +12,43 @@ import te_prop
 reload(te_prop)
 
 class Leg(object):
-    """class for individual p-type or n-type TE leg"""
+
+    """Class for individual TE leg.
+
+    Methods:
+    
+    __init__
+    get_Yprime
+    set_ZT
+    set_constants
+    set_power_factor
+    set_q_c_guess
+    solve_leg
+    solve_leg_anal
+    solve_leg_once
+
+    """
 
     def __init__(self):
-        """Sets the following: 
-        self.I : current (A) in TE leg pair
-        self.nodes : number of nodes for finite difference model
-        self.length : leg length (m)
-        self.area = : leg area (m^2)
-        self.T_h_goal : hot side temperature (K) that matches HX BC
-        self.T_c : cold side temperature (K)
-        self.T : initial array for temperature (K) for finite
-        difference model
-        self.q : initial array for heat flux (W/m^2)
-        self.V_nodes : initial array for Seebeck voltage (V)
-        self.P_flux_nodes : initial array for power flux in node (W/m^2)
+
+        """Sets constants and binds methods. 
+
+        Methods:
+
+        self.set_constants
 
         Binds the following methods:
+
         te_prop.set_prop_fit
         te_prop.set_TEproperties"""
     
-        self.I = 0.5 
+        self.I = 0.5 # current (A) in TE leg pair 
         self.nodes = 10 
-        self.length = 1.e-3
-        self.area = (3.e-3)**2. 
-        self.T_h_goal = 550. 
-        self.T_c = 350. 
+        # number of nodes for which values are stored
+        self.length = 1.e-3 # leg length (m)
+        self.area = (3.e-3)**2. # leg area (m^2)
+        self.T_h_goal = 550. # hot side temperature (K) goal  
+        self.T_c = 350. # cold side temperature (K) 
 
         self.alpha_nodes = np.zeros(self.nodes)
         self.rho_nodes = np.zeros(self.nodes)
@@ -53,7 +64,9 @@ class Leg(object):
         types.MethodType(te_prop.set_TEproperties, self) )
     
     def set_constants(self):
-        """sets a few parameters"""
+
+        """Sets attributes that are typically held constant.""" 
+
         self.node_length = self.length / self.nodes
         # length of each node (m)
         self.x = np.linspace(0., self.length, self.nodes) 
@@ -61,19 +74,44 @@ class Leg(object):
         self.J = self.I / self.area # (Amps/m^2)
 
     def set_q_c_guess(self):
-        """Sets guess for q_c to be used by iterative solutions.""" 
+
+        """Sets guess for q_c to be used by iterative solutions.
+
+        Methods:
+
+        self.set_TEproperties(T_props)
+
+        """ 
+
         self.T_h = self.T_h_goal
         self.T_props = 0.5 * (self.T_h + self.T_c)
         self.set_TEproperties(T_props=self.T_props)
         delta_T = self.T_h - self.T_c
         self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
-                     self.length * self.k - self.J**2 * self.length * self.rho )
+                     self.length * self.k - self.J**2 * self.length *
+        self.rho )
+        # cold side heat flux (W / (m^2 * K))
 
-        self.q_c_guess = self.q_c
+        self.q_c_guess = self.q_c 
+        # cold side heat flux (W / (m^2 * K)) 
 
     def get_Yprime(self, y, x):
-        """Function for evaluating the derivatives of
-        temperature and heat flux w.r.t. x."""
+
+        """Returns array of derivatives.  See below.
+
+        Function for evaluating the derivatives of temperature and
+        heat flux w.r.t. x-dimension
+
+        Inputs:
+
+        y : initial conditions
+        x : array of locations where results are desired 
+
+        Methods:
+
+        self.set_TEproperties(T_props)
+
+        """
         
         T = y[0]
         q = y[1]
@@ -95,12 +133,21 @@ class Leg(object):
         return dT_dx, dq_dx, dV_dx, dR_dx
             
     def solve_leg_once(self, q_c):
-        """Solution procedure comes from Ch. 12 of Thermoelectrics
-        Handbook, CRC/Taylor & Francis 2006. The model guesses a cold
-        side heat flux and changes that heat flux until it results in
-        the desired hot side temperature.  Hot side and cold side
-        temperature as well as hot side heat flux must be
-        specified.""" 
+
+        """Solves leg once based on cold side heat flux.
+        
+        Solution procedure comes from Ch. 12 of Thermoelectrics
+        Handbook, CRC/Taylor & Francis 2006. 
+        
+        Inputs:
+        q_c - cold side heat flux (W / m^2)
+
+
+        Returns:
+
+        self.T_h_error
+
+        """
 
         self.q_c = q_c
         self.y0 = np.array([self.T_c, self.q_c, 0, 0])
@@ -131,18 +178,35 @@ class Leg(object):
         return self.T_h_error
             
     def solve_leg(self):
-        """Solves leg until specified hot side temperature is met.""" 
+        """Solves leg until specified hot side temperature is met.
+
+        Methods:
+
+        self.set_q_c_guess
+        self.solve_leg_once
+
+        """  
 
         self.set_q_c_guess()
         fsolve(self.solve_leg_once, x0=self.q_c_guess) 
 
     def solve_leg_anal(self):
-        """Analytically solves the leg based on lumped properties.  No
-        iteration is needed."""
+
+        """Analytically solves the leg based on lumped properties.
+
+        Methods:
+        
+        self.set_TEproperties
+
+        No iteration is needed.
+
+        """
 
         self.T_h = self.T_h_goal
         self.T_props = 0.5 * (self.T_h + self.T_c)
+
         self.set_TEproperties(T_props=self.T_props)
+
         delta_T = self.T_h - self.T_c
         self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
                      self.length * self.k + self.J**2. * self.length * self.rho
@@ -164,12 +228,21 @@ class Leg(object):
         self.R_load = - self.V / self.I
 
     def set_ZT(self):
-        """Sets ZT based on formula
-        self.ZT = self.sigma * self.alpha**2. / self.k""" 
+
+        """Sets ZT based on formula.
+
+        Formula:
+
+        self.ZT = self.sigma * self.alpha**2. / self.k
+
+        """ 
+        
         self.ZT = self.alpha**2. * self.T_props / (self.k * self.rho)
 
     def set_power_factor(self):
-        """Sets power factor and maximum theoretical power for leg."""
+
+        """Sets power factor and maximum theoretical power for leg.""" 
+
         self.power_factor = self.alpha**2 * self.sigma
         self.power_max = ( self.power_factor * self.T_props**2 /
         self.length * self.area ) 
