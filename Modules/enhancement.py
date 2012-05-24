@@ -1,28 +1,37 @@
-"""Module for modeling fins in exhaust or coolant side of heat
-exchanger""" 
+"""Contains classes for modeling convection heat transfer
+enhancement."""  
+
 # Distribution libraries
 import numpy as np
 
 
 class BejanPorous(object):
-    """Class for modeling porous media according to Bejan."""
+
+    """Class for porous media according to the book of Bejan.
+
+    Methods:
+
+    __init__
+    solve_enh
+
+    """
 
     def __init__(self):
-        """Initializes the following: 
-        --------------------------
+
+        """Initializes a bunch of constants.""" 
+
         self.porosity = 0.92
         self.k_matrix = 5.8e-3
         self.PPI = 10.
         self.K = 2.e-7
-        self.Nu_D : Nu for porous media parallel plates with const
-        heat flux.  Bejan Eq. 12.77"""
-        self.porosity = 0.92
-        self.k_matrix = 5.8e-3
-        self.PPI = 10.
-        self.K = 2.e-7
-        self.Nu_D = 6. 
+        self.Nu_D 
+        # Nu for porous media parallel plates with const heat flux.
+        # Bejan Eq. 12.77 
     
     def solve_enh(self,flow):
+
+        """Solves for convection parameters with enhancement.""" 
+
         self.Re_K = self.velocity * self.K**0.5 / self.nu 
         # Re based on permeability from Bejan Eq. 12.11    
         self.f = 1. / self.Re_K + 0.55 
@@ -37,10 +46,19 @@ class BejanPorous(object):
         
 
 class MancinPorous(object):            
-    """Class for modeling porous media according to Mancin."""
+
+    """Class for modeling porous media according to Mancin.
+
+    Methods:
+
+    __init__
+    solve_enh
+
+    """
 
     def __init__(self):
-        """Doc string"""
+    
+        """Sets constants."""
 
         self.porosity = 0.92
         self.k_matrix = 5.8e-3
@@ -49,9 +67,12 @@ class MancinPorous(object):
         self.k = self.k_matrix
         self.Nu_D = 4.93
         # Nu for porous media parallel plates with T_w = const.  Bejan
-        # Eq. 12.77 
+        # Eq. 12.77
 
     def solve_enh(self):
+
+        """Solves for convection parameters with enhancement."""
+
         self.G = self.rho * self.velocity 
         # Mass velocity from Mancin et al.
         self.D_pore = 0.0122 * self.PPI**(-0.849) 
@@ -72,24 +93,39 @@ class MancinPorous(object):
 
 
 class IdealFin(object):
-    """Class for modeling fin."""
+
+    """Class for modeling straight fin.
+
+    Methods:
+
+    __init__
+    set_eta
+    set_geometry
+    set_h_and_P
+    solve_enh
+
+    """
 
     def __init__(self):
-        """Sets constants and things that need to be guessed to
-        execute as a standalone model.
 
-        Sets
-        ------------------
-        self.thickness : thickness (m) of fin
-        self.k : thermal conductivity (kW/m-K) of fin material
-        self.spacing : distance between adjacent fin edges"""
+        """Sets constants and things are needed at runtime."""
 
         self.thickness = 1.e-3
+        # fin thickness (m)
         self.k = 0.2
+        # thermal conductivity (kW / (m * K)) of fin material
         self.spacing = 0.003
+        # distance (m) between adjacent fin edges 
 
     def set_geometry(self,flow):
-        """Fixes appropriate geometrical parameters."""
+
+        """Fixes appropriate geometrical parameters.
+
+        Inputs:
+        
+        flow : class instance of exhaust or coolant
+
+        """
 
         self.height = flow.height / 2
         # height of fin pair such that their tips meet in the
@@ -106,18 +142,33 @@ class IdealFin(object):
         self.D = 4. * self.flow_area / self.perimeter
 
     def set_eta(self,flow):
-        """Determines fin efficiency
-        Sets
-        ------------------
-        self.beta : dimensionless fin parameter
-        self.xi : beta times fin length (self.height)
-        self.eta : fin efficiency"""
-        self.beta = np.sqrt(2. * flow.h / (self.k * self.thickness)) 
+
+        """Sets fin efficiency and related parameters.
+
+        Inputs:
+        
+        flow : class instance of exhaust or coolant
+
+        """
+
+        self.beta = np.sqrt(2. * flow.h / (self.k * self.thickness))  
+        # dimensionless fin parameter
         self.xi = self.beta * self.height
+        # beta times fin length (self.height)
         self.eta = np.tanh(self.xi) / self.xi
+        # fin efficiency
 
     def set_h_and_P(self,flow):
-        """Determines effective heat transfer coefficient of fin."""
+
+        """Sets effective heat transfer coefficient and deltaP.
+
+        
+        Inputs:
+        
+        flow : class instance of exhaust or coolant
+
+        """ 
+
         flow.h_unfinned = flow.h
 
         self.effectiveness = self.eta * 2. * self.height / self.thickness
@@ -131,7 +182,21 @@ class IdealFin(object):
         # pressure drop (kPa)
 
     def solve_enh(self,flow):
-        """Runs all the other methods that need to run."""
+
+        """Runs all the other methods that need to run.
+
+        Inputs:
+        
+        flow : class instance of exhaust or coolant
+
+        Methods:
+
+        self.set_geometry
+        self.set_eta
+        self.set_h_and_P
+
+        """
+
         self.set_geometry(flow)
         flow.velocity = flow.Vdot / self.flow_area
         flow.set_Re_dependents()
@@ -145,96 +210,119 @@ class IdealFin(object):
         
 
 class OffsetStripFin(object):
-    """Class for modeling offset strip fins. Uses correlations from:
- 
-    Manglik, Raj M., and Arthur E. Bergles, 'Heat Transfer and
+
+    """Class for modeling offset strip fins. 
+    
+    Uses correlations from:
+     Manglik, Raj M., and Arthur E. Bergles, 'Heat Transfer and
     Pressure Drop Correlations for the Rectangular Offset Strip Fin
     Compact Heat Exchanger', Experimental Thermal and Fluid Science,
-    10 (1995), 171-180 <doi:10.1016/0894-1777(94)00096-Q>."""
+    10 (1995), 171-180 <doi:10.1016/0894-1777(94)00096-Q>.
 
+    Methods:
+
+    __init__
+    set_params
+    set_f
+    set_j
+    solve_enh
+
+    """
+    
     def __init__(self):
+        
         """Sets constants and things that need to be guessed to
         execute as a standalone model.
-
+        
         Sets
         ------------------
         self.thickness : thickness (m) of fin strip
         self.l : length (m) of fin
         self.spacing : pitch (m) of fin
         self.k : thermal conductivity (W/m/K) of osf material""" 
-
+        
         self.thickness = 0.001
         self.l = 0.01
         self.spacing = 0.001
         self.k = 0.2
 
-    def set_params(self,flow):
-        """Sets parameters used to calculate friction factor and
-        Colburn factor.  See Manglik and Bergles Fig. 1.
+    def set_params(self, flow):
 
-        Requires
-        -------------------
-        flow.height
-        self.thickness : thickness (m) of fin strip
-        self.l : length (m) of fin
+        """Sets flow parameters. 
 
-        Sets
-        --------------------
-        self.height : vertical gap (m) between fins and hx walls
-        self.spacing : horizontal gap (m) between fins  
-        self.alpha = self.spacing / self.height
-        self.delta = self.thickness / self.l
-        self.gamma = self.thickness / self.spacing
-        self.area_frac : fraction of original area still available
-        for flow 
-        self.flow_area : actual flow area (m^2)
-        self.velocity : actual velocity (m/s) based on flow area
-        self.area_enh : heat transfer area enhancment factor
-        self.rows : number of rows of offset strip fins in streamwise
-        direction 
+        See Manglik and Bergles Fig. 1.
+        
+        Inputs:
 
-        more stuff that needs to be documented"""
+        flow
+        
+        """
         
         self.height = flow.height - self.thickness
+        # vertical gap (m) between fins and hx walls
+
+        # self.spacing : horizontal gap (m) between fins  
 
         self.alpha = self.spacing / self.height
         self.delta = self.thickness / self.l
         self.gamma = self.thickness / self.spacing 
-
+        
         self.rows = flow.length / self.l
+        # number of rows of offset strip fins in streamwise direction   
+        
+        self.area_frac = ( (self.spacing * self.height) /
+        ((self.height + self.thickness) * (self.spacing +
+        self.thickness)) )    
+        # fraction of original area still available for flow 
 
-        self.area_frac = ( (self.spacing * self.height) / ((self.height + self.thickness) *
-        (self.spacing + self.thickness)) )  
+        self.area_enh = ( (self.height * self.thickness +  self.height
+                           * self.l + self.spacing * self.l) /
+                          ((self.thickness + self.spacing) * self.l) )  
+        # heat transfer area enhancement factor
 
-        self.area_enh = ( (self.height * self.thickness +  self.height * self.l + self.spacing
-        * self.l) / ((self.thickness + self.spacing) * self.l) )
-
-        self.D = ( 4. * self.spacing * self.height * self.l / (2. * (self.spacing *
-        self.l + self.height * self.l + self.thickness * self.height) + self.thickness * self.spacing)
-        )
+        self.D = ( 4. * self.spacing * self.height * self.l / (2. *
+        (self.spacing * self.l + self.height * self.l + self.thickness
+        * self.height) + self.thickness * self.spacing) ) 
 
         self.flow_area = flow.flow_area * self.area_frac 
+        # actual flow area (m^2)
         self.perimeter = 4. * self.flow_area / self.D
         # check this calculation at some point ??? 
         self.velocity = flow.velocity / self.area_frac
+        # actual velocity (m/s) based on flow area        
         self.Re_D = self.velocity * self.D / flow.nu
-
+        
     def set_f(self):
+
         """Sets friction factor, f."""
+
         self.f = ( 9.6243 * self.Re_D**-0.7422 * self.alpha**-0.1856 *
-        self.delta**0.3053 * self.gamma**-0.2659 ) 
+                   self.delta**0.3053 * self.gamma**-0.2659 ) 
 
     def set_j(self):
+
         """Sets Colburn factor, j."""
+
         self.j = ( 0.6522 * self.Re_D**-0.5403 * self.alpha**-0.1541 *
         self.delta**0.1499 * self.gamma**-0.0678 * (1. + 5.269e-5 *
         self.Re_D**1.340 * self.alpha**0.504 * self.delta**0.456 *
         self.gamma**-1.055)**0.1 ) 
 
     def solve_enh(self,flow):
-        """Solves all the stuff for this class.
+        """Runs all the methods for this class.
+
         self.h comes from Thermal Design by HoSung Lee, eq. 5.230
-        self.eta_fin : fin efficiency"""
+        self.eta_fin : fin efficiency
+        
+        
+        Methods:
+
+        self.set_params
+        self.set_f 
+        self.set_j
+        
+        """
+
         self.set_params(flow)
         self.set_f()
         flow.f = self.f
@@ -255,7 +343,10 @@ class OffsetStripFin(object):
         flow.Nu_D = flow.h * flow.D / flow.k
     
 class JetArray(object):
-    """Class for modeling impinging jet array."""
+    """Class for impinging jet array.
+
+    This class probably won't get used again so I'm not putting any
+    effort into documenting it as of 24/05/2012. CAB"""
 
     def __init__(self):
         """Initializes variables that do not require calculation.  
