@@ -1,5 +1,5 @@
-"""Engine class used to determine attributes of engine.  This will be
-fleshed out with experimental data later. """
+"""Contains Engine class used to determine attributes of engine.  This will be
+fleshed out with experimental data later."""
 
 # Distribution modules
 import scipy as sp
@@ -8,12 +8,27 @@ import scipy as sp
 import properties as prop
 
 class Engine(object):
-    """Operating condintions for Cummins Engine. This module
-    eventually needs to provide charge flow rate, EGR flow rate,
-    exhaust port temperature, post turbo temperature.""" 
+
+    """Class definition for engine object.
+
+    Methods:
+    
+    self.set_mdot_charge
+
+    """
 
     def __init__(self,**kwargs):
-        """sets constants, some of which need to be moved to another method"""
+        
+        """Sets constants
+
+        Methods:
+        
+        self.air.set_TempPress_dependents()
+
+        Instantiated in hx.py in HX class
+
+        """
+
         if 'RPM' in kwargs:
             self.RPM = kwargs['kwargs']
         else:
@@ -36,7 +51,9 @@ class Engine(object):
         self.air.set_TempPres_dependents()
 
     def set_mdot_charge(self):
-        """sets charge mass flow rate"""
+        
+        """Sets charge mass flow rate.""" 
+
         self.mdot_charge =( (self.RPM / 2. * self.displacement *
         self.eta_V * self.air.rho) / 60. )  
         # charge flow (kg/s) in engine
