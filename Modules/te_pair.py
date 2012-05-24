@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as mpl
 import time
 from scipy.optimize import fsolve
-from scipy.integrate import odeint
 
 # User defined modules
 import te_prop
@@ -15,25 +14,67 @@ reload(leg)
 
 
 class TE_Pair(object):
-    """class for TEModule that includes a pair of legs"""
+    """Class definition for TE leg pair with convection BC
+
+    Methods:
+
+    __init__
+    get_error
+    set_A_opt
+    set_TEproperties
+    set_ZT
+    set_all_areas
+    set_area
+    set_constants
+    set_eta_max
+    set_power_max
+    set_q_c_guess
+    solve_te_pair
+    solve_te_pair_once
+
+    """
 
     def __init__(self):
-        """sets constants and defines leg instances"""
-        self.leg_area_ratio = 0.7
+
+        """Sets attributes and instantiates classes.
+        
+        Class instances:
+
+        self.Ptype = leg.Leg() 
+        self.Ntype = leg.Leg() 
+
+        """
+
+        self.leg_area_ratio = 0.7 
+        # Ratio of cross-section area of N-type leg to cross-section
+        # area of P-type leg 
         self.fill_fraction = 0.02
+        # Percentage of nominal area occupied by TE legs
         self.length = 1.e-3
-        self.I = 1. # electrical current (Amps)
-        self.Ptype = leg.Leg() # p-type instance of leg
-        self.Ntype = leg.Leg() # n-type instance of leg
+        # Length (m) of TE legs
+        self.I = 1. # electrical current (Amps) 
+        self.Ptype = leg.Leg() 
+        self.Ntype = leg.Leg() 
         self.Ptype.material = 'HMS'
         self.Ntype.material = 'MgSi'
-        self.area_void = (1.e-3)**2 # void area (m^2)
-        self.length = 1.e-3 # default leg height (m)
+        self.area_void = (1.e-3)**2 
+        # void area (m^2) associated with each leg pair 
+        self.length = 1.e-3 
         self.nodes = 10
-        self.method = "numerical"
+        #  number of nodes for which the temperature values are
+        #  returned by odeint.  This does not affect the actual
+        #  calculation, only the values for which results are stored. 
 
     def set_constants(self):
-        """Sets constants that are calculated."""
+
+        """Sets a bunch of attributes that are usually held constant.
+        
+        Methods:
+
+        self.Ntype.set_constants
+        self.Ptype.set_constants
+
+        """
 
         self.area = self.Ntype.area + self.Ptype.area + self.area_void 
         self.Ntype.length = self.length
@@ -47,11 +88,18 @@ class TE_Pair(object):
         self.Ntype.I = self.I
         self.Ntype.set_constants()
         self.Ptype.set_constants()
-        self.Ntype.method = self.method
-        self.Ptype.method = self.method
 
     def solve_te_pair_once(self):
-        """solves legs and combines results of leg pair"""
+
+        """Solves legs and combines results of leg pair. 
+        
+        Methods:
+
+        self.Ntype.solve_leg_once
+        self.Ptype.solve_leg_once
+
+        """
+
         self.Ptype.T_c = self.T_c
         self.Ntype.T_c = self.T_c
 
@@ -71,8 +119,19 @@ class TE_Pair(object):
         self.R_thermal = 1. / self.h
 
     def get_error(self,knob_arr):
-        """Returns hot and cold side error.  This doc string needs
-        work.""" 
+
+        """Returns BC error.
+
+        This function uses guesses at the cold side temperature and
+        heat fluxes for both legs to solve the pair a single time.
+        The resulting errors in boundary conditions are then
+        determined. This is then used by fsolve in solve_te_pair.
+        
+        Methods:
+
+        self.solve_te_pair_once
+
+        """ 
 
         self.Ntype.q_c = knob_arr[0]
         self.Ptype.q_c = knob_arr[1]
@@ -93,12 +152,28 @@ class TE_Pair(object):
         return self.error
 
     def set_q_c_guess(self):
-        """Sets cold side guess for both Ntype and Ptype legs."""
+
+        """Sets cold side guess for both Ntype and Ptype legs.
+
+        Methods:
+
+        self.Ntype.set_q_c_guess
+        self.Ptype.set_q_c_guess 
+
+        """
+
         self.Ntype.set_q_c_guess()
         self.Ptype.set_q_c_guess()
 
     def solve_te_pair(self):
-        """solves legs and combines results of leg pair"""
+
+        """Solves legs and combines results of leg pair.
+
+        Methods:
+
+        self.set_q_c_guess
+
+        """
 
         self.set_q_c_guess()
         knob_arr0 = np.array([self.Ntype.q_c_guess,
@@ -119,21 +194,40 @@ class TE_Pair(object):
         self.Ptype.R_internal )
 
     def set_TEproperties(self, T_props):
-        """Sets properties for both legs based on temperature of
-        module."""
+
+        """Sets properties for both legs based on temperature.
+
+        Methods:
+
+        self.Ntype.set_TEproperties(T_props)
+        self.Ptype.set_TEproperties(T_props)
+
+        """
+
         self.Ntype.set_TEproperties(T_props)
         self.Ptype.set_TEproperties(T_props)
 
     def set_ZT(self):
+
         """Sets ZT based on whatever properties were used last."""
+
         self.ZT = ( ((self.Ptype.alpha - self.Ntype.alpha) /
         ((self.Ptype.rho * self.Ptype.k)**0.5 + (self.Ntype.rho *
         self.Ntype.k)**0.5))**2. * self.T_props )
 
     def set_eta_max(self):
-        """Sets theoretical maximum efficiency with material
-        properties evaluated at the average temperature based on
-        Sherman's analysis."""
+
+        """Sets theoretical maximum efficiency.
+
+        Methods:
+
+        self.set_TEproperties(T_props)
+
+        Uses material properties evaluated at the average temperature
+        based on Sherman's analysis.
+
+        """
+
         self.T_props = 0.5 * (self.T_h + self.T_c)
         self.set_TEproperties(T_props=self.T_props)
         self.set_ZT()
@@ -142,36 +236,61 @@ class TE_Pair(object):
         1.) / ((1. + self.ZT)**0.5 + self.T_c / self.T_h) ) 
                 
     def set_area(self):
-        """Sets new N-type and P-type area based on desired area
-        ratio. Ensures that sum of N-type and P-type area is
-        constant.""" 
+        """Sets new leg areas based on desired area ratio. 
+
+        Ensures that sum of N-type and P-type area is constant.
+
+        """ 
+
         area = self.Ntype.area + self.Ptype.area
         self.Ptype.area = area / (1. + self.leg_area_ratio)
         self.Ntype.area = area - self.Ptype.area
 
     def set_A_opt(self):
-        """Sets Ntype / Ptype area that results in maximum efficiency
-        based on material properties evaluated at the average
-        temperature."""
+
+        """Sets Ntype / Ptype area that results in max efficiency.  
+
+        Methods:
+        
+        self.set_TEproperties(T_props)
+
+        Based on material properties evaluated at the average
+        temperature.
+
+        """ 
+
         self.set_TEproperties(T_props=self.T_props)
         self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
         (self.Ptype.rho * self.Ntype.k))
 
     def set_power_max(self):
-        """Sets power factor and maximum theoretical power."""
+
+        """Sets power factor and maximum theoretical power.
+
+        Methods:
+
+        self.Ntype.set_power_factor
+        self.Ptype.set_power_factor
+
+        """
+
         self.Ntype.set_power_factor()
         self.Ptype.set_power_factor()
         self.power_max = self.Ntype.power_max + self.Ptype.power_max 
     
     def set_all_areas(self, leg_area, leg_area_ratio, fill_fraction):
-        """Sets leg areas and void area based on leg area ratio and
-        fill fraction. 
 
-        Arguments
-        ----------------
+        """Sets leg areas and void area.
+
+        Based on leg area ratio and fill fraction.
+
+        Inputs:
+
         leg_area : base area of P-type leg
         leg_area_ratio : N/P area ratio
-        fill_fraction : fraction of area taken up by legs"""
+        fill_fraction : fraction of area taken up by legs
+
+        """
 
         self.leg_area_ratio = leg_area_ratio
         self.fill_fraction = fill_fraction
