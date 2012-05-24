@@ -1,3 +1,5 @@
+"""Contains class for coolant side of heat exchanger.""" 
+
 # In python directory
 import properties as prop
 import types
@@ -16,11 +18,9 @@ class Coolant(object):
 
     def __init__(self):
         """
-        sets constants and initiates class instances
+        Sets contants and instantiates classes.
 
-        self.enh_lib : class attribute copy of enhancement library
         """
-        super(Coolant, self).__init__()
         
         self.enh_lib = enhancement
         self.enh = None        
@@ -54,29 +54,11 @@ class Coolant(object):
         types.MethodType(functions.set_Re, self) )
         self.set_Re_dependents = (
         types.MethodType(functions.set_Re_dependents, self) )
+        self.set_flow = (
+        types.MethodType(functions.set_flow, self) )
 
-    def set_flow(self):
-        """calculates flow parameters"""
-
-        self.C = self.mdot * self.c_p # heat capacity of flow (kW/K)
-
-        self.Vdot = self.mdot / self.rho # volume flow rate (m^3/s) of exhaust
-        self.velocity = self.Vdot / (self.flow_area * self.ducts) # velocity (m/s) of coolant
-        self.nu = self.mu/self.rho
-
-        if self.enh == None:
-            self.set_Re_dependents()
-            self.h = self.Nu_D * self.k / self.D # coefficient of convection (kW/m^2-K)
-            self.deltaP =  ( self.f * self.perimeter *
-            self.node_length / self.flow_area * (0.5 * self.rho *
-            self.velocity**2) * 1.e-3 )   
-            # pressure drop (kPa)  
-        else:
-            self.enh.solve_enh(self)
-
-        self.Wdot_pumping = self.Vdot * self.deltaP 
-        # pumping power (kW)
-
-        self.R_thermal = 1 / self.h
-        # thermal resistance of coolant (m^2-K/W)
-
+    def set_fluid_props(self):
+        
+        """Sets fluid properties needed """
+        
+        self.nu = self.mu / self.rho
