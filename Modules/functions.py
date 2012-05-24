@@ -37,8 +37,8 @@ def set_Re_dependents(self):
             self.f = 0.078 * self.Re_D**(-1. / 4.) 
             # friction factor for turbulent flow from Bejan Convection
             # Heat Transfer
-            self.Nu_D = self.Nu_coeff * self.Re_D**(4. / 5.) *
-            self.Pr**(1. / 3.) 
+            self.Nu_D = ( self.Nu_coeff * self.Re_D**(4. / 5.) *
+                          self.Pr**(1. / 3.) ) 
             # Adrian Bejan, Convection Heat Transfer, 3rd ed.,
             # Equation 8.30 
             self.flow = 'turbulent'
