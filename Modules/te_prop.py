@@ -1,10 +1,17 @@
-"""Module containing set properties function.  It got too big to be in
-the tem module."""
+"""Module containing set properties function."""
 
 import numpy as np
 
 def set_prop_fit(self):
-    """Sets temperature fit curves for thermoelectric properties."""
+
+    """Sets temperature fit curves for thermoelectric properties.
+
+    Methods:
+
+    set_TEproperties
+    set_prop_fit
+
+    """
 
     print "running set_prop_fit"
 
@@ -62,8 +69,14 @@ def set_prop_fit(self):
                               poly_deg)
 
 def set_TEproperties(self,T_props):
-    """Sets thermal and electrical properties, as a function of
-    temperature if self.T_props is used."""
+
+    """Sets TE properties
+
+    Inputs:
+
+    T_props : temperature (K) at which properties are to be evaluated
+
+    """
     
     # Materials with tabulated properties
 
