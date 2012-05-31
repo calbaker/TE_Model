@@ -7,8 +7,8 @@ import time
 from scipy.optimize import fsolve
 
 # User defined modules
-import te_prop
-reload(te_prop)
+import mat_prop
+reload(mat_prop)
 import leg
 reload(leg) 
 

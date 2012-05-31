@@ -8,8 +8,8 @@ from scipy.optimize import fsolve
 from scipy.integrate import odeint
 
 # User defined modules
-import te_prop
-reload(te_prop)
+import mat_prop
+reload(mat_prop)
 
 class Leg(object):
 
@@ -39,8 +39,8 @@ class Leg(object):
 
         Binds the following methods:
 
-        te_prop.set_prop_fit
-        te_prop.set_TEproperties"""
+        mat_prop.set_prop_fit
+        mat_prop.set_TEproperties"""
     
         self.I = 0.5 # current (A) in TE leg pair 
         self.nodes = 10 
@@ -58,10 +58,10 @@ class Leg(object):
 
         self.set_constants()
 
-        self.set_prop_fit = types.MethodType(te_prop.set_prop_fit,
+        self.set_prop_fit = types.MethodType(mat_prop.set_prop_fit,
         self) 
         self.set_TEproperties = (
-        types.MethodType(te_prop.set_TEproperties, self) )
+        types.MethodType(mat_prop.set_TEproperties, self) )
     
     def set_constants(self):
 
