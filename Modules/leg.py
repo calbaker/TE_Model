@@ -2,8 +2,6 @@
 
 import types
 import numpy as np
-import matplotlib.pyplot as mpl
-import time
 from scipy.optimize import fsolve
 from scipy.integrate import odeint
 
