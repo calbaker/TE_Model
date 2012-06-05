@@ -1,10 +1,9 @@
 # Distribution modules
 
-import types
 import numpy as np
-import matplotlib.pyplot as mpl
 import time
-from scipy.optimize import fsolve
+import operator
+from scipy.optimize import fsolve, fmin
 
 # User defined modules
 import mat_prop
@@ -64,6 +63,14 @@ class TE_Pair(object):
         #  number of nodes for which the temperature values are
         #  returned by odeint.  This does not affect the actual
         #  calculation, only the values for which results are stored.
+        self.apar_list = [
+            ['self','leg_area_ratio'],     
+            ['self','fill_fraction'],
+            ['self','length'],        
+            ['self','I']
+            ] 
+        # list of strings used to construct names of attributes to be
+        # optimized 
 
     def set_constants(self):
 
@@ -299,3 +306,86 @@ class TE_Pair(object):
         self.Ntype.area = self.Ptype.area * leg_area_ratio
         self.area_void = ( (1. - fill_fraction) / fill_fraction *
         (self.Ptype.area + self.Ntype.area) )  
+
+    def get_minpar(self, apar):
+
+	"""Returns inverse of power.
+
+        Methods:
+
+        Used by method self.optimize
+
+        Uses self.apar_list to determine which paramters are to be
+        varied in optimization.  Use with scipy.optimize.fmin to find
+        optimal set of input parameters."""
+
+	# unpack guess vector
+        self.opt_iter = self.opt_iter + 1
+        if self.opt_iter % 15 == 0:
+            print "optimizaton iteration", self.opt_iter
+            print "net power", self.P
+	apar = np.array(apar)
+
+        for i in range(apar.size):
+            setattr(operator.attrgetter('.'.join(self.apar_list[i][1:-1]))(self),
+            self.apar_list[i][-1], apar[i]) 
+
+        # reset surrogate variables
+        self.set_all_areas(self.Ptype.area,
+        self.leg_area_ratio, self.fill_fraction) 
+
+	self.solve_te_pair()
+
+        if apar.any() <= 0.: 
+            minpar = np.abs(self.P)**3 + 100.  
+            # penalizes negative parameters
+
+        elif self.P <= 0.:
+            minpar = np.abs(self.P)**3 + 100.
+            # penalizes negative power
+
+        else:
+            minpar = 1. / self.P
+
+	return minpar
+
+    def optimize(self):
+
+	"""Finds optimal set of paramters in self.apar_list 
+
+        Methods:
+
+        self.get_minpar
+        
+        self.x0 and self.xb must be defined elsewhere."""
+	
+	time.clock()
+
+        # dummy function that might be used with minimization 
+        def fprime():
+            return 1
+
+        self.opt_iter = 0
+
+        self.x0 = np.zeros(len(self.apar_list))
+
+        for i in range(self.x0.size):
+            self.x0[i] = (
+            operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
+            ) 
+
+        self.xmin = fmin(self.get_minpar, self.x0)
+
+	t1 = time.clock() 
+        
+        print '\n'
+        for i in range(self.x0.size):
+            varname = '.'.join(self.apar_list[i][1:])
+            varval = (
+                operator.attrgetter(varname)(self)
+        ) 
+            print varname + ":", varval
+
+        print "\npower:", self.P * 1000., 'W'
+
+	print """Elapsed time solving xmin1 =""", t1
