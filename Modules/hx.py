@@ -1,5 +1,5 @@
 """
-Script defining HX class.  
+Script defining HX class.
 
 Chad Baker
 Created on 2011 Feb 10
@@ -8,9 +8,8 @@ Created on 2011 Feb 10
 # Distribution Modules
 import time
 import numpy as np
-import matplotlib.pyplot as mpl
 import operator
-from scipy.optimize import fsolve, fmin#_l_bfgs_b
+from scipy.optimize import fmin  # _l_bfgs_b
 
 # User Defined Modules
 # In this directory
@@ -56,7 +55,7 @@ class HX(object):
 
     def __init__(self):
 
-        """Sets several attributes, including instance attributes.  
+        """Sets several attributes, including instance attributes.
 
         Instance attributes
 
@@ -74,13 +73,13 @@ class HX(object):
 
         self.width = 0.55
         # width (cm*10**-2) of HX duct. This model treats duct as
-        # parallel plates for simpler modeling. 
+        # parallel plates for simpler modeling.
         self.length = 0.55
         # length (m) of HX duct
-        self.nodes = 25 # number of nodes for numerical heat transfer
-                        # model
-        self.x0 = np.array([.7,0.02,0.001,4.])
-        self.xb = [(0.5,2.), (0.,1.), (1.e-4,20.e-3), (0.1,None)] 
+        self.nodes = 25 
+        # number of nodes for numerical heat transfer model
+        self.x0 = np.array([.7, 0.02, 0.001, 4.])
+        self.xb = [(0.5, 2.), (0., 1.), (1.e-4, 20.e-3), (0.1, None)]
         # initial guess and bounds for x where entries are N/P area,
         # fill fraction, leg length (m), and current (A)
         self.xmin_file = 'xmin'
