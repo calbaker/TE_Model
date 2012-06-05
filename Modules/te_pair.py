@@ -10,7 +10,7 @@ from scipy.optimize import fsolve
 import mat_prop
 reload(mat_prop)
 import leg
-reload(leg) 
+reload(leg)
 
 
 class TE_Pair(object):
@@ -37,38 +37,38 @@ class TE_Pair(object):
     def __init__(self):
 
         """Sets attributes and instantiates classes.
-        
+
         Class instances:
 
-        self.Ptype = leg.Leg() 
-        self.Ntype = leg.Leg() 
+        self.Ptype = leg.Leg()
+        self.Ntype = leg.Leg()
 
         """
 
-        self.leg_area_ratio = 0.7 
+        self.leg_area_ratio = 0.7
         # Ratio of cross-section area of N-type leg to cross-section
-        # area of P-type leg 
+        # area of P-type leg
         self.fill_fraction = 0.02
         # Percentage of nominal area occupied by TE legs
         self.length = 1.e-3
         # Length (m) of TE legs
-        self.I = 1. # electrical current (Amps) 
-        self.Ptype = leg.Leg() 
-        self.Ntype = leg.Leg() 
+        self.I = 1.  # electrical current (Amps)
+        self.Ptype = leg.Leg()
+        self.Ntype = leg.Leg()
         self.Ptype.material = 'HMS'
         self.Ntype.material = 'MgSi'
-        self.area_void = (1.e-3)**2 
-        # void area (m^2) associated with each leg pair 
-        self.length = 1.e-3 
+        self.area_void = (1.e-3) ** 2
+        # void area (m^2) associated with each leg pair
+        self.length = 1.e-3
         self.nodes = 10
         #  number of nodes for which the temperature values are
         #  returned by odeint.  This does not affect the actual
-        #  calculation, only the values for which results are stored. 
+        #  calculation, only the values for which results are stored.
 
     def set_constants(self):
 
         """Sets a bunch of attributes that are usually held constant.
-        
+
         Methods:
 
         self.Ntype.set_constants
@@ -76,7 +76,7 @@ class TE_Pair(object):
 
         """
 
-        self.area = self.Ntype.area + self.Ptype.area + self.area_void 
+        self.area = self.Ntype.area + self.Ptype.area + self.area_void
         self.Ntype.length = self.length
         self.Ptype.length = self.length
         self.Ptype.nodes = self.nodes
@@ -118,7 +118,7 @@ class TE_Pair(object):
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
 
-    def get_error(self,knob_arr):
+    def get_error(self, knob_arr):
 
         """Returns BC error.
 
@@ -174,7 +174,7 @@ class TE_Pair(object):
         self.set_q_c_guess
 
         """
-
+        
         self.set_q_c_guess()
         knob_arr0 = np.array([self.Ntype.q_c_guess,
         self.Ptype.q_c_guess, self.T_c_conv])  
@@ -299,4 +299,3 @@ class TE_Pair(object):
         self.Ntype.area = self.Ptype.area * leg_area_ratio
         self.area_void = ( (1. - fill_fraction) / fill_fraction *
         (self.Ptype.area + self.Ntype.area) )  
-        
