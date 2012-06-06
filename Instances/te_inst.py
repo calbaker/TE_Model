@@ -30,14 +30,11 @@ te_pair.Ptype.material = 'HMS'
 te_pair.I = current
 # set current to be used in both legs
 
-te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
-# set all areas
-
 te_pair.length = length
-#set leg length
-
-te_pair.set_constants()
-# Sets a bunch of attributes that are usually held constant.
+te_pair.leg_area_ratio = area_ratio
+te_pair.fill_fraction = fill_fraction
+#set leg length and such
+te_pair.set_leg_areas()
 
 te_pair.T_c_conv = 300.
 te_pair.T_h_conv = 800.
