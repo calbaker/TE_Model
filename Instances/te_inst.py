@@ -41,3 +41,8 @@ te_pair.set_constants()
 
 te_pair.T_c_conv = 300.
 te_pair.T_h_conv = 800.
+
+te_pair.U_cold = 2.
+te_pair.U_hot = 0.5
+
+te_pair.solve_te_pair() 
