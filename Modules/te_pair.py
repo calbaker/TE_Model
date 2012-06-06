@@ -318,7 +318,7 @@ class TE_Pair(object):
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
             print "optimizaton iteration", self.opt_iter
-            print "net power", self.P
+            print "power", self.P
 	apar = np.array(apar)
 
         self.length         = apar[0]
