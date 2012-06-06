@@ -5,11 +5,9 @@ heat sink usa"""
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
 import time
-from scipy.optimize import fsolve, fmin
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
