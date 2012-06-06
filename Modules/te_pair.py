@@ -328,10 +328,10 @@ class TE_Pair(object):
 	self.solve_te_pair()
 
         if (apar <= 0.).any(): 
-            minpar = np.abs(self.P) ** 3. + 100
+            minpar = np.abs(self.P_flux) ** 3. + 100
 
         else:
-            minpar = - self.P 
+            minpar = - self.P_flux 
 
 	return minpar
 
