@@ -66,8 +66,10 @@ for i in range(U.size):
         area_ratios[i, j] = te_pair.leg_area_ratio
 
         P[i, j] = te_pair.P
+
 save_dir = "../data/te_insts/"
 
+np.save(save_dir + 'U', U)
 np.save(save_dir + 'lengths', lengths)
 np.save(save_dir + 'fill_fractions', fill_fractions)
 np.save(save_dir + 'currents', currents)
