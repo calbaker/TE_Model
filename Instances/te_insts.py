@@ -1,5 +1,6 @@
 # distribution modules
 import matplotlib.pyplot as plt
+import numpy as np
 import time
 import os
 import sys
@@ -13,7 +14,7 @@ reload(te_pair)
 
 t0 = time.clock()
 
-leg_area = (0.002)**2
+leg_area = (0.002) ** 2
 area_ratio = 0.849
 fill_fraction = 3.85e-2
 length = 4.00e-4
@@ -41,11 +42,37 @@ te_pair.set_constants()
 te_pair.T_c_conv = 300.
 te_pair.T_h_conv = 800.
 
-te_pair.U_cold = 2.
-te_pair.U_hot = 0.5
+U = np.linspace(0.1, 2.5, 15)
 
-te_pair.solve_te_pair()
-te_pair.optimize()
+P = np.zeros([U.size, U.size])
+
+lengths = np.zeros([U.size, U.size])
+fill_fractions = np.zeros([U.size, U.size])
+currents = np.zeros([U.size, U.size])
+area_ratios = np.zeros([U.size, U.size])
+
+for i in range(U.size):
+    te_pair.U_hot = U[i]
+    for j in range(U.size):
+
+        print "\n\nsolving", i, ',', j, "of", U.size, ',', U.size
+
+        te_pair.U_cold = U[j]
+        te_pair.optimize()
+
+        lengths[i, j] = te_pair.length
+        fill_fractions[i, j] = te_pair.fill_fraction
+        currents[i, j] = te_pair.I
+        area_ratios[i, j] = te_pair.leg_area_ratio
+
+        P[i, j] = te_pair.P
+save_dir = "../data/te_insts/"
+
+np.save(save_dir + 'lengths', lengths)
+np.save(save_dir + 'fill_fractions', fill_fractions)
+np.save(save_dir + 'currents', currents)
+np.save(save_dir + 'area_ratios', area_ratios)
+np.save(save_dir + 'P', P)
 
 # Plot configuration
 FONTSIZE = 15
