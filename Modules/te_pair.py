@@ -42,6 +42,10 @@ class TE_Pair(object):
         self.Ptype = leg.Leg()
         self.Ntype = leg.Leg()
 
+        Methods:
+
+        self.set_constants
+
         """
 
         self.leg_area_ratio = 0.7
@@ -63,6 +67,8 @@ class TE_Pair(object):
         #  number of nodes for which the temperature values are
         #  returned by odeint.  This does not affect the actual
         #  calculation, only the values for which results are stored.
+
+        self.set_constants()
 
     def set_constants(self):
 
@@ -234,17 +240,6 @@ class TE_Pair(object):
         self.eta_max = ( delta_T / self.T_h * ((1. + self.ZT) ** 0.5 -
         1.) / ((1. + self.ZT) ** 0.5 + self.T_c / self.T_h) ) 
                 
-    def set_area(self):
-        """Sets new leg areas based on desired area ratio. 
-
-        Ensures that sum of N-type and P-type area is constant.
-
-        """ 
-
-        area = self.Ntype.area + self.Ptype.area
-        self.Ptype.area = area / (1. + self.leg_area_ratio)
-        self.Ntype.area = area - self.Ptype.area
-
     def set_A_opt(self):
 
         """Sets Ntype / Ptype area that results in max efficiency.  
@@ -277,24 +272,17 @@ class TE_Pair(object):
         self.Ptype.set_power_factor()
         self.power_max = self.Ntype.power_max + self.Ptype.power_max 
     
-    def set_all_areas(self, leg_area, leg_area_ratio, fill_fraction):
+    def set_leg_areas(self):
 
         """Sets leg areas and void area.
 
         Based on leg area ratio and fill fraction.
 
-        Inputs:
-
-        leg_area : base area of P-type leg
-        leg_area_ratio : N/P area ratio
-        fill_fraction : fraction of area taken up by legs
-
         """
 
-        self.leg_area_ratio = leg_area_ratio
-        self.fill_fraction = fill_fraction
+        leg_area_ratio = self.leg_area_ratio 
+        fill_fraction = self.fill_fraction 
 
-        self.Ptype.area = leg_area                           
         self.Ntype.area = self.Ptype.area * leg_area_ratio
         self.area_void = ( (1. - fill_fraction) / fill_fraction *
         (self.Ptype.area + self.Ntype.area) )  
@@ -307,9 +295,9 @@ class TE_Pair(object):
 
         Used by method self.optimize
 
-        self.length         = apar[0]
-        self.fill_fraction  = apar[1]
-        self.I        = apar[2]
+        self.length = apar[0]
+        self.fill_fraction = apar[1]
+        self.I = apar[2]
         self.leg_area_ratio = apar[3]
 
         Use with scipy.optimize.fmin to find optimal set of input
@@ -321,14 +309,14 @@ class TE_Pair(object):
             print "power", self.P
 	apar = np.array(apar)
 
-        self.length         = apar[0]
-        self.fill_fraction  = apar[1]
-        self.I        = apar[2]
+        self.length = apar[0]
+        self.fill_fraction = apar[1]
+        self.I = apar[2]
         self.leg_area_ratio = apar[3]
 
         # reset surrogate variables
-        self.set_all_areas(self.Ptype.area, self.leg_area_ratio,
-        self.fill_fraction)  
+        self.set_leg_areas()
+        self.set_constants()
 
 	self.solve_te_pair()
 

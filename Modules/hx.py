@@ -447,8 +447,8 @@ class HX(object):
             self.apar_list[i][-1], apar[i]) 
 
         # reset surrogate variables
-        self.te_pair.set_all_areas(self.te_pair.Ptype.area,
-        self.te_pair.leg_area_ratio, self.te_pair.fill_fraction) 
+        self.te_pair.set_leg_areas()
+        self.te_pair.set_constants()
 
 	self.solve_hx()
 
