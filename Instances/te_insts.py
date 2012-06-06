@@ -13,10 +13,11 @@ reload(te_pair)
 
 t0 = time.clock()
 
-length = 1.e-3
-current = 3.5
-area = (2.e-3) ** 2
-area_ratio = 0.69
+leg_area = (0.002)**2
+area_ratio = 0.849
+fill_fraction = 3.85e-2
+length = 4.00e-4
+current = 13.2
 
 te_pair = te_pair.TE_Pair()
 # instantiate a te_pair object
@@ -28,9 +29,7 @@ te_pair.Ptype.material = 'HMS'
 te_pair.I = current
 # set current to be used in both legs
 
-te_pair.Ptype.area = area
-te_pair.Ntype.area = te_pair.Ptype.area * area_ratio
-te_pair.area_void = 0.
+te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 # set all areas
 
 te_pair.length = length
@@ -40,12 +39,13 @@ te_pair.set_constants()
 # Sets a bunch of attributes that are usually held constant.
 
 te_pair.T_c_conv = 300.
-te_pair.T_h_conv = 700.
+te_pair.T_h_conv = 800.
 
-te_pair.U_cold = 1.
+te_pair.U_cold = 2.
 te_pair.U_hot = 0.5
 
 te_pair.solve_te_pair()
+te_pair.optimize()
 
 # Plot configuration
 FONTSIZE = 15

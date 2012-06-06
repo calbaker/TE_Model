@@ -332,6 +332,8 @@ class TE_Pair(object):
 
 	self.solve_te_pair()
 
+        print "\npower =", self.P
+
         if apar.any() <= 0.: 
             minpar = np.abs(self.P) ** 3 + 100.  
             # penalizes negative parameters
