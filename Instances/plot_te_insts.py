@@ -5,7 +5,8 @@ import numpy as np
 
 load_dir = "../data/te_insts/"
 
-U = np.load(load_dir + 'U.npy')
+U_hot = np.load(load_dir + 'U_hot.npy')
+U_cold = np.load(load_dir + 'U_cold.npy')
 lengths = np.load(load_dir + 'lengths.npy')
 fill_fractions = np.load(load_dir + 'fill_fractions.npy')
 currents = np.load(load_dir + 'currents.npy')
@@ -26,62 +27,72 @@ plt.rcParams['axes.formatter.limits'] = -3, 3
 plt.close('all')
 
 plt.figure()
-x_2d, y_2d = np.meshgrid(U, U)
-# TICKS = 
-# LEVELS = 
-FCS = plt.contourf(x_2d, y_2d, P.T)
-CB = plt.colorbar(FCS, orientation='vertical')#, format='%.0f')
+x_2d, y_2d = np.meshgrid(U_hot, U_cold)
+TICKS = np.linspace(0., P.max(), 8)
+LEVELS = np.linspace(0., P.max(), 8)
+FCS = plt.contourf(x_2d, y_2d, P.T, levels=LEVELS)
+CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS)
 CB.set_label(r'Power')
 plt.grid()
-plt.xlabel('?Cold? Side U')
-plt.ylabel('?Hot? Side U')
+plt.xlabel('?Hot? Side U')
+plt.ylabel('?Cold? Side U')
 plt.subplots_adjust(bottom=0.15)
 plt.subplots_adjust(left=0.15)
 plt.subplots_adjust(right=0.7)
 plt.savefig('../Plots/te_insts/P.pdf')
 
 plt.figure()
-x_2d, y_2d = np.meshgrid(U, U)
-# TICKS = 
-# LEVELS = 
-FCS = plt.contourf(x_2d, y_2d, lengths.T)
-CB = plt.colorbar(FCS, orientation='vertical')#, format='%.0f')
-CB.set_label(r'Length')
+TICKS = np.linspace(0., lengths.max() * 1000., 8)
+LEVELS = TICKS
+FCS = plt.contourf(x_2d, y_2d, lengths.T * 1000., levels=LEVELS)
+CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS)
+CB.set_label('Length (mm)')
 plt.grid()
-plt.xlabel('?Cold? Side U')
-plt.ylabel('?Hot? Side U')
+plt.xlabel('?Hot? Side U')
+plt.ylabel('?Cold? Side U')
 plt.subplots_adjust(bottom=0.15)
 plt.subplots_adjust(left=0.15)
 plt.subplots_adjust(right=0.7)
 plt.savefig('../Plots/te_insts/length.pdf')
 
 plt.figure()
-x_2d, y_2d = np.meshgrid(U, U)
-# TICKS = 
-# LEVELS = 
-FCS = plt.contourf(x_2d, y_2d, fill_fractions.T)
-CB = plt.colorbar(FCS, orientation='vertical')#, format='%.0f')
+TICKS = np.linspace(0, fill_fractions.max(), 8)
+LEVELS = TICKS
+FCS = plt.contourf(x_2d, y_2d, fill_fractions.T, levels=LEVELS)
+CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS) 
 CB.set_label(r'fill_fraction')
 plt.grid()
-plt.xlabel('?Cold? Side U')
-plt.ylabel('?Hot? Side U')
+plt.xlabel('?Hot? Side U')
+plt.ylabel('?Cold? Side U')
 plt.subplots_adjust(bottom=0.15)
 plt.subplots_adjust(left=0.15)
 plt.subplots_adjust(right=0.7)
 plt.savefig('../Plots/te_insts/fill_fraction.pdf')
 
 plt.figure()
-x_2d, y_2d = np.meshgrid(U, U)
-# TICKS = 
-# LEVELS = 
-FCS = plt.contourf(x_2d, y_2d, currents.T)
-CB = plt.colorbar(FCS, orientation='vertical')#, format='%.0f')
-CB.set_label(r'Current')
+TICKS = np.linspace(0., currents.max(), 8)
+LEVELS = TICKS
+FCS = plt.contourf(x_2d, y_2d, currents.T, levels=LEVELS)
+CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS) 
+CB.set_label('Current')
 plt.grid()
-plt.xlabel('?Cold? Side U')
-plt.ylabel('?Hot? Side U')
+plt.xlabel('?Hot? Side U')
+plt.ylabel('?Cold? Side U')
 plt.subplots_adjust(bottom=0.15)
 plt.subplots_adjust(left=0.15)
 plt.subplots_adjust(right=0.7)
 plt.savefig('../Plots/te_insts/current.pdf')
 
+plt.figure()
+TICKS = np.linspace(0, area_ratios.max(), 8)
+LEVELS = TICKS
+FCS = plt.contourf(x_2d, y_2d, area_ratios.T, levels=LEVELS)
+CB = plt.colorbar(FCS, orientation='vertical', ticks=TICKS) 
+CB.set_label(r'fill_fraction')
+plt.grid()
+plt.xlabel('?Hot? Side U')
+plt.ylabel('?Cold? Side U')
+plt.subplots_adjust(bottom=0.15)
+plt.subplots_adjust(left=0.15)
+plt.subplots_adjust(right=0.7)
+plt.savefig('../Plots/te_insts/fill_fraction.pdf')

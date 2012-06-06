@@ -278,6 +278,10 @@ class TE_Pair(object):
 
         Based on leg area ratio and fill fraction.
 
+        Methods:
+
+        self.set_constants
+
         """
 
         leg_area_ratio = self.leg_area_ratio 
@@ -287,11 +291,15 @@ class TE_Pair(object):
         self.area_void = ( (1. - fill_fraction) / fill_fraction *
         (self.Ptype.area + self.Ntype.area) )  
 
+        self.set_constants()
+
     def get_minpar(self, apar):
 
 	"""Returns inverse of power. 
 
         Methods:
+
+        self.set_leg_areas
 
         Used by method self.optimize
 
@@ -316,7 +324,6 @@ class TE_Pair(object):
 
         # reset surrogate variables
         self.set_leg_areas()
-        self.set_constants()
 
 	self.solve_te_pair()
 

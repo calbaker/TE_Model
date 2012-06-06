@@ -428,6 +428,7 @@ class HX(object):
         Methods:
 
         self.solve_hx
+        self.set_leg_areas
 
         Used by method self.optimize
 
@@ -448,7 +449,6 @@ class HX(object):
 
         # reset surrogate variables
         self.te_pair.set_leg_areas()
-        self.te_pair.set_constants()
 
 	self.solve_hx()
 

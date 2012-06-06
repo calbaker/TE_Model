@@ -36,13 +36,15 @@ hx_exp.length      = 20. * 2.54e-2
 
 hx_exp.plate.thickness = 0.375 * 2.54e-2
 
+hx_exp.te_pair.leg_area_ratio = area_ratio
+hx_exp.te_pair.fill_fraction = fill_fraction
 hx_exp.te_pair.I = current
 hx_exp.te_pair.length = leg_length
 
+hx_exp.te_pair.set_leg_areas()
+
 hx_exp.te_pair.Ntype.material = 'MgSi'
 hx_exp.te_pair.Ptype.material = 'HMS'
-
-hx_exp.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx_exp.te_pair.method = 'numerical'
 hx_exp.type = 'counter'

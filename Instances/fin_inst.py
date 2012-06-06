@@ -2,7 +2,6 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
 from scipy.optimize import fsolve
@@ -22,18 +21,19 @@ leg_length = 3.56e-4
 current = 13.0
 
 hx_fins0 = hx.HX()
-hx_fins0.x0 = np.array([area_ratio, fill_fraction, leg_length,
-                        current]) 
+
 hx_fins0.width = 0.55
 hx_fins0.exh.height = 3.5e-2
 hx_fins0.length = 0.55
 hx_fins0.te_pair.I = current
 hx_fins0.te_pair.length = leg_length
+hx_fins0.te_pair.leg_area_ratio = area_ratio
+hx_fins0.te_pair.fill_fraction = fill_fraction
+
+hx_fins0.te_pair.set_leg_areas()
 
 hx_fins0.te_pair.Ntype.material = 'MgSi'
 hx_fins0.te_pair.Ptype.material = 'HMS'
-
-hx_fins0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx_fins0.te_pair.method = 'numerical'
 hx_fins0.type = 'counter'

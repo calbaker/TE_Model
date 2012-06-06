@@ -42,22 +42,27 @@ te_pair.set_constants()
 te_pair.T_c_conv = 300.
 te_pair.T_h_conv = 800.
 
-U = np.linspace(0.1, 2.5, 15)
+U_hot = np.linspace(0.1, 2.5, 10)
+U_cold = np.linspace(0.1, 2.5, 11)
 
-P = np.zeros([U.size, U.size])
+P = np.zeros([U_hot.size, U_cold.size])
 
-lengths = np.zeros([U.size, U.size])
-fill_fractions = np.zeros([U.size, U.size])
-currents = np.zeros([U.size, U.size])
-area_ratios = np.zeros([U.size, U.size])
+lengths = np.zeros([U_hot.size, U_cold.size])
+fill_fractions = np.zeros([U_hot.size, U_cold.size])
+currents = np.zeros([U_hot.size, U_cold.size])
+area_ratios = np.zeros([U_hot.size, U_cold.size])
 
-for i in range(U.size):
-    te_pair.U_hot = U[i]
-    for j in range(U.size):
+for i in range(U_hot.size):
+    te_pair.U_hot = U_hot[i]
 
-        print "\n\nsolving", i, ',', j, "of", U.size, ',', U.size
+    print "\n\n\ncurrent =", te_pair.I
 
-        te_pair.U_cold = U[j]
+    for j in range(U_cold.size):
+
+        print "\n\nsolving", i, ',', j, "of", U_hot.size, ',', U_cold.size
+
+        te_pair.U_cold = U_cold[j]
+
         te_pair.optimize()
 
         lengths[i, j] = te_pair.length
@@ -69,7 +74,8 @@ for i in range(U.size):
 
 save_dir = "../data/te_insts/"
 
-np.save(save_dir + 'U', U)
+np.save(save_dir + 'U_hot', U_hot)
+np.save(save_dir + 'U_cold', U_cold)
 np.save(save_dir + 'lengths', lengths)
 np.save(save_dir + 'fill_fractions', fill_fractions)
 np.save(save_dir + 'currents', currents)
