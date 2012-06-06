@@ -452,8 +452,8 @@ class HX(object):
 
 	self.solve_hx()
 
-        if apar.any() <= 0.: 
-            minpar = np.abs(self.power_net)**3 + 100.  
+        if (apar <= 0.).any(): 
+            minpar = np.abs(self.power_net) ** 3 + 100.  
             # penalizes negative parameters
 
         else:

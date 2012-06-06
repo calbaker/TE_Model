@@ -327,7 +327,11 @@ class TE_Pair(object):
 
 	self.solve_te_pair()
 
-        minpar = - self.P
+        if (apar <= 0.).any(): 
+            minpar = np.abs(self.P) ** 3. + 100
+
+        else:
+            minpar = - self.P 
 
 	return minpar
 
