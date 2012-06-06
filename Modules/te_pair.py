@@ -63,14 +63,6 @@ class TE_Pair(object):
         #  number of nodes for which the temperature values are
         #  returned by odeint.  This does not affect the actual
         #  calculation, only the values for which results are stored.
-        self.apar_list = [
-            ['self','leg_area_ratio'],     
-            ['self','fill_fraction'],
-            ['self','length'],        
-            ['self','I']
-            ] 
-        # list of strings used to construct names of attributes to be
-        # optimized 
 
     def set_constants(self):
 
@@ -219,8 +211,8 @@ class TE_Pair(object):
         """Sets ZT based on whatever properties were used last."""
 
         self.ZT = ( ((self.Ptype.alpha - self.Ntype.alpha) /
-        ((self.Ptype.rho * self.Ptype.k)**0.5 + (self.Ntype.rho *
-        self.Ntype.k)**0.5))**2. * self.T_props )
+        ((self.Ptype.rho * self.Ptype.k) ** 0.5 + (self.Ntype.rho *
+        self.Ntype.k) ** 0.5)) ** 2. * self.T_props )
 
     def set_eta_max(self):
 
@@ -239,8 +231,8 @@ class TE_Pair(object):
         self.set_TEproperties(T_props=self.T_props)
         self.set_ZT()
         delta_T = self.T_h - self.T_c
-        self.eta_max = ( delta_T / self.T_h * ((1. + self.ZT)**0.5 -
-        1.) / ((1. + self.ZT)**0.5 + self.T_c / self.T_h) ) 
+        self.eta_max = ( delta_T / self.T_h * ((1. + self.ZT) ** 0.5 -
+        1.) / ((1. + self.ZT) ** 0.5 + self.T_c / self.T_h) ) 
                 
     def set_area(self):
         """Sets new leg areas based on desired area ratio. 
@@ -309,39 +301,43 @@ class TE_Pair(object):
 
     def get_minpar(self, apar):
 
-	"""Returns inverse of power.
+	"""Returns inverse of power. 
 
         Methods:
 
         Used by method self.optimize
 
-        Uses self.apar_list to determine which paramters are to be
-        varied in optimization.  Use with scipy.optimize.fmin to find
-        optimal set of input parameters."""
+        self.length         = apar[0]
+        self.fill_fraction  = apar[1]
+        self.I        = apar[2]
+        self.leg_area_ratio = apar[3]
 
-	# unpack guess vector
+        Use with scipy.optimize.fmin to find optimal set of input
+        parameters."""
+
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
             print "optimizaton iteration", self.opt_iter
             print "net power", self.P
 	apar = np.array(apar)
 
-        for i in range(apar.size):
-            setattr(operator.attrgetter('.'.join(self.apar_list[i][1:-1]))(self),
-            self.apar_list[i][-1], apar[i]) 
+        self.length         = apar[0]
+        self.fill_fraction  = apar[1]
+        self.I        = apar[2]
+        self.leg_area_ratio = apar[3]
 
         # reset surrogate variables
-        self.set_all_areas(self.Ptype.area,
-        self.leg_area_ratio, self.fill_fraction) 
+        self.set_all_areas(self.Ptype.area, self.leg_area_ratio,
+        self.fill_fraction)  
 
 	self.solve_te_pair()
 
         if apar.any() <= 0.: 
-            minpar = np.abs(self.P)**3 + 100.  
+            minpar = np.abs(self.P) ** 3 + 100.  
             # penalizes negative parameters
 
         elif self.P <= 0.:
-            minpar = np.abs(self.P)**3 + 100.
+            minpar = np.abs(self.P) ** 3 + 100.
             # penalizes negative power
 
         else:
@@ -351,7 +347,7 @@ class TE_Pair(object):
 
     def optimize(self):
 
-	"""Finds optimal set of paramters in self.apar_list 
+	"""Minimizes self.get_minpar 
 
         Methods:
 
@@ -367,25 +363,21 @@ class TE_Pair(object):
 
         self.opt_iter = 0
 
-        self.x0 = np.zeros(len(self.apar_list))
-
-        for i in range(self.x0.size):
-            self.x0[i] = (
-            operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
-            ) 
+        self.x0 = np.array([self.length, self.fill_fraction,
+        self.I, self.leg_area_ratio]) 
 
         self.xmin = fmin(self.get_minpar, self.x0)
 
 	t1 = time.clock() 
         
         print '\n'
-        for i in range(self.x0.size):
-            varname = '.'.join(self.apar_list[i][1:])
-            varval = (
-                operator.attrgetter(varname)(self)
-        ) 
-            print varname + ":", varval
-
+        
+        print "Optimized parameters:"
+        print "leg length =", self.length, "m"
+        print "fill fraction =", self.fill_fraction * 100., "%"
+        print "current =", self.I, "A"
+        print "area ratio =", self.leg_area_ratio
+        
         print "\npower:", self.P * 1000., 'W'
 
 	print """Elapsed time solving xmin1 =""", t1
