@@ -295,7 +295,7 @@ class TE_Pair(object):
 
     def get_minpar(self, apar):
 
-	"""Returns inverse of power. 
+	"""Returns inverse of power flux. 
 
         Methods:
 
@@ -309,7 +309,11 @@ class TE_Pair(object):
         self.leg_area_ratio = apar[3]
 
         Use with scipy.optimize.fmin to find optimal set of input
-        parameters."""
+        parameters.
+
+        This method uses power flux rather than power because for
+        optimal power, leg height approaches zero and void area
+        approaches infinity.  This trivial result is not useful."""
 
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
