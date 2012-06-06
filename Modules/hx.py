@@ -456,12 +456,8 @@ class HX(object):
             minpar = np.abs(self.power_net)**3 + 100.  
             # penalizes negative parameters
 
-        elif self.power_net <= 0.:
-            minpar = np.abs(self.power_net)**3 + 100.
-            # penalizes negative power
-
         else:
-            minpar = 1. / self.power_net
+            minpar = - self.power_net
 
 	return minpar
 
