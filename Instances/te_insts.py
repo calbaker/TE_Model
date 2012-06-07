@@ -79,15 +79,3 @@ np.save(save_dir + 'currents', currents)
 np.save(save_dir + 'area_ratios', area_ratios)
 np.save(save_dir + 'P', P)
 
-# Plot configuration
-FONTSIZE = 15
-plt.rcParams['axes.labelsize'] = FONTSIZE
-plt.rcParams['axes.titlesize'] = FONTSIZE
-plt.rcParams['legend.fontsize'] = FONTSIZE
-plt.rcParams['xtick.labelsize'] = FONTSIZE
-plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 2.5
-plt.rcParams['lines.markersize'] = 10
-plt.rcParams['axes.formatter.limits'] = -3, 3
-
-plt.close('all')
