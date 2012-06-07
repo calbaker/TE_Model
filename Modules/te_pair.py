@@ -2,8 +2,6 @@
 
 import numpy as np
 import time
-import operator
-from scipy.optimize import fsolve, fmin
 
 # User defined modules
 import mat_prop
@@ -184,6 +182,8 @@ class TE_Pair(object):
         knob_arr0 = np.array([self.Ntype.q_c_guess,
         self.Ptype.q_c_guess, self.T_c_conv])  
 
+        from scipy.optimize import fsolve
+
         self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 
         self.P = -(self.Ntype.P + self.Ptype.P) * 0.001 
@@ -359,6 +359,8 @@ class TE_Pair(object):
 
         self.x0 = np.array([self.length, self.fill_fraction,
         self.I, self.leg_area_ratio]) 
+
+        from scipy.optimize import fmin
 
         self.xmin = fmin(self.get_minpar, self.x0)
 
