@@ -1,6 +1,4 @@
 # distribution modules
-import matplotlib.pyplot as plt
-import numpy as np
 import time
 import os
 import sys
@@ -36,7 +34,7 @@ te_pair.fill_fraction = fill_fraction
 #set leg length and such
 te_pair.set_leg_areas()
 
-te_pair.T_c_conv = 300.  # cold side convection temperature (K) 
+te_pair.T_c_conv = 300.  # cold side convection temperature (K)
 te_pair.T_h_conv = 800.  # hot side convection temperature (K)
 
 te_pair.U_cold = 2.
@@ -44,6 +42,6 @@ te_pair.U_cold = 2.
 te_pair.U_hot = 0.5
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
-te_pair.solve_te_pair() 
+te_pair.solve_te_pair()
 # solves for temperature profile, hot side heat flux, cold side heat
-# flux, power, and some other stuff.  
+# flux, power, and some other stuff.
