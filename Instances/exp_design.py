@@ -1,5 +1,5 @@
-"""This script runs the model for designs available from
-heat sink usa"""
+"""This script runs the model for designs available from heat sink
+usa.  This doc string may not be completely accurate."""
 
 # Chad Baker
 # Created on 2011 Feb 10
