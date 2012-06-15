@@ -1,12 +1,13 @@
 """This script runs the model for designs available from
-heat sink usa""" 
+heat sink usa"""
 
 # Chad Baker
 # Created on 2011 Feb 10
 
 # Distribution Modules
 import matplotlib.pyplot as plt
-import os,sys
+import os
+import sys
 import time
 
 # User Defined Modules
@@ -18,7 +19,7 @@ reload(hx)
 
 time0 = time.clock()
 
-leg_area = (0.002)**2
+leg_area = (0.002) ** 2
 
 area_ratio = 0.849
 fill_fraction = 3.85e-2
@@ -29,10 +30,10 @@ time0 = time.clock()
 
 hx_exp = hx.HX()
 
-hx_exp.width       = (20. - 0.640) * 2.54e-2
-hx_exp.exh.height  = (2.5 - 0.375) * 2.54e-2
+hx_exp.width = (20. - 0.640) * 2.54e-2
+hx_exp.exh.height = (2.5 - 0.375) * 2.54e-2
 hx_exp.cool.height = 1.25 * 2.54e-2
-hx_exp.length      = 20. * 2.54e-2
+hx_exp.length = 20. * 2.54e-2
 
 hx_exp.plate.thickness = 0.375 * 2.54e-2
 
@@ -59,7 +60,7 @@ hx_exp.exh.enh.l = 3. / 8. * 2.54e-2
 
 hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
 hx_exp.cool.enh.thickness = thickness
-hx_exp.cool.enh.spacing = (0.400 - 0.080) * 2.54e-2 
+hx_exp.cool.enh.spacing = (0.400 - 0.080) * 2.54e-2
 
 # hx_exp.apar_list.append(['self','exh','enh','l'])
 # hx_exp.apar_list.append(['self','length'])
@@ -76,7 +77,7 @@ hx_exp.solve_hx()
 #     """Returns inverse of net power for varied length."""
 #     hx_exp.length = length
 #     hx_exp.solve_hx()
-    
+
 #     if hx_exp.power_net > 0:
 #         minpar = 1. / hx_exp.power_net
 #     else:
@@ -111,8 +112,10 @@ plt.close()
 
 plt.figure()
 plt.plot(hx_exp.x * 100., hx_exp.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx_exp.x * 100., hx_exp.te_pair.T_h_nodes, '-g', label='TE_PAIR Hot Side')
-plt.plot(hx_exp.x * 100., hx_exp.te_pair.T_c_nodes, '-k', label='TE_PAIR Cold Side')
+plt.plot(hx_exp.x * 100., hx_exp.te_pair.T_h_nodes, '-g',
+         label='TE_PAIR Hot Side')
+plt.plot(hx_exp.x * 100., hx_exp.te_pair.T_c_nodes, '-k',
+         label='TE_PAIR Cold Side')
 plt.plot(hx_exp.x * 100., hx_exp.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')
@@ -125,4 +128,3 @@ plt.subplots_adjust(bottom=0.15)
 # plt.savefig('../Plots/temp '+hx_exp.type+str(hx_exp.exh.fins)+'.pdf')
 
 # plt.show()
-
