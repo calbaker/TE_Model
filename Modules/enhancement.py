@@ -9,6 +9,10 @@ class BejanPorous(object):
 
     """Class for porous media according to the book of Bejan.
 
+    Bejan, A. “Designed Porous Media: Maximal Heat Transfer Density at
+    Decreasing Length Scales.” International Journal of Heat and Mass
+    Transfer 47, no. 14 (2004): 3073–3083.
+
     Methods:
 
     __init__
@@ -49,6 +53,10 @@ class BejanPorous(object):
 class MancinPorous(object):
 
     """Class for modeling porous media according to Mancin.
+
+    Mancin, S., C. Zilio, A. Cavallini, and L. Rossetto. “Pressure
+    Drop During Air Flow in Aluminum Foams.” International Journal of
+    Heat and Mass Transfer 53, no. 15–16 (2010): 3121–3130.
 
     Methods:
 
@@ -96,6 +104,8 @@ class MancinPorous(object):
 class IdealFin(object):
 
     """Class for modeling straight fin.
+
+    Mills, A. F. Heat Transfer. 2nd ed. Prentice Hall, 1998.
 
     Methods:
 
@@ -213,7 +223,8 @@ class OffsetStripFin(object):
     """Class for modeling offset strip fins.
 
     Uses correlations from:
-     Manglik, Raj M., and Arthur E. Bergles, 'Heat Transfer and
+
+    Manglik, Raj M., and Arthur E. Bergles, 'Heat Transfer and
     Pressure Drop Correlations for the Rectangular Offset Strip Fin
     Compact Heat Exchanger', Experimental Thermal and Fluid Science,
     10 (1995), 171-180 <doi:10.1016/0894-1777(94)00096-Q>.
@@ -346,6 +357,8 @@ class OffsetStripFin(object):
 class JetArray(object):
     """Class for impinging jet array.
 
+
+
     This class probably won't get used again so I'm not putting any
     effort into documenting it as of 24/05/2012. CAB"""
 
@@ -443,6 +456,9 @@ class JetArray(object):
         (self.H / self.D) ** -0.123 * (self.spacing / self.D) ** -0.725)
 
     def solve_enh(self, flow):
+        """This method is probably not useful so this doc string is
+        not good."""
+
         self.set_number(flow)
         self.set_annulus(flow)
         self.set_flow(flow)
