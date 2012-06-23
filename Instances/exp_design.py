@@ -11,7 +11,7 @@ import sys
 import time
 
 # User Defined Modules
-cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
+cmd_folder = os.path.dirname('../Modules/')
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
