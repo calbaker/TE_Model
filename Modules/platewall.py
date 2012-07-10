@@ -31,9 +31,7 @@ class PlateWall(object):
         self.alpha = 73.0e-6
         # thermal diffusivity (m^2/s) of Al HX plate  
         self.thickness = 0.00635
-        # thickness (m) of HX plate
-        self.R_contact = 0.
-        # thermal contact resistance (m^2*K/kW) between plates
+        # thickness (m) of HX plate        
         self.nodes = 2. # default number of nodes in transient
                         # solution.  
         self.t_step = 0.005

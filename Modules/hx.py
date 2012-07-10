@@ -70,7 +70,28 @@ class HX(object):
         self.fix_geometry
 
         """
-
+        self.R_interconnect = 0.00075
+        # Resistance of copper tab assuming a thickness of 0.3 mm
+        # (Ref: Hori, Y., D. Kusano, T. Ito, and K. Izumi. “Analysis
+        # on Thermo-mechanical Stress of Thermoelectric Module.” In
+        # Thermoelectrics  1999. Eighteenth International Conference 
+        # On, 328 –331, 1999), where k_copper = 400 W/(m-K)
+        self.R_substrate = 0.005
+        # resistance of ceramic substrate(AlN) 1 mmm thick (Hori, Y.,
+        # D. Kusano, T. Ito, and K. Izumi. “Analysis on
+        # Thermo-mechanical Stress of Thermoelectric Module.” In
+        # Thermoelectrics, 1999. Eighteenth International Conference
+        # On, 328 –331, 1999.), based on k_ceramic = 200 W/(m-K)
+        # obtained from Thermoelectrics Handbook. 
+        self.R_contact = 0.8322
+        # thermal contact resistance (m^2*K/kW) for plate/substrate,
+        # substrate/copper, and copper/TE leg interfaces all combined. All
+        # estimated (at 450 K) based on AlN/Cu contact resistance extracted from
+        # Shi, Ling, Gang Wu, Hui-ling Wang, and Xin-ming
+        # Yu. “Interfacial Thermal Contact Resistance Between Aluminum
+        # Nitride and Copper at Cryogenic Temperature.” Heat and 
+        # Mass Transfer 48, no. 6 (2012): 999–1004.
+       
         self.width = 0.55
         # width (cm*10**-2) of HX duct. This model treats duct as
         # parallel plates for simpler modeling.
@@ -242,12 +263,10 @@ class HX(object):
         self.plate.set_h()
         # The previous three commands need only execute once per node.
 
-        self.U_hot = ( (self.exh.R_thermal + self.plate.R_thermal +
-        self.plate.R_contact)**-1 )
+        self.U_hot = ( (self.exh.R_thermal + self.R_parasitic)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE hot side and
         # exhaust  
-        self.U_cold = ( (self.cool.R_thermal +
-        self.plate.R_thermal + self.plate.R_contact)**-1 )
+        self.U_cold = ( (self.cool.R_thermal + self.R_parasitic)**-1 )  
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant  
 
@@ -300,6 +319,13 @@ class HX(object):
 
         self.init_arrays()
         self.set_constants()
+        
+        self.R_parasitic = (self.plate.R_Thermal + self.R_copper +
+        self.R_ceramic + self.R_contact)
+        # haiyan - R_parasitic (m^2-K/kW) includes plate resistance from
+        # module platewall, resistance of copper tab and ceramic
+        # substrate and all the contact resistances
+        
         self.exh.node_length = self.node_length
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
