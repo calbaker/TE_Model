@@ -20,7 +20,6 @@ class TE_Pair(object):
     set_A_opt
     set_TEproperties
     set_ZT
-    set_all_areas
     set_area
     set_constants
     set_eta_max

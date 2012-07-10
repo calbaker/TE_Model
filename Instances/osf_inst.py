@@ -39,7 +39,7 @@ hx_osf0.te_pair.length = leg_length
 hx_osf0.te_pair.Ntype.material = 'MgSi'
 hx_osf0.te_pair.Ptype.material = 'HMS'
 
-hx_osf0.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction) 
+hx_osf0.te_pair.set_leg_areas()
 
 hx_osf0.te_pair.method = 'numerical'
 hx_osf0.type = 'counter'
