@@ -1,3 +1,4 @@
+# coding=utf-8
 """Contains classes for modeling convection heat transfer
 enhancement."""
 
