@@ -71,33 +71,35 @@ class HX(object):
 
         """
         self.R_interconnect = 0.00075
-        # Resistance of copper tab assuming a thickness of 0.3 mm
-        # (Ref: Hori, Y., D. Kusano, T. Ito, and K. Izumi. “Analysis
-        # on Thermo-mechanical Stress of Thermoelectric Module.” In
-        # Thermoelectrics  1999. Eighteenth International Conference 
-        # On, 328 –331, 1999), where k_copper = 400 W/(m-K)
+        # Resistance of copper interconnect assuming a thickness of
+        # 0.3 mm (Ref: Hori, Y., D. Kusano, T. Ito, and
+        # K. Izumi. “Analysis on Thermo-mechanical Stress of
+        # Thermoelectric Module.” In Thermoelectrics 1999. Eighteenth
+        # International Conference On, 328 –331, 1999), where
+        # k_interconnect = 400 W/(m-K)
         self.R_substrate = 0.005
         # resistance of ceramic substrate(AlN) 1 mmm thick (Hori, Y.,
         # D. Kusano, T. Ito, and K. Izumi. “Analysis on
         # Thermo-mechanical Stress of Thermoelectric Module.” In
         # Thermoelectrics, 1999. Eighteenth International Conference
         # On, 328 –331, 1999.), based on k_ceramic = 200 W/(m-K)
-        # obtained from Thermoelectrics Handbook. 
+        # obtained from Thermoelectrics Handbook.
         self.R_contact = 0.8322
         # thermal contact resistance (m^2*K/kW) for plate/substrate,
-        # substrate/copper, and copper/TE leg interfaces all combined. All
-        # estimated (at 450 K) based on AlN/Cu contact resistance extracted from
-        # Shi, Ling, Gang Wu, Hui-ling Wang, and Xin-ming
-        # Yu. “Interfacial Thermal Contact Resistance Between Aluminum
-        # Nitride and Copper at Cryogenic Temperature.” Heat and 
-        # Mass Transfer 48, no. 6 (2012): 999–1004.
-       
+        # substrate/interconnect, and interconnect/TE leg interfaces
+        # all combined. All estimated (at 450 K) based on AlN/Cu
+        # contact resistance extracted from Shi, Ling, Gang Wu,
+        # Hui-ling Wang, and Xin-ming Yu. “Interfacial Thermal Contact
+        # Resistance Between Aluminum Nitride and Copper at Cryogenic
+        # Temperature.” Heat and Mass Transfer 48, no. 6 (2012):
+        # 999–1004.
+
         self.width = 0.55
         # width (cm*10**-2) of HX duct. This model treats duct as
         # parallel plates for simpler modeling.
         self.length = 0.55
         # length (m) of HX duct
-        self.nodes = 25 
+        self.nodes = 25
         # number of nodes for numerical heat transfer model
         self.x0 = np.array([.7, 0.02, 0.001, 4.])
         self.xb = [(0.5, 2.), (0., 1.), (1.e-4, 20.e-3), (0.1, None)]
@@ -109,13 +111,13 @@ class HX(object):
         self.equal_width = True
 
         self.apar_list = [
-            ['self','te_pair','leg_area_ratio'],     
+            ['self','te_pair','leg_area_ratio'],
             ['self','te_pair','fill_fraction'],
-            ['self','te_pair','length'],        
+            ['self','te_pair','length'],
             ['self','te_pair','I']
-            ] 
+            ]
         # list of strings used to construct names of attributes to be
-        # optimized 
+        # optimized
 
         # initialization of instance attributes
         self.cool = coolant.Coolant()
@@ -132,7 +134,7 @@ class HX(object):
         """Initializes arrays for storing node values."""
 
         self.Qdot_nodes = np.zeros(self.nodes)
-        
+
         self.exh.Vdot_nodes = np.zeros(self.nodes)
 
         self.exh.T_nodes = np.zeros(self.nodes)
@@ -159,7 +161,7 @@ class HX(object):
         self.te_pair.q_c_conv_nodes = np.zeros(self.nodes)
         self.te_pair.q_h_nodes = np.zeros(self.nodes)
         self.te_pair.q_c_nodes = np.zeros(self.nodes)
-        self.te_pair.error_nodes = np.zeros([3, self.nodes]) 
+        self.te_pair.error_nodes = np.zeros([3, self.nodes])
         self.te_pair.T_c_nodes = np.zeros(self.nodes)
         self.te_pair.T_h_nodes = np.zeros(self.nodes)
         self.te_pair.h_nodes = np.zeros(self.nodes)
@@ -199,16 +201,16 @@ class HX(object):
         self.x = np.linspace(0, self.length, self.nodes)
         self.node_length = self.length / self.nodes
         # length (m) of each node
-        self.area = self.node_length * self.width * self.cool.ducts 
+        self.area = self.node_length * self.width * self.cool.ducts
         # area (m^2) through which heat flux occurs in each node
         self.te_pair.set_constants()
         self.leg_pairs = int(self.area / self.te_pair.area)
         # Number of TEM leg pairs per node
         self.x_dim = np.arange(self.node_length / 2, self.length +
-        self.node_length / 2, self.node_length)   
+        self.node_length / 2, self.node_length)
         # x coordinate (m)
         self.fix_geometry()
-        self.exh.set_flow_geometry(self.exh.width) 
+        self.exh.set_flow_geometry(self.exh.width)
         self.cool.set_flow_geometry(self.cool.width)
 
     def fix_geometry(self):
@@ -224,11 +226,11 @@ class HX(object):
             self.exh.width = self.width
             self.cool.width = self.width
         self.cool.length = self.length
-        self.exh.length = self.length 
+        self.exh.length = self.length
 
     def set_mdot_charge(self):
 
-        """Sets exhaust mass flow rate. 
+        """Sets exhaust mass flow rate.
 
         Methods:
 
@@ -236,7 +238,7 @@ class HX(object):
 
         Eventually, this should be a function of speed, load, and EGR
         fraction.  Also, it should come from experimental data.  Also,
-        it should probably go within the exhaust module.  
+        it should probably go within the exhaust module.
 
         """
 
@@ -245,8 +247,8 @@ class HX(object):
 
     def set_convection(self):
 
-        """Sets values for convection coefficients. 
-        
+        """Sets values for convection coefficients.
+
         Methods:
 
         self.exh.set_flow
@@ -265,14 +267,14 @@ class HX(object):
 
         self.U_hot = ( (self.exh.R_thermal + self.R_parasitic)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE hot side and
-        # exhaust  
-        self.U_cold = ( (self.cool.R_thermal + self.R_parasitic)**-1 )  
+        # exhaust
+        self.U_cold = ( (self.cool.R_thermal + self.R_parasitic)**-1 )
         # heat transfer coefficient (kW/m^-K) between TE cold side and
-        # coolant  
+        # coolant
 
     def solve_node(self,i):
-        
-        """Solves for performance of streamwise slice of HX. 
+
+        """Solves for performance of streamwise slice of HX.
 
         Methods:
 
@@ -297,15 +299,15 @@ class HX(object):
 
         self.te_pair.solve_te_pair()
         self.q_h = self.te_pair.q_h
-        self.q_c = self.te_pair.q_c        
+        self.q_c = self.te_pair.q_c
 
         self.Qdot_node = -self.q_h * self.area
         # heat transfer on hot side of node, positive values indicates
         # heat transfer from hot to cold
-            
+
     def solve_hx(self,**kwargs): # solve parallel flow heat exchanger
 
-        """Solves for performance of all stream-wise nodes. 
+        """Solves for performance of all stream-wise nodes.
 
         Methods:
 
@@ -313,19 +315,19 @@ class HX(object):
         self.set_constants
         self.solve_node
         self.store_node_values
-        self.set_availability 
+        self.set_availability
 
         """
 
         self.init_arrays()
         self.set_constants()
-        
-        self.R_parasitic = (self.plate.R_Thermal + self.R_copper +
+
+        self.R_parasitic = (self.plate.R_Thermal + self.R_interconnect +
         self.R_ceramic + self.R_contact)
-        # haiyan - R_parasitic (m^2-K/kW) includes plate resistance from
-        # module platewall, resistance of copper tab and ceramic
-        # substrate and all the contact resistances
-        
+        # R_parasitic (m^2-K/kW) includes plate resistance from module
+        # platewall, resistance of interconnect and ceramic substrate
+        # and all the contact resistances
+
         self.exh.node_length = self.node_length
         self.exh.T = self.exh.T_inlet
         # T_inlet and T_outlet correspond to the temperatures going
@@ -333,9 +335,9 @@ class HX(object):
         if self.type == 'parallel':
             self.cool.T = self.cool.T_inlet
         elif self.type == 'counter':
-            self.cool.T = self.cool.T_outlet  
+            self.cool.T = self.cool.T_outlet
         self.cool.node_length = self.node_length
-            
+
         # for loop iterates of nodes of HX in streamwise direction
         for i in np.arange(self.nodes):
             self.solve_node(i)
@@ -343,14 +345,14 @@ class HX(object):
 
             # redefining temperatures (K) for next node
             self.exh.T = ( self.exh.T + self.te_pair.q_h * self.area /
-                self.exh.C )   
+                self.exh.C )
             if self.type == 'parallel':
                 self.cool.T = ( self.cool.T - self.te_pair.q_c * self.area
-                    / self.cool.C )  
+                    / self.cool.C )
             elif self.type == 'counter':
                 self.cool.T = ( self.cool.T + self.te_pair.q_c * self.area
                     / self.cool.C )
-                
+
         # defining HX outlet/inlet temperatures (K)
         self.exh.T_outlet = self.exh.T
         if self.type == 'parallel':
@@ -369,12 +371,12 @@ class HX(object):
         self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
         self.cool.Wdot_total = self.cool.Wdot_nodes.sum()
         self.Wdot_pumping = ( self.exh.Wdot_total +
-                              self.cool.Wdot_total )  
-        # total pumping power requirement (kW) 
+                              self.cool.Wdot_total )
+        # total pumping power requirement (kW)
 
         self.power_net = ( self.te_pair.power_total -
-        self.Wdot_pumping ) 
-        
+        self.Wdot_pumping )
+
         self.set_availability()
 
     def set_availability(self):
@@ -390,30 +392,30 @@ class HX(object):
 
         self.exh.availability_flow_nodes = ( (self.exh.enthalpy_nodes
         - self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
-        self.exh.entropy0)) * self.exh.mdot ) 
+        self.exh.entropy0)) * self.exh.mdot )
         # availability (kJ/kg) of exhaust
 
         self.cool.enthalpy_nodes = ( self.cool.c_p *
-        (self.cool.T_nodes - self.T0) + self.cool.enthalpy0)  
+        (self.cool.T_nodes - self.T0) + self.cool.enthalpy0)
         # enthalpy (kJ/kg*K) of coolant
         self.cool.entropy_nodes = ( self.cool.c_p *
-        np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 )  
+        np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 )
 
         self.cool.availability_flow_nodes = (
         (self.cool.enthalpy_nodes - self.cool.enthalpy0 - self.T0 *
         (self.cool.entropy_nodes - self.cool.entropy0)) *
-        self.cool.mdot) 
+        self.cool.mdot)
         # availability (kJ/kg) of coolant
 
     def store_node_values(self,i):
-        
-        """Stores values of parameters of interest in node i.   
+
+        """Stores values of parameters of interest in node i.
 
         This should eventually also store the node valuves for T, q,
         and material properties in the te legs.
 
         """
-        
+
         self.Qdot_nodes[i] = self.Qdot_node
         # storing node hot side heat transfer in array
 
@@ -434,7 +436,7 @@ class HX(object):
         self.exh.deltaP_nodes[i] = self.exh.deltaP
         self.exh.Wdot_nodes[i] = self.exh.Wdot_pumping
         self.exh.Nu_nodes[i] = self.exh.Nu_D
-        self.exh.c_p_nodes[i] = self.exh.c_p 
+        self.exh.c_p_nodes[i] = self.exh.c_p
         self.exh.h_nodes[i] = self.exh.h
         self.exh.velocity_nodes[i] = self.exh.velocity
         self.exh.entropy_nodes[i] = self.exh.entropy
@@ -449,7 +451,7 @@ class HX(object):
 
     def get_minpar(self, apar):
 
-	"""Returns inverse of net power.
+        """Returns inverse of net power.
 
         Methods:
 
@@ -462,44 +464,44 @@ class HX(object):
         varied in optimization.  Use with scipy.optimize.fmin to find
         optimal set of input parameters."""
 
-	# unpack guess vector
+        # unpack guess vector
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
             print "optimizaton iteration", self.opt_iter
             print "net power", self.power_net
-	apar = np.array(apar)
+        apar = np.array(apar)
 
         for i in range(apar.size):
             setattr(operator.attrgetter('.'.join(self.apar_list[i][1:-1]))(self),
-            self.apar_list[i][-1], apar[i]) 
+            self.apar_list[i][-1], apar[i])
 
         # reset surrogate variables
         self.te_pair.set_leg_areas()
 
-	self.solve_hx()
+        self.solve_hx()
 
-        if (apar <= 0.).any(): 
-            minpar = np.abs(self.power_net) ** 3 + 100.  
+        if (apar <= 0.).any():
+            minpar = np.abs(self.power_net) ** 3 + 100.
             # penalizes negative parameters
 
         else:
             minpar = - self.power_net
 
-	return minpar
+        return minpar
 
     def optimize(self):
 
-	"""Finds optimal set of paramters in self.apar_list 
+        """Finds optimal set of paramters in self.apar_list
 
         Methods:
 
         self.get_minpar
-        
-        self.x0 and self.xb must be defined elsewhere."""
-	
-	time.clock()
 
-        # dummy function that might be used with minimization 
+        self.x0 and self.xb must be defined elsewhere."""
+
+        time.clock()
+
+        # dummy function that might be used with minimization
         def fprime():
             return 1
 
@@ -510,18 +512,18 @@ class HX(object):
         for i in range(self.x0.size):
             self.x0[i] = (
             operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
-            ) 
+            )
 
         self.xmin = fmin(self.get_minpar, self.x0)
 
-	t1 = time.clock() 
-        
+        t1 = time.clock()
+
         print '\n'
         for i in range(self.x0.size):
             varname = '.'.join(self.apar_list[i][1:])
             varval = (
                 operator.attrgetter(varname)(self)
-        ) 
+        )
             print varname + ":", varval
 
         print "\npower net:", self.power_net * 1000., 'W'
@@ -531,17 +533,17 @@ class HX(object):
         print "exhaust volume:", self.exh.volume * 1000., 'L'
         print "exhaust power density:", self.power_net / self.exh.volume, 'kW/m^3'
 
-	print """Elapsed time solving xmin1 =""", t1
+        print """Elapsed time solving xmin1 =""", t1
 
     def get_T_inlet_error(self, T_outlet):
 
-	"""Returns error for coolant inlet temperature. 
+        """Returns error for coolant inlet temperature.
 
         Error is determined relative to desired setpoint inlet
-	temperature for the counter flow configuration in which the
-	outlet coolant temperaure is specified.  Should be used with
-	fsolve to determine the correct inlet temperature for the
-	coolant.
+        temperature for the counter flow configuration in which the
+        outlet coolant temperaure is specified.  Should be used with
+        fsolve to determine the correct inlet temperature for the
+        coolant.
 
         Inputs:
 
@@ -553,8 +555,7 @@ class HX(object):
 
         """
 
-	self.cool.T_outlet = np.float(T_outlet)
-	self.solve_hx()
-	error = self.cool.T_inlet_set - self.cool.T_inlet
-	return error
-    
+        self.cool.T_outlet = np.float(T_outlet)
+        self.solve_hx()
+        error = self.cool.T_inlet_set - self.cool.T_inlet
+        return error
