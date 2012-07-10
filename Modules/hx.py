@@ -323,7 +323,7 @@ class HX(object):
         self.init_arrays()
         self.set_constants()
 
-        self.R_parasitic = (self.plate.R_Thermal + self.R_interconnect +
+        self.R_parasitic = (self.plate.R_thermal + self.R_interconnect +
         self.R_ceramic + self.R_contact)
         # R_parasitic (m^2-K/kW) includes plate resistance from module
         # platewall, resistance of interconnect and ceramic substrate
