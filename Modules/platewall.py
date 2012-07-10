@@ -2,7 +2,6 @@
 
 # Created on 7 Nov 2011 by Chad Baker
 
-import scipy.optimize as spopt
 import numpy as np
 
 class PlateWall(object):
