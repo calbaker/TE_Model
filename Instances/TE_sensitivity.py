@@ -35,7 +35,7 @@ hx11.te_pair.length = leg_length
 hx11.te_pair.Ntype.material = 'MgSi'
 hx11.te_pair.Ptype.material = 'HMS'
 
-hx11.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction) 
+hx11.te_pair.set_leg_areas()
 
 hx11.te_pair.method = 'analytical'
 hx11.type = 'counter'
@@ -67,7 +67,7 @@ for i in range(current_array.size):
     hx11.te_pair.I = current_array[i]
     for j in range(fill_array.size):
         fill_fraction = fill_array[j]
-        hx11.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)             
+        hx11.te_pair.set_leg_areas()            
         for k in range(leg_height_array.size):
             hx11.te_pair.length = leg_height_array[k]
             hx11.solve_hx()
