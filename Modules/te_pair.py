@@ -4,8 +4,6 @@ import numpy as np
 import time
 
 # User defined modules
-import mat_prop
-reload(mat_prop)
 import leg
 reload(leg)
 
@@ -86,15 +84,15 @@ class TE_Pair(object):
         self.Ptype.I = -self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient
-        # is positive.  
+        # is positive.
         self.Ntype.I = self.I
         self.Ntype.set_constants()
         self.Ptype.set_constants()
 
     def solve_te_pair_once(self):
 
-        """Solves legs and combines results of leg pair. 
-        
+        """Solves legs and combines results of leg pair.
+
         Methods:
 
         self.Ntype.solve_leg_once
@@ -116,7 +114,7 @@ class TE_Pair(object):
         * self.Ntype.area) / (self.area)) * 0.001
         # area averaged hot side heat flux (kW/m^2)
 
-        self.h = self.q_h / (self.T_c - self.T_h) 
+        self.h = self.q_h / (self.T_c - self.T_h)
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
 
@@ -128,12 +126,12 @@ class TE_Pair(object):
         heat fluxes for both legs to solve the pair a single time.
         The resulting errors in boundary conditions are then
         determined. This is then used by fsolve in solve_te_pair.
-        
+
         Methods:
 
         self.solve_te_pair_once
 
-        """ 
+        """
 
         self.Ntype.q_c = knob_arr[0]
         self.Ptype.q_c = knob_arr[1]
@@ -144,12 +142,12 @@ class TE_Pair(object):
         self.q_c_conv = self.U_cold * (self.T_c_conv - self.T_c)
         self.q_h_conv = - self.U_hot * (self.T_h_conv - self.T_h)
 
-        T_error = self.Ntype.T_h - self.Ptype.T_h 
+        T_error = self.Ntype.T_h - self.Ptype.T_h
         q_c_error = self.q_c - self.q_c_conv
         q_h_error = self.q_h - self.q_h_conv
 
         self.error = np.array([T_error, q_c_error, q_h_error])
-        self.error = self.error.reshape(self.error.size)  
+        self.error = self.error.reshape(self.error.size)
 
         return self.error
 
@@ -160,7 +158,7 @@ class TE_Pair(object):
         Methods:
 
         self.Ntype.set_q_c_guess
-        self.Ptype.set_q_c_guess 
+        self.Ptype.set_q_c_guess
 
         """
 
@@ -176,19 +174,19 @@ class TE_Pair(object):
         self.set_q_c_guess
 
         """
-        
+
         self.set_q_c_guess()
         knob_arr0 = np.array([self.Ntype.q_c_guess,
-        self.Ptype.q_c_guess, self.T_c_conv])  
+        self.Ptype.q_c_guess, self.T_c_conv])
 
         from scipy.optimize import fsolve
 
         self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 
-        self.P = -(self.Ntype.P + self.Ptype.P) * 0.001 
+        self.P = -(self.Ntype.P + self.Ptype.P) * 0.001
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs
-        # a negative sign also.  
+        # a negative sign also.
         self.P_flux = self.P / self.area
         # power flux (kW / m^2) through leg pair
         self.eta = -self.P / (self.q_h * self.area)
@@ -237,20 +235,20 @@ class TE_Pair(object):
         self.set_ZT()
         delta_T = self.T_h - self.T_c
         self.eta_max = ( delta_T / self.T_h * ((1. + self.ZT) ** 0.5 -
-        1.) / ((1. + self.ZT) ** 0.5 + self.T_c / self.T_h) ) 
-                
+        1.) / ((1. + self.ZT) ** 0.5 + self.T_c / self.T_h) )
+
     def set_A_opt(self):
 
-        """Sets Ntype / Ptype area that results in max efficiency.  
+        """Sets Ntype / Ptype area that results in max efficiency.
 
         Methods:
-        
+
         self.set_TEproperties(T_props)
 
         Based on material properties evaluated at the average
         temperature.
 
-        """ 
+        """
 
         self.set_TEproperties(T_props=self.T_props)
         self.A_opt = np.sqrt(self.Ntype.rho * self.Ptype.k /
@@ -269,8 +267,8 @@ class TE_Pair(object):
 
         self.Ntype.set_power_factor()
         self.Ptype.set_power_factor()
-        self.power_max = self.Ntype.power_max + self.Ptype.power_max 
-    
+        self.power_max = self.Ntype.power_max + self.Ptype.power_max
+
     def set_leg_areas(self):
 
         """Sets leg areas and void area.
@@ -283,18 +281,18 @@ class TE_Pair(object):
 
         """
 
-        leg_area_ratio = self.leg_area_ratio 
-        fill_fraction = self.fill_fraction 
+        leg_area_ratio = self.leg_area_ratio
+        fill_fraction = self.fill_fraction
 
         self.Ntype.area = self.Ptype.area * leg_area_ratio
         self.area_void = ( (1. - fill_fraction) / fill_fraction *
-        (self.Ptype.area + self.Ntype.area) )  
+        (self.Ptype.area + self.Ntype.area) )
 
         self.set_constants()
 
     def get_minpar(self, apar):
 
-	"""Returns inverse of power flux. 
+        """Returns inverse of power flux.
 
         Methods:
 
@@ -318,7 +316,7 @@ class TE_Pair(object):
         if self.opt_iter % 15 == 0:
             print "optimizaton iteration", self.opt_iter
             print "power", self.P
-	apar = np.array(apar)
+        apar = np.array(apar)
 
         self.length = apar[0]
         self.fill_fraction = apar[1]
@@ -328,51 +326,51 @@ class TE_Pair(object):
         # reset surrogate variables
         self.set_leg_areas()
 
-	self.solve_te_pair()
+        self.solve_te_pair()
 
-        if (apar <= 0.).any(): 
+        if (apar <= 0.).any():
             minpar = np.abs(self.P_flux) ** 3. + 100
 
         else:
-            minpar = - self.P_flux 
+            minpar = - self.P_flux
 
-	return minpar
+        return minpar
 
     def optimize(self):
 
-	"""Minimizes self.get_minpar 
+        """Minimizes self.get_minpar
 
         Methods:
 
         self.get_minpar
-        
-        self.x0 and self.xb must be defined elsewhere."""
-	
-	time.clock()
 
-        # dummy function that might be used with minimization 
+        self.x0 and self.xb must be defined elsewhere."""
+
+        time.clock()
+
+        # dummy function that might be used with minimization
         def fprime():
             return 1
 
         self.opt_iter = 0
 
         self.x0 = np.array([self.length, self.fill_fraction,
-        self.I, self.leg_area_ratio]) 
+        self.I, self.leg_area_ratio])
 
         from scipy.optimize import fmin
 
         self.xmin = fmin(self.get_minpar, self.x0)
 
-	t1 = time.clock() 
-        
+        t1 = time.clock()
+
         print '\n'
-        
+
         print "Optimized parameters:"
         print "leg length =", self.length, "m"
         print "fill fraction =", self.fill_fraction * 100., "%"
         print "current =", self.I, "A"
         print "area ratio =", self.leg_area_ratio
-        
+
         print "\npower:", self.P * 1000., 'W'
 
-	print """Elapsed time solving xmin1 =""", t1
+        print """Elapsed time solving xmin1 =""", t1

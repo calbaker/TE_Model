@@ -68,6 +68,35 @@ def set_prop_fit(self):
         self.sigma_params = np.polyfit(sigma_raw[:,0], sigma_raw[:,1],
                               poly_deg)
 
+def set_TEprop_polyfit(self,T_props):
+    
+    """ Sets properties based on polynomial fit values.  
+
+    Used by set_TEproperties to set the temperature-dependent
+    properties of materials for which polynomial curve fits have been
+    done.  
+
+    This may need to changed to spline fitting at some point for a
+    more accurate fit.
+
+    Inputs:
+    
+    T_props : temperature (K) at which properties are to be evaluated
+    
+    """
+    try: 
+        self.alpha_params
+    except AttributeError:
+        self.set_prop_fit()
+    self.alpha = ( np.polyval(self.alpha_params, T_props) * 1.e-6 )
+    # Seebeck coefficient (V/K)        
+    self.k = np.polyval(self.k_params, T_props)  
+    # thermal conductivity (W/m-K) 
+    self.sigma = np.polyval(self.sigma_params, T_props) * 1.e4 
+    # electrical conductivity (S/m)
+    self.rho = 1. / self.sigma
+    # electrical resistivity (Ohm-m)        
+
 def set_TEproperties(self,T_props):
 
     """Sets TE properties
@@ -78,36 +107,14 @@ def set_TEproperties(self,T_props):
 
     """
     
+    
     # Materials with tabulated properties
 
     if self.material == 'HMS':
-        try: 
-            self.alpha_params
-        except AttributeError:
-            self.set_prop_fit()
-        self.alpha = ( np.polyval(self.alpha_params, T_props) *
-        1.e-6 )
-        # Seebeck coefficient (V/K)        
-        self.k = np.polyval(self.k_params, T_props)  
-        # thermal conductivity (W/m-K) 
-        self.sigma = np.polyval(self.sigma_params, T_props) * 1.e4 
-        # electrical conductivity (S/m)
-        self.rho = 1. / self.sigma
-        # electrical resistivity (Ohm-m)        
+        self.set_TEprop_polyfit(T_props)
 
     if self.material == 'MgSi': 
-        try: 
-            self.alpha_params
-        except AttributeError:
-            self.set_prop_fit()
-        self.alpha = np.polyval(self.alpha_params, T_props) * 1.e-6
-        # Seebeck coefficient (V/K)        
-        self.k = np.polyval(self.k_params, T_props)      
-        # thermal conductivity (W/m-K) 
-        self.sigma = np.polyval(self.sigma_params, T_props) * 1.e4
-        # electrical conductivity (S/m)
-        self.rho = 1. / self.sigma
-        # electrical resistivity (Ohm-m)        
+        self.set_TEprop_polyfit(T_props)
 
     # Materials with properties that are either constant or dependent
     # on temperature by some convenient function.  

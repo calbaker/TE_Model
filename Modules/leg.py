@@ -14,7 +14,7 @@ class Leg(object):
     """Class for individual TE leg.
 
     Methods:
-    
+
     __init__
     get_Yprime
     set_ZT
@@ -29,7 +29,7 @@ class Leg(object):
 
     def __init__(self):
 
-        """Sets constants and binds methods. 
+        """Sets constants and binds methods.
 
         Methods:
 
@@ -38,36 +38,39 @@ class Leg(object):
         Binds the following methods:
 
         mat_prop.set_prop_fit
+        mat_prop.set_TEprop_polyfit
         mat_prop.set_TEproperties"""
-    
-        self.I = 0.5 # current (A) in TE leg pair 
-        self.nodes = 10 
+
+        self.I = 0.5 # current (A) in TE leg pair
+        self.nodes = 10
         # number of nodes for which values are stored
         self.length = 1.e-3 # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
-        self.T_h_goal = 550. # hot side temperature (K) goal  
-        self.T_c = 350. # cold side temperature (K) 
+        self.T_h_goal = 550. # hot side temperature (K) goal
+        self.T_c = 350. # cold side temperature (K)
 
         self.alpha_nodes = np.zeros(self.nodes)
         self.rho_nodes = np.zeros(self.nodes)
         self.k_nodes = np.zeros(self.nodes)
-        self.V_nodes = np.zeros(self.nodes) 
-        self.P_flux_nodes = np.zeros(self.nodes) 
+        self.V_nodes = np.zeros(self.nodes)
+        self.P_flux_nodes = np.zeros(self.nodes)
 
         self.set_constants()
 
         self.set_prop_fit = types.MethodType(mat_prop.set_prop_fit,
-        self) 
+        self)
+        self.set_TEprop_polyfit = (
+        types.MethodType(mat_prop.set_TEprop_polyfit, self))
         self.set_TEproperties = (
-        types.MethodType(mat_prop.set_TEproperties, self) )
-    
+        types.MethodType(mat_prop.set_TEproperties, self))
+
     def set_constants(self):
 
-        """Sets attributes that are typically held constant.""" 
+        """Sets attributes that are typically held constant."""
 
         self.node_length = self.length / self.nodes
         # length of each node (m)
-        self.x = np.linspace(0., self.length, self.nodes) 
+        self.x = np.linspace(0., self.length, self.nodes)
 
         self.J = self.I / self.area # (Amps/m^2)
 
@@ -79,7 +82,7 @@ class Leg(object):
 
         self.set_TEproperties(T_props)
 
-        """ 
+        """
 
         self.T_h = self.T_h_goal
         self.T_props = 0.5 * (self.T_h + self.T_c)
@@ -90,8 +93,8 @@ class Leg(object):
         self.rho )
         # cold side heat flux (W / (m^2 * K))
 
-        self.q_c_guess = self.q_c 
-        # cold side heat flux (W / (m^2 * K)) 
+        self.q_c_guess = self.q_c
+        # cold side heat flux (W / (m^2 * K))
 
     def get_Yprime(self, y, x):
 
@@ -103,40 +106,40 @@ class Leg(object):
         Inputs:
 
         y : initial conditions
-        x : array of locations where results are desired 
+        x : array of locations where results are desired
 
         Methods:
 
         self.set_TEproperties(T_props)
 
         """
-        
+
         T = y[0]
         q = y[1]
         V = y[2]
         R_int = y[3]
-        
+
         self.T_props = T
         self.set_TEproperties(self.T_props)
 
-        dT_dx = ( 1. / self.k * (self.J * T * self.alpha - q) )   
+        dT_dx = ( 1. / self.k * (self.J * T * self.alpha - q) )
 
         dq_dx = ( (self.rho * self.J**2. * (1. + self.alpha**2. * T /
-        (self.rho * self.k)) - self.J * self.alpha * q / self.k) )      
+        (self.rho * self.k)) - self.J * self.alpha * q / self.k) )
 
-        dV_dx = ( self.alpha * dT_dx + self.J * self.rho ) 
-        
-        dR_dx = ( self.rho / self.area )  
+        dV_dx = ( self.alpha * dT_dx + self.J * self.rho )
+
+        dR_dx = ( self.rho / self.area )
 
         return dT_dx, dq_dx, dV_dx, dR_dx
-            
+
     def solve_leg_once(self, q_c):
 
         """Solves leg once based on cold side heat flux.
-        
+
         Solution procedure comes from Ch. 12 of Thermoelectrics
-        Handbook, CRC/Taylor & Francis 2006. 
-        
+        Handbook, CRC/Taylor & Francis 2006.
+
         Inputs:
         q_c - cold side heat flux (W / m^2)
 
@@ -150,7 +153,7 @@ class Leg(object):
         self.q_c = q_c
         self.y0 = np.array([self.T_c, self.q_c, 0, 0])
 
-        self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x) 
+        self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x)
 
         self.T_nodes = self.y[:,0]
         self.q_nodes = self.y[:,1]
@@ -160,7 +163,7 @@ class Leg(object):
         self.T_h = self.T_nodes[-1]
         self.q_h = self.q_nodes[-1]
 
-        self.V = self.V_nodes[-1] 
+        self.V = self.V_nodes[-1]
         self.R_internal = self.R_int_nodes[-1]
 
         self.P_flux = self.J * self.V
@@ -172,9 +175,9 @@ class Leg(object):
         self.R_load = - self.V / self.I
 
         self.T_h_error = self.T_h - self.T_h_goal
-        
+
         return self.T_h_error
-            
+
     def solve_leg(self):
         """Solves leg until specified hot side temperature is met.
 
@@ -183,17 +186,17 @@ class Leg(object):
         self.set_q_c_guess
         self.solve_leg_once
 
-        """  
+        """
 
         self.set_q_c_guess()
-        fsolve(self.solve_leg_once, x0=self.q_c_guess) 
+        fsolve(self.solve_leg_once, x0=self.q_c_guess)
 
     def solve_leg_anal(self):
 
         """Analytically solves the leg based on lumped properties.
 
         Methods:
-        
+
         self.set_TEproperties
 
         No iteration is needed.
@@ -208,19 +211,19 @@ class Leg(object):
         delta_T = self.T_h - self.T_c
         self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
                      self.length * self.k + self.J**2. * self.length * self.rho
-                     / 2. ) 
+                     / 2. )
         self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
                      self.length * self.k - self.J**2 * self.length * self.rho )
 
         self.P_flux = ( (self.alpha * delta_T * self.J + self.rho *
-                         self.J**2 * self.length) ) 
+                         self.J**2 * self.length) )
         self.P = self.P_flux  * self.area
         self.eta = self.P / (self.q_h * self.area)
         self.eta_check = ( (self.J * self.alpha * delta_T + self.rho *
                             self.J**2. * self.length) / (self.alpha *
                             self.T_h * self.J - delta_T / self.length
                             * self.k + self.J**2 * self.length *
-                            self.rho / 2.) ) 
+                            self.rho / 2.) )
         self.V = -self.P / np.abs(self.I)
         self.R_internal = self.rho * self.length / self.area
         self.R_load = - self.V / self.I
@@ -233,16 +236,14 @@ class Leg(object):
 
         self.ZT = self.sigma * self.alpha**2. / self.k
 
-        """ 
-        
+        """
+
         self.ZT = self.alpha**2. * self.T_props / (self.k * self.rho)
 
     def set_power_factor(self):
 
-        """Sets power factor and maximum theoretical power for leg.""" 
+        """Sets power factor and maximum theoretical power for leg."""
 
         self.power_factor = self.alpha**2 * self.sigma
         self.power_max = ( self.power_factor * self.T_props**2 /
-        self.length * self.area ) 
-
-
+        self.length * self.area )
