@@ -78,7 +78,7 @@ class HX(object):
         # Thermoelectric Module.” In Thermoelectrics 1999. Eighteenth
         # International Conference On, 328 –331, 1999), where
         # k_interconnect = 400 W/(m-K)
-        self.R_ceramic = 0.005
+        self.R_substrate = 0.005
         # resistance of ceramic substrate(AlN) 1 mmm thick (Hori, Y.,
         # D. Kusano, T. Ito, and K. Izumi. “Analysis on
         # Thermo-mechanical Stress of Thermoelectric Module.” In
@@ -324,7 +324,7 @@ class HX(object):
         self.set_constants()
 
         self.R_parasitic = (self.plate.R_thermal + self.R_interconnect +
-        self.R_ceramic + self.R_contact)
+        self.R_substrate + self.R_contact)
         # R_parasitic (m^2-K/kW) includes plate resistance from module
         # platewall, resistance of interconnect and ceramic substrate
         # and all the contact resistances
