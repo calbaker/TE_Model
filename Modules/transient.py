@@ -24,11 +24,6 @@ class Transient_HX(hx.HX):
         self.plate_hot = platewall.PlateWall()
         super(Transient_HX, self).__init__()
 
-    def set_t_step(self):
-        """Sets appropriate time step based on average residence time
-        of flow in each node."""
-        self.t_step = (self.node_length / self.exh.velocity_nodes).mean()
-
     def get_error_hot_trans(self,T_h):
         """Needs better doc string."""
         self.plate_hot.solve_transient(self.exh.T, T_h)
