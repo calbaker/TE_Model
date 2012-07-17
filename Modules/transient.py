@@ -3,8 +3,6 @@
 
 # Distribution Modules
 import numpy as np
-import matplotlib.pyplot as plt
-import os
 import scipy.optimize as spopt
 
 # User Defined Modules
