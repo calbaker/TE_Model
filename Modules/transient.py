@@ -10,8 +10,6 @@ reload(hx)
 import platewall
 reload(platewall)
 
-<<<<<<< HEAD
-=======
 class Transient_HX(hx.HX):
     """Special class for modeling waste heat recovery heat exchanger
     with transient inlet temperature and flow conditions."""
