@@ -28,14 +28,14 @@ class Transient_HX(hx.HX):
         self.t_step = 0.001  # time step (s)
         super(Transient_HX, self).__init__()
 
-    def get_error_hot_trans(self, T_h):
-        """Needs better doc string."""
-        self.plate_hot.solve_transient(self.exh.T, T_h)
-        # hot side heat flux coming from plate into TE devices
-        self.tem.T_h_goal = T_h
-        self.tem.solve_te_pair()
-        self.error_hot = (self.plate_hot.q_c - self.tem.q_h) / self.tem.q_h
-        return self.error_hot
+    # def get_error_hot_trans(self, T_h):
+    #     """Needs better doc string."""
+    #     self.plate_hot.solve_transient(self.exh.T, T_h)
+    #     # hot side heat flux coming from plate into TE devices
+    #     self.tem.T_h_goal = T_h
+    #     self.tem.solve_te_pair()
+    #     self.error_hot = (self.plate_hot.q_c - self.tem.q_h) / self.tem.q_h
+    #     return self.error_hot
 
     def solve_hx_transient(self):
         """This doc string explains what this method should do.  The
@@ -60,10 +60,8 @@ class Transient_HX(hx.HX):
         self.init_trans_values()
 
         for t in range(1, int(self.t_max / self.t_step)):
-            if t % 10 == 0:
-                print "t_index =", t, "of", int(self.t_max / self.t_step)
-            self.exh.T = self.exh.T_inlet_trans[t]
-            self.cool.T = self.cool.T_inlet
+                # initiate temperatures here
+
             for i in range(self.nodes):
                 self.solve_node_transient(i, t)
                 self.Qdot_node = -self.tem.q_h * self.area
@@ -78,6 +76,7 @@ class Transient_HX(hx.HX):
                     self.cool.T = (self.cool.T_trans[i - 1, t - 1]
                                     - self.tem.q_c_trans[i - 1, t - 1]
                                     * self.area / self.cool.C)
+
                 elif self.type == 'counter':
                     self.cool.T = (self.cool.T_trans[i - 1, t - 1]
                                     + self.tem.q_c_trans[i - 1, t - 1]
@@ -118,6 +117,10 @@ class Transient_HX(hx.HX):
 
         self.plate_hot.T_prev = self.plate_hot.T_trans[:, i, t - 1]
         self.plate_hot.setup_transient(self.exh.h_trans[i, t - 1])
+
+        # needs to have something that solves the plate transient
+        # model 
+        
 
         # This next block needs to be replaced with something that
         # does not suck, but what???
