@@ -285,10 +285,10 @@ class HX(object):
         self.set_convection()
 
         if i == 0:
+            self.te_pair.T_h = self.exh.T
+            # guess at hot side TEM temperature (K)
             self.te_pair.T_c = self.cool.T
             # guess at cold side tem temperature (K)
-            self.te_pair.T_h_goal = self.exh.T
-            # guess at hot side TEM temperature (K)
 
         self.te_pair.U_hot = self.U_hot
         self.te_pair.U_cold = self.U_cold
@@ -297,7 +297,7 @@ class HX(object):
         self.q_h = self.te_pair.q_h
         self.q_c = self.te_pair.q_c
 
-        self.Qdot_node = -self.q_h * self.area
+        self.Qdot_node = self.q_h * self.area
         # heat transfer on hot side of node, positive values indicates
         # heat transfer from hot to cold
 

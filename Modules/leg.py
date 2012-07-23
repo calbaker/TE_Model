@@ -208,7 +208,6 @@ class Leg(object):
 
         """
 
-        self.T_h = self.T_h_goal
         self.T_props = 0.5 * (self.T_h + self.T_c)
 
         self.set_TEproperties(T_props=self.T_props)

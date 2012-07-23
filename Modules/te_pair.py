@@ -100,12 +100,12 @@ class TE_Pair(object):
 
         """
 
-        self.Ptype.T_c = self.T_c
-        self.Ntype.T_c = self.T_c
+        self.Ptype.T_h = self.T_h
+        self.Ntype.T_h = self.T_h
 
-        self.Ntype.solve_leg_once(self.Ntype.q_c)
-        self.Ptype.solve_leg_once(self.Ptype.q_c)
-        self.T_h = self.Ntype.T_h
+        self.Ntype.solve_leg_once(self.Ntype.q_h)
+        self.Ptype.solve_leg_once(self.Ptype.q_h)
+        self.T_c = self.Ntype.T_c
 
         self.q_h = ((self.Ptype.q_h * self.Ptype.area + self.Ntype.q_h
         * self.Ntype.area) / (self.area)) * 0.001
