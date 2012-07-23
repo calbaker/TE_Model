@@ -341,13 +341,13 @@ class HX(object):
             self.store_node_values(i)
 
             # redefining temperatures (K) for next node
-            self.exh.T = (self.exh.T + self.te_pair.q_h * self.area /
+            self.exh.T = (self.exh.T - self.te_pair.q_h * self.area /
                 self.exh.C)
             if self.type == 'parallel':
-                self.cool.T = (self.cool.T - self.te_pair.q_c * self.area
+                self.cool.T = (self.cool.T + self.te_pair.q_c * self.area
                     / self.cool.C)
             elif self.type == 'counter':
-                self.cool.T = (self.cool.T + self.te_pair.q_c * self.area
+                self.cool.T = (self.cool.T - self.te_pair.q_c * self.area
                     / self.cool.C)
 
         # defining HX outlet/inlet temperatures (K)
