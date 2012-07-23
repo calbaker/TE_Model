@@ -151,19 +151,19 @@ class TE_Pair(object):
 
         return self.error
 
-    def set_q_c_guess(self):
+    def set_q_guess(self):
 
         """Sets cold side guess for both Ntype and Ptype legs.
 
         Methods:
 
-        self.Ntype.set_q_c_guess
-        self.Ptype.set_q_c_guess
+        self.Ntype.set_q_guess
+        self.Ptype.set_q_guess
 
         """
 
-        self.Ntype.set_q_c_guess()
-        self.Ptype.set_q_c_guess()
+        self.Ntype.set_q_guess()
+        self.Ptype.set_q_guess()
 
     def solve_te_pair(self):
 
@@ -171,11 +171,11 @@ class TE_Pair(object):
 
         Methods:
 
-        self.set_q_c_guess
+        self.set_q_guess
 
         """
 
-        self.set_q_c_guess()
+        self.set_q_guess()
         knob_arr0 = np.array([self.Ntype.q_c_guess,
         self.Ptype.q_c_guess, self.T_c_conv])
 
@@ -183,7 +183,7 @@ class TE_Pair(object):
 
         self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 
-        self.P = -(self.Ntype.P + self.Ptype.P) * 0.001
+        self.P = (self.Ntype.P + self.Ptype.P) * 0.001
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs
         # a negative sign also.

@@ -74,7 +74,7 @@ class Leg(object):
 
         self.J = self.I / self.area # (Amps/m^2)
 
-    def set_q_c_guess(self):
+    def set_q_guess(self):
 
         """Sets guess for q_c to be used by iterative solutions.
 
@@ -99,6 +99,7 @@ class Leg(object):
 
         self.q_c_guess = self.q_c
         # cold side heat flux (W / (m^2 * K))
+        self.q_h_guess = self.q_h
 
     def get_Yprime(self, y, x):
 
@@ -187,13 +188,13 @@ class Leg(object):
 
         Methods:
 
-        self.set_q_c_guess
+        self.set_q_guess
         self.solve_leg_once
 
         """
 
-        self.set_q_c_guess()
-        fsolve(self.solve_leg_once, x0=self.q_c_guess)
+        self.set_q_guess()
+        fsolve(self.solve_leg_once, x0=self.q_h_guess)
 
     def solve_leg_anal(self):
 
