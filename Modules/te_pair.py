@@ -81,11 +81,11 @@ class TE_Pair(object):
         self.Ptype.length = self.length
         self.Ptype.nodes = self.nodes
         self.Ntype.nodes = self.nodes
-        self.Ptype.I = -self.I
+        self.Ptype.I = self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient
         # is positive.
-        self.Ntype.I = self.I
+        self.Ntype.I = -self.I
         self.Ntype.set_constants()
         self.Ptype.set_constants()
 

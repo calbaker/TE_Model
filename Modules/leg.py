@@ -93,6 +93,10 @@ class Leg(object):
         self.rho )
         # cold side heat flux (W / (m^2 * K))
 
+        self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
+                     self.length * self.k + self.J**2. * self.length * self.rho
+                     / 2. )
+
         self.q_c_guess = self.q_c
         # cold side heat flux (W / (m^2 * K))
 
@@ -133,7 +137,7 @@ class Leg(object):
 
         return dT_dx, dq_dx, dV_dx, dR_dx
 
-    def solve_leg_once(self, q_c):
+    def solve_leg_once(self, q_h):
 
         """Solves leg once based on cold side heat flux.
 
@@ -141,7 +145,7 @@ class Leg(object):
         Handbook, CRC/Taylor & Francis 2006.
 
         Inputs:
-        q_c - cold side heat flux (W / m^2)
+        q_h - hot side heat flux (W / m^2)
 
 
         Returns:
@@ -150,8 +154,8 @@ class Leg(object):
 
         """
 
-        self.q_c = q_c
-        self.y0 = np.array([self.T_c, self.q_c, 0, 0])
+        self.q_h = q_h
+        self.y0 = np.array([self.T_h, self.q_h, 0, 0])
 
         self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x)
 
