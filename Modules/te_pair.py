@@ -2,6 +2,7 @@
 
 import numpy as np
 import time
+from scipy.optimize import fsolve
 
 # User defined modules
 import leg
@@ -81,11 +82,11 @@ class TE_Pair(object):
         self.Ptype.length = self.length
         self.Ptype.nodes = self.nodes
         self.Ntype.nodes = self.nodes
-        self.Ptype.I = self.I
+        self.Ptype.I = - self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient
         # is positive.
-        self.Ntype.I = -self.I
+        self.Ntype.I = self.I
         self.Ntype.set_constants()
         self.Ptype.set_constants()
 
@@ -122,7 +123,7 @@ class TE_Pair(object):
 
         """Returns BC error.
 
-        This function uses guesses at the cold side temperature and
+        This function uses guesses the hot side temperature and
         heat fluxes for both legs to solve the pair a single time.
         The resulting errors in boundary conditions are then
         determined. This is then used by fsolve in solve_te_pair.
@@ -133,16 +134,16 @@ class TE_Pair(object):
 
         """
 
-        self.Ntype.q_c = knob_arr[0]
-        self.Ptype.q_c = knob_arr[1]
-        self.T_c = knob_arr[2]
+        self.Ntype.q_h = knob_arr[0]
+        self.Ptype.q_h = knob_arr[1]
+        self.T_h = knob_arr[2]
 
         self.solve_te_pair_once()
 
         self.q_c_conv = self.U_cold * (self.T_c_conv - self.T_c)
         self.q_h_conv = - self.U_hot * (self.T_h_conv - self.T_h)
 
-        T_error = self.Ntype.T_h - self.Ptype.T_h
+        T_error = self.Ntype.T_c - self.Ptype.T_c
         q_c_error = self.q_c - self.q_c_conv
         q_h_error = self.q_h - self.q_h_conv
 
@@ -176,10 +177,8 @@ class TE_Pair(object):
         """
 
         self.set_q_guess()
-        knob_arr0 = np.array([self.Ntype.q_c_guess,
-        self.Ptype.q_c_guess, self.T_c_conv])
-
-        from scipy.optimize import fsolve
+        knob_arr0 = np.array([self.Ntype.q_h_guess,
+        self.Ptype.q_h_guess, self.T_h_conv])
 
         self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 

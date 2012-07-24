@@ -37,8 +37,8 @@ class Leg(object):
 
         Binds the following methods:
 
-        mat_prop.set_prop_fit
-        mat_prop.set_TEprop_polyfit
+        mat_prop.set_raw_property_data
+        mat_prop.set_properties_v_temp
         mat_prop.set_TEproperties"""
 
         self.I = 0.5 # current (A) in TE leg pair
@@ -46,7 +46,6 @@ class Leg(object):
         # number of nodes for which values are stored
         self.length = 1.e-3 # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
-        self.T_h_goal = 550. # hot side temperature (K) goal
         self.T_c = 350. # cold side temperature (K)
 
         self.alpha_nodes = np.zeros(self.nodes)
@@ -57,10 +56,10 @@ class Leg(object):
 
         self.set_constants()
 
-        self.set_prop_fit = types.MethodType(mat_prop.set_prop_fit,
+        self.set_prop_fit = types.MethodType(mat_prop.set_raw_property_data,
         self)
         self.set_TEprop_polyfit = (
-        types.MethodType(mat_prop.set_TEprop_polyfit, self))
+        types.MethodType(mat_prop.set_properties_v_temp, self))
         self.set_TEproperties = (
         types.MethodType(mat_prop.set_TEproperties, self))
 
@@ -84,16 +83,16 @@ class Leg(object):
 
         """
 
-        self.T_h = self.T_h_goal
+        self.T_h = self.T_h_conv
         self.T_props = 0.5 * (self.T_h + self.T_c)
         self.set_TEproperties(T_props=self.T_props)
         delta_T = self.T_h - self.T_c
-        self.q_c = ( self.alpha * self.T_c * self.J - delta_T /
+        self.q_c = - ( self.alpha * self.T_c * self.J - delta_T /
                      self.length * self.k - self.J**2 * self.length *
         self.rho )
         # cold side heat flux (W / (m^2 * K))
 
-        self.q_h = ( self.alpha * self.T_h * self.J - delta_T /
+        self.q_h = - ( self.alpha * self.T_h * self.J - delta_T /
                      self.length * self.k + self.J**2. * self.length * self.rho
                      / 2. )
 

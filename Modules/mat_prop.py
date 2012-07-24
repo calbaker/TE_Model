@@ -2,18 +2,18 @@
 
 import numpy as np
 
-def set_prop_fit(self):
+def set_raw_property_data(self):
 
     """Sets temperature fit curves for thermoelectric properties.
 
     Methods:
 
     set_TEproperties
-    set_prop_fit
+    set_raw_property_data
 
     """
 
-    print "running set_prop_fit"
+    print "running set_raw_property_data"
 
     if self.material == "HMS":
         # Raw data taken from Luo et al. HMS is p-type
@@ -68,7 +68,7 @@ def set_prop_fit(self):
         self.sigma_params = np.polyfit(sigma_raw[:,0], sigma_raw[:,1],
                               poly_deg)
 
-def set_TEprop_polyfit(self,T_props):
+def set_properties_v_temp(self,T_props):
     
     """ Sets properties based on polynomial fit values.  
 
