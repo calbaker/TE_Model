@@ -85,7 +85,14 @@ class HX(object):
         # Thermoelectrics, 1999. Eighteenth International Conference
         # On, 328 –331, 1999.), based on k_ceramic = 200 W/(m-K)
         # obtained from Thermoelectrics Handbook.
-        self.R_contact = 0.8322
+        self.R_contact = 0.00003
+        # Thermal contact resistance for all three contacts estimated
+        # using alumina/copper contact resistance extracted from
+        # Gundrum, Bryan C., David G. Cahill, and Robert
+        # S. Averback. “Thermal Conductance of Metal-metal
+        # Interfaces.” Physical Review B 72, no. 24 (December 30, 2005): 245426.
+        
+        # self.R_contact = 0.8322
         # thermal contact resistance (m^2*K/kW) for plate/substrate,
         # substrate/interconnect, and interconnect/TE leg interfaces
         # all combined. All estimated (at 450 K) based on AlN/Cu
