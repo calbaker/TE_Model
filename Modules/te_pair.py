@@ -123,7 +123,10 @@ class TE_Pair(object):
         This function uses guesses the hot side temperature and
         heat fluxes for both legs to solve the pair a single time.
         The resulting errors in boundary conditions are then
-        determined. This is then used by fsolve in solve_te_pair.
+        determined. This is then used by fsolve in solve_te_pair to
+        zero out the error between hot and cold side heat fluxes and
+        the error between the cold side temperatures of both n-type
+        and p-type devices.
 
         Methods:
 

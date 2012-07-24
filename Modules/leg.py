@@ -141,11 +141,11 @@ class Leg(object):
         """Solves leg once based on cold side heat flux.
 
         Solution procedure comes from Ch. 12 of Thermoelectrics
-        Handbook, CRC/Taylor & Francis 2006.
+        Handbook, CRC/Taylor & Francis 2006. x-axis has been reversed
+        relative to reference procedure.  
 
         Inputs:
         q_h - hot side heat flux (W / m^2)
-
 
         Returns:
 
