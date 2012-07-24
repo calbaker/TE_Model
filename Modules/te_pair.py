@@ -143,11 +143,11 @@ class TE_Pair(object):
         self.q_c_conv = self.U_cold * (self.T_c - self.T_c_conv)
         self.q_h_conv = self.U_hot * (self.T_h_conv - self.T_h)
 
-        T_error = self.Ntype.T_c - self.Ptype.T_c
+        T_c_error = self.Ntype.T_c - self.Ptype.T_c
         q_c_error = self.q_c - self.q_c_conv
         q_h_error = self.q_h - self.q_h_conv
 
-        self.error = np.array([T_error, q_c_error, q_h_error])
+        self.error = np.array([T_c_error, q_c_error, q_h_error])
         self.error = self.error.reshape(self.error.size)
 
         return self.error
