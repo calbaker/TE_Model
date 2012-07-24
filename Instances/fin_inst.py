@@ -50,8 +50,9 @@ hx_fins0.cool.T_inlet_set = 300.
 hx_fins0.cool.T_outlet = 310.
 
 hx_fins0.set_mdot_charge()
-hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error,
-                                x0=hx_fins0.cool.T_outlet, xtol=0.01)
+# hx_fins0.cool.T_outlet = fsolve(hx_fins0.get_T_inlet_error,
+#                                 x0=hx_fins0.cool.T_outlet, xtol=0.01)
+hx_fins0.solve_hx()
 
 print "\nProgram finished."
 print "\nPlotting..."

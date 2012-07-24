@@ -2,6 +2,7 @@
 
 import numpy as np
 import time
+from scipy.optimize import fsolve
 
 # User defined modules
 import leg
@@ -81,7 +82,7 @@ class TE_Pair(object):
         self.Ptype.length = self.length
         self.Ptype.nodes = self.nodes
         self.Ntype.nodes = self.nodes
-        self.Ptype.I = -self.I
+        self.Ptype.I = - self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient
         # is positive.
@@ -100,12 +101,12 @@ class TE_Pair(object):
 
         """
 
-        self.Ptype.T_c = self.T_c
-        self.Ntype.T_c = self.T_c
+        self.Ptype.T_h = self.T_h
+        self.Ntype.T_h = self.T_h
 
-        self.Ntype.solve_leg_once(self.Ntype.q_c)
-        self.Ptype.solve_leg_once(self.Ptype.q_c)
-        self.T_h = self.Ntype.T_h
+        self.Ntype.solve_leg_once(self.Ntype.q_h)
+        self.Ptype.solve_leg_once(self.Ptype.q_h)
+        self.T_c = self.Ntype.T_c
 
         self.q_h = ((self.Ptype.q_h * self.Ptype.area + self.Ntype.q_h
         * self.Ntype.area) / (self.area)) * 0.001
@@ -122,7 +123,7 @@ class TE_Pair(object):
 
         """Returns BC error.
 
-        This function uses guesses at the cold side temperature and
+        This function uses guesses the hot side temperature and
         heat fluxes for both legs to solve the pair a single time.
         The resulting errors in boundary conditions are then
         determined. This is then used by fsolve in solve_te_pair.
@@ -133,16 +134,16 @@ class TE_Pair(object):
 
         """
 
-        self.Ntype.q_c = knob_arr[0]
-        self.Ptype.q_c = knob_arr[1]
-        self.T_c = knob_arr[2]
+        self.Ntype.q_h = knob_arr[0]
+        self.Ptype.q_h = knob_arr[1]
+        self.T_h = knob_arr[2]
 
         self.solve_te_pair_once()
 
         self.q_c_conv = self.U_cold * (self.T_c_conv - self.T_c)
         self.q_h_conv = - self.U_hot * (self.T_h_conv - self.T_h)
 
-        T_error = self.Ntype.T_h - self.Ptype.T_h
+        T_error = self.Ntype.T_c - self.Ptype.T_c
         q_c_error = self.q_c - self.q_c_conv
         q_h_error = self.q_h - self.q_h_conv
 
@@ -151,19 +152,19 @@ class TE_Pair(object):
 
         return self.error
 
-    def set_q_c_guess(self):
+    def set_q_guess(self):
 
         """Sets cold side guess for both Ntype and Ptype legs.
 
         Methods:
 
-        self.Ntype.set_q_c_guess
-        self.Ptype.set_q_c_guess
+        self.Ntype.set_q_guess
+        self.Ptype.set_q_guess
 
         """
 
-        self.Ntype.set_q_c_guess()
-        self.Ptype.set_q_c_guess()
+        self.Ntype.set_q_guess()
+        self.Ptype.set_q_guess()
 
     def solve_te_pair(self):
 
@@ -171,19 +172,17 @@ class TE_Pair(object):
 
         Methods:
 
-        self.set_q_c_guess
+        self.set_q_guess
 
         """
 
-        self.set_q_c_guess()
-        knob_arr0 = np.array([self.Ntype.q_c_guess,
-        self.Ptype.q_c_guess, self.T_c_conv])
-
-        from scipy.optimize import fsolve
+        self.set_q_guess()
+        knob_arr0 = np.array([self.Ntype.q_h_guess,
+        self.Ptype.q_h_guess, self.T_h_conv])
 
         self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 
-        self.P = -(self.Ntype.P + self.Ptype.P) * 0.001
+        self.P = (self.Ntype.P + self.Ptype.P) * 0.001
         # power for the entire leg pair(kW). Negative sign makes this
         # a positive number. Heat flux is negative so efficiency needs
         # a negative sign also.
