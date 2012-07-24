@@ -61,6 +61,9 @@ hx_osf0.set_mdot_charge()
 # hx_osf0.cool.T_outlet = fsolve(hx_osf0.get_T_inlet_error,
 #                                x0=hx_osf0.cool.T_outlet)
 
+hx_osf0.apar_list.append(['self', 'exh', 'enh', 'l'])
+hx_osf0.apar_list.append(['self', 'exh', 'enh', 'spacing'])
+
 hx_osf0.solve_hx()
 
 
