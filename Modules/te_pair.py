@@ -101,9 +101,6 @@ class TE_Pair(object):
 
         """
 
-        self.Ptype.T_h = self.T_h
-        self.Ntype.T_h = self.T_h
-
         self.Ntype.solve_leg_once(self.Ntype.q_h)
         self.Ptype.solve_leg_once(self.Ptype.q_h)
         self.T_c = self.Ntype.T_c
@@ -137,6 +134,9 @@ class TE_Pair(object):
         self.Ntype.q_h = knob_arr[0]
         self.Ptype.q_h = knob_arr[1]
         self.T_h = knob_arr[2]
+
+        self.Ptype.T_h = self.T_h
+        self.Ntype.T_h = self.T_h
 
         self.solve_te_pair_once()
 
@@ -175,6 +175,9 @@ class TE_Pair(object):
         self.set_q_guess
 
         """
+
+        self.Ptype.T_h = self.T_h_conv 
+        self.Ntype.T_h = self.T_h_conv
 
         self.set_q_guess()
         knob_arr0 = np.array([self.Ntype.q_h_guess,

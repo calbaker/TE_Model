@@ -83,7 +83,6 @@ class Leg(object):
 
         """
 
-        self.T_h = self.T_h_conv
         self.T_props = 0.5 * (self.T_h + self.T_c)
         self.set_TEproperties(T_props=self.T_props)
         delta_T = self.T_h - self.T_c
@@ -178,9 +177,9 @@ class Leg(object):
         # Efficiency of leg
         self.R_load = - self.V / self.I
 
-        self.T_h_error = self.T_h - self.T_h_goal
+        self.T_c_error = self.T_c - self.T_c_goal
 
-        return self.T_h_error
+        return self.T_c_error
 
     def solve_leg(self):
         """Solves leg until specified hot side temperature is met.
