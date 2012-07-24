@@ -119,10 +119,10 @@ class HX(object):
         self.equal_width = True
 
         self.apar_list = [
-            ['self','te_pair','leg_area_ratio'],
-            ['self','te_pair','fill_fraction'],
-            ['self','te_pair','length'],
-            ['self','te_pair','I']
+            ['self', 'te_pair', 'leg_area_ratio'],
+            ['self', 'te_pair', 'fill_fraction'],
+            ['self', 'te_pair', 'length'],
+            ['self', 'te_pair', 'I']
             ]
         # list of strings used to construct names of attributes to be
         # optimized
@@ -250,7 +250,8 @@ class HX(object):
 
         """
 
-        self.cummins.set_mdot_charge() # mass flow rate (kg/s) of exhaust
+        self.cummins.set_mdot_charge()
+        # mass flow rate (kg/s) of exhaust
         self.exh.mdot = self.cummins.mdot_charge
 
     def set_convection(self):
@@ -273,14 +274,14 @@ class HX(object):
         self.plate.set_h()
         # The previous three commands need only execute once per node.
 
-        self.U_hot = ( (self.exh.R_thermal + self.R_parasitic)**-1 )
+        self.U_hot = ((self.exh.R_thermal + self.R_parasitic) ** -1)
         # heat transfer coefficient (kW/m^-K) between TE hot side and
         # exhaust
-        self.U_cold = ( (self.cool.R_thermal + self.R_parasitic)**-1 )
+        self.U_cold = ((self.cool.R_thermal + self.R_parasitic) ** -1)
         # heat transfer coefficient (kW/m^-K) between TE cold side and
         # coolant
 
-    def solve_node(self,i):
+    def solve_node(self, i):
 
         """Solves for performance of streamwise slice of HX.
 
@@ -313,7 +314,8 @@ class HX(object):
         # heat transfer on hot side of node, positive values indicates
         # heat transfer from hot to cold
 
-    def solve_hx(self,**kwargs): # solve parallel flow heat exchanger
+    def solve_hx(self, ** kwargs):
+        # solve parallel flow heat exchanger
 
         """Solves for performance of all stream-wise nodes.
 
@@ -352,14 +354,14 @@ class HX(object):
             self.store_node_values(i)
 
             # redefining temperatures (K) for next node
-            self.exh.T = ( self.exh.T + self.te_pair.q_h * self.area /
-                self.exh.C )
+            self.exh.T = (self.exh.T + self.te_pair.q_h * self.area /
+                self.exh.C)
             if self.type == 'parallel':
-                self.cool.T = ( self.cool.T - self.te_pair.q_c * self.area
-                    / self.cool.C )
+                self.cool.T = (self.cool.T - self.te_pair.q_c * self.area
+                    / self.cool.C)
             elif self.type == 'counter':
-                self.cool.T = ( self.cool.T + self.te_pair.q_c * self.area
-                    / self.cool.C )
+                self.cool.T = (self.cool.T + self.te_pair.q_c * self.area
+                    / self.cool.C)
 
         # defining HX outlet/inlet temperatures (K)
         self.exh.T_outlet = self.exh.T
@@ -369,8 +371,8 @@ class HX(object):
             self.cool.T_inlet = self.cool.T
 
         self.Qdot_total = self.Qdot_nodes.sum()
-        self.effectiveness = ( self.Qdot_total / (self.exh.C *
-        (self.exh.T_inlet - self.cool.T_inlet)) )
+        self.effectiveness = (self.Qdot_total / (self.exh.C *
+        (self.exh.T_inlet - self.cool.T_inlet)))
         # heat exchanger effectiveness
 
         self.te_pair.power_total = self.te_pair.power_nodes.sum()
@@ -378,12 +380,12 @@ class HX(object):
 
         self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
         self.cool.Wdot_total = self.cool.Wdot_nodes.sum()
-        self.Wdot_pumping = ( self.exh.Wdot_total +
-                              self.cool.Wdot_total )
+        self.Wdot_pumping = (self.exh.Wdot_total +
+                              self.cool.Wdot_total)
         # total pumping power requirement (kW)
 
-        self.power_net = ( self.te_pair.power_total -
-        self.Wdot_pumping )
+        self.power_net = (self.te_pair.power_total -
+        self.Wdot_pumping)
 
         self.set_availability()
 
@@ -398,16 +400,16 @@ class HX(object):
         self.exh.entropy0 = self.exh.get_entropy(self.T0)
         # entropy (kJ/kg*K) of exhuast at restricted dead state
 
-        self.exh.availability_flow_nodes = ( (self.exh.enthalpy_nodes
+        self.exh.availability_flow_nodes = ((self.exh.enthalpy_nodes
         - self.exh.enthalpy0 - self.T0 * (self.exh.entropy_nodes -
-        self.exh.entropy0)) * self.exh.mdot )
+        self.exh.entropy0)) * self.exh.mdot)
         # availability (kJ/kg) of exhaust
 
-        self.cool.enthalpy_nodes = ( self.cool.c_p *
+        self.cool.enthalpy_nodes = (self.cool.c_p *
         (self.cool.T_nodes - self.T0) + self.cool.enthalpy0)
         # enthalpy (kJ/kg*K) of coolant
-        self.cool.entropy_nodes = ( self.cool.c_p *
-        np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0 )
+        self.cool.entropy_nodes = (self.cool.c_p *
+        np.log(self.cool.T_nodes / self.T0) + self.cool.entropy0)
 
         self.cool.availability_flow_nodes = (
         (self.cool.enthalpy_nodes - self.cool.enthalpy0 - self.T0 *
@@ -415,7 +417,7 @@ class HX(object):
         self.cool.mdot)
         # availability (kJ/kg) of coolant
 
-    def store_node_values(self,i):
+    def store_node_values(self, i):
 
         """Stores values of parameters of interest in node i.
 
@@ -431,7 +433,7 @@ class HX(object):
         self.te_pair.q_c_conv_nodes[i] = self.q_c
         self.te_pair.q_h_nodes[i] = self.te_pair.q_h
         self.te_pair.q_c_nodes[i] = self.te_pair.q_c
-        self.te_pair.error_nodes[:,i] = self.te_pair.error
+        self.te_pair.error_nodes[:, i] = self.te_pair.error
         self.te_pair.T_h_nodes[i] = self.te_pair.T_h
         self.te_pair.T_c_nodes[i] = self.te_pair.T_c
         self.te_pair.power_nodes[i] = self.te_pair.P * self.leg_pairs
@@ -480,7 +482,8 @@ class HX(object):
         apar = np.array(apar)
 
         for i in range(apar.size):
-            setattr(operator.attrgetter('.'.join(self.apar_list[i][1:-1]))(self),
+            setattr(operator.attrgetter(
+                    '.'.join(self.apar_list[i][1:-1]))(self),
             self.apar_list[i][-1], apar[i])
 
         # reset surrogate variables
@@ -520,7 +523,7 @@ class HX(object):
         for i in range(self.x0.size):
             self.x0[i] = (
             operator.attrgetter('.'.join(self.apar_list[i][1:]))(self)
-            )
+           )
 
         self.xmin = fmin(self.get_minpar, self.x0)
 
@@ -531,7 +534,7 @@ class HX(object):
             varname = '.'.join(self.apar_list[i][1:])
             varval = (
                 operator.attrgetter(varname)(self)
-        )
+       )
             print varname + ":", varval
 
         print "\npower net:", self.power_net * 1000., 'W'
@@ -539,7 +542,8 @@ class HX(object):
         print "pumping power:", self.Wdot_pumping * 1000., 'W'
         self.exh.volume = self.exh.height * self.exh.width * self.length
         print "exhaust volume:", self.exh.volume * 1000., 'L'
-        print "exhaust power density:", self.power_net / self.exh.volume, 'kW/m^3'
+        VAR = self.power_net / self.exh.volume
+        print "exhaust power density:", VAR, 'kW/m^3'
 
         print """Elapsed time solving xmin1 =""", t1
 
