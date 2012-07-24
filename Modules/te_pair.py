@@ -82,11 +82,11 @@ class TE_Pair(object):
         self.Ptype.length = self.length
         self.Ptype.nodes = self.nodes
         self.Ntype.nodes = self.nodes
-        self.Ptype.I = - self.I
+        self.Ptype.I = self.I
         # Current must have same sign as heat flux for p-type
         # material. Heat flux is negative because temperature gradient
         # is positive.
-        self.Ntype.I = self.I
+        self.Ntype.I = - self.I
         self.Ntype.set_constants()
         self.Ptype.set_constants()
 
@@ -140,8 +140,8 @@ class TE_Pair(object):
 
         self.solve_te_pair_once()
 
-        self.q_c_conv = self.U_cold * (self.T_c_conv - self.T_c)
-        self.q_h_conv = - self.U_hot * (self.T_h_conv - self.T_h)
+        self.q_c_conv = self.U_cold * (self.T_c - self.T_c_conv)
+        self.q_h_conv = self.U_hot * (self.T_h_conv - self.T_h)
 
         T_error = self.Ntype.T_c - self.Ptype.T_c
         q_c_error = self.q_c - self.q_c_conv
@@ -178,6 +178,8 @@ class TE_Pair(object):
 
         self.Ptype.T_h = self.T_h_conv 
         self.Ntype.T_h = self.T_h_conv
+        self.Ptype.T_c = self.T_c_conv
+        self.Ntype.T_c = self.T_c_conv
 
         self.set_q_guess()
         knob_arr0 = np.array([self.Ntype.q_h_guess,
@@ -191,7 +193,7 @@ class TE_Pair(object):
         # a negative sign also.
         self.P_flux = self.P / self.area
         # power flux (kW / m^2) through leg pair
-        self.eta = -self.P / (self.q_h * self.area)
+        self.eta = self.P / (self.q_h * self.area)
         self.V = self.Ntype.V + self.Ptype.V
         self.R_load = self.Ntype.R_load + self.Ptype.R_load
         self.R_internal = ( self.Ntype.R_internal +

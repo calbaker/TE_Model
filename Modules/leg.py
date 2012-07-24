@@ -163,10 +163,10 @@ class Leg(object):
         self.V_nodes = self.y[:,2]
         self.R_int_nodes = self.y[:,3]
 
-        self.T_h = self.T_nodes[0]
-        self.q_h = self.q_nodes[0]
+        self.T_c = self.T_nodes[-1]
+        self.q_c = self.q_nodes[-1]
 
-        self.V = self.V_nodes[-1]
+        self.V = self.V_nodes[0] - self.V_nodes[-1]
         self.R_internal = self.R_int_nodes[-1]
 
         self.P_flux = self.J * self.V
