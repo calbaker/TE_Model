@@ -249,3 +249,11 @@ class Leg(object):
         self.power_factor = self.alpha**2 * self.sigma
         self.power_max = ( self.power_factor * self.T_props**2 /
         self.length * self.area )
+
+    def solve_leg_transient(self):
+
+        """Solves leg based on array of transient BC's.""" 
+        
+        self.solve_leg()
+        
+        
