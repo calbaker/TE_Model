@@ -46,7 +46,7 @@ class Leg(object):
         # number of nodes for which values are stored
         self.length = 1.e-3 # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
-        self.T_c = 350. # cold side temperature (K)
+        self.T_c_goal = 350. # cold side temperature (K)
 
         self.alpha_nodes = np.zeros(self.nodes)
         self.rho_nodes = np.zeros(self.nodes)
@@ -182,7 +182,7 @@ class Leg(object):
         return self.T_c_error
 
     def solve_leg(self):
-        """Solves leg until specified hot side temperature is met.
+        """Solves leg until specified cold side temperature is met.
 
         Methods:
 
