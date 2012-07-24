@@ -177,7 +177,13 @@ class Leg(object):
         # Efficiency of leg
         self.R_load = - self.V / self.I
 
-        self.T_c_error = self.T_c - self.T_c_goal
+        # If T_c_goal has been externally defined as none, it is not
+        # relevant and therefore not used.
+        if self.T_c_goal == None:
+            self.T_c_error = None
+
+        else:
+            self.T_c_error = self.T_c - self.T_c_goal
 
         return self.T_c_error
 

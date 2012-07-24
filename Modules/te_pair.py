@@ -188,6 +188,9 @@ class TE_Pair(object):
         knob_arr0 = np.array([self.Ntype.q_h_guess,
         self.Ptype.q_h_guess, self.T_h_conv])
 
+        self.Ptype.T_c_goal = None
+        self.Ntype.T_c_goal = None
+
         self.fsolve_output = fsolve(self.get_error, x0=knob_arr0)
 
         self.P = (self.Ntype.P + self.Ptype.P) * 0.001
