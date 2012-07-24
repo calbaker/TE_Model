@@ -14,7 +14,29 @@ def set_raw_property_data(self):
     """
 
     print "running set_raw_property_data"
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    if self.material == "typical BiTe doped"
+        # Extracted from Bed Poudel et al, Science 320, 634 (2008)
+        poly_deg = 3
 
+        alpha_raw = np.array([[296.89119171, 138.265544041], 
+                              [380.829015544, 140.620466321],
+                              [561.139896373, 176.845854922],
+                              [701.03626943, 206.270725389],
+                              [806.735751295, 217.652849741],
+                              [900., 205.769430052]])
+        self.alpha_params = np.polyfit(alpha_raw[:,0], alpha_raw[:,1], poly_deg)
+
+
+
+
+
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     if self.material == "HMS":
         # Raw data taken from Luo et al. HMS is p-type
         poly_deg = 3
