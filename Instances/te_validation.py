@@ -29,6 +29,7 @@ te_pair = te_pair.TE_Pair()
 
 te_pair.Ntype.material = "trial n-type"
 te_pair.Ptype.material = "trial p-type" 
+
 # declares materials to be used for property calculations
 
 te_pair.I = current
