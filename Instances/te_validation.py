@@ -27,8 +27,8 @@ current = 0.05
 te_pair = te_pair.TE_Pair()
 #instantiate a te_pair object
 
-te_pair.Ntype.material = "trial n-type"
-te_pair.Ptype.material = "trial p-type" 
+te_pair.Ntype.material = "BiTe variable n-type"
+te_pair.Ptype.material = "BiTe variable p-type" 
 
 # declares materials to be used for property calculations
 

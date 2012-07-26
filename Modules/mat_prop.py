@@ -17,7 +17,7 @@ def set_raw_property_data(self):
 
 
 
-    if self.material == "trial n-type":
+    if self.material == "BiTe variable n-type":
         # properties trial 2 - need to add a comment
         poly_deg = 3
         
@@ -62,7 +62,7 @@ def set_raw_property_data(self):
         self.sigma_params = np.polyfit(sigma_raw[:,0], sigma_raw[:,1], poly_deg)
 
 
-    if self.material == "trial p-type":
+    if self.material == "BiTe variable p-type":
         # properties trial 2 - need to add a comment 
         poly_deg = 3
         
@@ -296,10 +296,10 @@ def set_TEproperties(self,T_props):
     
     
     # Materials with tabulated properties
-    if self.material == 'trial n-type':
+    if self.material == 'BiTe variable n-type':
         self.set_TEprop_polyfit(T_props)
 
-    if self.material == 'trial p-type':
+    if self.material == 'BiTe variable p-type':
         self.set_TEprop_polyfit(T_props)
 
     if self.material == 'typical BiTe n-type':
@@ -317,7 +317,7 @@ def set_TEproperties(self,T_props):
     # Material properties for validation trial. These properties are
     # for typical BiTe materials at 423 K. The properties for a range
     # of temperature are given above as a poly curve. 
-    if self.material == 'trial n-type':
+    if self.material == 'BiTe variable n-type':
         self.k = 1.54 # Thermal conductivity (W/m-K)
         self.alpha = -150.e-6 # Seebeck coefficient (V/K)
         # I made this negative even though it's for a p-type
@@ -325,7 +325,7 @@ def set_TEproperties(self,T_props):
         self.rho = 9.0909 * 1.e-6
         # electrical resistivity (Ohm-m)
 
-    if self.material == 'trial p-type':
+    if self.material == 'BiTe variable p-type':
         self.k = 1.54 # Thermal conductivity (W/m-K)
         self.alpha = 150.e-6 # Seebeck coefficient (V/K)
         self.rho = 9.0909 * 1.e-6
