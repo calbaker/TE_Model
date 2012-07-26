@@ -27,8 +27,8 @@ current = 0.76
 te_pair = te_pair.TE_Pair()
 #instantiate a te_pair object
 
-te_pair.Ntype.material = "ideal BiTe n-type"
-te_pair.Ptype.material = "ideal BiTe p-type" 
+te_pair.Ntype.material = "constant BiTe n-type"
+te_pair.Ptype.material = "constant BiTe p-type" 
 # declares materials to be used for property calculations
 
 te_pair.I = current

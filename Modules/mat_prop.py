@@ -185,7 +185,7 @@ def set_TEproperties(self,T_props):
         # electrical resistivity (Ohm-m)
 
     # From CRC TE Handbook Table 27.7
-    if self.material == 'ideal BiTe n-type':
+    if self.material == 'constant BiTe n-type':
         self.k = 1.5 # Thermal conductivity (W/m-K)
         self.alpha = -206.e-6 # Seebeck coefficient (V/K)
         # I made this negative even though it's for a p-type
@@ -194,7 +194,7 @@ def set_TEproperties(self,T_props):
         # electrical resistivity (Ohm-m)
 
     # From CRC TE Handbook Table 27.7
-    if self.material == 'ideal BiTe p-type':
+    if self.material == 'constant BiTe p-type':
         self.k = 1.5 # Thermal conductivity (W/m-K)
         self.alpha = 206.e-6 # Seebeck coefficient (V/K)
         self.rho = 8.89 * 1.e-6
