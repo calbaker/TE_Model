@@ -22,13 +22,13 @@ leg_area = (0.001525) ** 2
 area_ratio = 1.
 fill_fraction = 0.593
 length = 0.00136
-current = 0.76
+current = 0.05
 
 te_pair = te_pair.TE_Pair()
 #instantiate a te_pair object
 
-te_pair.Ntype.material = "ideal BiTe n-type"
-te_pair.Ptype.material = "ideal BiTe p-type" 
+te_pair.Ntype.material = "trial n-type"
+te_pair.Ptype.material = "trial p-type" 
 # declares materials to be used for property calculations
 
 te_pair.I = current
@@ -42,11 +42,11 @@ te_pair.fill_fraction = fill_fraction
 te_pair.set_leg_areas()
 
 te_pair.T_c_conv = 303.   # cold side convection temperature (K)
-te_pair.T_h_conv = 423.   # hot side convection temperature (K)
+te_pair.T_h_conv = 343.   # hot side convection temperature (K)
 
-te_pair.U_cold = 1000
+te_pair.U_cold = 10000
 # cold side overall heat transfer coefficient (kW / (m ** 2 * K))
-te_pair.U_hot = 1000
+te_pair.U_hot = 10000
 # hot side overall heat transfer coefficient (kW / (m ** 2 * K))
 
 te_pair.solve_te_pair()

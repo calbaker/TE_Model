@@ -45,7 +45,9 @@ hx_osf0.te_pair.method = 'numerical'
 hx_osf0.type = 'counter'
 
 hx_osf0.exh.enh = hx_osf0.exh.enh_lib.OffsetStripFin()
-hx_osf0.exh.enh.thickness = 0.25 * 2.54e-2 
+# hx_osf0.exh.enh.thickness = 0.25 * 2.54e-2
+# 0.25 inches is too thick to manufacture
+hx_osf0.exh.enh.thickness = 0.01 * 2.54e-2 
 hx_osf0.exh.enh.spacing = 0.25 * 2.54e-2 
 hx_osf0.exh.enh.l = 0.5 * 2.54e-2
 
@@ -61,8 +63,14 @@ hx_osf0.set_mdot_charge()
 # hx_osf0.cool.T_outlet = fsolve(hx_osf0.get_T_inlet_error,
 #                                x0=hx_osf0.cool.T_outlet)
 
-hx_osf0.solve_hx()
+# Dont need the line at this point (need it if not optimizing)
+# hx_osf0.solve_hx()
 
+# Haiyan - trying to learn how to optimize 
+hx_osf0.apar_list.append(['self', 'exh', 'enh', 'spacing'])
+hx_osf0.apar_list.append(['self', 'exh', 'enh', 'l'])
+
+hx_osf0.optimize()
 
 print "\nProgram finished."
 
