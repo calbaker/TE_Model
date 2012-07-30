@@ -8,8 +8,6 @@ import os,sys
 import time
 from scipy.optimize import fmin
 
-# DO I NEED TO IMPORT EXHAUST/AND RELOAD IT ?????
-
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
 if cmd_folder not in sys.path:
@@ -132,17 +130,12 @@ def optimize():
         t1 = time.clock()
 
         print '\n'
-        for i in range(x0.size):
-            varname = '.'.join(x0[i][1:])
-            varval = (
-                operator.attrgetter(varname)()
-       )
-            print varname + ":", varval
 
         print "\npower net:", hx_osf0.power_net * 1000., 'W'
         print "power raw:", hx_osf0.te_pair.power_total * 1000., 'W'
         print "pumping power:", hx_osf0.Wdot_pumping * 1000., 'W'
-        self.exh.volume = hx_osf0.exh.height * hx_osf0.exh.width * hx_osf0.length
+        self.exh.volume = (hx_osf0.exh.height * hx_osf0.exh.width *
+        hx_osf0.length)
         print "exhaust volume:", hx_osf0.exh.volume * 1000., 'L'
         VAR = hx_osf0.power_net / hx_osf0.exh.volume
         print "exhaust power density:", VAR, 'kW/m^3'
