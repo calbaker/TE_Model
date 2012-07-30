@@ -131,6 +131,8 @@ def optimize():
 
         print '\n'
 
+        print "length of osf", hx_osf0.exh.enh.l
+        print "spacing", hx_osf0.exh.enh.spacing
         print "\npower net:", hx_osf0.power_net * 1000., 'W'
         print "power raw:", hx_osf0.te_pair.power_total * 1000., 'W'
         print "pumping power:", hx_osf0.Wdot_pumping * 1000., 'W'
