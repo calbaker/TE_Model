@@ -19,7 +19,7 @@ leg_area = (0.002)**2
 area_ratio = 0.740
 fill_fraction = 3.01e-2
 leg_length = 3.18e-4
-current = 22.58
+current = 34.3
 
 time0 = time.clock()
 
