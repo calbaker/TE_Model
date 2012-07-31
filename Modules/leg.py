@@ -120,8 +120,7 @@ class Leg(object):
         T = y[0]
         q = y[1]
 
-        self.T_props = T
-        self.set_TEproperties(self.T_props)
+        self.set_TEproperties(T)
 
         dT_dx = ( 1. / self.k * (self.J * T * self.alpha - q) )
 
@@ -259,34 +258,24 @@ class Leg(object):
         """Solves leg based on array of transient BC's.""" 
         
         
-    def get_Yprime_transient(self, y, x):
+    def solve_leg_transient_once(self):
 
-        """Returns array of derivatives.  See below.
-
-        Function for evaluating the derivatives of temperature and
-        heat flux w.r.t. x-dimension
-
-        Inputs:
-
-        y : initial conditions
-        x : array of locations where results are desired
-
-        Methods:
-
-        self.set_TEproperties(T_props)
-
+        """Not sure what this does yet.
         """
 
-        T = y[0]
-        q = y[1]
+    def get_Yprime_transient(self):
 
-        self.T_props = T
-        self.set_TEproperties(self.T_props)
+        """Not sure what this does yet.
+        """
 
-        dT_dx = ( 1. / self.k * (self.J * T * self.alpha - q) )
+        T = something 
 
-        dq_dx = ( (self.rho * self.J**2. * (1. + self.alpha**2. * T /
-        (self.rho * self.k)) - self.J * self.alpha * q / self.k) )
+        self.set_TEproperties(T)
+
+        dT_dx = (1. / self.k * (self.J * T * self.alpha - q))
+
+        dq_dx = (self.rho_mass * (T - T_old) / self.time_step + (self.rho * self.J**2. * (1. + self.alpha**2. * T /
+        (self.rho * self.k)) - self.J * self.alpha * q / self.k))
 
         dV_dx = ( self.alpha * dT_dx + self.J * self.rho )
 
