@@ -107,7 +107,8 @@ def set_TEproperties(self,T_props):
 
     """
     
-    
+    self.T_props = T_props
+
     # Materials with tabulated properties
 
     if self.material == 'HMS':
