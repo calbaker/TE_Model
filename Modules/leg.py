@@ -257,14 +257,16 @@ class Leg(object):
 
         """Solves leg based on array of transient BC's.""" 
         
-
+        self.T = np.zeros([self.nodes, self.time_span / self.time_step])
+        self.q = np.zeros([self.nodes, self.time_span / self.time_step])
         
+
     def solve_leg_transient_once(self):
 
         """Not sure what this does yet.
         """
 
-        
+        self.init_trans_vars(self)
 
     def get_Yprime_transient(self, i, t):
 
@@ -274,8 +276,8 @@ class Leg(object):
         T = self.T_nodes[i - 1, t]
         self.set_TEproperties(T)
 
-        dT_dx = (1. / self.k * (self.J * self.T_nodes[i - 1, t] * self.alpha
-        - q[i - 1, t]))
+        dT_dx = (1. / self.k * (self.J * self.T_nodes[i - 1, t] *
+        self.alpha - self.q[i - 1, t])) 
 
         self.T_nodes[i, t] = dT_dx * self.x_step + self.T_nodes[i - 1, t]
 
