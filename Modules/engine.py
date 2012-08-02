@@ -1,9 +1,6 @@
 """Contains Engine class used to determine attributes of engine.  This will be
 fleshed out with experimental data later."""
 
-# Distribution modules
-import scipy as sp
-
 # User defined modules
 import properties as prop
 
