@@ -12,22 +12,16 @@ if cmd_folder not in sys.path:
 import hx
 reload(hx)
 
-leg_area = (0.002)**2
-
-area_ratio = 0.745
-fill_fraction = 3.10e-2
-leg_length = 3.56e-4
-current = 13.0
-
 hx_exp = hx.HX()
 
 hx_exp.width = 0.55
 hx_exp.exh.height = 3.5e-2
 hx_exp.length = 0.55
-hx_exp.te_pair.I = current
-hx_exp.te_pair.length = leg_length
-hx_exp.te_pair.leg_area_ratio = area_ratio
-hx_exp.te_pair.fill_fraction = fill_fraction
+
+hx_exp.te_pair.I = 13.0
+hx_exp.te_pair.length = 3.56e-4
+hx_exp.te_pair.leg_area_ratio = 0.745
+hx_exp.te_pair.fill_fraction = 3.10e-2
 
 hx_exp.te_pair.set_leg_areas()
 
