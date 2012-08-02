@@ -1,3 +1,4 @@
+
 # coding=utf-8
 """Contains classes for modeling convection heat transfer
 enhancement."""
@@ -129,6 +130,14 @@ class IdealFin(object):
         self.spacing = 0.003
         # distance (m) between adjacent fin edges
 
+    def set_fin_height(self, flow):
+
+        """Sets fin height based on half of duct height."""
+
+        self.height = flow.height / 2
+        # height of fin pair such that their tips meet in the
+        # middle and are adiabatic.
+
     def set_geometry(self, flow):
 
         """Fixes appropriate geometrical parameters.
@@ -139,9 +148,7 @@ class IdealFin(object):
 
         """
 
-        self.height = flow.height / 2
-        # height of fin pair such that their tips meet in the
-        # middle and are adiabatic.
+        self.set_fin_height(flow)
         self.N = ((flow.width / self.spacing - 1.) / (1. +
         self.thickness / self.spacing))
         self.spacing = ((flow.width - self.N * self.thickness) / (self.N + 1.))
@@ -150,6 +157,11 @@ class IdealFin(object):
         self.flow_area = self.spacing * flow.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin
         self.D = 4. * self.flow_area / self.perimeter
+
+        flow.D_empty = flow.D
+        flow.D = self.D
+        flow.flow_area_empty = flow.flow_area
+        flow.flow_area = self.flow_area
 
     def set_eta(self, flow):
 
@@ -172,7 +184,6 @@ class IdealFin(object):
 
         """Sets effective heat transfer coefficient and deltaP.
 
-
         Inputs:
 
         flow : class instance of exhaust or coolant
@@ -183,6 +194,7 @@ class IdealFin(object):
 
         self.effectiveness = self.eta * 2. * self.height / self.thickness
         self.h_base = self.effectiveness * flow.h
+
         flow.h = ((flow.h_unfinned * (flow.width - self.N *
         self.thickness) + self.h_base * self.N * self.thickness) /
         flow.width)
@@ -207,16 +219,49 @@ class IdealFin(object):
 
         """
 
-        self.set_geometry(flow)
-        flow.velocity = flow.Vdot / self.flow_area
         flow.set_Re_dependents()
         flow.h = flow.Nu_D * flow.k / flow.D
         # coefficient of convection (kW/m^2-K)
-        self.h = flow.h
+
         self.set_eta(flow)
         self.set_h_and_P(flow)
-        self.h = ((self.h * (flow.width - self.N * self.thickness) +
-        self.h_base * self.N * self.thickness) / flow.width)
+
+class IdealFin2(IdealFin):
+
+    """Class for modeling fin that crosses duct with adiabatic tip.
+    
+    Inherits traits of IdealFin."""
+
+    def set_fin_height(self, flow):
+
+        """Sets fin height based on half of duct height."""
+
+        self.height = flow.height
+        # height of fin pair such that their tips meet in the
+        # middle and are adiabatic.
+
+    def set_h_and_P(self, flow):
+
+        """Sets effective heat transfer coefficient and deltaP.
+
+        Inputs:
+
+        flow : class instance of exhaust or coolant
+
+        """
+
+        flow.h_unfinned = flow.h
+
+        self.effectiveness = self.eta * 2. * self.height / self.thickness
+        self.h_base = self.effectiveness * flow.h
+
+        flow.h = ((flow.h_unfinned * (flow.width - self.N / 2. *
+        self.thickness) + self.h_base * self.N * self.thickness) /
+        flow.width)
+
+        flow.deltaP = (flow.f * self.perimeter * flow.node_length /
+        self.flow_area * (0.5 * flow.rho * flow.velocity ** 2) * 0.001)
+        # pressure drop (kPa)
 
 
 class OffsetStripFin(object):

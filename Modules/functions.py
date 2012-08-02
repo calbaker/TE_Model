@@ -20,6 +20,14 @@ def set_flow_geometry(self, width):
     self.D = 4. * self.flow_area / self.perimeter
     # coolant hydraulic diameter (m)
 
+    if self.enh != None:
+        try:
+            self.enh.set_geometry(self)
+        except AttributeError:
+            pass
+        else:
+            self.enh.set_geometry(self)
+
 def set_Re_dependents(self):
 
     """Sets Nu and f based on Re.
@@ -102,11 +110,11 @@ def set_flow(self):
     self.velocity = self.Vdot / self.flow_area 
     # velocity (m/s) of exhaust
 
-    if self.enh == None:
-        self.set_Re_dependents()
-        self.h = self.Nu_D * self.k / self.D 
-        # coefficient of convection (kW/m^2-K)
+    self.set_Re_dependents()
+    self.h = self.Nu_D * self.k / self.D 
+    # coefficient of convection (kW/m^2-K)
         
+    if self.enh == None:
         self.deltaP = ( self.f * self.perimeter * self.node_length /
         self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )       
         # pressure drop (kPa)

@@ -34,7 +34,7 @@ hx_exp.te_pair.Ptype.material = 'HMS'
 
 hx_exp.type = 'counter'
 
-hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin()
+hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin2()
 hx_exp.exh.enh.thickness = 0.1 * 2.54e-2
 hx_exp.exh.enh.spacing = 0.3 * 2.54e-2
 
