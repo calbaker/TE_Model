@@ -47,7 +47,7 @@ class TE_Pair(object):
         self.leg_area_ratio = 0.7
         # Ratio of cross-section area of N-type leg to cross-section
         # area of P-type leg
-        self.fill_fraction = 0.02
+        self.fill_fraction = 0.03
         # Percentage of nominal area occupied by TE legs
         self.length = 1.e-3
         # Length (m) of TE legs

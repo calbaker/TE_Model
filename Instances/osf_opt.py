@@ -131,16 +131,18 @@ def optimize():
 
         print '\n'
 
-        print "\npower net:", hx_osf0.power_net * 1000., 'W'
-        print "power raw:", hx_osf0.te_pair.power_total * 1000., 'W'
-        print "pumping power:", hx_osf0.Wdot_pumping * 1000., 'W'
-        self.exh.volume = (hx_osf0.exh.height * hx_osf0.exh.width *
-        hx_osf0.length)
-        print "exhaust volume:", hx_osf0.exh.volume * 1000., 'L'
-        VAR = hx_osf0.power_net / hx_osf0.exh.volume
-        print "exhaust power density:", VAR, 'kW/m^3'
+        #print "length of osf", hx_osf0.exh.enh.l
+        #print "spacing", hx_osf0.exh.enh.spacing
+        #print "\npower net:", hx_osf0.power_net * 1000., 'W'
+        #print "power raw:", hx_osf0.te_pair.power_total * 1000., 'W'
+        #print "pumping power:", hx_osf0.Wdot_pumping * 1000., 'W'
+        #self.exh.volume = (hx_osf0.exh.height * hx_osf0.exh.width *
+        #hx_osf0.length)
+        #print "exhaust volume:", hx_osf0.exh.volume * 1000., 'L'
+        #VAR = hx_osf0.power_net / hx_osf0.exh.volume
+        #print "exhaust power density:", VAR, 'kW/m^3'
 
-        print """Elapsed time solving xmin1 =""", t1
+        #print """Elapsed time solving xmin1 =""", t1
 
 # hx_osf0.solve_hx()
 
@@ -180,6 +182,8 @@ plt.subplots_adjust(bottom=0.15)
 
 # plt.show()
 
+print "length of osf", hx_osf0.exh.enh.l * 1000., 'mm'
+print "spacing", hx_osf0.exh.enh.spacing * 1000., 'mm'
 print "power net:", hx_osf0.power_net * 1000., 'W'
 print "power raw:", hx_osf0.te_pair.power_total * 1000., 'W'
 print "pumping power:", hx_osf0.Wdot_pumping * 1000., 'W'
