@@ -294,7 +294,8 @@ def set_TEproperties(self,T_props):
 
     """
     
-    
+    self.T_props = T_props
+
     # Materials with tabulated properties
     if self.material == 'BiTe variable n-type':
         self.set_TEprop_polyfit(T_props)

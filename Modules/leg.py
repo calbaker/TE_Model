@@ -119,11 +119,8 @@ class Leg(object):
 
         T = y[0]
         q = y[1]
-        V = y[2]
-        R_int = y[3]
 
-        self.T_props = T
-        self.set_TEproperties(self.T_props)
+        self.set_TEproperties(T)
 
         dT_dx = ( 1. / self.k * (self.J * T * self.alpha - q) )
 
@@ -255,3 +252,48 @@ class Leg(object):
         self.power_factor = self.alpha**2 * self.sigma
         self.power_max = ( self.power_factor * self.T_props**2 /
         self.length * self.area )
+
+    def solve_leg_transient(self):
+
+        """Solves leg based on array of transient BC's.""" 
+        
+        self.T = np.zeros([self.nodes, self.time_span / self.time_step])
+        self.q = np.zeros([self.nodes, self.time_span / self.time_step])
+        
+
+    def solve_leg_transient_once(self):
+
+        """Not sure what this does yet.
+        """
+
+        self.init_trans_vars(self)
+
+    def get_Yprime_transient(self, i, t):
+
+        """Not sure what this does yet.
+        """
+
+        T = self.T_nodes[i - 1, t]
+        self.set_TEproperties(T)
+
+        dT_dx = (1. / self.k * (self.J * self.T_nodes[i - 1, t] *
+        self.alpha - self.q[i - 1, t])) 
+
+        self.T_nodes[i, t] = dT_dx * self.x_step + self.T_nodes[i - 1, t]
+
+        T = self.T_nodes[i - 1, t - 1]
+        self.set_TEproperties(T)
+
+        dq_dx = (self.rho_mass * self.c * (self.T_nodes[i, t] - self.T_nodes[i, t
+        - 1]) / self.time_step + (self.rho * self.J**2. * (1. +
+        self.alpha**2. * self.T_nodes[i - 1, t - 1] / (self.rho * self.k)) -
+        self.J * self.alpha * self.q[i - 1, t - 1] / self.k)) 
+
+        self.q[i, t] = dq_dx * self.x_step + self.q[i - 1, t - 1]
+
+        # these next two formulas probably need to be modified to
+        # reflect changes that have occurred as compared to
+        # get_Yprime.  
+        dV_dx = ( self.alpha * dT_dx + self.J * self.rho )
+
+        dR_dx = ( self.rho / self.area )
