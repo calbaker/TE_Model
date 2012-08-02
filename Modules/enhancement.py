@@ -138,6 +138,13 @@ class IdealFin(object):
         # height of fin pair such that their tips meet in the
         # middle and are adiabatic.
 
+    def set_area_convection(self, flow):
+        
+        """Sets finned and unfinned area for convection."""
+
+        flow.area_unfinned = (flow.width - self.N * self.thickness)        
+        flow.area_finned = self.N * self.thickness
+
     def set_geometry(self, flow):
 
         """Fixes appropriate geometrical parameters.
@@ -157,6 +164,10 @@ class IdealFin(object):
         self.flow_area = self.spacing * flow.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin
         self.D = 4. * self.flow_area / self.perimeter
+
+        self.set_area_convection(flow)
+        flow.area_unfinned = (flow.width - self.N * self.thickness)        
+        flow.area_finned = self.N * self.thickness
 
         flow.D_empty = flow.D
         flow.D = self.D
@@ -195,9 +206,8 @@ class IdealFin(object):
         self.effectiveness = self.eta * 2. * self.height / self.thickness
         self.h_base = self.effectiveness * flow.h
 
-        flow.h = ((flow.h_unfinned * (flow.width - self.N *
-        self.thickness) + self.h_base * self.N * self.thickness) /
-        flow.width)
+        flow.h = ((flow.h_unfinned * flow.area_unfinned + self.h_base
+        * flow.area_finned) / flow.width)  
 
         flow.deltaP = (flow.f * self.perimeter * flow.node_length /
         self.flow_area * (0.5 * flow.rho * flow.velocity ** 2) * 0.001)
@@ -240,28 +250,12 @@ class IdealFin2(IdealFin):
         # height of fin pair such that their tips meet in the
         # middle and are adiabatic.
 
-    def set_h_and_P(self, flow):
+    def set_area_convection(self, flow):
+        
+        """Sets finned and unfinned area for convection."""
 
-        """Sets effective heat transfer coefficient and deltaP.
-
-        Inputs:
-
-        flow : class instance of exhaust or coolant
-
-        """
-
-        flow.h_unfinned = flow.h
-
-        self.effectiveness = self.eta * 2. * self.height / self.thickness
-        self.h_base = self.effectiveness * flow.h
-
-        flow.h = ((flow.h_unfinned * (flow.width - self.N / 2. *
-        self.thickness) + self.h_base * self.N * self.thickness) /
-        flow.width)
-
-        flow.deltaP = (flow.f * self.perimeter * flow.node_length /
-        self.flow_area * (0.5 * flow.rho * flow.velocity ** 2) * 0.001)
-        # pressure drop (kPa)
+        flow.area_unfinned = (flow.width - self.N / 2. * self.thickness)        
+        flow.area_finned = self.N / 2. * self.thickness
 
 
 class OffsetStripFin(object):

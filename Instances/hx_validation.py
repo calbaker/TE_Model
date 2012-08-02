@@ -23,9 +23,9 @@ hx_exp.length = 20. * 2.54e-2
 hx_exp.te_pair.Ptype.area = (2.e-3) ** 2
 
 hx_exp.te_pair.leg_area_ratio = 0.662
-hx_exp.te_pair.I = 15.0
+hx_exp.te_pair.I = 15.0  # turns off TE effect
 hx_exp.te_pair.length = 3.34e-4
-hx_exp.te_pair.fill_fraction = 3.45e-2
+hx_exp.te_pair.fill_fraction = 0.035
 
 hx_exp.te_pair.set_leg_areas()
 
@@ -34,13 +34,13 @@ hx_exp.te_pair.Ptype.material = 'HMS'
 
 hx_exp.type = 'counter'
 
-hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin()
-hx_exp.exh.enh.thickness = 1.e-3
-hx_exp.exh.enh.spacing = 1.26e-3
+hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin2()
+hx_exp.exh.enh.thickness = 0.1 * 2.54e-2
+hx_exp.exh.enh.spacing = 0.3 * 2.54e-2
 
 hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
-hx_exp.cool.enh.thickness = 1.e-3
-hx_exp.cool.enh.spacing = 1.e-3
+hx_exp.cool.enh.thickness = 0.08 * 2.54e-2
+hx_exp.cool.enh.spacing = 0.32 * 2.54e-2
 
 hx_exp.exh.T_inlet = 406.1 + 273.15
 hx_exp.cool.T_inlet_set = 300.
@@ -84,6 +84,7 @@ plt.savefig('../Plots/fin_inst/temp.pdf')
 
 # plt.show()
 
+print "hot side heat transfer:", hx_exp.Qdot_total, 'W'
 print "power net:", hx_exp.power_net * 1000., 'W'
 print "power raw:", hx_exp.te_pair.power_total * 1000., 'W'
 print "pumping power:", hx_exp.Wdot_pumping * 1000., 'W'
