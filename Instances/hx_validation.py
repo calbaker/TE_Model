@@ -21,10 +21,11 @@ hx_exp.cool.height = 1. * 2.54e-2
 hx_exp.length = 20. * 2.54e-2
 
 hx_exp.te_pair.Ptype.area = (2.e-3) ** 2
-hx_exp.te_pair.I = 13.0
-hx_exp.te_pair.length = 3.56e-4
-hx_exp.te_pair.leg_area_ratio = 0.745
-hx_exp.te_pair.fill_fraction = 3.10e-2
+
+hx_exp.te_pair.leg_area_ratio = 0.662
+hx_exp.te_pair.I = 15.0
+hx_exp.te_pair.length = 3.34e-4
+hx_exp.te_pair.fill_fraction = 3.45e-2
 
 hx_exp.te_pair.set_leg_areas()
 
