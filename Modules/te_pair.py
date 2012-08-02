@@ -112,7 +112,7 @@ class TE_Pair(object):
         * self.Ntype.area) / (self.area)) * 0.001
         # area averaged hot side heat flux (kW/m^2)
 
-        self.h = self.q_h / (self.T_c - self.T_h)
+        self.h = self.q_h / (self.T_h - self.T_c)
         # effective coeffient of convection (kW/m^2-K)
         self.R_thermal = 1. / self.h
 
