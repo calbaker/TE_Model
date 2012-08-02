@@ -14,10 +14,13 @@ reload(hx)
 
 hx_exp = hx.HX()
 
-hx_exp.width = 0.55
-hx_exp.exh.height = 3.5e-2
-hx_exp.length = 0.55
+# These values must be checked
+hx_exp.width = 20. * 2.54e-2
+hx_exp.exh.height = 2.5 * 2.54e-2
+hx_exp.cool.height = 1. * 2.54e-2
+hx_exp.length = 20. * 2.54e-2
 
+hx_exp.te_pair.Ptype.area = (0.02e-3) ** 2
 hx_exp.te_pair.I = 13.0
 hx_exp.te_pair.length = 3.56e-4
 hx_exp.te_pair.leg_area_ratio = 0.745
