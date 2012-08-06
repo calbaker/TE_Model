@@ -384,6 +384,9 @@ class HX(object):
                               self.cool.Wdot_total)
         # total pumping power requirement (kW)
 
+        self.exh.deltaP_total = self.exh.deltaP_nodes.sum()
+        self.cool.deltaP_total = self.cool.deltaP_nodes.sum()
+
         self.power_net = (self.te_pair.power_total -
         self.Wdot_pumping)
 
