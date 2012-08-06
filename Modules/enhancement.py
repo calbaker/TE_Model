@@ -156,23 +156,19 @@ class IdealFin(object):
         """
 
         self.set_fin_height(flow)
+
         self.N = ((flow.width / self.spacing - 1.) / (1. +
         self.thickness / self.spacing))
-        self.spacing = ((flow.width - self.N * self.thickness) / (self.N + 1.))
-        self.perimeter = (2. * (self.spacing + flow.height) * (self.N + 1.))
+
+        flow.perimeter = (2. * (self.spacing + flow.height) * (self.N + 1.))
         # perimeter of new duct formed by fins with constant overal duct width
-        self.flow_area = self.spacing * flow.height * (self.N + 1.)
+        flow.flow_area = self.spacing * flow.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin
-        self.D = 4. * self.flow_area / self.perimeter
+        self.D = 4. * flow.flow_area / flow.perimeter
 
         self.set_area_convection(flow)
         flow.area_unfinned = (flow.width - self.N * self.thickness)        
         flow.area_finned = self.N * self.thickness
-
-        flow.D_empty = flow.D
-        flow.D = self.D
-        flow.flow_area_empty = flow.flow_area
-        flow.flow_area = self.flow_area
 
     def set_eta(self, flow):
 
@@ -209,8 +205,8 @@ class IdealFin(object):
         flow.h = ((flow.h_unfinned * flow.area_unfinned + self.h_base
         * flow.area_finned) / flow.width)  
 
-        flow.deltaP = (flow.f * self.perimeter * flow.node_length /
-        self.flow_area * (0.5 * flow.rho * flow.velocity ** 2) * 0.001)
+        flow.deltaP = (flow.f * flow.perimeter * flow.node_length /
+        flow.flow_area * (0.5 * flow.rho * flow.velocity ** 2) * 0.001)
         # pressure drop (kPa)
 
     def solve_enh(self, flow):
@@ -228,6 +224,12 @@ class IdealFin(object):
         self.set_h_and_P
 
         """
+
+        try:
+            self.geometry_is_set
+        except AttributeError:
+            self.set_geometry(flow)
+            self.geometry_is_set = True
 
         flow.set_Re_dependents()
         flow.h = flow.Nu_D * flow.k / flow.D
