@@ -164,7 +164,9 @@ class IdealFin(object):
         # perimeter of new duct formed by fins with constant overall duct width
         flow.flow_area = self.spacing * flow.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin
+
         self.D = 4. * flow.flow_area / flow.perimeter
+        # hydraulic diameter (m)
 
         self.set_area_convection(flow)
         flow.area_unfinned = (flow.width - self.N * self.thickness)        
