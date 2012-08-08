@@ -101,7 +101,7 @@ class Leg(object):
 
     def get_Yprime(self, y, x):
 
-        """Returns array of derivatives.  See below.
+        """Solves node. Returns array of derivatives.
 
         Function for evaluating the derivatives of temperature and
         heat flux w.r.t. x-dimension
@@ -114,6 +114,9 @@ class Leg(object):
         Methods:
 
         self.set_TEproperties(T_props)
+
+        If there were a function called solve_node, it would do the
+        same thing as this.  
 
         """
 
