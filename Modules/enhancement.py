@@ -161,7 +161,7 @@ class IdealFin(object):
         self.thickness / self.spacing))
 
         flow.perimeter = (2. * (self.spacing + flow.height) * (self.N + 1.))
-        # perimeter of new duct formed by fins with constant overal duct width
+        # perimeter of new duct formed by fins with constant overall duct width
         flow.flow_area = self.spacing * flow.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin
         self.D = 4. * flow.flow_area / flow.perimeter
@@ -192,7 +192,7 @@ class IdealFin(object):
         """Sets effective heat transfer coefficient and deltaP.
 
         Inputs:
-
+        
         flow : class instance of exhaust or coolant
 
         """
