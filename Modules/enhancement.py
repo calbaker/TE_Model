@@ -113,7 +113,7 @@ class IdealFin(object):
 
     __init__
     set_eta
-    set_geometry
+    set_flow_geometry
     set_h_and_P
     solve_enh
 
@@ -145,7 +145,7 @@ class IdealFin(object):
         flow.area_unfinned = (flow.width - self.N * self.thickness)        
         flow.area_finned = self.N * self.thickness
 
-    def set_geometry(self, flow):
+    def set_flow_geometry(self, flow):
 
         """Fixes appropriate geometrical parameters.
 
@@ -165,7 +165,7 @@ class IdealFin(object):
         flow.flow_area = self.spacing * flow.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin
 
-        self.D = 4. * flow.flow_area / flow.perimeter
+        flow.D = 4. * flow.flow_area / flow.perimeter
         # hydraulic diameter (m)
 
         self.set_area_convection(flow)
@@ -221,16 +221,21 @@ class IdealFin(object):
 
         Methods:
 
-        self.set_geometry
+        self.set_flow_geometry
         self.set_eta
         self.set_h_and_P
 
         """
 
+        flow.set_flow_geometry = self.set_flow_geometry
+        # This needs to be here so that if set_flow_geometry is run
+        # from the exh or cool instance, nothing will be overridden
+        # that was set here.  
+
         try:
             self.geometry_is_set
         except AttributeError:
-            self.set_geometry(flow)
+            self.set_flow_geometry(flow)
             self.geometry_is_set = True
 
         flow.set_Re_dependents()
