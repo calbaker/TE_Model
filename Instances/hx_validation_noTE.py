@@ -36,11 +36,13 @@ hx_exp.type = 'counter'
 
 hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin2()
 hx_exp.exh.enh.thickness = 0.1 * 2.54e-2
-hx_exp.exh.enh.spacing = 0.3 * 2.54e-2
+hx_exp.exh.enh.spacing = 0.298 * 2.54e-2
+# spacing = 0.400 - 0.124 / 2. - 0.040 = 0.298
 
 hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
 hx_exp.cool.enh.thickness = 0.08 * 2.54e-2
-hx_exp.cool.enh.spacing = 0.32 * 2.54e-2
+hx_exp.cool.enh.spacing = 0.320 * 2.54e-2
+# spacing = 0.400 - 0.100 / 2. - 0.030 = 0.320
 
 hx_exp.exh.T_inlet = 406.1 + 273.15
 hx_exp.cool.T_inlet_set = 300.
