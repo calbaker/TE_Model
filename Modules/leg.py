@@ -157,6 +157,9 @@ class Leg(object):
         self.y0 = np.array([self.T_h, self.q_h, 0, 0])
 
         self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x)
+        # odeint cannot be used for a transient method because the
+        # transient method will required a fixed number of spatial
+        # nodes, and odeint allows this to vary for improve accuracy.   
 
         self.T_nodes = self.y[:,0]
         self.q_nodes = self.y[:,1]
