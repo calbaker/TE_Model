@@ -4,6 +4,7 @@ import types
 import numpy as np
 from scipy.optimize import fsolve
 from scipy.integrate import odeint
+from numpy.testing import assert_approx_equal
 
 # User defined modules
 import mat_prop
@@ -47,12 +48,6 @@ class Leg(object):
         self.length = 1.e-3 # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
         self.T_c_goal = 350. # cold side temperature (K)
-
-        self.alpha_nodes = np.zeros(self.nodes)
-        self.rho_nodes = np.zeros(self.nodes)
-        self.k_nodes = np.zeros(self.nodes)
-        self.V_nodes = np.zeros(self.nodes)
-        self.P_flux_nodes = np.zeros(self.nodes)
 
         self.set_constants()
 
@@ -130,11 +125,17 @@ class Leg(object):
         dq_dx = ( (self.rho * self.J**2. * (1. + self.alpha**2. * T /
         (self.rho * self.k)) - self.J * self.alpha * q / self.k) )
 
-        dV_dx = ( self.alpha * dT_dx + self.J * self.rho )
+        dVs_dx = self.alpha * dT_dx
+        # Seebeck voltage, aka open circuit voltage
 
-        dR_dx = ( self.rho / self.area )
+        dV_dx = self.alpha * dT_dx + self.rho * self.J
+        # Seebeck voltage minus resistance-dissipated voltage per unit
+        # length
 
-        return dT_dx, dq_dx, dV_dx, dR_dx
+        dR_dx = self.rho / self.area
+        # Internal resistance per unit length
+
+        return dT_dx, dq_dx, dVs_dx, dV_dx, dR_dx
 
     def solve_leg_once(self, q_h):
 
@@ -154,7 +155,7 @@ class Leg(object):
         """
 
         self.q_h = q_h
-        self.y0 = np.array([self.T_h, self.q_h, 0, 0])
+        self.y0 = np.array([self.T_h, self.q_h, 0, 0, 0])
 
         self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x)
         # odeint cannot be used for a transient method because the
@@ -163,8 +164,9 @@ class Leg(object):
 
         self.T_nodes = self.y[:,0]
         self.q_nodes = self.y[:,1]
-        self.V_nodes = self.y[:,2]
-        self.R_int_nodes = self.y[:,3]
+        self.Vs_nodes = self.y[:,2]
+        self.V_nodes = self.y[:,3]
+        self.R_int_nodes = self.y[:,4]
 
         self.T_c = self.T_nodes[-1]
         self.q_c = self.q_nodes[-1]
@@ -178,17 +180,28 @@ class Leg(object):
 
         self.eta = self.P / (self.q_h * self.area)
         # Efficiency of leg
-        self.R_load = - self.V / self.I
+        self.R_load = - self.V / self.I - self.R_internal
 
-        # If T_c_goal has been externally defined as none, it is not
-        # relevant and therefore not used.
-        if self.T_c_goal == None:
-            self.T_c_error = None
+        # Sanity check.  q_h - q_c should be nearly equal but not
+        # exactly equal to P.  It is not exact because of spatial
+        # asymmetry in electrical resistivity along the leg.  I
+        # imported assert_approx_equal in the front matter to make
+        # this print an error if there is too much disagreement.
 
-        else:
-            self.T_c_error = self.T_c - self.T_c_goal
+        self.P_from_heat = (self.q_h - self.q_c) * self.area
 
-        return self.T_c_error
+        sig_figs = 3
+        # tolerance in number of sig figs that agree.  Higher number
+        # is stricter aka tighter tolerance.  This may need to be
+        # reduced if you know the code is correct and it is still
+        # printing the error statement.  
+        
+        try:
+            assert_approx_equal(self.P, self.P_from_heat, sig_figs)
+        except AssertionError:
+            print "\nPower from q_h - q_c and I ** 2 * R disagree."
+            print "Consider reducing sig_figs under solve_leg_once"
+            print "in leg.py if you think this is an error."
 
     def solve_leg(self):
         """Solves leg until specified cold side temperature is met.
@@ -197,6 +210,8 @@ class Leg(object):
 
         self.set_q_guess
         self.solve_leg_once
+        
+        This is not normally run within a te_pair instance.
 
         """
 
