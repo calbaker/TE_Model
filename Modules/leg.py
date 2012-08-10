@@ -22,7 +22,6 @@ class Leg(object):
     set_constants
     set_power_factor
     set_q_c_guess
-    solve_leg
     solve_leg_anal
     solve_leg_once
 
@@ -202,21 +201,6 @@ class Leg(object):
             print "\nPower from q_h - q_c and I ** 2 * R disagree."
             print "Consider reducing sig_figs under solve_leg_once"
             print "in leg.py if you think this is an error."
-
-    def solve_leg(self):
-        """Solves leg until specified cold side temperature is met.
-
-        Methods:
-
-        self.set_q_guess
-        self.solve_leg_once
-        
-        This is not normally run within a te_pair instance.
-
-        """
-
-        self.set_q_guess()
-        fsolve(self.solve_leg_once, x0=self.q_h_guess)
 
     def solve_leg_anal(self):
 
