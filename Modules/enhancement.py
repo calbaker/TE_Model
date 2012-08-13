@@ -227,17 +227,6 @@ class IdealFin(object):
 
         """
 
-        flow.set_flow_geometry = self.set_flow_geometry
-        # This needs to be here so that if set_flow_geometry is run
-        # from the exh or cool instance, nothing will be overridden
-        # that was set here.  
-
-        try:
-            self.geometry_is_set
-        except AttributeError:
-            self.set_flow_geometry(flow)
-            self.geometry_is_set = True
-
         flow.set_Re_dependents()
         flow.h = flow.Nu_D * flow.k / flow.D
         # coefficient of convection (kW/m^2-K)

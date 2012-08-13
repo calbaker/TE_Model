@@ -20,13 +20,18 @@ def set_flow_geometry(self, width):
     self.D = 4. * self.flow_area / self.perimeter
     # coolant hydraulic diameter (m)
 
+    try:
+        self.enh
+    except AttributeError:
+        self.enh = None
+
     if self.enh != None:
         try:
-            self.enh.set_geometry(self)
+            self.enh.set_flow_geometry(self)
         except AttributeError:
             pass
         else:
-            self.enh.set_geometry(self)
+            self.enh.set_flow_geometry(self)
 
 def set_Re_dependents(self):
 
