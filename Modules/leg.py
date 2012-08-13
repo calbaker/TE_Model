@@ -2,7 +2,6 @@
 
 import types
 import numpy as np
-from scipy.optimize import fsolve
 from scipy.integrate import odeint
 from numpy.testing import assert_approx_equal
 
