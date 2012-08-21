@@ -1,6 +1,6 @@
 # distribution modules
-import scipy as sp
-import matplotlib.pyplot as mpl
+import matplotlib.pyplot as plt
+import numpy as np
 import os
 import sys
 
@@ -13,8 +13,10 @@ reload(leg)
 
 leg = leg.Leg()
 leg.length = 3.56e-4
-leg.I = 1.
+leg.I = 13.
 leg.material = 'HMS'
+leg.nodes = 50
+leg.t_array = np.arange(0, 20, 1.)
 
 leg.T_h_conv = 570.
 leg.U_hot = 54e3
@@ -25,17 +27,32 @@ leg.set_constants()
 
 leg.solve_leg()
 
-print "\n" * 3
-print "T_nodes:\n", leg.T_nodes
-print "q_nodes:\n", leg.q_nodes
+leg.T_h += 50.
+
+leg.solve_leg_transient()
+
 
 # Plot configuration
 FONTSIZE = 14
-mpl.rcParams['axes.labelsize'] = FONTSIZE
-mpl.rcParams['axes.titlesize'] = FONTSIZE
-mpl.rcParams['legend.fontsize'] = FONTSIZE
-mpl.rcParams['xtick.labelsize'] = FONTSIZE
-mpl.rcParams['ytick.labelsize'] = FONTSIZE
-mpl.rcParams['lines.linewidth'] = 1.5
-mpl.rcParams['lines.markersize'] = 10
+plt.rcParams['axes.labelsize'] = FONTSIZE
+plt.rcParams['axes.titlesize'] = FONTSIZE
+plt.rcParams['legend.fontsize'] = FONTSIZE
+plt.rcParams['xtick.labelsize'] = FONTSIZE
+plt.rcParams['ytick.labelsize'] = FONTSIZE
+plt.rcParams['lines.linewidth'] = 1.5
+plt.rcParams['lines.markersize'] = 10
 
+plt.close()
+
+plt.figure()
+
+for i in range(leg.t_array.size):
+    plt.plot(leg.x * 1e3, leg.T_xt[i, :])
+
+plt.grid()
+plt.xlabel('Position (mm)')
+plt.ylabel('Temperature (K)')
+plt.ylim(275, 800)
+
+plt.show()
+    

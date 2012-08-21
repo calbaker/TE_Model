@@ -51,6 +51,8 @@ class Leg(object):
 
         self.C = 1. 
         # assumed value for heat capacity (kJ / K)
+        self.t_array = np.arange(0, 600, 1)
+        # array of times for transient solution
 
         self.set_constants()
 
@@ -65,8 +67,6 @@ class Leg(object):
 
         """Sets attributes that are typically held constant."""
 
-        self.node_length = self.length / self.nodes
-        # length of each node (m)
         self.x = np.linspace(0., self.length, self.nodes)
 
         self.J = self.I / self.area # (Amps/m^2)
@@ -176,7 +176,7 @@ class Leg(object):
         self.q_h_error = self.q_h - self.q_h_conv
         self.q_c_error = self.q_c - self.q_c_conv
 
-        self.error = np.array([self.q_h_error, self.q_c_error])
+        self.error = np.array([self.q_h_error, self.q_c_error]).flatten()
         
         return self.error
 
@@ -300,39 +300,41 @@ class Leg(object):
         """Solves leg based on array of transient BC's.""" 
 
         self.delta_x = self.x[1] - self.x[0]
-        self.solve_leg()
+        self.y0 = np.array([self.T_nodes, self.q_nodes]).flatten()
+        self.Tq_xt = odeint(self.get_Tq_prime_trans, y0=self.y0,
+        t=self.t_array)
+        self.T_xt = self.Tq_xt[:, :self.nodes]
+        self.q_xt = self.Tq_xt[:, self.nodes:]
         
-        self.T_xt = odeint(self.get_Tprime_trans, x0=self.T_nodes)
-        
-    def get_Tprime_trans(self, T, t):
+    def get_Tq_prime_trans(self, Tq, t):
 
-        """Not sure what this does yet.
+        """Returns derivative of array of T wrt time. 
         """
 
-        Tprime = np.zeros(T.size)
-        q = np.zeros(T.size)
-        
+        self.Tprime = np.zeros(Tq.size / 2)
+        self.q_prime = np.zeros(Tq.size / 2)
+
+        T = Tq[:Tq.size / 2]
+        q = Tq[Tq.size / 2:]
+
         # hot side BC
         T[0] = self.T_h
-
-        for i in range(1, T.size):
-
+        
+        for i in range(1, self.nodes):
             T_props = T[i - 1]
             self.set_TEproperties(T_props)
 
-            q[i] = (
-                self.J * T[i] * self.alpha - self.k * 
-                (T[i] - T[i - 1]) / self.delta_x
+            self.Tprime[i] = (
+                1. / self.C * (-(q[i] - q[i - 1]) / self.delta_x +
+                self.rho * self.J ** 2 * (1. + self.ZT) - self.J *
+                self.alpha * q[i - 1] / self.k)
                 )
 
-        for i in range(1, T.size - 1):
+            self.q_prime[i] = (
+                self.J * self.Tprime[i] * self.alpha - self.k /
+                self.delta_x * (self.Tprime[i] - self.Tprime[i - 1])
+                )
 
-            T_props = T[i - 1]
-            self.set_TEproperties(T_props)
+        Tq_prime = np.array([self.Tprime, self.q_prime]).flatten()
 
-            Tprime[i] = (
-                1. / self.C * (q[i] - q[i - 1]) / self.delta_x +
-                self.rho * (1. + 1.))
-            
-
-
+        return Tq_prime

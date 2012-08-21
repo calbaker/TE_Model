@@ -150,8 +150,7 @@ class TE_Pair(object):
         q_c_error = self.q_c - self.q_c_conv
         q_h_error = self.q_h - self.q_h_conv
 
-        self.error = np.array([T_c_error, q_c_error, q_h_error])
-        self.error = self.error.reshape(self.error.size)
+        self.error = np.array([T_c_error, q_c_error, q_h_error]).flatten()
 
         return self.error
 
