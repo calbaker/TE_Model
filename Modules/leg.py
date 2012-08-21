@@ -17,7 +17,7 @@ class Leg(object):
     Methods:
 
     __init__
-    get_Yprime
+    get_Tq_prime
     set_ZT
     set_constants
     set_power_factor
@@ -95,7 +95,7 @@ class Leg(object):
         self.q_h_guess = self.q_h
         self.q_guess = self.q_h
 
-    def get_Yprime(self, y, x):
+    def get_Tq_prime(self, Tq, x):
 
         """Solves node. Returns array of derivatives.
 
@@ -104,7 +104,7 @@ class Leg(object):
 
         Inputs:
 
-        y : initial conditions
+        Tq : initial conditions
         x : array of locations where results are desired
 
         Methods:
@@ -116,8 +116,8 @@ class Leg(object):
 
         """
 
-        T = y[0]
-        q = y[1]
+        T = Tq[0]
+        q = Tq[1]
 
         self.set_TEproperties(T)
 
@@ -189,7 +189,7 @@ class Leg(object):
         self.q_h = q_h
         self.y0 = np.array([self.T_h, self.q_h, 0, 0, 0])
 
-        self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x)
+        self.y = odeint(self.get_Tq_prime, y0=self.y0, t=self.x)
 
         self.T_nodes = self.y[:,0]
         self.q_nodes = self.y[:,1]
@@ -292,11 +292,11 @@ class Leg(object):
 
         """Solves leg based on array of transient BC's.""" 
         
-        self.T = np.zeros([self.nodes, self.time_span / self.time_step])
-        self.q = np.zeros([self.nodes, self.time_span / self.time_step])
         
-    def get_Yprime_transient(self, i, t):
+    def get_Yprime_transient(self, Tq, t):
 
         """Not sure what this does yet.
         """
+        
+
 
