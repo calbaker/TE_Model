@@ -4,6 +4,7 @@ import types
 import numpy as np
 from scipy.integrate import odeint
 from numpy.testing import assert_approx_equal
+from scipy.optimize import fsolve
 
 # User defined modules
 import mat_prop
@@ -23,6 +24,8 @@ class Leg(object):
     set_q_c_guess
     solve_leg_anal
     solve_leg_once
+    solve_leg
+    get_error
 
     """
 
@@ -45,7 +48,6 @@ class Leg(object):
         # number of nodes for which values are stored
         self.length = 1.e-3 # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
-        self.T_c_goal = 350. # cold side temperature (K)
 
         self.set_constants()
 
@@ -91,6 +93,7 @@ class Leg(object):
         self.q_c_guess = self.q_c
         # cold side heat flux (W / (m^2 * K))
         self.q_h_guess = self.q_h
+        self.q_guess = self.q_h
 
     def get_Yprime(self, y, x):
 
@@ -135,9 +138,44 @@ class Leg(object):
 
         return dT_dx, dq_dx, dVs_dx, dV_dx, dR_dx
 
+    def solve_leg(self):
+
+        """Solves leg based on specified convection boundary
+        conditions."""
+        self.T_h = self.T_h_conv 
+        self.T_c = self.T_c_conv
+
+        self.set_q_guess()
+        self.knob_arr0 = np.array([self.q_guess, self.T_h])
+
+        self.fsolve_output = fsolve(self.get_error, x0=self.knob_arr0)
+
+    def get_error(self, knob_arr):
+
+        """Returns error in heat flux and temperature convection
+        boundary conditions.
+
+        Methods:
+        self.solve_leg_once"""
+
+        q_h = knob_arr[0]
+        self.T_h = knob_arr[1]
+
+        self.solve_leg_once(q_h)
+
+        self.q_h_conv = self.U_hot * (self.T_h_conv - self.T_h)
+        self.q_c_conv = self.U_cold * (self.T_c - self.T_c_conv)
+
+        self.q_h_error = self.q_h - self.q_h_conv
+        self.q_c_error = self.q_c - self.q_c_conv
+
+        self.error = np.array([self.q_h_error, self.q_c_error])
+        
+        return self.error
+
     def solve_leg_once(self, q_h):
 
-        """Solves leg once based on cold side heat flux.
+        """Solves leg once based on hot side heat flux.
 
         Solution procedure comes from Ch. 12 of Thermoelectrics
         Handbook, CRC/Taylor & Francis 2006. x-axis has been reversed
@@ -146,19 +184,12 @@ class Leg(object):
         Inputs:
         q_h - hot side heat flux (W / m^2)
 
-        Returns:
-
-        self.T_h_error
-
         """
 
         self.q_h = q_h
         self.y0 = np.array([self.T_h, self.q_h, 0, 0, 0])
 
         self.y = odeint(self.get_Yprime, y0=self.y0, t=self.x)
-        # odeint cannot be used for a transient method because the
-        # transient method will required a fixed number of spatial
-        # nodes, and odeint allows this to vary for improve accuracy.   
 
         self.T_nodes = self.y[:,0]
         self.q_nodes = self.y[:,1]
@@ -264,40 +295,8 @@ class Leg(object):
         self.T = np.zeros([self.nodes, self.time_span / self.time_step])
         self.q = np.zeros([self.nodes, self.time_span / self.time_step])
         
-
-    def solve_leg_transient_once(self):
-
-        """Not sure what this does yet.
-        """
-
-        self.init_trans_vars(self)
-
     def get_Yprime_transient(self, i, t):
 
         """Not sure what this does yet.
         """
 
-        T = self.T_nodes[i - 1, t]
-        self.set_TEproperties(T)
-
-        dT_dx = (1. / self.k * (self.J * self.T_nodes[i - 1, t] *
-        self.alpha - self.q[i - 1, t])) 
-
-        self.T_nodes[i, t] = dT_dx * self.x_step + self.T_nodes[i - 1, t]
-
-        T = self.T_nodes[i - 1, t - 1]
-        self.set_TEproperties(T)
-
-        dq_dx = (self.rho_mass * self.c * (self.T_nodes[i, t] - self.T_nodes[i, t
-        - 1]) / self.time_step + (self.rho * self.J**2. * (1. +
-        self.alpha**2. * self.T_nodes[i - 1, t - 1] / (self.rho * self.k)) -
-        self.J * self.alpha * self.q[i - 1, t - 1] / self.k)) 
-
-        self.q[i, t] = dq_dx * self.x_step + self.q[i - 1, t - 1]
-
-        # these next two formulas probably need to be modified to
-        # reflect changes that have occurred as compared to
-        # get_Yprime.  
-        dV_dx = ( self.alpha * dT_dx + self.J * self.rho )
-
-        dR_dx = ( self.rho / self.area )
