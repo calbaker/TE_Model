@@ -49,6 +49,9 @@ class Leg(object):
         self.length = 1.e-3 # leg length (m)
         self.area = (3.e-3)**2. # leg area (m^2)
 
+        self.C = 1. 
+        # assumed value for heat capacity (kJ / K)
+
         self.set_constants()
 
         self.set_prop_fit = types.MethodType(mat_prop.set_raw_property_data,
@@ -123,8 +126,12 @@ class Leg(object):
 
         dT_dx = ( 1. / self.k * (self.J * T * self.alpha - q) )
 
-        dq_dx = ( (self.rho * self.J**2. * (1. + self.alpha**2. * T /
-        (self.rho * self.k)) - self.J * self.alpha * q / self.k) )
+        self.set_ZT()
+
+        dq_dx = ( 
+            (self.rho * self.J**2. * (1. + self.ZT)) - self.J *
+            self.alpha * q / self.k
+            )
 
         dVs_dx = self.alpha * dT_dx
         # Seebeck voltage, aka open circuit voltage
@@ -291,12 +298,41 @@ class Leg(object):
     def solve_leg_transient(self):
 
         """Solves leg based on array of transient BC's.""" 
+
+        self.delta_x = self.x[1] - self.x[0]
+        self.solve_leg()
         
+        self.T_xt = odeint(self.get_Tprime_trans, x0=self.T_nodes)
         
-    def get_Yprime_transient(self, Tq, t):
+    def get_Tprime_trans(self, T, t):
 
         """Not sure what this does yet.
         """
+
+        Tprime = np.zeros(T.size)
+        q = np.zeros(T.size)
         
+        # hot side BC
+        T[0] = self.T_h
+
+        for i in range(1, T.size):
+
+            T_props = T[i - 1]
+            self.set_TEproperties(T_props)
+
+            q[i] = (
+                self.J * T[i] * self.alpha - self.k * 
+                (T[i] - T[i - 1]) / self.delta_x
+                )
+
+        for i in range(1, T.size - 1):
+
+            T_props = T[i - 1]
+            self.set_TEproperties(T_props)
+
+            Tprime[i] = (
+                1. / self.C * (q[i] - q[i - 1]) / self.delta_x +
+                self.rho * (1. + 1.))
+            
 
 
