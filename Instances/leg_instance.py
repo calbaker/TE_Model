@@ -1,15 +1,33 @@
 # distribution modules
 import scipy as sp
 import matplotlib.pyplot as mpl
+import os
+import sys
 
-# local user modules
-import te_pair
-reload(te_pair)
+# User Defined Modules
+cmd_folder = os.path.dirname('../Modules/')
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
+import leg
+reload(leg)
 
-leg = te_pair.Leg()
-leg.I = 10.
+leg = leg.Leg()
+leg.length = 3.56e-4
+leg.I = 1.
 leg.material = 'HMS'
+
+leg.T_h_conv = 570.
+leg.U_hot = 54e3
+leg.T_c_conv = 300.
+leg.U_cold = 253e3
+
+leg.set_constants()
+
 leg.solve_leg()
+
+print "\n" * 3
+print "T_nodes:\n", leg.T_nodes
+print "q_nodes:\n", leg.q_nodes
 
 # Plot configuration
 FONTSIZE = 14
@@ -21,18 +39,3 @@ mpl.rcParams['ytick.labelsize'] = FONTSIZE
 mpl.rcParams['lines.linewidth'] = 1.5
 mpl.rcParams['lines.markersize'] = 10
 
-q_c = sp.arange(0.1,3.,0.1) * leg.q_c[0]
-T_h = sp.zeros(sp.size(q_c))
-for i in sp.arange(sp.size(q_c)):
-    leg.q[0] = q_c[i]
-    leg.solve_leg_once()
-    T_h[i] = leg.T[-1]
-
-fig2 = mpl.figure()
-mpl.title('TE Hot Side Temp v. Cold Side Heat')
-mpl.plot(q_c*100.**-2, T_h)
-mpl.xlabel(r'Cold Side $q^{\prime\prime}$ $\left(\frac{W}{cm^2}\right)$')
-mpl.ylabel('Hot Side Temperature (K)')
-mpl.grid()
-
-mpl.show()
