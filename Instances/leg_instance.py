@@ -46,7 +46,7 @@ plt.close()
 
 plt.figure()
 
-for i in range(leg.t_array.size):
+for i in range(2):
     plt.plot(leg.x * 1e3, leg.T_xt[i, :])
 
 plt.grid()

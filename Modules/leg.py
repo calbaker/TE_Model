@@ -300,41 +300,43 @@ class Leg(object):
         """Solves leg based on array of transient BC's.""" 
 
         self.delta_x = self.x[1] - self.x[0]
-        self.y0 = np.array([self.T_nodes, self.q_nodes]).flatten()
-        self.Tq_xt = odeint(self.get_Tq_prime_trans, y0=self.y0,
+
+        self.y0 = self.T_nodes
+
+        self.T_xt = odeint(self.get_T_prime_trans, y0=self.y0,
         t=self.t_array)
-        self.T_xt = self.Tq_xt[:, :self.nodes]
-        self.q_xt = self.Tq_xt[:, self.nodes:]
+
+        self.T_xt = self.T_xt[:, :self.nodes]
+        self.q_xt = self.T_xt[:, self.nodes:]
         
-    def get_Tq_prime_trans(self, Tq, t):
+    def get_T_prime_trans(self, T, t):
 
         """Returns derivative of array of T wrt time. 
         """
 
-        self.Tprime = np.zeros(Tq.size / 2)
-        self.q_prime = np.zeros(Tq.size / 2)
-
-        T = Tq[:Tq.size / 2]
-        q = Tq[Tq.size / 2:]
+        self.Tprime = np.zeros(T.size)
+        self.q = np.zeros(T.size)
 
         # hot side BC
         T[0] = self.T_h
+        self.q[0] = self.U_hot * (self.T_h_conv - self.T_h)
+
+        # cold side BC
+        T[-1] = self.T_c
         
         for i in range(1, self.nodes):
             T_props = T[i - 1]
             self.set_TEproperties(T_props)
 
+            self.q[i] = (
+                self.J * T[i] * self.alpha - self.k / self.delta_x *
+                (T[i] - T[i - 1])
+                )
+
             self.Tprime[i] = (
-                1. / self.C * (-(q[i] - q[i - 1]) / self.delta_x +
+                1. / self.C * (-(self.q[i] - self.q[i - 1]) / self.delta_x +
                 self.rho * self.J ** 2 * (1. + self.ZT) - self.J *
-                self.alpha * q[i - 1] / self.k)
+                self.alpha * self.q[i] / self.k)
                 )
 
-            self.q_prime[i] = (
-                self.J * self.Tprime[i] * self.alpha - self.k /
-                self.delta_x * (self.Tprime[i] - self.Tprime[i - 1])
-                )
-
-        Tq_prime = np.array([self.Tprime, self.q_prime]).flatten()
-
-        return Tq_prime
+        return self.Tprime
