@@ -315,28 +315,32 @@ class Leg(object):
         """
 
         self.Tprime = np.zeros(T.size)
-        self.q = np.zeros(T.size)
+        self.q_trans = np.zeros(T.size)
 
         # hot side BC
         T[0] = self.T_h
-        self.q[0] = self.U_hot * (self.T_h_conv - self.T_h)
+        self.q_trans[0] = self.U_hot * (self.T_h_conv - self.T_h)
 
         # cold side BC
         T[-1] = self.T_c
+
+        self.Tprime[0] = 0
         
         for i in range(1, self.nodes):
             T_props = T[i - 1]
             self.set_TEproperties(T_props)
 
-            self.q[i] = (
+            self.q_trans[i] = (
                 self.J * T[i] * self.alpha - self.k / self.delta_x *
                 (T[i] - T[i - 1])
                 )
 
             self.Tprime[i] = (
-                1. / self.C * (-(self.q[i] - self.q[i - 1]) / self.delta_x +
-                self.rho * self.J ** 2 * (1. + self.ZT) - self.J *
-                self.alpha * self.q[i] / self.k)
+                1. / self.C * (-(self.q_trans[i] - self.q_trans[i -
+                1]) / self.delta_x + self.rho * self.J ** 2 * (1. +
+                self.ZT) - self.J * self.alpha * self.q_trans[i] / self.k)
                 )
+
+        self.Tprime[-1] = 0
 
         return self.Tprime
