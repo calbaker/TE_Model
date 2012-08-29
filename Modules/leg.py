@@ -363,10 +363,10 @@ class Leg(object):
             (self.q0[2:] - self.q0[:-2]) / (2. * self.delta_x)
             )
         self.dq_dx[0] = (
-            self.q0[1] - self.q0[0] / self.delta_x
+            (self.q0[1] - self.q0[0]) / self.delta_x
             )
         self.dq_dx[-1] = (
-            self.q0[-1] - self.q0[-2] / self.delta_x
+            (self.q0[-1] - self.q0[-2]) / self.delta_x
             )
 
         for i in range(self.nodes):
