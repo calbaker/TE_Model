@@ -51,7 +51,8 @@ for i in range(leg.t_array.size):
 plt.grid()
 plt.xlabel('Position (mm)')
 plt.ylabel('Temperature (K)')
-plt.ylim(leg.T_xt.min(), leg.T_xt.max())
+plt.ylim(leg.T_c_conv, leg.T_h_conv)
+plt.subplots_adjust(left=0.15)
 
 plt.show()
     
