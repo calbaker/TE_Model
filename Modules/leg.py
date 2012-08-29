@@ -338,7 +338,7 @@ class Leg(object):
         self.q0[0] = self.U_hot * (self.T_h_conv - T[0])
 
         # cold side BC
-        self.q0[-1] = self.U_hot * (T[-1] - self.T_c_conv)
+        self.q0[-1] = self.U_cold * (T[-1] - self.T_c_conv)
 
         self.dT_dx[1:-1] = 0.5 * (T[2:] - T[:-2]) / self.delta_x  
         self.dT_dx[0] = (T[1] - T[0]) / self.delta_x
