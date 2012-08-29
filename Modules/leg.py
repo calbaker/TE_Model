@@ -331,6 +331,7 @@ class Leg(object):
 
         self.dT_dt = np.zeros(T.size)
         self.q0 = np.zeros(T.size)
+        self.dq_dx_ss = np.zeros(T.size - 2)
 
         # hot side BC
         T[0] = self.T_h
@@ -353,7 +354,7 @@ class Leg(object):
                 )  # this formula checks out ok.  
 
         self.dq_dx = (
-            0.5 * (self.q0[2:] - self.q0[:-2]) / self.delta_x
+            (self.q0[2:] - self.q0[:-2]) / (self.x[2:] - self.x[:-2])
             )
 
         for i in range(1, self.nodes - 1):
@@ -362,10 +363,13 @@ class Leg(object):
             self.set_TEproperties(T_props)
             self.set_ZT()
 
+            self.dq_dx_ss[i - 1] = (
+                (self.rho * self.J ** 2. * (1. + self.ZT)) - self.J *
+                self.alpha * self.q0[i] / self.k
+                )
+
             self.dT_dt[i] = (
-                1. / self.C * (-self.dq_dx[i - 1] + self.rho * self.J
-                                ** 2 * (1. + self.ZT) - self.J *
-                                self.alpha * self.q0[i] / self.k)
+                1. / self.C * (-self.dq_dx[i - 1] + self.dq_dx_ss[i - 1])
                 )
 
         return self.dT_dt
