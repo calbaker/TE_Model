@@ -315,11 +315,10 @@ class Leg(object):
         self.delta_x = self.x[1] - self.x[0]
 
         self.y0 = self.T_x
-        # self.q_h = self.U_hot * (self.T_h_conv - self.T_h)
 
         self.odeint_output = odeint(
             self.get_dTx_dt, y0=self.y0, t=self.t_array,
-            full_output=1, hmin=0.005, hmax=0.5
+            full_output=1
             )
 
         self.T_xt = self.odeint_output[0]
@@ -331,19 +330,17 @@ class Leg(object):
 
         self.dT_dt = np.zeros(T.size)
         self.q0 = np.zeros(T.size)
-        self.dq_dx_ss = np.zeros(T.size - 2)
+        self.dq_dx_ss = np.zeros(T.size)
 
         # hot side BC
-        T[0] = self.T_h
-        self.q0[0] = self.q_h
+        self.q0[0] = self.U_hot * (self.T_h_conv - T[0])
 
         # cold side BC
-        T[-1] = self.T_c
-        self.q0[-1] = self.q_c
+        self.q0[-1] = self.U_hot * (T[-1] - self.T_c_conv)
 
         self.dT_dx = 0.5 * (T[2:] - T[:-2]) / self.delta_x  
 
-        for i in range(1, self.nodes - 1):
+        for i in range(self.nodes):
 
             T_props = T[i]  # i for central differencing
             self.set_TEproperties(T_props)
@@ -358,18 +355,24 @@ class Leg(object):
                 self.alpha * self.q0[i] / self.k
                 )
 
-        self.dq_dx = (
+        self.dq_dx[1:-1] = (
             (self.q0[2:] - self.q0[:-2]) / (2. * self.delta_x)
             )
+        self.dq_dx[0] = (
+            self.q0[1] - self.q0[0] / self.delta_x
+            )
+        self.dq_dx[-1] = (
+            self.q0[-1] - self.q0[-2] / self.delta_x
+            )
 
-        for i in range(1, self.nodes - 1):
+        for i in range(self.nodes):
 
             T_props = T[i]  # i for central differencing
             self.set_TEproperties(T_props)
             self.set_ZT()
 
             self.dT_dt[i] = (
-                1. / self.C * (-self.dq_dx[i - 1] + self.dq_dx_ss[i - 1])
+                1. / self.C * (-self.dq_dx[i] + self.dq_dx_ss[i])
                 )
 
         return self.dT_dt

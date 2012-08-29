@@ -15,7 +15,7 @@ leg = leg.Leg()
 leg.length = 3.56e-4
 leg.I = 13.
 leg.material = 'HMS'
-leg.nodes = 50
+leg.nodes = 10
 leg.t_array = np.linspace(0, 1, 20)
 
 leg.T_h_conv = 570.
@@ -27,8 +27,8 @@ leg.set_constants()
 
 leg.solve_leg()
 
-# leg.T_h += 50.
-# leg.T_h_conv += 60.
+leg.T_h += 10.
+leg.T_h_conv += 15.
 
 leg.solve_leg_transient()
 
