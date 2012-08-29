@@ -50,9 +50,9 @@ class Leg(object):
         self.length = 1.e-3  # leg length (m)
         self.area = (3.e-3) ** 2.  # leg area (m^2)
 
-        self.C = 1.e-5
+        self.C = 1
         # assumed value for heat capacity (kJ / K)
-        self.t_array = np.arange(0, 600, 1)
+        self.t_array = np.linspace(0, 5, 10)
         # array of times for transient solution
 
         self.set_constants()
@@ -317,8 +317,12 @@ class Leg(object):
         self.y0 = self.T_x
         # self.q_h = self.U_hot * (self.T_h_conv - self.T_h)
 
-        self.T_xt = odeint(self.get_dTx_dt, y0=self.y0,
-        t=self.t_array)
+        self.odeint_output = odeint(
+            self.get_dTx_dt, y0=self.y0, t=self.t_array,
+            full_output=1, hmin=0.005, hmax=0.5
+            )
+
+        self.T_xt = self.odeint_output[0]
 
     def get_dTx_dt(self, T, t):
 
@@ -326,37 +330,42 @@ class Leg(object):
         """
 
         self.dT_dt = np.zeros(T.size)
-        self.q = np.zeros(T.size)
-        self.dq_dx = np.zeros(T.size - 2)
+        self.q0 = np.zeros(T.size)
 
         # hot side BC
         T[0] = self.T_h
-        self.q[0] = self.q_h
+        self.q0[0] = self.q_h
 
         # cold side BC
         T[-1] = self.T_c
-        self.q[-1] = self.q_c
+        self.q0[-1] = self.q_c
 
-        self.dT_dx = 0.5 * (T[2:] - T[:-2]) / self.delta_x
+        self.dT_dx = 0.5 * (T[2:] - T[:-2]) / self.delta_x  
 
         for i in range(1, self.nodes - 1):
 
             T_props = T[i]  # i for central differencing
             self.set_TEproperties(T_props)
-
-            self.q[i] = (
-                self.J * T[i] * self.alpha - self.k * self.dT_dx[i - 1]
-                )
-
-            self.dq_dx[i - 1] = (
-                0.5 * (self.q[i + 1] - self.q[i - 1]) / self.delta_x
-                )
-
             self.set_ZT()
+
+            self.q0[i] = (
+                self.J * T[i] * self.alpha - self.k * self.dT_dx[i - 1]
+                )  # this formula checks out ok.  
+
+        self.dq_dx = (
+            0.5 * (self.q0[2:] - self.q0[:-2]) / self.delta_x
+            )
+
+        for i in range(1, self.nodes - 1):
+
+            T_props = T[i]  # i for central differencing
+            self.set_TEproperties(T_props)
+            self.set_ZT()
+
             self.dT_dt[i] = (
                 1. / self.C * (-self.dq_dx[i - 1] + self.rho * self.J
                                 ** 2 * (1. + self.ZT) - self.J *
-                                self.alpha * self.q[i] / self.k)
+                                self.alpha * self.q0[i] / self.k)
                 )
 
         return self.dT_dt

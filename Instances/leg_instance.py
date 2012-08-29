@@ -28,10 +28,9 @@ leg.set_constants()
 leg.solve_leg()
 
 # leg.T_h += 50.
-leg.T_h_conv += 60.
+# leg.T_h_conv += 60.
 
 leg.solve_leg_transient()
-
 
 # Plot configuration
 FONTSIZE = 14
@@ -53,7 +52,7 @@ for i in range(leg.t_array.size):
 plt.grid()
 plt.xlabel('Position (mm)')
 plt.ylabel('Temperature (K)')
-plt.ylim(leg.T_x.min(), leg.T_x.max())
+plt.ylim(leg.T_xt.min(), leg.T_xt.max())
 
 plt.show()
     
