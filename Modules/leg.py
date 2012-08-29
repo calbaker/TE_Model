@@ -331,6 +331,8 @@ class Leg(object):
         self.dT_dt = np.zeros(T.size)
         self.q0 = np.zeros(T.size)
         self.dq_dx_ss = np.zeros(T.size)
+        self.dq_dx = np.zeros(T.size)
+        self.dT_dx = np.zeros(T.size)
 
         # hot side BC
         self.q0[0] = self.U_hot * (self.T_h_conv - T[0])
@@ -338,7 +340,9 @@ class Leg(object):
         # cold side BC
         self.q0[-1] = self.U_hot * (T[-1] - self.T_c_conv)
 
-        self.dT_dx = 0.5 * (T[2:] - T[:-2]) / self.delta_x  
+        self.dT_dx[1:-1] = 0.5 * (T[2:] - T[:-2]) / self.delta_x  
+        self.dT_dx[0] = (T[1] - T[0]) / self.delta_x
+        self.dT_dx[-1] = (T[-1] - T[-2]) / self.delta_x
 
         for i in range(self.nodes):
 
@@ -347,10 +351,10 @@ class Leg(object):
             self.set_ZT()
 
             self.q0[i] = (
-                self.J * T[i] * self.alpha - self.k * self.dT_dx[i - 1]
+                self.J * T[i] * self.alpha - self.k * self.dT_dx[i]
                 ) 
 
-            self.dq_dx_ss[i - 1] = (
+            self.dq_dx_ss[i] = (
                 (self.rho * self.J ** 2. * (1. + self.ZT)) - self.J *
                 self.alpha * self.q0[i] / self.k
                 )
