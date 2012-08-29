@@ -27,7 +27,7 @@ leg.set_constants()
 
 leg.solve_leg()
 
-# leg.T_h_conv += 15.
+leg.T_h_conv += 100.
 
 leg.solve_leg_transient()
 
