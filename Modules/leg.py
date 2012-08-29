@@ -50,7 +50,7 @@ class Leg(object):
         self.length = 1.e-3  # leg length (m)
         self.area = (3.e-3) ** 2.  # leg area (m^2)
 
-        self.C = 1
+        self.C = 1.e7
         # assumed value for heat capacity (kJ / K)
         self.t_array = np.linspace(0, 5, 10)
         # array of times for transient solution
@@ -351,10 +351,15 @@ class Leg(object):
 
             self.q0[i] = (
                 self.J * T[i] * self.alpha - self.k * self.dT_dx[i - 1]
-                )  # this formula checks out ok.  
+                ) 
+
+            self.dq_dx_ss[i - 1] = (
+                (self.rho * self.J ** 2. * (1. + self.ZT)) - self.J *
+                self.alpha * self.q0[i] / self.k
+                )
 
         self.dq_dx = (
-            (self.q0[2:] - self.q0[:-2]) / (self.x[2:] - self.x[:-2])
+            (self.q0[2:] - self.q0[:-2]) / (2. * self.delta_x)
             )
 
         for i in range(1, self.nodes - 1):
@@ -362,11 +367,6 @@ class Leg(object):
             T_props = T[i]  # i for central differencing
             self.set_TEproperties(T_props)
             self.set_ZT()
-
-            self.dq_dx_ss[i - 1] = (
-                (self.rho * self.J ** 2. * (1. + self.ZT)) - self.J *
-                self.alpha * self.q0[i] / self.k
-                )
 
             self.dT_dt[i] = (
                 1. / self.C * (-self.dq_dx[i - 1] + self.dq_dx_ss[i - 1])
