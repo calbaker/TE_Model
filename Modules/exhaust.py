@@ -1,7 +1,6 @@
 """Contains class for exhaust side of heat exchanger"""
 
 # Distribution libraries
-import numpy as np
 import types
 
 # In python directory
