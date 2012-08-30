@@ -51,8 +51,10 @@ class Engine(object):
         
         """Sets charge mass flow rate.""" 
 
-        self.mdot_charge =( (self.RPM / 2. * self.displacement *
-        self.eta_V * self.air.rho) / 60. )  
+        self.mdot_charge =( 
+            (self.RPM / 2. * self.displacement * self.eta_V *
+            self.air.rho) / 60.
+            )  
         # charge flow (kg/s) in engine
 
 
