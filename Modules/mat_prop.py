@@ -17,7 +17,7 @@ def import_raw_property_data(self):
     if self.material == "BiTe variable n-type":
         poly_deg = 3
 
-        alpha_raw = np.array([[112.301006188, -43.0457272427],
+        self.alpha_raw = np.array([[112.301006188, -43.0457272427],
                               [137.129765223, -53.5256743351],
                               [156.431574472, -62.2549482734],
                               [179.857338561, -73.5981860267],
@@ -28,10 +28,10 @@ def import_raw_property_data(self):
                               [339.954650668, -135.642685058],
                               [373.158864377, -143.544806084]])
         self.alpha_params = np.polyfit(
-            alpha_raw[:, 0], alpha_raw[:, 1], poly_deg
+            self.alpha_raw[:, 0], self.alpha_raw[:, 1], poly_deg
             )
 
-        k_raw = np.array([[100, 29.467689848],
+        self.k_raw = np.array([[100, 29.467689848],
                           [130, 27.8005198844],
                           [160, 26.4696917156],
                           [190, 24.9615826351],
@@ -41,9 +41,9 @@ def import_raw_property_data(self):
                           [310, 14.8860234335],
                           [340, 9.7526188408],
                           [370, 1.6249327924]])
-        self.k_params = np.polyfit(k_raw[:, 0], k_raw[:, 1], poly_deg)
+        self.k_params = np.polyfit(self.k_raw[:, 0], self.k_raw[:, 1], poly_deg)
 
-        sigma_raw = np.array([[109.722222222, 64.802436126],
+        self.sigma_raw = np.array([[109.722222222, 64.802436126],
                               [125, 59.3315508021],
                               [138.888888889, 52.8995840761],
                               [158.333333333, 46.7825311943],
@@ -57,14 +57,14 @@ def import_raw_property_data(self):
                               [359.722222222, 15.1232917409],
                               [376.388888889, 13.8220439691]])
         self.sigma_params = np.polyfit(
-            sigma_raw[:, 0], sigma_raw[:, 1], poly_deg
+            self.sigma_raw[:, 0], self.sigma_raw[:, 1], poly_deg
             )
 
     if self.material == "BiTe variable p-type":
         # properties trial 2 - need to add a comment
         poly_deg = 3
 
-        alpha_raw = np.array([[112.301006188, 43.0457272427],
+        self.alpha_raw = np.array([[112.301006188, 43.0457272427],
                               [137.129765223, 53.5256743351],
                               [156.431574472, 62.2549482734],
                               [179.857338561, 73.5981860267],
@@ -75,10 +75,10 @@ def import_raw_property_data(self):
                               [339.954650668, 135.642685058],
                               [373.158864377, 143.544806084]])
         self.alpha_params = np.polyfit(
-            alpha_raw[:, 0], alpha_raw[:, 1], poly_deg
+            self.alpha_raw[:, 0], self.alpha_raw[:, 1], poly_deg
             )
 
-        k_raw = np.array([[100, 29.467689848],
+        self.k_raw = np.array([[100, 29.467689848],
                           [130, 27.8005198844],
                           [160, 26.4696917156],
                           [190, 24.9615826351],
@@ -88,9 +88,9 @@ def import_raw_property_data(self):
                           [310, 14.8860234335],
                           [340, 9.7526188408],
                           [370, 1.6249327924]])
-        self.k_params = np.polyfit(k_raw[:, 0], k_raw[:, 1], poly_deg)
+        self.k_params = np.polyfit(self.k_raw[:, 0], self.k_raw[:, 1], poly_deg)
 
-        sigma_raw = np.array([[109.722222222, 64.802436126],
+        self.sigma_raw = np.array([[109.722222222, 64.802436126],
                               [125, 59.3315508021],
                               [138.888888889, 52.8995840761],
                               [158.333333333, 46.7825311943],
@@ -104,7 +104,7 @@ def import_raw_property_data(self):
                               [359.722222222, 15.1232917409],
                               [376.388888889, 13.8220439691]])
         self.sigma_params = np.polyfit(
-            sigma_raw[:, 0], sigma_raw[:, 1], poly_deg
+            self.sigma_raw[:, 0], self.sigma_raw[:, 1], poly_deg
             )
 
     if self.material == "typical BiTe n-type":
@@ -113,7 +113,7 @@ def import_raw_property_data(self):
         # process.
         poly_deg = 3
 
-        alpha_raw = np.array([[297.3450032873, -213.717948718],
+        self.alpha_raw = np.array([[297.3450032873, -213.717948718],
                               [321.1747205786, -223.974358974],
                               [343.6845825115, -227.820512821],
                               [367.6137409599, -231.025641026],
@@ -125,10 +125,10 @@ def import_raw_property_data(self):
                               [496.72452334, -175.897435897],
                               [522.425542406, -153.46153846]])
         self.alpha_params = np.polyfit(
-            alpha_raw[:, 0], alpha_raw[:, 1], poly_deg
+            self.alpha_raw[:, 0], self.alpha_raw[:, 1], poly_deg
             )
 
-        k_raw = np.array([[299.5228426396, 1.3873417722],
+        self.k_raw = np.array([[299.5228426396, 1.3873417722],
                           [321.8578680203, 1.3265822785],
                           [345.5888324873, 1.3164556962],
                           [369.3197969543, 1.3569620253],
@@ -140,10 +140,10 @@ def import_raw_property_data(self):
                           [497.746192893, 2.035443038],
                           [522.873096447, 2.2075949367]])
         self.k_params = np.polyfit(
-            k_raw[:, 0], k_raw[:, 1], poly_deg
+            self.k_raw[:, 0], self.k_raw[:, 1], poly_deg
             )
 
-        sigma_raw = np.array([[299.4305754926, 9.746835443],
+        self.sigma_raw = np.array([[299.4305754926, 9.746835443],
                               [323.4029100874, 8.6835443038],
                               [344.5312214537, 7.5443037975],
                               [369.9479968681, 6.7088607595],
@@ -155,7 +155,7 @@ def import_raw_property_data(self):
                               [497.229250946, 4.2025316456],
                               [522.744714864, 4.2025316456]])
         self.sigma_params = np.polyfit(
-            sigma_raw[:, 0], sigma_raw[:, 1], poly_deg
+            self.sigma_raw[:, 0], self.sigma_raw[:, 1], poly_deg
             )
 
     if self.material == "typical BiTe p-type":
@@ -164,7 +164,7 @@ def import_raw_property_data(self):
         # Extracted from Bed Poudel et al, Science 320, 634 (2008)
         # This was the properties used for first trial of validation
         # process.
-        alpha_raw = np.array([[297.3450032873, 213.717948718],
+        self.alpha_raw = np.array([[297.3450032873, 213.717948718],
                               [321.1747205786, 223.974358974],
                               [343.6845825115, 227.820512821],
                               [367.6137409599, 231.025641026],
@@ -176,10 +176,10 @@ def import_raw_property_data(self):
                               [496.72452334, 175.897435897],
                               [522.425542406, 153.46153846]])
         self.alpha_params = np.polyfit(
-            alpha_raw[:, 0], alpha_raw[:, 1], poly_deg
+            self.alpha_raw[:, 0], self.alpha_raw[:, 1], poly_deg
             )
 
-        k_raw = np.array([[299.5228426396, 1.3873417722],
+        self.k_raw = np.array([[299.5228426396, 1.3873417722],
                           [321.8578680203, 1.3265822785],
                           [345.5888324873, 1.3164556962],
                           [369.3197969543, 1.3569620253],
@@ -191,10 +191,10 @@ def import_raw_property_data(self):
                           [497.746192893, 2.035443038],
                           [522.873096447, 2.2075949367]])
         self.k_params = np.polyfit(
-            k_raw[:, 0], k_raw[:, 1], poly_deg
+            self.k_raw[:, 0], self.k_raw[:, 1], poly_deg
             )
 
-        sigma_raw = np.array([[299.4305754926, 9.746835443],
+        self.sigma_raw = np.array([[299.4305754926, 9.746835443],
                               [323.4029100874, 8.6835443038],
                               [344.5312214537, 7.5443037975],
                               [369.9479968681, 6.7088607595],
@@ -206,7 +206,7 @@ def import_raw_property_data(self):
                               [497.229250946, 4.2025316456],
                               [522.744714864, 4.2025316456]])
         self.sigma_params = np.polyfit(
-            sigma_raw[:, 0], sigma_raw[:, 1], poly_deg
+            self.sigma_raw[:, 0], self.sigma_raw[:, 1], poly_deg
             )
 
     if self.material == "HMS":
@@ -214,34 +214,34 @@ def import_raw_property_data(self):
         poly_deg = 3
         # print "Curve fitting for HMS"
 
-        alpha_raw = np.array([[296.89119171, 138.265544041],
+        self.alpha_raw = np.array([[296.89119171, 138.265544041],
                               [380.829015544, 140.620466321],
                               [561.139896373, 176.845854922],
                               [701.03626943, 206.270725389],
                               [806.735751295, 217.652849741],
                               [900., 205.769430052]])
         self.alpha_params = np.polyfit(
-            alpha_raw[:, 0], alpha_raw[:, 1], poly_deg
+            self.alpha_raw[:, 0], self.alpha_raw[:, 1], poly_deg
             )
 
-        k_raw = np.array([[300, 2.40620446533],
+        self.k_raw = np.array([[300, 2.40620446533],
                           [485.869565217, 2.20460634548],
                           [593.47826087, 2.1252173913],
                           [707.608695652, 2.07168037603],
                           [815.217391304, 2.09607520564],
                           [900.0, 2.12944770858]])
         self.k_params = np.polyfit(
-            k_raw[:, 0], k_raw[:, 1], poly_deg
+            self.k_raw[:, 0], self.k_raw[:, 1], poly_deg
             )
 
-        sigma_raw = np.array([[283.888641142, 6.55346563038],
+        self.sigma_raw = np.array([[283.888641142, 6.55346563038],
                               [396.056571319, 6.22507485507],
                               [573.510861948, 4.86979996178],
                               [786.035548194, 3.5398961585],
                               [856.520354208, 3.34810791871],
                               [901.20405173, 3.34610116583]])
         self.sigma_params = np.polyfit(
-            sigma_raw[:, 0], sigma_raw[:, 1], poly_deg
+            self.sigma_raw[:, 0], self.sigma_raw[:, 1], poly_deg
             )
 
     if self.material == "MgSi":
@@ -249,27 +249,27 @@ def import_raw_property_data(self):
         poly_deg = 2
         # print "Curve fitting for MgSi"
 
-        alpha_raw = np.array([[311.289993567, -111.872146119],
+        self.alpha_raw = np.array([[311.289993567, -111.872146119],
                               [464.006967001, -141.552511416],
                               [644.121200709, -184.931506849],
                               [777.984904831, -207.762557078]])
         self.alpha_params = np.polyfit(
-            alpha_raw[:, 0], alpha_raw[:, 1], poly_deg
+            self.alpha_raw[:, 0], self.alpha_raw[:, 1], poly_deg
             )
 
-        k_raw = np.array([[291.236965464, 2.80871520138],
+        self.k_raw = np.array([[291.236965464, 2.80871520138],
                           [472.020791479, 2.62097005644],
                           [725.982971396, 2.38897924041],
                           [576.615963519, 2.50282215632]])
         self.k_params = np.polyfit(
-            k_raw[:, 0], k_raw[:, 1], poly_deg
+            self.k_raw[:, 0], self.k_raw[:, 1], poly_deg
             )
 
-        sigma_raw = np.array([[307.385007162, 13.156135604],
+        self.sigma_raw = np.array([[307.385007162, 13.156135604],
                               [456.638548464, 9.79627566449],
                               [574.442145472, 8.21502466974],
                               [722.524271845, 7.17849753303]])
-        self.sigma_params = np.polyfit(sigma_raw[:, 0], sigma_raw[:, 1],
+        self.sigma_params = np.polyfit(self.sigma_raw[:, 0], self.sigma_raw[:, 1],
                               poly_deg)
 
 
