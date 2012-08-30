@@ -18,7 +18,7 @@ leg.material = 'HMS'
 leg.nodes = 50
 leg.t_array = np.linspace(0, 1, 10)
 
-leg.T_h_conv = 325.
+leg.T_h_conv = 300.
 leg.U_hot = 54e3
 leg.T_c_conv = 300.
 leg.U_cold = 253e3
@@ -28,10 +28,10 @@ leg.set_constants()
 
 leg.solve_leg()
 
-leg.T_h_conv += 200.
+leg.T_h_conv += 300.
 leg.solve_leg_transient()
-leg.T_h_conv -= 100.
-leg.T_c_conv += 25. 
+leg.T_h_conv -= 300.
+leg.T_c_conv += 15. 
 leg.solve_leg_transient()
 
 # Plot configuration
@@ -57,6 +57,7 @@ plt.grid()
 plt.xlabel('Position (mm)')
 plt.ylabel('Temperature (K)')
 plt.ylim(leg.T_xt.min() - 25., leg.T_xt.max() + 25.)
+plt.xlim(-0.05, 0.40)
 plt.subplots_adjust(left=0.15)
 
 plt.savefig('../Plots/leg_instance/transient.pdf')
