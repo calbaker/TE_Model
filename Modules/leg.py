@@ -316,12 +316,23 @@ class Leg(object):
 
         self.y0 = self.T_x
 
-        self.odeint_output = odeint(
-            self.get_dTx_dt, y0=self.y0, t=self.t_array,
-            full_output=1
-            )
+        try: 
+            self.T_xt
 
-        self.T_xt = self.odeint_output[0]
+        except AttributeError:
+            self.odeint_output = odeint(
+                self.get_dTx_dt, y0=self.y0, t=self.t_array,
+                full_output=1 
+                )
+            self.T_xt = self.odeint_output[0]
+
+        else:
+            self.y0 = self.T_xt[-1,:]
+            self.odeint_output = odeint(
+                self.get_dTx_dt, y0=self.y0, t=self.t_array,
+                full_output=1 
+                )
+            self.T_xt = np.concatenate((self.T_xt, self.odeint_output[0]))
 
     def get_dTx_dt(self, T, t):
 
