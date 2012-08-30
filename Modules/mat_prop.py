@@ -4,21 +4,17 @@
 import numpy as np
 
 
-def set_raw_property_data(self):
+def import_raw_property_data(self):
 
-    """Sets temperature fit curves for thermoelectric properties.
-
-    Methods:
-
-    set_TEproperties
-    set_raw_property_data
+    """Imports and sets values for material properties as a function
+    of temperature.  These values come from literature, and they may
+    come from experiments or curve fitting in the future.
 
     """
 
-    print "running set_raw_property_data"
+    print "running import_raw_property_data"
 
     if self.material == "BiTe variable n-type":
-        # properties trial 2 - need to add a comment
         poly_deg = 3
 
         alpha_raw = np.array([[112.301006188, -43.0457272427],
@@ -296,7 +292,7 @@ def set_properties_v_temp(self, T_props):
     try:
         self.alpha_params
     except AttributeError:
-        self.set_prop_fit()
+        self.import_raw_property_data()
     self.alpha = (np.polyval(self.alpha_params, T_props) * 1.e-6)
     # Seebeck coefficient (V/K)
     self.k = np.polyval(self.k_params, T_props)
@@ -315,33 +311,37 @@ def set_TEproperties(self, T_props):
 
     T_props : temperature (K) at which properties are to be evaluated
 
+    This method exists to separater materials with constant properties
+    from materials with temperature dependent properties.  It uses
+    set_properties_v_temp for the latter type of materials.  
+
     """
 
     self.T_props = T_props
 
     # Materials with tabulated properties
-    if self.material == 'BiTe variable n-type':
-        self.set_TEprop_polyfit(T_props)
-
-    if self.material == 'BiTe variable p-type':
-        self.set_TEprop_polyfit(T_props)
-
-    if self.material == 'typical BiTe n-type':
-        self.set_TEprop_polyfit(T_props)
-
-    if self.material == 'typical BiTe p-type':
-        self.set_TEprop_polyfit(T_props)
-
     if self.material == 'HMS':
-        self.set_TEprop_polyfit(T_props)
+        self.set_properties_v_temp(T_props)
 
-    if self.material == 'MgSi':
-        self.set_TEprop_polyfit(T_props)
+    elif self.material == 'MgSi':
+        self.set_properties_v_temp(T_props)
+
+    elif self.material == 'BiTe variable n-type':
+        self.set_properties_v_temp(T_props)
+
+    elif self.material == 'BiTe variable p-type':
+        self.set_properties_v_temp(T_props)
+
+    elif self.material == 'typical BiTe n-type':
+        self.set_properties_v_temp(T_props)
+
+    elif self.material == 'typical BiTe p-type':
+        self.set_properties_v_temp(T_props)
 
     # Material properties for validation trial. These properties are
     # for typical BiTe materials at 423 K. The properties for a range
     # of temperature are given above as a poly curve.
-    if self.material == 'BiTe variable n-type':
+    elif self.material == 'BiTe variable n-type':
         self.k = 1.54  # Thermal conductivity (W/m-K)
         self.alpha = -150.e-6  # Seebeck coefficient (V/K)
         # I made this negative even though it's for a p-type
@@ -349,7 +349,7 @@ def set_TEproperties(self, T_props):
         self.rho = 9.0909 * 1.e-6
         # electrical resistivity (Ohm-m)
 
-    if self.material == 'BiTe variable p-type':
+    elif self.material == 'BiTe variable p-type':
         self.k = 1.54  # Thermal conductivity (W/m-K)
         self.alpha = 150.e-6  # Seebeck coefficient (V/K)
         self.rho = 9.0909 * 1.e-6
@@ -358,7 +358,7 @@ def set_TEproperties(self, T_props):
     # Materials with properties that are either constant or dependent
     # on temperature by some convenient function.
     # from CRC TE Handbook Table 12.1
-    if self.material == 'ex1 n-type':
+    elif self.material == 'ex1 n-type':
         self.k = 54. / T_props * 100.
         # thermal conductivity (W/m-K)
         self.alpha = (0.268 * T_props - 329.) * 1.e-6
@@ -369,7 +369,7 @@ def set_TEproperties(self, T_props):
         # electrical resistivity (Ohm-m)
 
     # from CRC TE Handbook Table 12.1
-    if self.material == 'ex1 p-type':
+    elif self.material == 'ex1 p-type':
         self.k = 3.194 / T_props * 100.
         # thermal conductivity (W/m-K)
         self.alpha = (0.150 * T_props + 211.) * 1.e-6
@@ -380,7 +380,7 @@ def set_TEproperties(self, T_props):
         # electrical resistivity (Ohm-m)
 
     # from CRC TE Handbook Table 12.1
-    if self.material == 'ex2 n-type':
+    elif self.material == 'ex2 n-type':
         self.k = 3. / T_props * 100.
         # thermal conductivity (W/m-K)
         self.alpha = (0.20 * T_props - 400.) * 1.e-6
@@ -391,7 +391,7 @@ def set_TEproperties(self, T_props):
         # electrical resistivity (Ohm-m)
 
     # from CRC TE Handbook Table 12.1
-    if self.material == 'ex2 p-type':
+    elif self.material == 'ex2 p-type':
         self.k = 10. / T_props * 100.
         # thermal conductivity (W/m-K)
         self.alpha = (200.) * 1.e-6
@@ -402,7 +402,7 @@ def set_TEproperties(self, T_props):
         # electrical resistivity (Ohm-m)
 
     # from CRC TE Handbook Table 12.1
-    if self.material == 'ex3 n-type':
+    elif self.material == 'ex3 n-type':
         self.k = 3. / T_props * 100.
         # thermal conductivity (W/m-K)
         self.alpha = 0.20 * T_props * 1.e-6
@@ -413,7 +413,7 @@ def set_TEproperties(self, T_props):
         # electrical resistivity (Ohm-m)
 
     # from CRC TE Handbook Table 12.1
-    if self.material == 'ex3 p-type':
+    elif self.material == 'ex3 p-type':
         self.k = 10. / T_props * 100.
         # thermal conductivity (W/m-K)
         self.alpha = 200. * 1.e-6
@@ -424,7 +424,7 @@ def set_TEproperties(self, T_props):
         # electrical resistivity (Ohm-m)
 
     # From CRC TE Handbook Table 27.7
-    if self.material == 'constant BiTe n-type':
+    elif self.material == 'constant BiTe n-type':
         self.k = 1.5  # Thermal conductivity (W/m-K)
         self.alpha = -206.e-6  # Seebeck coefficient (V/K)
         # I made this negative even though it's for a p-type
@@ -433,14 +433,14 @@ def set_TEproperties(self, T_props):
         # electrical resistivity (Ohm-m)
 
     # From CRC TE Handbook Table 27.7
-    if self.material == 'constant BiTe p-type':
+    elif self.material == 'constant BiTe p-type':
         self.k = 1.5  # Thermal conductivity (W/m-K)
         self.alpha = 206.e-6  # Seebeck coefficient (V/K)
         self.rho = 8.89 * 1.e-6
         # electrical resistivity (Ohm-m)
 
     # Alumina with pure conduction
-    if self.material == 'alumina':
+    elif self.material == 'alumina':
         self.k = 1.5  # Thermal conductivity (W/m-K) this needs to be
                      # updated to what it actually is
         self.alpha = 1.e-9  # Seebeck coefficient (V/K)
@@ -452,7 +452,7 @@ def set_TEproperties(self, T_props):
         # electrical resistivity (Ohm-m)
 
     # Direct contact between hot and cold side
-    if self.material == 'none':
+    elif self.material == 'none':
         self.k = 1.e9  # really high thermal condutivity (W/m-K) so
                       # that resistance is zero
         self.alpha = 1.e-9  # dummy value

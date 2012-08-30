@@ -40,7 +40,7 @@ class Leg(object):
 
         Binds the following methods:
 
-        mat_prop.set_raw_property_data
+        mat_prop.import_raw_property_data
         mat_prop.set_properties_v_temp
         mat_prop.set_TEproperties"""
 
@@ -57,12 +57,15 @@ class Leg(object):
 
         self.set_constants()
 
-        self.set_prop_fit = types.MethodType(mat_prop.set_raw_property_data,
-        self)
-        self.set_TEprop_polyfit = (
-        types.MethodType(mat_prop.set_properties_v_temp, self))
+        self.import_raw_property_data = (
+            types.MethodType(mat_prop.import_raw_property_data, self)
+            )
+        self.set_properties_v_temp = (
+            types.MethodType(mat_prop.set_properties_v_temp, self)
+            )
         self.set_TEproperties = (
-        types.MethodType(mat_prop.set_TEproperties, self))
+            types.MethodType(mat_prop.set_TEproperties, self)
+            )
 
     def set_constants(self):
 
