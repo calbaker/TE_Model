@@ -51,7 +51,7 @@ hx_exp.cool.T_outlet = 310.
 
 hx_exp.cummins.RPM = 1940.
 hx_exp.set_mdot_charge()
-hx_exp.exh.mdot = hx_exp.exh.mdot * 10.
+hx_exp.exh.mdot = hx_exp.exh.mdot
 
 # hx_exp.cool.T_outlet = fsolve(hx_exp.get_T_inlet_error,
 #                                 x0=hx_exp.cool.T_outlet, xtol=0.01)
