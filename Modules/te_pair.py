@@ -48,7 +48,9 @@ class TE_Pair(object):
         # Ratio of cross-section area of N-type leg to cross-section
         # area of P-type leg
         self.fill_fraction = 0.03
-        # Percentage of nominal area occupied by TE legs
+        # Percentage of nominal area occupied by TE legs.  This is not
+        # consistent with the value for the area_void, unless or until
+        # set_leg_areas has been called.
         self.length = 1.e-3
         # Length (m) of TE legs
         self.I = 1.  # electrical current (Amps)
@@ -57,7 +59,9 @@ class TE_Pair(object):
         self.Ptype.material = 'HMS'
         self.Ntype.material = 'MgSi'
         self.area_void = (1.e-3) ** 2
-        # void area (m^2) associated with each leg pair
+        # Void area (m^2) associated with each leg pair.  This will be
+        # changed when set_leg_areas is called.  After this happens,
+        # it will be consisent with self.fill_fraction.
         self.length = 1.e-3
         self.nodes = 10
         #  number of nodes for which the temperature values are
@@ -287,6 +291,9 @@ class TE_Pair(object):
         Methods:
 
         self.set_constants
+        
+        self.Ptype.area must be held constant.  self.Ntype.area and
+        self.area_void are varied here.
 
         """
 
@@ -294,9 +301,11 @@ class TE_Pair(object):
         fill_fraction = self.fill_fraction
 
         self.Ntype.area = self.Ptype.area * leg_area_ratio
-        self.area_void = ( (1. - fill_fraction) / fill_fraction *
-        (self.Ptype.area + self.Ntype.area) )
-
+        self.area_void = (
+            (1. - fill_fraction) / fill_fraction * (self.Ptype.area +
+        self.Ntype.area)
+            )
+        
         self.set_constants()
 
     def get_minpar(self, apar):
