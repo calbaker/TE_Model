@@ -203,7 +203,7 @@ class TE_Pair(object):
         self.P_flux = self.P / self.area
         # power flux (kW / m^2) through leg pair
         self.eta = self.P / (self.q_h * self.area)
-        self.V = self.Ntype.V + self.Ptype.V
+        self.V = -self.Ntype.V + self.Ptype.V
         self.R_load = self.Ntype.R_load + self.Ptype.R_load
         self.R_internal = ( self.Ntype.R_internal +
         self.Ptype.R_internal )
