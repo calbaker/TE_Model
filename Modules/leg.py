@@ -160,12 +160,9 @@ class Leg(object):
         self.T_h = self.T_h_conv
         self.T_c = self.T_c_conv
 
-        self.set_q_guess()
-        self.knob_arr0 = np.array([self.q_guess, self.T_h])
+        self.fsolve_output = fsolve(self.get_error, x0=self.T_h - 1.)
 
-        self.fsolve_output = fsolve(self.get_error, x0=self.knob_arr0)
-
-    def get_error(self, knob_arr):
+    def get_error(self, T_h):
 
         """Returns error in heat flux and temperature convection
         boundary conditions.
@@ -173,20 +170,18 @@ class Leg(object):
         Methods:
         self.solve_leg_once"""
 
-        q_h = knob_arr[0]
-        self.T_h = knob_arr[1]
-
-        self.solve_leg_once(q_h)
+        self.T_h = T_h[0]
 
         self.q_h_conv = self.U_hot * (self.T_h_conv - self.T_h)
+        self.q_h = self.q_h_conv
+
+        self.solve_leg_once(self.q_h)
+
         self.q_c_conv = self.U_cold * (self.T_c - self.T_c_conv)
 
-        self.q_h_error = self.q_h - self.q_h_conv
         self.q_c_error = self.q_c - self.q_c_conv
 
-        self.error = np.array([self.q_h_error, self.q_c_error]).flatten()
-
-        return self.error
+        return self.q_c_error
 
     def solve_leg_once(self, q_h):
 
