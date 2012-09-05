@@ -190,7 +190,7 @@ class Leg(object):
 
         self.eta = self.P / (self.q_h * self.area)
         # Efficiency of leg
-        self.R_load = - self.V / self.I - self.R_internal
+        self.R_load = self.V / self.I
 
         # Sanity check.  q_h - q_c should be nearly equal but not
         # exactly equal to P.  It is not exact because of spatial
