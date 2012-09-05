@@ -22,7 +22,7 @@ class Leg(object):
     set_ZT
     set_constants
     set_power_factor
-    set_q_c_guess
+    set_q_guess
     solve_leg_anal
     solve_leg_once
     solve_leg
@@ -212,6 +212,35 @@ class Leg(object):
             print "\nPower from q_h - q_c and I  **  2 * R disagree."
             print "Consider reducing sig_figs under solve_leg_once"
             print "in leg.py if you think this is an error."
+
+    def set_q_guess(self):
+
+        """Sets guess for q_c to be used by iterative solutions.
+
+        Methods:
+
+        self.set_TEproperties(T_props)
+
+        """
+
+        self.T_props = 0.5 * (self.T_h + self.T_c)
+        self.set_TEproperties(T_props=self.T_props)
+        delta_T = self.T_h - self.T_c
+        self.q_c = - (
+            self.alpha * self.T_c * self.J - delta_T / self.length *
+        self.k - self.J ** 2 * self.length * self.rho
+            )
+        # cold side heat flux (W / (m^2 * K))
+
+        self.q_h = - (
+            self.alpha * self.T_h * self.J - delta_T / self.length *
+            self.k + self.J ** 2. * self.length * self.rho / 2.
+            )
+
+        self.q_c_guess = self.q_c
+        # cold side heat flux (W / (m^2 * K))
+        self.q_h_guess = self.q_h
+        self.q_guess = self.q_h
 
     def solve_leg_anal(self):
 
