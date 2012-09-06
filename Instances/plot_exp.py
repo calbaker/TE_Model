@@ -11,13 +11,19 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import exp_data
 reload(exp_data)
+import real_hx
+reload(real_hx)
 
 exp_data = exp_data.ExpData()
-
 exp_data.folder = '../ExpData/'
-exp_data.file = '2012-09-04.csv'
-
+exp_data.file = '2012-09-04 gypsum.csv'
 exp_data.import_data()
+
+mod_data = real_hx.get_hx()
+
+for i in range(exp_data.exh.T_in.size):
+    mod_data.exh.T_inlet = exp_data.exh.T_in[i]
+    mod_data.exh.mdot = exp_data.exh.mdot[i]
 
 # Plot configuration
 FONTSIZE = 18
