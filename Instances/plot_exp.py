@@ -16,29 +16,20 @@ reload(exp_data)
 import real_hx
 reload(real_hx)
 
-exp_data = exp_data.ExpData()
-exp_data.folder = '../ExpData/'
-exp_data.file = '2012-09-04 gypsum.csv'
-exp_data.import_data()
+hx_exp = exp_data.ExpData()
+hx_exp.folder = '../ExpData/'
+hx_exp.file = '2012-09-04 gypsum.csv'
+hx_exp.import_data()
 
-mod_data = real_hx.get_hx()
+hx_mod = real_hx.get_hx()
 k_gypsum = 0.17e-3
 # thermal conductivity (kW / (m * K)) of gypsum board from Incropera
 # and DeWitt Intro. to Heat Transfer 5th ed., Table A.3
 thickness_gypsum = 0.25 * 2.54e-2
 # thickness (m) of gypsum board
-mod_data.R_extra = thickness_gypsum / k_gypsum
-mod_data.Qdot_arr = np.zeros(exp_data.exh.T_in.size)
+hx_mod.R_extra = thickness_gypsum / k_gypsum
 
-for i in range(exp_data.exh.T_in.size):
-    mod_data.exh.T_inlet = exp_data.exh.T_in[i]
-    mod_data.exh.mdot = exp_data.exh.mdot[i]
-    mod_data.cool.mdot = exp_data.cool.Vdot[i] * mod_data.cool.rho
-    mod_data.cool.T_outlet = exp_data.cool.T_out[i]
-
-    mod_data.solve_hx()
-
-    mod_data.Qdot_arr[i] = mod_data.Qdot_total
+hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
 # Plot configuration
 FONTSIZE = 12
@@ -52,19 +43,19 @@ plt.rcParams['lines.markersize'] = 10
 
 plt.close()
 
-dx = (exp_data.exh.mdot.max() - exp_data.exh.mdot.min()) / 10.
-dy = (exp_data.exh.T_in.max() - exp_data.exh.T_in.min()) / 10.
+dx = (hx_exp.exh.mdot.max() - hx_exp.exh.mdot.min()) / 10.
+dy = (hx_exp.exh.T_in.max() - hx_exp.exh.T_in.min()) / 10.
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.bar3d(
-    exp_data.exh.mdot, exp_data.exh.T_in,
-    np.zeros(exp_data.exh.Qdot.size), dx, dy, exp_data.exh.Qdot
+    hx_exp.exh.mdot, hx_exp.exh.T_in,
+    np.zeros(hx_exp.exh.Qdot.size), dx, dy, hx_exp.exh.Qdot
     )
 ax.bar3d(
-    exp_data.exh.mdot, exp_data.exh.T_in,
-    np.zeros(exp_data.exh.Qdot.size), -dx, -dy,
-    mod_data.Qdot_arr, color='r'
+    hx_exp.exh.mdot, hx_exp.exh.T_in,
+    np.zeros(hx_exp.exh.Qdot.size), -dx, -dy,
+    hx_mod.Qdot_arr, color='r'
     )
 
 ax.set_xlabel(r'$\dot{m}$ (kg/s)')

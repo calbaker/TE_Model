@@ -2,7 +2,9 @@
 experimental hx downstairs."""
 
 # Distribution Modules
-import os, sys
+import os
+import sys
+import numpy as np
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -55,3 +57,25 @@ def get_hx():
     hx_exp.cool.T_inlet_set = 300.
 
     return hx_exp
+
+def solve_hx(hx_exp, hx_mod):
+
+    """Solves heat exchanger for all the conditions in the
+    experimental data set."""
+    
+    hx_mod.Qdot_arr = np.zeros(hx_exp.exh.T_in.size)
+
+    for i in range(hx_exp.exh.T_in.size):
+        hx_mod.exh.T_inlet = hx_exp.exh.T_in[i]
+        hx_mod.exh.mdot = hx_exp.exh.mdot[i]
+        hx_mod.cool.mdot = hx_exp.cool.Vdot[i] * hx_mod.cool.rho
+        hx_mod.cool.T_outlet = hx_exp.cool.T_out[i]
+
+        hx_mod.solve_hx()
+
+        hx_mod.Qdot_arr[i] = hx_mod.Qdot_total
+
+    return hx_mod
+
+
+
