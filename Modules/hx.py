@@ -90,7 +90,8 @@ class HX(object):
         # using alumina/copper contact resistance extracted from
         # Gundrum, Bryan C., David G. Cahill, and Robert
         # S. Averback. “Thermal Conductance of Metal-metal
-        # Interfaces.” Physical Review B 72, no. 24 (December 30, 2005): 245426.
+        # Interfaces.” Physical Review B 72, no. 24 (December 30,
+        # 2005): 245426. 
         
         # self.R_contact = 0.8322
         # thermal contact resistance (m^2*K/kW) for plate/substrate,
