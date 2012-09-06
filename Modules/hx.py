@@ -71,6 +71,12 @@ class HX(object):
         self.fix_geometry
 
         """
+
+        self.R_extra = 0.
+        # Dummy variable that can be used as a fit parameter or for
+        # any other appropriate purpose to add thermal resistance to
+        # the model
+
         self.R_interconnect = 0.00075
         # Resistance of copper interconnect assuming a thickness of
         # 0.3 mm (Ref: Hori, Y., D. Kusano, T. Ito, and
@@ -263,7 +269,6 @@ class HX(object):
 
         self.exh.set_flow
         self.cool.set_flow
-        self.plate.set_h
 
         """
 
@@ -271,8 +276,6 @@ class HX(object):
         self.exh.set_flow()
         # Coolant stuff
         self.cool.set_flow()
-        # Wall stuff
-        self.plate.set_h()
         # The previous three commands need only execute once per node.
 
         self.U_hot = ((self.exh.R_thermal + self.R_parasitic) ** -1)
@@ -334,7 +337,7 @@ class HX(object):
         self.set_constants()
 
         self.R_parasitic = (self.plate.R_thermal + self.R_interconnect +
-        self.R_substrate + self.R_contact)
+        self.R_substrate + self.R_contact + self.R_extra)
         # R_parasitic (m^2-K/kW) includes plate resistance from module
         # platewall, resistance of interconnect and ceramic substrate
         # and all the contact resistances
