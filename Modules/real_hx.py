@@ -15,6 +15,13 @@ def get_hx():
 
     hx_exp = hx.HX()
 
+    hx_exp.plate.thickness = (
+        (0.300 +  # thickness (in) of coolant plate
+         0.375)  # thickness (in) of exhaust plate
+        * 2.54e-3
+        )  # total thickness (m)
+    hx_exp.plate.set_h()
+
     # These values must be checked
     hx_exp.width = 20. * 2.54e-2
     hx_exp.exh.height = 2.5 * 2.54e-2
