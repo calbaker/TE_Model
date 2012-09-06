@@ -14,7 +14,7 @@ reload(exp_data)
 
 exp_data = exp_data.ExpData()
 
-exp_data.folder = '../../../Heat Exchanger Experiments/gen2/'
+exp_data.folder = '../ExpData/'
 exp_data.file = '2012-09-04.csv'
 
 exp_data.import_data()
