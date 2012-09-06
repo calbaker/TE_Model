@@ -21,9 +21,17 @@ exp_data.import_data()
 
 mod_data = real_hx.get_hx()
 
+mod_data.Qdot_arr = np.zeros(exp_data.exh.T_in.size)
+
 for i in range(exp_data.exh.T_in.size):
     mod_data.exh.T_inlet = exp_data.exh.T_in[i]
     mod_data.exh.mdot = exp_data.exh.mdot[i]
+    mod_data.cool.mdot = exp_data.cool.Vdot[i] * mod_data.cool.rho
+    mod_data.cool.T_outlet = exp_data.cool.T_out[i]
+
+    mod_data.solve_hx()
+
+    mod_data.Qdot_arr[i] = mod_data.Qdot_total
 
 # Plot configuration
 FONTSIZE = 18
@@ -56,12 +64,20 @@ plt.close()
 
 # plt.savefig('Plots/plot_exp/Qdot.pdf')
 
-dx = (exp_data.exh.mdot.max() - exp_data.exh.mdot.min()) / 20.
-dy = (exp_data.exh.T_in.max() - exp_data.exh.T_in.min()) / 20.
+dx = (exp_data.exh.mdot.max() - exp_data.exh.mdot.min()) / 10.
+dy = (exp_data.exh.T_in.max() - exp_data.exh.T_in.min()) / 10.
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.bar3d(exp_data.exh.mdot, exp_data.exh.T_in, np.zeros(exp_data.exh.Qdot.size), dx, dy, exp_data.exh.Qdot)
+ax.bar3d(
+    exp_data.exh.mdot, exp_data.exh.T_in,
+    np.zeros(exp_data.exh.Qdot.size), dx, dy, exp_data.exh.Qdot
+    )
+ax.bar3d(
+    exp_data.exh.mdot, exp_data.exh.T_in,
+    np.zeros(exp_data.exh.Qdot.size), dx * 0.5, dy * 0.5,
+    mod_data.Qdot_arr, color='r'
+    )
 
 ax.set_xlabel(r'$\dot{m}$ (kg/s)')
 ax.set_ylabel(r'$T_{exh,in}$ (K)')

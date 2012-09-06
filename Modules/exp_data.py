@@ -29,14 +29,16 @@ class ExpData(object):
         self.exh.T_in = self.data['hx_exh_in_t'] + 273.15  # K
         self.exh.T_out = self.data['hx_exh_out_t'] + 273.15  # K
         self.exh.mdot = self.data['exh_mdot_kgmin'] / 60.  # kg/s
+
         self.cool.T_in = (
             0.5 * (self.data['hx_cool_1_in_t'] +
             self.data['hx_cool_2_in_t'])
             )
-        self.cool.T_in = (
+        self.cool.T_out = (
             0.5 * (self.data['hx_cool_1_out_t'] +
             self.data['hx_cool_2_out_t'])
             )
+        self.cool.Vdot = self.data['cool_vdot_gpm']
 
         self.exh.T_mean = 0.5 * (self.exh.T_in + self.exh.T_out)
         self.exh.delta_T = self.exh.T_in - self.exh.T_out
