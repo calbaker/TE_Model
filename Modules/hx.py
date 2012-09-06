@@ -84,6 +84,7 @@ class HX(object):
         # Thermoelectric Module.” In Thermoelectrics 1999. Eighteenth
         # International Conference On, 328 –331, 1999), where
         # k_interconnect = 400 W/(m-K)
+
         self.R_substrate = 0.005
         # resistance of ceramic substrate(AlN) 1 mmm thick (Hori, Y.,
         # D. Kusano, T. Ito, and K. Izumi. “Analysis on
@@ -91,6 +92,7 @@ class HX(object):
         # Thermoelectrics, 1999. Eighteenth International Conference
         # On, 328 –331, 1999.), based on k_ceramic = 200 W/(m-K)
         # obtained from Thermoelectrics Handbook.
+
         self.R_contact = 0.00003
         # Thermal contact resistance for all three contacts estimated
         # using alumina/copper contact resistance extracted from
