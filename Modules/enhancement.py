@@ -195,11 +195,16 @@ class IdealFin(object):
         self.effectiveness = self.eta * 2. * self.height / self.thickness
         self.h_base = self.effectiveness * self.flow.h
 
-        self.flow.h = ((self.flow.h_unfinned * self.flow.area_unfinned + self.h_base
-        * self.flow.area_finned) / self.flow.width)  
-
-        self.flow.deltaP = (self.flow.f * self.flow.perimeter * self.flow.node_length /
-        self.flow.flow_area * (0.5 * self.flow.rho * self.flow.velocity ** 2) * 0.001)
+        self.flow.h = (
+            (self.flow.h_unfinned * self.flow.area_unfinned +
+            self.h_base * self.flow.area_finned) / self.flow.width
+            )  
+        
+        self.flow.deltaP = (
+            self.flow.f * self.flow.perimeter * self.flow.node_length
+            / self.flow.flow_area * (0.5 * self.flow.rho *
+            self.flow.velocity ** 2) * 0.001
+            )
         # pressure drop (kPa)
 
     def solve_enh(self):
