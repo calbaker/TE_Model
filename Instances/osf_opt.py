@@ -52,7 +52,7 @@ hx_osf0.exh.enh.thickness = 0.01 * 2.54e-2
 hx_osf0.exh.enh.spacing = 0.1 * 2.54e-2 
 hx_osf0.exh.enh.l = 0.47 * 2.54e-2
 
-hx_osf0.cool.enh = hx_osf0.cool.enh_lib.IdealFin()
+hx_osf0.cool.enh = hx_osf0.cool.set_enhancement('IdealFin')
 hx_osf0.cool.enh.thickness = 0.1 * 2.54e-2 
 hx_osf0.cool.enh.spacing = 0.4 * 2.54e-2
 

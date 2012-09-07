@@ -37,11 +37,11 @@ hx_fins0.te_pair.Ptype.material = 'HMS'
 
 hx_fins0.type = 'counter'
 
-hx_fins0.exh.enh = hx_fins0.exh.enh_lib.IdealFin()
+hx_fins0.exh.enh = hx_fins0.exh.set_enhancement('IdealFin')
 hx_fins0.exh.enh.thickness = 1.e-3
 hx_fins0.exh.enh.spacing = 1.26e-3
 
-hx_fins0.cool.enh = hx_fins0.cool.enh_lib.IdealFin()
+hx_fins0.cool.enh = hx_fins0.cool.set_enhancement('IdealFin')
 hx_fins0.cool.enh.thickness = 1.e-3
 hx_fins0.cool.enh.spacing = 1.e-3
 

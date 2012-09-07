@@ -36,7 +36,7 @@ hx2.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 hx2.te_pair.method = 'analytical'
 hx2.type = 'counter'
 
-hx2.exh.enh = hx2.exh.enh_lib.IdealFin()
+hx2.exh.enh = hx2.exh.set_enhancement('IdealFin')
 hx2.exh.enh.thickness = 2.e-3
 hx2.exh.enh.spacing = 3.19e-3
 hx2.exh.enh.k = 0.02

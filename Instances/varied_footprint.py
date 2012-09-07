@@ -35,7 +35,7 @@ hx1.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
 
 hx1.te_pair.method = 'analytical'
 hx1.type = 'counter'
-hx1.exh.enh = hx1.exh.enh_lib.IdealFin()
+hx1.exh.enh = hx1.exh.set_enhancement('IdealFin')
 hx1.exh.enh.thickness = 1.e-3
 hx1.exh.enh.N = 60
 
