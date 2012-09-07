@@ -34,7 +34,7 @@ class BejanPorous(object):
         # Nu for porous media parallel plates with const heat flux.
         # Bejan Eq. 12.77
 
-    def solve_enh(self, flow):
+    def solve_enh(self):
 
         """Solves for convection parameters with enhancement."""
 
@@ -113,15 +113,16 @@ class IdealFin(object):
 
     __init__
     set_eta
-    set_flow_geometry
+    set_enh_geometry
     set_h_and_P
     solve_enh
 
     """
 
-    def __init__(self):
+    def __init__(self, flow):
 
-        """Sets constants and things are needed at runtime."""
+        """Sets constants and things are needed at runtime.  Runs
+        set_fin_height and set_area_convection."""
 
         self.thickness = 1.e-3
         # fin thickness (m)
@@ -130,130 +131,120 @@ class IdealFin(object):
         self.spacing = 0.003
         # distance (m) between adjacent fin edges
 
-    def set_fin_height(self, flow):
+        self.set_fin_height()
+        self.set_area_convection()
+
+    def set_fin_height(self):
 
         """Sets fin height based on half of duct height."""
 
-        self.height = flow.height / 2
+        self.height = self.flow.height / 2
         # height of fin pair such that their tips meet in the
         # middle and are adiabatic.
 
-    def set_area_convection(self, flow):
+    def set_area_convection(self):
         
         """Sets finned and unfinned area for convection."""
 
-        flow.area_unfinned = (flow.width - self.N * self.thickness)        
-        flow.area_finned = self.N * self.thickness
+        self.flow.area_unfinned = (self.flow.width - self.N * self.thickness)        
+        self.flow.area_finned = self.N * self.thickness
 
-    def set_flow_geometry(self, flow):
+    def set_enh_geometry(self):
 
         """Fixes appropriate geometrical parameters.
 
-        Inputs:
-
-        flow : class instance of exhaust or coolant
-
         """
 
-        self.set_fin_height(flow)
+        self.set_fin_height(self.flow)
 
-        self.N = ((flow.width / self.spacing - 1.) / (1. +
+        self.N = ((self.flow.width / self.spacing - 1.) / (1. +
         self.thickness / self.spacing))
 
-        flow.perimeter = (2. * (self.spacing + flow.height) * (self.N + 1.))
+        self.flow.perimeter = (2. * (self.spacing + self.flow.height) * (self.N + 1.))
         # perimeter of new duct formed by fins with constant overall duct width
-        flow.flow_area = self.spacing * flow.height * (self.N + 1.)
+        self.flow.flow_area = self.spacing * self.flow.height * (self.N + 1.)
         # flow area (m^2) of new duct formed by fin
 
-        flow.D = 4. * flow.flow_area / flow.perimeter
+        self.flow.D = 4. * self.flow.flow_area / self.flow.perimeter
         # hydraulic diameter (m)
 
-        self.set_area_convection(flow)
-        flow.area_unfinned = (flow.width - self.N * self.thickness)        
-        flow.area_finned = self.N * self.thickness
+        self.set_area_convection(self.flow)
+        self.flow.area_unfinned = (self.flow.width - self.N * self.thickness)        
+        self.flow.area_finned = self.N * self.thickness
 
-    def set_eta(self, flow):
+    def set_eta(self):
 
         """Sets fin efficiency and related parameters.
 
-        Inputs:
-
-        flow : class instance of exhaust or coolant
-
         """
 
-        self.beta = np.sqrt(2. * flow.h / (self.k * self.thickness))
+        self.beta = np.sqrt(2. * self.flow.h / (self.k * self.thickness))
         # dimensionless fin parameter
         self.xi = self.beta * self.height
         # beta times fin length (self.height)
         self.eta = np.tanh(self.xi) / self.xi
         # fin efficiency
 
-    def set_h_and_P(self, flow):
+    def set_h_and_P(self):
 
         """Sets effective heat transfer coefficient and deltaP.
 
-        Inputs:
-        
-        flow : class instance of exhaust or coolant
-
         """
 
-        flow.h_unfinned = flow.h
+        self.flow.h_unfinned = self.flow.h
 
         self.effectiveness = self.eta * 2. * self.height / self.thickness
-        self.h_base = self.effectiveness * flow.h
+        self.h_base = self.effectiveness * self.flow.h
 
-        flow.h = ((flow.h_unfinned * flow.area_unfinned + self.h_base
-        * flow.area_finned) / flow.width)  
+        self.flow.h = ((self.flow.h_unfinned * self.flow.area_unfinned + self.h_base
+        * self.flow.area_finned) / self.flow.width)  
 
-        flow.deltaP = (flow.f * flow.perimeter * flow.node_length /
-        flow.flow_area * (0.5 * flow.rho * flow.velocity ** 2) * 0.001)
+        self.flow.deltaP = (self.flow.f * self.flow.perimeter * self.flow.node_length /
+        self.flow.flow_area * (0.5 * self.flow.rho * self.flow.velocity ** 2) * 0.001)
         # pressure drop (kPa)
 
-    def solve_enh(self, flow):
+    def solve_enh(self):
 
         """Runs all the other methods that need to run.
 
-        Inputs:
-
-        flow : class instance of exhaust or coolant
-
         Methods:
 
-        self.set_flow_geometry
+        self.set_enh_geometry
         self.set_eta
         self.set_h_and_P
 
         """
 
-        flow.set_Re_dependents()
-        flow.h = flow.Nu_D * flow.k / flow.D
+        self.flow.set_Re_dependents()
+        self.flow.h = self.flow.Nu_D * self.flow.k / self.flow.D
         # coefficient of convection (kW/m^2-K)
 
-        self.set_eta(flow)
-        self.set_h_and_P(flow)
+        self.set_eta(self.flow)
+        self.set_h_and_P(self.flow)
 
 class IdealFin2(IdealFin):
 
     """Class for modeling fin that crosses duct with adiabatic tip.
     
     Inherits traits of IdealFin."""
+        
+    def __init__(self):
+        super(IdealFin, self).__init__()        
 
-    def set_fin_height(self, flow):
+    def set_fin_height(self):
 
         """Sets fin height based on half of duct height."""
 
-        self.height = flow.height
+        self.height = self.flow.height
         # height of fin pair such that their tips meet in the
         # middle and are adiabatic.
 
-    def set_area_convection(self, flow):
+    def set_area_convection(self):
         
         """Sets finned and unfinned area for convection."""
 
-        flow.area_unfinned = (flow.width - self.N / 2. * self.thickness)        
-        flow.area_finned = self.N / 2. * self.thickness
+        self.flow.area_unfinned = (self.flow.width - self.N / 2. * self.thickness)        
+        self.flow.area_finned = self.N / 2. * self.thickness
 
 
 class OffsetStripFin(object):
@@ -277,7 +268,7 @@ class OffsetStripFin(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, flow):
 
         """Sets constants and things that need to be guessed to
         execute as a standalone model.
@@ -294,19 +285,15 @@ class OffsetStripFin(object):
         self.spacing = 0.001
         self.k = 0.2
 
-    def set_params(self, flow):
+    def set_params(self):
 
         """Sets flow parameters.
 
         See Manglik and Bergles Fig. 1.
 
-        Inputs:
-
-        flow
-
         """
 
-        self.height = flow.height - self.thickness
+        self.height = self.flow.height - self.thickness
         # vertical gap (m) between fins and hx walls
 
         # self.spacing : horizontal gap (m) between fins
@@ -315,7 +302,7 @@ class OffsetStripFin(object):
         self.delta = self.thickness / self.l
         self.gamma = self.thickness / self.spacing
 
-        self.rows = flow.length / self.l
+        self.rows = self.flow.length / self.l
         # number of rows of offset strip fins in streamwise direction
 
         self.area_frac = ((self.spacing * self.height) /
@@ -332,13 +319,13 @@ class OffsetStripFin(object):
         (self.spacing * self.l + self.height * self.l + self.thickness
         * self.height) + self.thickness * self.spacing))
 
-        self.flow_area = flow.flow_area * self.area_frac
+        self.flow_area = self.flow.self.flow_area * self.area_frac
         # actual flow area (m^2)
         self.perimeter = 4. * self.flow_area / self.D
         # check this calculation at some point ???
-        self.velocity = flow.velocity / self.area_frac
+        self.velocity = self.flow.velocity / self.area_frac
         # actual velocity (m/s) based on flow area
-        self.Re_D = self.velocity * self.D / flow.nu
+        self.Re_D = self.velocity * self.D / self.flow.nu
 
     def set_f(self):
 
@@ -356,7 +343,7 @@ class OffsetStripFin(object):
         self.Re_D ** 1.340 * self.alpha ** 0.504 * self.delta ** 0.456 *
         self.gamma ** -1.055) ** 0.1)
 
-    def solve_enh(self, flow):
+    def solve_enh(self):
         """Runs all the methods for this class.
 
         self.h comes from Thermal Design by HoSung Lee, eq. 5.230
@@ -371,25 +358,25 @@ class OffsetStripFin(object):
 
         """
 
-        self.set_params(flow)
+        self.set_params(self.flow)
         self.set_f()
-        flow.f = self.f
-        flow.deltaP = (self.f * self.perimeter * flow.node_length /
-                    flow.flow_area * (0.5 * flow.rho * self.velocity
+        self.flow.f = self.f
+        self.flow.deltaP = (self.f * self.perimeter * self.flow.node_length /
+                    self.flow.flow_area * (0.5 * self.flow.rho * self.velocity
         ** 2) * 0.001)
         # pressure drop (kPa)
         self.set_j()
-        self.h_conv = (self.j * flow.mdot / self.flow_area * flow.c_p /
-                   flow.Pr ** 0.667)
+        self.h_conv = (self.j * self.flow.mdot / self.flow_area * self.flow.c_p /
+                   self.flow.Pr ** 0.667)
         self.beta = np.sqrt(2. * self.h_conv / (self.k * self.thickness))
         self.xi = self.beta * self.height / 2.
         self.eta_fin = np.tanh(self.xi) / self.xi
         self.effectiveness = self.eta_fin * self.height / self.thickness
         self.h_base = self.h_conv * self.effectiveness
-        flow.h = ((self.h_base * self.thickness + self.h_conv * self.spacing) /
+        self.flow.h = ((self.h_base * self.thickness + self.h_conv * self.spacing) /
         (self.spacing + self.thickness))
 
-        flow.Nu_D = flow.h * flow.D / flow.k
+        self.flow.Nu_D = self.flow.h * self.flow.D / self.flow.k
 
 
 class JetArray(object):
@@ -455,7 +442,7 @@ class JetArray(object):
         self.ann_perimeter = 2. * (flow.width + self.H)
         self.ann_velocity = flow.Vdot / self.ann_area / 2.
 
-    def set_flow(self, flow):
+    def set_enh_flow(self, flow):
         """Determines pressure drop through jet array.
 
         Sets the following variables
@@ -499,7 +486,7 @@ class JetArray(object):
 
         self.set_number(flow)
         self.set_annulus(flow)
-        self.set_flow(flow)
+        self.set_enh_flow(flow)
         self.set_Nu_D(flow)
         flow.h = flow.Nu_D * flow.k / self.D
         flow.f = 37.
