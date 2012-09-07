@@ -12,20 +12,17 @@ if cmd_folder not in sys.path:
 import real_hx
 reload(real_hx)
 
-hx_exp = real_hx.get_hx()
+hx_val = real_hx.get_hx()
 
-hx_exp.exh.T_inlet = 406.1 + 273.15
-hx_exp.cool.T_outlet = 310.
+hx_val.exh.T_inlet = 700.
+hx_val.cool.T_outlet = 300.
 
-hx_exp.cummins.RPM = 1940.
-hx_exp.set_mdot_charge()
-hx_exp.exh.mdot = hx_exp.exh.mdot
+hx_val.exh.mdot = 0.0833
 
-# hx_exp.cool.T_outlet = fsolve(hx_exp.get_T_inlet_error,
-#                                 x0=hx_exp.cool.T_outlet, xtol=0.01)
-hx_exp.solve_hx()
+# hx_val.cool.T_outlet = fsolve(hx_val.get_T_inlet_error,
+#                                 x0=hx_val.cool.T_outlet, xtol=0.01)
+hx_val.solve_hx()
 
-print "\nProgram finished."
 print "\nPlotting..."
 
 # Plot configuration
@@ -37,15 +34,17 @@ plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
+plt.close()
+
 plt.figure()
-plt.plot(hx_exp.x * 100., hx_exp.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(hx_exp.x * 100., hx_exp.te_pair.T_h_nodes, '-g', label='TE Hot Side')
-plt.plot(hx_exp.x * 100., hx_exp.te_pair.T_c_nodes, '-k', label='TE Cold Side')
-plt.plot(hx_exp.x * 100., hx_exp.cool.T_nodes, '-b', label='Coolant')
+plt.plot(hx_val.x * 100., hx_val.exh.T_nodes, '-r', label='Exhaust')
+plt.plot(hx_val.x * 100., hx_val.te_pair.T_h_nodes, '-g', label='TE Hot Side')
+plt.plot(hx_val.x * 100., hx_val.te_pair.T_c_nodes, '-k', label='TE Cold Side')
+plt.plot(hx_val.x * 100., hx_val.cool.T_nodes, '-b', label='Coolant')
 
 plt.xlabel('Distance Along HX (cm)')
 plt.ylabel('Temperature (K)')
-#plt.title('Temperature v. Distance, '+hx_exp.type)
+#plt.title('Temperature v. Distance, '+hx_val.type)
 plt.grid()
 # plt.legend(loc='center left')
 plt.subplots_adjust(bottom=0.15)
@@ -54,14 +53,14 @@ plt.legend(loc="upper right")
 plt.savefig('../Plots/fin_inst/temp.png')
 plt.savefig('../Plots/fin_inst/temp.pdf')
 
-# plt.show()
+print "\ndeltaP:", hx_val.exh.deltaP_total
 
-print "hot side heat transfer:", hx_exp.Qdot_total, 'W'
-print "power net:", hx_exp.power_net * 1000., 'W'
-print "power raw:", hx_exp.te_pair.power_total * 1000., 'W'
-print "pumping power:", hx_exp.Wdot_pumping * 1000., 'W'
-hx_exp.exh.volume = hx_exp.exh.height * hx_exp.exh.width * hx_exp.length
-print "exhaust volume:", hx_exp.exh.volume * 1000., 'L'
-print "exhaust power density:", hx_exp.power_net / hx_exp.exh.volume, 'kW/m^3'
+print "\nhot side heat transfer:", hx_val.Qdot_total, 'W'
+print "power net:", hx_val.power_net * 1000., 'W'
+print "power raw:", hx_val.te_pair.power_total * 1000., 'W'
+print "pumping power:", hx_val.Wdot_pumping * 1000., 'W'
+hx_val.exh.volume = hx_val.exh.height * hx_val.exh.width * hx_val.length
+print "exhaust volume:", hx_val.exh.volume * 1000., 'L'
+print "exhaust power density:", hx_val.power_net / hx_val.exh.volume, 'kW/m^3'
 
-
+plt.show()
