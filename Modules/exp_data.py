@@ -33,11 +33,11 @@ class ExpData(object):
 
         self.cool.T_in = (
             0.5 * (self.data['hx_cool_1_in_t'] +
-            self.data['hx_cool_2_in_t'])
+            self.data['hx_cool_2_in_t']) + 273.15  # K
             )
         self.cool.T_out = (
             0.5 * (self.data['hx_cool_1_out_t'] +
-            self.data['hx_cool_2_out_t'])
+            self.data['hx_cool_2_out_t']) + 273.15  # K
             )
         self.cool.Vdot = self.data['cool_vdot_gpm']
 
