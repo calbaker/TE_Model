@@ -71,41 +71,29 @@ class HX(object):
         self.fix_geometry
 
         """
-<<<<<<< HEAD
-        self.R_interconnect = 0.00075 # (m^2*K/kW)
-=======
 
         self.R_extra = 0.
         # Dummy variable that can be used as a fit parameter or for
         # any other appropriate purpose to add thermal resistance to
         # the model
 
-        self.R_interconnect = 0.00075
->>>>>>> 98a07ec1d5cff00f21bb91f7c061d7effdf3708d
+        self.R_interconnect = 0.00075 # (m^2*K/kW)
         # Resistance of copper interconnect assuming a thickness of
         # 0.3 mm (Ref: Hori, Y., D. Kusano, T. Ito, and
         # K. Izumi. “Analysis on Thermo-mechanical Stress of
         # Thermoelectric Module.” In Thermoelectrics 1999. Eighteenth
         # International Conference On, 328 –331, 1999), where
         # k_interconnect = 400 W/(m-K)
-<<<<<<< HEAD
-        self.R_substrate = 0.005 # (m^2*K/kW)
-=======
 
-        self.R_substrate = 0.005
->>>>>>> 98a07ec1d5cff00f21bb91f7c061d7effdf3708d
+        self.R_substrate = 0.005 # (m^2*K/kW)
         # resistance of ceramic substrate(AlN) 1 mmm thick (Hori, Y.,
         # D. Kusano, T. Ito, and K. Izumi. “Analysis on
         # Thermo-mechanical Stress of Thermoelectric Module.” In
         # Thermoelectrics, 1999. Eighteenth International Conference
         # On, 328 –331, 1999.), based on k_ceramic = 200 W/(m-K)
         # obtained from Thermoelectrics Handbook.
-<<<<<<< HEAD
-        self.R_contact = 0.00003 # (m^2*K/kW)
-=======
 
-        self.R_contact = 0.00003
->>>>>>> 98a07ec1d5cff00f21bb91f7c061d7effdf3708d
+        self.R_contact = 0.00003 # (m^2*K/kW)
         # Thermal contact resistance for all three contacts estimated
         # using alumina/copper contact resistance extracted from
         # Gundrum, Bryan C., David G. Cahill, and Robert
