@@ -1,9 +1,5 @@
 """Contains class for coolant side of heat exchanger.""" 
 
-# In python directory
-import properties as prop
-import types
-
 # In local directory
 import functions
 reload(functions)

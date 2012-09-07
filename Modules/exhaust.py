@@ -1,8 +1,5 @@
 """Contains class for exhaust side of heat exchanger"""
 
-# Distribution libraries
-import types
-
 # In python directory
 import properties as prop
 reload(prop)
