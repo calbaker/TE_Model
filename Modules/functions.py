@@ -125,7 +125,7 @@ def set_flow(self):
         self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )       
         # pressure drop (kPa)
     else:
-        self.enh.solve_enh(self)
+        self.enh.solve_enh()
 
     self.Wdot_pumping = self.Vdot * self.deltaP 
     # pumping power (kW)

@@ -133,7 +133,7 @@ class IdealFin(object):
 
         self.flow = flow
         self.set_fin_height()
-        self.set_area_convection()
+        self.set_enh_geometry()
 
     def set_fin_height(self):
 
@@ -156,7 +156,7 @@ class IdealFin(object):
 
         """
 
-        self.set_fin_height(self.flow)
+        self.set_fin_height()
 
         self.N = ((self.flow.width / self.spacing - 1.) / (1. +
         self.thickness / self.spacing))
@@ -169,7 +169,7 @@ class IdealFin(object):
         self.flow.D = 4. * self.flow.flow_area / self.flow.perimeter
         # hydraulic diameter (m)
 
-        self.set_area_convection(self.flow)
+        self.set_area_convection()
 
     def set_eta(self):
 
@@ -218,8 +218,8 @@ class IdealFin(object):
         self.flow.h = self.flow.Nu_D * self.flow.k / self.flow.D
         # coefficient of convection (kW/m^2-K)
 
-        self.set_eta(self.flow)
-        self.set_h_and_P(self.flow)
+        self.set_eta()
+        self.set_h_and_P()
 
 class IdealFin2(IdealFin):
 
@@ -228,8 +228,7 @@ class IdealFin2(IdealFin):
     Inherits traits of IdealFin."""
         
     def __init__(self, flow):
-        self.flow = flow
-        super(IdealFin, self).__init__()        
+        super(IdealFin2, self).__init__(flow)        
 
     def set_fin_height(self):
 
@@ -358,7 +357,7 @@ class OffsetStripFin(object):
 
         """
 
-        self.set_params(self.flow)
+        self.set_params()
         self.set_f()
         self.flow.f = self.f
         self.flow.deltaP = (self.f * self.perimeter * self.flow.node_length /
