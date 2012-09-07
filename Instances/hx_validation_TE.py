@@ -9,17 +9,45 @@ import os, sys
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
-import real_hx
-reload(real_hx)
+import hx
+reload(hx)
 
-hx_exp = real_hx.get_hx()
+hx_exp = hx.HX()
+
+# These values must be checked
+hx_exp.width = 20. * 2.54e-2
+hx_exp.exh.height = 2.5 * 2.54e-2
+hx_exp.cool.height = 1. * 2.54e-2
+hx_exp.length = 20. * 2.54e-2
+
+hx_exp.te_pair.Ptype.area = (2.e-3) ** 2
+
+hx_exp.te_pair.leg_area_ratio = 0.662
+hx_exp.te_pair.I = 15.0  # turns off TE effect
+hx_exp.te_pair.length = 3.34e-4
+hx_exp.te_pair.fill_fraction = 0.035
+
+hx_exp.te_pair.set_leg_areas()
+
+hx_exp.te_pair.Ntype.material = 'MgSi'
+hx_exp.te_pair.Ptype.material = 'HMS'
+
+hx_exp.type = 'counter'
+
+hx_exp.exh.enh = hx_exp.exh.enh_lib.IdealFin2()
+hx_exp.exh.enh.thickness = 0.1 * 2.54e-2
+hx_exp.exh.enh.spacing = 0.3 * 2.54e-2
+
+hx_exp.cool.enh = hx_exp.cool.enh_lib.IdealFin()
+hx_exp.cool.enh.thickness = 0.08 * 2.54e-2
+hx_exp.cool.enh.spacing = 0.32 * 2.54e-2
 
 hx_exp.exh.T_inlet = 406.1 + 273.15
+hx_exp.cool.T_inlet_set = 300.
 hx_exp.cool.T_outlet = 310.
 
 hx_exp.cummins.RPM = 1940.
 hx_exp.set_mdot_charge()
-hx_exp.exh.mdot = hx_exp.exh.mdot
 
 # hx_exp.cool.T_outlet = fsolve(hx_exp.get_T_inlet_error,
 #                                 x0=hx_exp.cool.T_outlet, xtol=0.01)
