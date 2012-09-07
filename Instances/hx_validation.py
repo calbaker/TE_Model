@@ -14,9 +14,16 @@ reload(real_hx)
 
 hx_val = real_hx.get_hx()
 
+k_gypsum = 0.17e-3
+# thermal conductivity (kW / (m * K)) of gypsum board from Incropera
+# and DeWitt Intro. to Heat Transfer 5th ed., Table A.3
+thickness_gypsum = 0.25 * 2.54e-2
+# thickness (m) of gypsum board
+hx_val.R_extra = thickness_gypsum / k_gypsum
+
 hx_val.exh.T_inlet = 700.
 hx_val.cool.T_outlet = 300.
-hx_val.exh.mdot = 0.0833
+hx_val.exh.mdot = 0.221
 hx_val.cool.mdot = 0.5
 
 hx_val.solve_hx()
