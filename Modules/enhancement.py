@@ -287,6 +287,7 @@ class OffsetStripFin(object):
         self.l = 0.01
         self.spacing = 0.001
         self.k = 0.2
+        self.flow = flow
 
     def set_params(self):
 
@@ -322,7 +323,7 @@ class OffsetStripFin(object):
         (self.spacing * self.l + self.height * self.l + self.thickness
         * self.height) + self.thickness * self.spacing))
 
-        self.flow_area = self.flow.self.flow_area * self.area_frac
+        self.flow_area = self.flow.flow_area * self.area_frac
         # actual flow area (m^2)
         self.perimeter = 4. * self.flow_area / self.D
         # check this calculation at some point ???
