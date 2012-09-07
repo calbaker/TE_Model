@@ -16,8 +16,8 @@ hx_val = real_hx.get_hx()
 
 hx_val.exh.T_inlet = 700.
 hx_val.cool.T_outlet = 300.
-
 hx_val.exh.mdot = 0.0833
+hx_val.cool.mdot = 0.5
 
 hx_val.solve_hx()
 
