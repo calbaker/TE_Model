@@ -28,11 +28,11 @@ def set_flow_geometry(self, width):
 
     if self.enh != None:
         try:
-            self.enh.set_flow_geometry(self)
+            self.enh.set_enh_geometry()
         except AttributeError:
             pass
         else:
-            self.enh.set_flow_geometry(self)
+            self.enh.set_enh_geometry()
 
 def set_Re_dependents(self):
 

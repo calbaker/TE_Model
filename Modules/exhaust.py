@@ -27,13 +27,6 @@ class Exhaust(prop.ideal_gas):
         """
         Sets a bunch of constants, binds methods, inits parent class
 
-        Binds these methods:
-
-        set_flow_geometry
-        set_Re
-        set_Re_dependents
-        set_flow
-
         self.enh_lib = enhancement - Used in hx.py 
 
         Also initializes super class, which is ideal_gas from the
