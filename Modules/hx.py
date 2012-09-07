@@ -447,7 +447,7 @@ class HX(object):
         self.te_pair.T_c_nodes[i] = self.te_pair.T_c
         self.te_pair.power_nodes[i] = self.te_pair.P * self.leg_pairs
         self.te_pair.eta_nodes[i] = self.te_pair.eta
-        self.te_pair.h_nodes[i] = self.te_pair.h
+        self.te_pair.h_nodes[i] = self.te_pair.h_eff
 
         self.exh.T_nodes[i] = self.exh.T
         self.exh.Vdot_nodes[i] = self.exh.Vdot
@@ -456,7 +456,7 @@ class HX(object):
         self.exh.Wdot_nodes[i] = self.exh.Wdot_pumping
         self.exh.Nu_nodes[i] = self.exh.Nu_D
         self.exh.c_p_nodes[i] = self.exh.c_p
-        self.exh.h_nodes[i] = self.exh.h
+        self.exh.h_nodes[i] = self.exh.h_conv
         self.exh.velocity_nodes[i] = self.exh.velocity
         self.exh.entropy_nodes[i] = self.exh.entropy
         self.exh.enthalpy_nodes[i] = self.exh.enthalpy

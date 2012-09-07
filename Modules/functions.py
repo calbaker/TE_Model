@@ -117,7 +117,7 @@ def set_flow(self):
     # velocity (m/s) of exhaust
 
     self.set_Re_dependents()
-    self.h = self.Nu_D * self.k / self.D 
+    self.h_conv= self.Nu_D * self.k / self.D 
     # coefficient of convection (kW/m^2-K)
         
     if self.enh == None:
@@ -133,7 +133,7 @@ def set_flow(self):
     self.Wdot_pumping = self.Vdot * self.deltaP 
     # pumping power (kW)
 
-    self.R_thermal = 1. / self.h
+    self.R_thermal = 1. / self.h_conv
     # thermal resistance (m^2-K/kW) of exhaust
 
 def set_enhancement(self, enh_type):

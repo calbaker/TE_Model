@@ -19,8 +19,6 @@ hx_val.cool.T_outlet = 300.
 
 hx_val.exh.mdot = 0.0833
 
-# hx_val.cool.T_outlet = fsolve(hx_val.get_T_inlet_error,
-#                                 x0=hx_val.cool.T_outlet, xtol=0.01)
 hx_val.solve_hx()
 
 print "\nPlotting..."

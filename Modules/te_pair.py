@@ -120,9 +120,9 @@ class TE_Pair(object):
             )
         # area averaged hot side heat flux (kW/m^2)
 
-        self.h = self.q_h / (self.T_h - self.T_c)
+        self.h_eff= self.q_h / (self.T_h - self.T_c)
         # effective coeffient of convection (kW/m^2-K)
-        self.R_thermal = 1. / self.h
+        self.R_thermal = 1. / self.h_eff
 
     def get_error(self, knob_arr):
 

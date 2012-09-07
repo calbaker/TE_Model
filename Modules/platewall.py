@@ -30,5 +30,5 @@ class PlateWall(object):
 
         """Sets the effective convection coefficient."""
 
-        self.h = self.k/self.thickness
-        self.R_thermal = 1. / self.h
+        self.h_conv= self.k / self.thickness
+        self.R_thermal = 1. / self.h_conv

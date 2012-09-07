@@ -48,7 +48,7 @@ class BejanPorous(object):
         self.flow_area * (0.5 * self.rho * self.velocity ** 2) *
         0.001)
         # pressure drop (kPa)
-        self.h = self.Nu_D * self.k / self.D
+        self.h_conv= self.Nu_D * self.k / self.D
         # coefficient of convection (kW/m^2-K)
 
 
@@ -99,7 +99,7 @@ class MancinPorous(object):
         self.deltaP = (self.length * 2. * self.F * self.G ** 2 /
         (self.D_pore * self.rho) * 0.001)
         # pressure drop from Mancin et al.
-        self.h = self.Nu_D * self.k_matrix / self.D
+        self.h_conv= self.Nu_D * self.k_matrix / self.D
         # coefficient of convection (kW/m^2-K)
 
 
@@ -176,7 +176,7 @@ class IdealFin(object):
 
         """
 
-        self.beta = np.sqrt(2. * self.flow.h / (self.k * self.thickness))
+        self.beta = np.sqrt(2. * self.flow.h_conv/ (self.k * self.thickness))
         # dimensionless fin parameter
         self.xi = self.beta * self.height
         # beta times fin length (self.height)
@@ -189,12 +189,12 @@ class IdealFin(object):
 
         """
 
-        self.flow.h_unfinned = self.flow.h
+        self.flow.h_unfinned = self.flow.h_conv
 
         self.effectiveness = self.eta * 2. * self.height / self.thickness
-        self.h_base = self.effectiveness * self.flow.h
+        self.h_base = self.effectiveness * self.flow.h_conv
 
-        self.flow.h = (
+        self.flow.h_conv= (
             (self.flow.h_unfinned * self.flow.area_unfinned +
             self.h_base * self.flow.area_finned) / self.flow.width
             )  
@@ -219,7 +219,7 @@ class IdealFin(object):
         """
 
         self.flow.set_Re_dependents()
-        self.flow.h = self.flow.Nu_D * self.flow.k / self.flow.D
+        self.flow.h_conv= self.flow.Nu_D * self.flow.k / self.flow.D
         # coefficient of convection (kW/m^2-K)
 
         self.set_eta()
@@ -349,7 +349,7 @@ class OffsetStripFin(object):
     def solve_enh(self):
         """Runs all the methods for this class.
 
-        self.h comes from Thermal Design by HoSung Lee, eq. 5.230
+        self.h_convcomes from Thermal Design by HoSung Lee, eq. 5.230
         self.eta_fin : fin efficiency
 
 
@@ -376,10 +376,10 @@ class OffsetStripFin(object):
         self.eta_fin = np.tanh(self.xi) / self.xi
         self.effectiveness = self.eta_fin * self.height / self.thickness
         self.h_base = self.h_conv * self.effectiveness
-        self.flow.h = ((self.h_base * self.thickness + self.h_conv * self.spacing) /
+        self.flow.h_conv= ((self.h_base * self.thickness + self.h_conv * self.spacing) /
         (self.spacing + self.thickness))
 
-        self.flow.Nu_D = self.flow.h * self.flow.D / self.flow.k
+        self.flow.Nu_D = self.flow.h_conv* self.flow.D / self.flow.k
 
 
 class JetArray(object):
@@ -491,7 +491,7 @@ class JetArray(object):
         self.set_annulus(flow)
         self.set_enh_flow(flow)
         self.set_Nu_D(flow)
-        flow.h = flow.Nu_D * flow.k / self.D
+        flow.h_conv= flow.Nu_D * flow.k / self.D
         flow.f = 37.
         # this might need to be changed, or it might be a dummy
         # variable just to keep the code from complaining.
