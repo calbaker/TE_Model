@@ -131,6 +131,7 @@ class IdealFin(object):
         self.spacing = 0.003
         # distance (m) between adjacent fin edges
 
+        self.flow = flow
         self.set_fin_height()
         self.set_area_convection()
 
@@ -228,7 +229,8 @@ class IdealFin2(IdealFin):
     
     Inherits traits of IdealFin."""
         
-    def __init__(self):
+    def __init__(self, flow):
+        self.flow = flow
         super(IdealFin, self).__init__()        
 
     def set_fin_height(self):
