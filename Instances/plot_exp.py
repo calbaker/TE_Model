@@ -50,12 +50,30 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.bar3d(
     hx_exp.exh.mdot, hx_exp.exh.T_in,
-    np.zeros(hx_exp.exh.Qdot.size), dx, dy, hx_exp.exh.Qdot
+    np.zeros(hx_exp.exh.Qdot.size), dx, dy, hx_exp.exh.Qdot,
+    alpha=0.5
     )
 ax.bar3d(
     hx_exp.exh.mdot, hx_exp.exh.T_in,
-    np.zeros(hx_exp.exh.Qdot.size), -dx, -dy,
-    hx_mod.Qdot_arr, color='r'
+    np.zeros(hx_exp.exh.Qdot.size), dx, dy,
+    hx_mod.Qdot_arr, color='r', alpha=0.5
+    )
+
+ax.set_xlabel(r'$\dot{m}$ (kg/s)')
+ax.set_ylabel(r'$T_{exh,in}$ (K)')
+ax.set_zlabel(r'$\dot{Q}$')
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.bar3d(
+    hx_exp.exh.mdot, hx_exp.exh.T_in,
+    np.zeros(hx_exp.exh.delta_P.size), dx, dy, hx_exp.exh.delta_P,
+    alpha=0.5
+    )
+ax.bar3d(
+    hx_exp.exh.mdot, hx_exp.exh.T_in,
+    np.zeros(hx_exp.exh.delta_P.size), dx, dy,
+    hx_mod.exh.delta_P_arr, color='r', alpha=0.5
     )
 
 ax.set_xlabel(r'$\dot{m}$ (kg/s)')
