@@ -71,28 +71,28 @@ class HX(object):
         self.fix_geometry
 
         """
-        self.R_interconnect = 0.00075
+        self.R_interconnect = 0.00075 # (m^2*K/kW)
         # Resistance of copper interconnect assuming a thickness of
         # 0.3 mm (Ref: Hori, Y., D. Kusano, T. Ito, and
         # K. Izumi. “Analysis on Thermo-mechanical Stress of
         # Thermoelectric Module.” In Thermoelectrics 1999. Eighteenth
         # International Conference On, 328 –331, 1999), where
         # k_interconnect = 400 W/(m-K)
-        self.R_substrate = 0.005
+        self.R_substrate = 0.005 # (m^2*K/kW)
         # resistance of ceramic substrate(AlN) 1 mmm thick (Hori, Y.,
         # D. Kusano, T. Ito, and K. Izumi. “Analysis on
         # Thermo-mechanical Stress of Thermoelectric Module.” In
         # Thermoelectrics, 1999. Eighteenth International Conference
         # On, 328 –331, 1999.), based on k_ceramic = 200 W/(m-K)
         # obtained from Thermoelectrics Handbook.
-        self.R_contact = 0.00003
+        self.R_contact = 0.00003 # (m^2*K/kW)
         # Thermal contact resistance for all three contacts estimated
         # using alumina/copper contact resistance extracted from
         # Gundrum, Bryan C., David G. Cahill, and Robert
         # S. Averback. “Thermal Conductance of Metal-metal
         # Interfaces.” Physical Review B 72, no. 24 (December 30, 2005): 245426.
         
-        # self.R_contact = 0.8322
+        # self.R_contact = 0.8322 # (m^2*K/kW)
         # thermal contact resistance (m^2*K/kW) for plate/substrate,
         # substrate/interconnect, and interconnect/TE leg interfaces
         # all combined. All estimated (at 450 K) based on AlN/Cu
