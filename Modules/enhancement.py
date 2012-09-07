@@ -170,8 +170,6 @@ class IdealFin(object):
         # hydraulic diameter (m)
 
         self.set_area_convection(self.flow)
-        self.flow.area_unfinned = (self.flow.width - self.N * self.thickness)        
-        self.flow.area_finned = self.N * self.thickness
 
     def set_eta(self):
 
