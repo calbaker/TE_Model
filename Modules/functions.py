@@ -124,6 +124,9 @@ def set_flow(self):
         self.deltaP = ( self.f * self.perimeter * self.node_length /
         self.flow_area * (0.5 * self.rho * self.velocity**2) * 0.001 )       
         # pressure drop (kPa)
+        print """Something is wrong in set_flow in
+        Modules/functions.py if you thought you were using
+        enhancement."""
     else:
         self.enh.solve_enh()
 
@@ -154,6 +157,8 @@ def set_enhancement(self, enh_type):
         print "IdealFin"
         print "IdealFin2"
         print "OffsetStripFin"
+
+    return self.enh
 
 def bind_functions(self):
     """Binds functions used by both coolant and exhaust."""
