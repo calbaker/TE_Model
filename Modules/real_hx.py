@@ -71,7 +71,9 @@ def solve_hx(hx_exp, hx_mod):
     for i in range(hx_exp.exh.T_in.size):
         hx_mod.exh.T_inlet = hx_exp.exh.T_in[i]
         hx_mod.exh.mdot = hx_exp.exh.mdot[i]
-        hx_mod.cool.mdot = hx_exp.cool.Vdot[i] * hx_mod.cool.rho
+        hx_mod.cool.mdot = (
+            hx_exp.cool.Vdot[i] * 3.8e-3 / 60 * hx_mod.cool.rho
+            ) # kg / s
         hx_mod.cool.T_outlet = hx_exp.cool.T_out[i]
 
         hx_mod.solve_hx()
