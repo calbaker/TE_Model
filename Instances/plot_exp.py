@@ -78,6 +78,6 @@ ax.bar3d(
 
 ax.set_xlabel(r'$\dot{m}$ (kg/s)')
 ax.set_ylabel(r'$T_{exh,in}$ (K)')
-ax.set_zlabel(r'$\dot{Q}$')
+ax.set_zlabel(r'$\Delta P$')
 
 plt.show()
