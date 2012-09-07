@@ -161,6 +161,8 @@ class IdealFin(object):
         self.N = ((self.flow.width / self.spacing - 1.) / (1. +
         self.thickness / self.spacing))
 
+
+        print 'setting flow perimeter'
         self.flow.perimeter = (2. * (self.spacing + self.flow.height) * (self.N + 1.))
         # perimeter of new duct formed by fins with constant overall duct width
         self.flow.flow_area = self.spacing * self.flow.height * (self.N + 1.)

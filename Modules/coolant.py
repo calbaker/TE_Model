@@ -22,13 +22,6 @@ class Coolant(object):
         """
         Sets contants and instantiates classes.
 
-        Binds these methods:
-
-        set_flow_geometry
-        set_Re
-        set_Re_dependents
-        set_flow
-
         self.enh_lib = enhancement - Used in hx.py 
 
         """
