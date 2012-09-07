@@ -17,48 +17,48 @@ def get_hx():
     """Sets up and returns an hx instance that has the geometry of the
     experimental hx downstairs."""
 
-    hx_exp = hx.HX()
+    hx_mod = hx.HX()
 
-    hx_exp.plate.thickness = (
+    hx_mod.plate.thickness = (
         (0.300 +  # thickness (in) of coolant plate
          0.375)  # thickness (in) of exhaust plate
         * 2.54e-3
         )  # total thickness (m)
-    hx_exp.plate.set_h()
+    hx_mod.plate.set_h()
 
     # These values must be checked
-    hx_exp.width = 20. * 2.54e-2
-    hx_exp.exh.height = 2.5 * 2.54e-2
-    hx_exp.cool.height = 1. * 2.54e-2
-    hx_exp.length = 20. * 2.54e-2
+    hx_mod.width = 20. * 2.54e-2
+    hx_mod.exh.height = 2.5 * 2.54e-2
+    hx_mod.cool.height = 1. * 2.54e-2
+    hx_mod.length = 20. * 2.54e-2
     
-    hx_exp.te_pair.Ptype.area = (2.e-3) ** 2
+    hx_mod.te_pair.Ptype.area = (2.e-3) ** 2
     
-    hx_exp.te_pair.leg_area_ratio = 0.662
-    hx_exp.te_pair.I = 0.001  # turns off TE effect
-    hx_exp.te_pair.length = 1.e-5
-    hx_exp.te_pair.fill_fraction = 1.
+    hx_mod.te_pair.leg_area_ratio = 0.662
+    hx_mod.te_pair.I = 0.001  # turns off TE effect
+    hx_mod.te_pair.length = 1.e-5
+    hx_mod.te_pair.fill_fraction = 1.
     
-    hx_exp.te_pair.set_leg_areas()
+    hx_mod.te_pair.set_leg_areas()
     
-    hx_exp.te_pair.Ntype.material = 'MgSi'
-    hx_exp.te_pair.Ptype.material = 'HMS'
+    hx_mod.te_pair.Ntype.material = 'MgSi'
+    hx_mod.te_pair.Ptype.material = 'HMS'
     
-    hx_exp.type = 'counter'
+    hx_mod.type = 'counter'
 
-    hx_exp.exh.set_enhancement('IdealFin2')
-    hx_exp.exh.enh.thickness = 0.1 * 2.54e-2
-    hx_exp.exh.enh.spacing = 0.298 * 2.54e-2
+    hx_mod.exh.set_enhancement('IdealFin2')
+    hx_mod.exh.enh.thickness = 0.1 * 2.54e-2
+    hx_mod.exh.enh.spacing = 0.298 * 2.54e-2
     # spacing = 0.400 - 0.124 / 2. - 0.040 = 0.298
     
-    hx_exp.cool.set_enhancement('IdealFin')
-    hx_exp.cool.enh.thickness = 0.08 * 2.54e-2
-    hx_exp.cool.enh.spacing = 0.320 * 2.54e-2
+    hx_mod.cool.set_enhancement('IdealFin')
+    hx_mod.cool.enh.thickness = 0.08 * 2.54e-2
+    hx_mod.cool.enh.spacing = 0.320 * 2.54e-2
     # spacing = 0.400 - 0.100 / 2. - 0.030 = 0.320
     
-    hx_exp.cool.T_inlet_set = 300.
+    hx_mod.cool.T_inlet_set = 300.
 
-    return hx_exp
+    return hx_mod
 
 def solve_hx(hx_exp, hx_mod):
 
