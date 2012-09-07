@@ -56,14 +56,7 @@ class Exhaust(prop.ideal_gas):
 
         self.Nu_coeff = 0.023
 
-        self.set_flow_geometry = (
-        types.MethodType(functions.set_flow_geometry, self) )
-        self.set_Re = (
-        types.MethodType(functions.set_Re, self) )
-        self.set_Re_dependents = (
-        types.MethodType(functions.set_Re_dependents, self) )
-        self.set_flow = (
-        types.MethodType(functions.set_flow, self) )
+        functions.bind_functions(self)
 
     def set_fluid_props(self):
          

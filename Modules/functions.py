@@ -2,6 +2,7 @@
 modules."""
 
 import numpy as np
+import types
 
 def set_flow_geometry(self, width):
 
@@ -132,3 +133,42 @@ def set_flow(self):
     self.R_thermal = 1. / self.h
     # thermal resistance (m^2-K/kW) of exhaust
 
+def set_enhancement(self, enh_type):
+    
+    """For some enhancement strategies, this is useful for
+    instantiating the instance because it can pass the exhaust or flow
+    instance to the enhancment instance."""
+
+    if enh_type == 'IdealFin':
+        self.enh = self.enh_lib.IdealFin(self)
+
+    elif enh_type == 'IdealFin2':
+        self.enh = self.enh_lib.IdealFin2(self)
+
+    elif enh_type == 'OffsetStripFin':
+        self.enh = self.enh_lib.OffsetStripFin(self)
+
+    else:
+        print "Error in enh_type specification."
+        print "Possible options are:"
+        print "IdealFin"
+        print "IdealFin2"
+        print "OffsetStripFin"
+
+def bind_functions(self):
+    """Binds functions used by both coolant and exhaust."""
+    self.set_flow_geometry = (
+        types.MethodType(set_flow_geometry, self)
+        )
+    self.set_Re = (
+        types.MethodType(set_Re, self)
+        )
+    self.set_Re_dependents = (
+        types.MethodType(set_Re_dependents, self)
+        )
+    self.set_flow = (
+        types.MethodType(set_flow, self)
+        )
+    self.set_enhancement = (
+        types.MethodType(set_enhancement, self)
+        )
