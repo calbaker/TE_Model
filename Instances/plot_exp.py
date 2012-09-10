@@ -18,7 +18,7 @@ reload(real_hx)
 
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
-hx_exp.file = '2012-09-04 gypsum.csv'
+hx_exp.file = '2012-09-10 gypsum'
 hx_exp.import_data()
 
 hx_mod = real_hx.get_hx()
@@ -30,6 +30,12 @@ thickness_gypsum = 0.25 * 2.54e-2
 hx_mod.R_extra = thickness_gypsum / k_gypsum
 
 hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
+
+np.savez(
+    '../output/plot_exp/' + hx_exp.file, 
+    hx_exp.exh.mdot, hx_exp.exh.T_in, hx_exp.exh.delta_P,
+    hx_mod.exh.delta_P_arr, hx_exp.exh.Qdot, hx_mod.Qdot_arr
+    )
 
 # Plot configuration
 FONTSIZE = 12

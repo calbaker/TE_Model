@@ -15,7 +15,7 @@ class ExpData(object):
         """nothing to do here yet"""
 
         self.folder = '../../../Heat Exchanger Experiments/gen2/'
-        self.file = '2012-09-04.csv'
+        self.file = '2012-09-04'
         self.exh = prop.ideal_gas()
         self.exh.P = 101.325
         self.cool = DataPoint()
@@ -24,7 +24,7 @@ class ExpData(object):
         """Imports data from csv file as a numpy record array (aka
         structured array)"""
 
-        self.data = np.recfromcsv(self.folder + self.file)
+        self.data = np.recfromcsv(self.folder + self.file + '.csv')
 
         self.exh.T_in = self.data['hx_exh_in_t'] + 273.15  # K
         self.exh.T_out = self.data['hx_exh_out_t'] + 273.15  # K
