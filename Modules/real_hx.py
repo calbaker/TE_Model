@@ -48,13 +48,13 @@ def get_hx():
 
     hx_mod.exh.set_enhancement('IdealFin2')
     hx_mod.exh.enh.thickness = 0.1 * 2.54e-2
-    hx_mod.exh.enh.spacing = 0.298 * 2.54e-2
-    # spacing = 0.400 - 0.124 / 2. - 0.040 = 0.298
+    hx_mod.exh.enh.spacing = 0.098 * 2.54e-2
+    # spacing = 0.200 - 0.124 / 2. - 0.040 = 0.098 in
     
     hx_mod.cool.set_enhancement('IdealFin')
     hx_mod.cool.enh.thickness = 0.08 * 2.54e-2
-    hx_mod.cool.enh.spacing = 0.320 * 2.54e-2
-    # spacing = 0.400 - 0.100 / 2. - 0.030 = 0.320
+    hx_mod.cool.enh.spacing = 0.120 * 2.54e-2
+    # spacing = 0.200 - 0.100 / 2. - 0.030 = 0.120 in
     
     hx_mod.cool.T_inlet_set = 300.
 
