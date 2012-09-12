@@ -18,7 +18,7 @@ reload(real_hx)
 
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
-hx_exp.file = '2012-09-10 gypsum'
+hx_exp.file = 'combined gypsum'
 hx_exp.import_data()
 
 hx_mod = real_hx.get_hx()
