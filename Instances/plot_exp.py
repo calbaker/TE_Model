@@ -68,6 +68,7 @@ ax.bar3d(
 ax.set_xlabel(r'$\dot{m}$ (kg/s)')
 ax.set_ylabel(r'$T_{exh,in}$ (K)')
 ax.set_zlabel(r'$\dot{Q}$')
+plt.savefig('../Plots/plot_exp/Qdot.pdf')
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -85,5 +86,6 @@ ax.bar3d(
 ax.set_xlabel(r'$\dot{m}$ (kg/s)')
 ax.set_ylabel(r'$T_{exh,in}$ (K)')
 ax.set_zlabel(r'$\Delta P$')
+plt.savefig('../Plots/plot_exp/deltaP.pdf')
 
 plt.show()
