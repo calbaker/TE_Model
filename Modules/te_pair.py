@@ -182,10 +182,12 @@ class TE_Pair(object):
 
         Methods:
 
+        self.set_constants
         self.set_q_guess
 
         """
 
+        self.set_constants()
         self.Ptype.T_h = self.T_h_conv 
         self.Ntype.T_h = self.T_h_conv
         self.Ptype.T_c = self.T_c_conv
