@@ -18,16 +18,23 @@ reload(real_hx)
 
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
-hx_exp.file = 'combined gypsum newP'
+hx_exp.file = '2012-09-18 copper'
 hx_exp.import_data()
 
 hx_mod = real_hx.get_hx()
-k_gypsum = 0.17e-3
-# thermal conductivity (kW / (m * K)) of gypsum board from Incropera
-# and DeWitt Intro. to Heat Transfer 5th ed., Table A.3
-thickness_gypsum = 0.25 * 2.54e-2
-# thickness (m) of gypsum board
-hx_mod.R_extra = thickness_gypsum / k_gypsum
+# k_gypsum = 0.17e-3
+# # thermal conductivity (kW / (m * K)) of gypsum board from Incropera
+# # and DeWitt Intro. to Heat Transfer 5th ed., Table A.3
+# thickness_gypsum = 0.25 * 2.54e-2
+# # thickness (m) of gypsum board
+# hx_mod.R_extra = thickness_gypsum / k_gypsum
+
+k_copper = 400.e-3  # thermal conductivity of copper (kW / (m * K))
+# from Wolfram Alpha
+thickness_copper = 0.5e-3  # effective thickness (m) of copper mesh 
+phi_copper = 0.9  # effective porosity of copper 
+k_effective = k_copper * (1. - phi_copper)
+hx_mod.R_extra = thickness_copper / k_effective
 
 hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
