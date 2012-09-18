@@ -31,10 +31,21 @@ hx_mod = real_hx.get_hx()
 
 k_copper = 400.e-3  # thermal conductivity of copper (kW / (m * K))
 # from Wolfram Alpha
-thickness_copper = 0.5e-3  # effective thickness (m) of copper mesh 
-phi_copper = 0.9  # effective porosity of copper 
-k_effective = k_copper * (1. - phi_copper)
+thickness_copper = 508.e-6  # effective thickness (m) of copper mesh 
+phi_copper = 0.95  # effective porosity of copper 
+k_air = 3.24e-5  
+# thermal conductivity (kW / (m * K)) of air at 405 K, which is mean
+# temperature between coolant and exhaust over all nodes.
+k_effective = (
+    k_air / (k_copper / k_air) ** ((1. - phi_copper) ** 0.59)
+    )
+# thermal conductivity of mesh screen according to Alexander's model
+# taken from Li and Peterson 2006 - The effective thermal conductivity
+# of wire screen.
 hx_mod.R_extra = thickness_copper / k_effective
+
+hx_mod.R_interconnect = 0.
+hx_mod.R_substrate = 0.
 
 hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
@@ -63,8 +74,8 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.bar3d(
     hx_exp.exh.mdot, hx_exp.exh.T_in,
-    np.zeros(hx_exp.exh.Qdot.size), dx, dy, hx_exp.exh.Qdot,
-    alpha=0.5
+    np.zeros(hx_exp.exh.Qdot.size), dx * 1.01, dy * 0.99,
+    hx_exp.exh.Qdot, alpha=0.5
     )
 ax.bar3d(
     hx_exp.exh.mdot, hx_exp.exh.T_in,
@@ -81,8 +92,8 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.bar3d(
     hx_exp.exh.mdot, hx_exp.exh.T_in,
-    np.zeros(hx_exp.exh.delta_P.size), dx, dy, hx_exp.exh.delta_P,
-    alpha=0.5
+    np.zeros(hx_exp.exh.delta_P.size), dx * 1.01, dy * 0.99,
+    hx_exp.exh.delta_P, alpha=0.5
     )
 ax.bar3d(
     hx_exp.exh.mdot, hx_exp.exh.T_in,
