@@ -36,12 +36,18 @@ phi_copper = 0.95  # effective porosity of copper
 k_air = 3.24e-5  
 # thermal conductivity (kW / (m * K)) of air at 405 K, which is mean
 # temperature between coolant and exhaust over all nodes.
-k_effective = (
+k_alexander = (
+    k_air / (k_copper / k_air) ** ((1. - phi_copper) ** 0.59)
+    )
+
+k_koh = (
     (1. - phi_copper) / (1. + 11. * phi_copper) * k_copper
     )
-# thermal conductivity of mesh screen according to Koh and Fortini's
-# model taken from Li and Peterson 2006 - The effective thermal
-# conductivity of wire screen.
+
+k_effective = 0.5 * (k_alexander + k_koh)
+# thermal conductivity of mesh screen according to average of
+# Alexander's and Koh and Fortini's model taken from Li and Peterson
+# 2006 - The effective thermal conductivity of wire screen.
 hx_mod.R_extra = thickness_copper / k_effective
 
 hx_mod.R_interconnect = 0.
