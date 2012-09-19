@@ -1,0 +1,5 @@
+Engine Speed (rpm),Torque (ft-lb),Exh Mdot (kg/min),Cool Vdot (GPM),Turbo Out T,HX Exh In T,HX Exh Out T,HX Exh delta P (2 in WC),HX Cool 1 In T,HX Cool 1 Out T,HX Cool 1 delta P,HX Cool 2 In T,HX Cool 2 Out T,HX Cool 2 delta P
+2000,389,13.3,6.8,,424,394.9,7.1,28.3,30.3,,28.9,32.1,
+1600,286,7.7,7,,382.3,350.3,2.4,28.7,29.8,,29.2,31.6,
+1200,48,4.6,6.8,,153,134.2,0.6,29,29.3,,29.1,29.7,
+1200,157,5,7.2,,253,245,0.9,28.9,29.6,,29.1,30.5,
