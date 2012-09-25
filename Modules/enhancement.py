@@ -1,4 +1,3 @@
-
 # coding=utf-8
 """Contains classes for modeling convection heat transfer
 enhancement."""
@@ -386,10 +385,11 @@ class OffsetStripFin(object):
 class JetArray(object):
     """Class for impinging jet array.
 
-
-
-    This class probably won't get used again so I'm not putting any
-    effort into documenting it as of 24/05/2012. CAB"""
+    Huber, Aaron M., and Raymond Viskanta. “Effect of Jet-jet Spacing
+    on Convective Heat Transfer to Confined, Impinging Arrays of
+    Axisymmetric Air Jets.” International Journal of Heat and Mass
+    Transfer 37, no. 18 (December 1994): 2859–2869.
+    """
 
     def __init__(self):
         """Initializes variables that do not require calculation.
