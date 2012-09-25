@@ -481,8 +481,10 @@ class JetArray(object):
         self.Pr : Prandtl number of fluid"""
 
         self.Re_D = self.V * self.D / flow.nu
-        flow.Nu_D = (0.285 * self.Re_D ** 0.710 * flow.Pr ** 0.33 *
-        (self.H / self.D) ** -0.123 * (self.spacing / self.D) ** -0.725)
+        flow.Nu_D = (
+            0.285 * self.Re_D ** 0.710 * flow.Pr ** 0.33 * (self.H /
+        self.D) ** -0.123 * (self.spacing / self.D) ** -0.725
+            )
 
     def solve_enh(self, flow):
         """This method is probably not useful so this doc string is
