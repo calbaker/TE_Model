@@ -15,47 +15,31 @@ if cmd_folder not in sys.path:
 import te_pair
 reload(te_pair)
 
-leg_area = (0.002) ** 2.
-
-area_ratio = 0.823
-fill_fraction = 2.63e-2
-leg_length = 3.55e-4
-current = 12.5
-
 te_design = te_pair.TE_Pair()
-te_design.x0 = np.array([area_ratio, fill_fraction, leg_length,
-                        current])
+te_design.Ptype.area = (0.002) ** 2.
+te_design.leg_area_ratio = 0.823
+te_design.fill_fraction = 2.63e-2
+te_design.length = 3.55e-4
+te_design.I = 12.5
 
-te_design.length = 48.e-2
-te_design.width = 73.e-2
-te_design.exh.height = 2.8e-2
+te_design.Ntype.material = 'MgSi'
+te_design.Ptype.material = 'HMS'
 
-te_design.te_pair.I = current
-te_design.te_pair.length = leg_length
+te_design.set_leg_areas()
 
-te_design.te_pair.Ntype.material = 'MgSi'
-te_design.te_pair.Ptype.material = 'HMS'
+te_design.T_c_conv = 300.  # cold side convection temperature (K)
+te_design.T_h_conv = 800.  # hot side convection temperature (K)
 
-te_design.te_pair.set_leg_areas()
-
-te_design.te_pair.method = 'analytical'
-te_design.type = 'counter'
-
-te_design.exh.enh = te_design.exh.enh_lib.OffsetStripFin()
-
-te_design.exh.T_inlet = 800.
-te_design.cool.T_inlet_set = 300.
-te_design.cool.T_outlet = 310.
-
-te_design.set_mdot_charge()
-te_design.cool.T_outlet = fsolve(te_design.get_T_inlet_error,
-                                  x0=te_design.cool.T_outlet)
+te_design.U_cold = 2.
+# cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
+te_design.U_hot = 0.5
+# hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
 current_array = np.linspace(10, 14, 15)
 fill_array = np.linspace(1.5, 3.5, 16) * 1.e-2
 leg_height_array = np.linspace(0.1, 0.6, 17) * 1.e-3
 
-power_net_array = np.zeros([current_array.size, fill_array.size,
+power_array = np.zeros([current_array.size, fill_array.size,
                             leg_height_array.size])
 
 for i in range(current_array.size):
@@ -64,13 +48,13 @@ for i in range(current_array.size):
         te_pair.fill_fraction = fill_array[j]
         te_design.set_leg_areas()
         for k in range(leg_height_array.size):
-            te_design.te_pair.length = leg_height_array[k]
-            te_design.solve_hx()
+            te_design.length = leg_height_array[k]
+            te_design.solve_te_pair()
 
-            power_net_array[i, j, k] = te_design.power_net
+            power_array[i, j, k] = te_design.P
 
-data_dir = '../output/TE_sensitivity/'
-np.save(data_dir + 'power_net_array', power_net_array)
+data_dir = '../output/te_design_space/'
+np.save(data_dir + 'power_array', power_array)
 np.save(data_dir + 'current_array', current_array)
 np.save(data_dir + 'fill_array', fill_array)
 np.save(data_dir + 'leg_height_array', leg_height_array)
@@ -92,11 +76,11 @@ plt.close()
 plt.figure()
 plt.plot(te_design.x * 100., te_design.exh.T_nodes, '-r', label='Exhaust')
 plt.plot(
-    te_design.x * 100., te_design.te_pair.T_h_nodes, '-g',
+    te_design.x * 100., te_design.T_h_nodes, '-g',
     label='TE_PAIR Hot Side'
     )
 plt.plot(
-    te_design.x * 100., te_design.te_pair.T_c_nodes, '-k',
+    te_design.x * 100., te_design.T_c_nodes, '-k',
     label='TE_PAIR Cold Side'
     )
 plt.plot(te_design.x * 100., te_design.cool.T_nodes, '-b', label='Coolant')
