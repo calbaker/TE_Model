@@ -15,12 +15,18 @@ if cmd_folder not in sys.path:
 import te_pair
 reload(te_pair)
 
+area = (0.002) ** 2.
+leg_area_ratio = 0.823
+fill_fraction = 2.63e-2
+length = 3.55e-4
+current = 12.5
+
 te_design = te_pair.TE_Pair()
-te_design.Ptype.area = (0.002) ** 2.
-te_design.leg_area_ratio = 0.823
-te_design.fill_fraction = 2.63e-2
-te_design.length = 3.55e-4
-te_design.I = 12.5
+te_design.Ptype.area = area
+te_design.leg_area_ratio = leg_area_ratio
+te_design.fill_fraction = fill_fraction
+te_design.length = length
+te_design.I = current
 
 te_design.Ntype.material = 'MgSi'
 te_design.Ptype.material = 'HMS'
@@ -32,47 +38,69 @@ te_design.T_h_conv = 800.  # hot side convection temperature (K)
 
 te_design.U_cold = 2.
 # cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
-te_design.U_hot = 0.5
+te_design.U_hot = 1.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
-current_array = np.linspace(10, 14, 15)
+current_array = np.linspace(10., 14., 15)
 fill_array = np.linspace(1.5, 3.5, 16) * 1.e-2
-leg_height_array = np.linspace(0.1, 0.6, 17) * 1.e-3
+length_array = np.linspace(0.1, 0.6, 17) * 1.e-3
 
-power_array = np.zeros([current_array.size, fill_array.size,
-                            leg_height_array.size])
+power_I_fill = np.zeros(
+    [current_array.size, fill_array.size]
+    )
+power_fill_height = np.zeros(
+    [fill_array.size, length_array.size]
+    )
+power_height_I = np.zeros(
+    [length_array.size, fill_array.size]
+    )
 
 for i in range(current_array.size):
     te_design.I = current_array[i]
+    print "i =", i
     for j in range(fill_array.size):
         te_pair.fill_fraction = fill_array[j]
         te_design.set_leg_areas()
-        for k in range(leg_height_array.size):
-            if k % 5 == 0:
-                print 'i, j, k =', i, j, k
-            te_design.length = leg_height_array[k]
-            te_design.solve_te_pair()
+        te_design.solve_te_pair()
+        power_I_fill[i, j] = te_design.P
 
-            power_array[i, j, k] = te_design.P
+te_design.I = current
+te_design.fill_fraction = fill_fraction
+
+for j in range(fill_array.size):
+    te_pair.fill_fraction = fill_array[j]
+    te_design.set_leg_areas()
+    print "j =", j
+    for k in range(length_array.size):
+        te_design.length = length_array[k]
+        te_design.solve_te_pair()
+        power_fill_height[j, k] = te_design.P
+
+te_design.fill_fraction = fill_fraction
+te_design.length = length
+
+for k in range(length_array.size):
+    te_design.length = length_array[k]
+    te_design.solve_te_pair()
+    print "k =", k
+    for i in range(current_array.size):
+        te_design.I = current_array[i]
+        te_design.solve_te_pair()
+        power_height_I[k, i] = te_design.P
+
+te_design.I = current
+te_design.fill_fraction = fill_fraction
+te_design.length = length
 
 data_dir = '../output/te_design_space/'
-np.save(data_dir + 'power_array', power_array)
+np.save(data_dir + 'power_I_fill', power_I_fill)
+np.save(data_dir + 'power_fill_height', power_fill_height)
+np.save(data_dir + 'power_height_I', power_height_I)
 np.save(data_dir + 'current_array', current_array)
 np.save(data_dir + 'fill_array', fill_array)
-np.save(data_dir + 'leg_height_array', leg_height_array)
+np.save(data_dir + 'length_array', length_array)
 
 print "\nProgram finished."
 print "\nPlotting..."
-
-# Plot configuration
-FONTSIZE = 20
-plt.rcParams['axes.labelsize'] = FONTSIZE
-plt.rcParams['axes.titlesize'] = FONTSIZE
-plt.rcParams['legend.fontsize'] = FONTSIZE
-plt.rcParams['xtick.labelsize'] = FONTSIZE
-plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 1.5
-
-plt.close()
 
 execfile('plot_TE_sensitivity')
