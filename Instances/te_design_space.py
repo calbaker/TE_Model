@@ -75,23 +75,4 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close()
 
-plt.figure()
-plt.plot(te_design.x * 100., te_design.exh.T_nodes, '-r', label='Exhaust')
-plt.plot(
-    te_design.x * 100., te_design.T_h_nodes, '-g',
-    label='TE_PAIR Hot Side'
-    )
-plt.plot(
-    te_design.x * 100., te_design.T_c_nodes, '-k',
-    label='TE_PAIR Cold Side'
-    )
-plt.plot(te_design.x * 100., te_design.cool.T_nodes, '-b', label='Coolant')
-
-plt.xlabel('Distance Along HX (cm)')
-plt.ylabel('Temperature (K)')
-#plt.title('Temperature v. Distance, '+te_design.type)
-plt.grid()
-plt.legend(loc='center left')
-plt.subplots_adjust(bottom=0.15)
-
-sys.execfile('plot_TE_sensitivity')
+execfile('plot_TE_sensitivity')
