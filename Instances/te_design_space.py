@@ -48,6 +48,8 @@ for i in range(current_array.size):
         te_pair.fill_fraction = fill_array[j]
         te_design.set_leg_areas()
         for k in range(leg_height_array.size):
+            if i % 2 == 0:
+                print 'i, j, k =', i, j, k
             te_design.length = leg_height_array[k]
             te_design.solve_te_pair()
 
