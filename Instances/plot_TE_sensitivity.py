@@ -16,13 +16,13 @@ if cmd_folder not in sys.path:
 data_dir = '../output/te_design_space/'
 current_array = np.load(data_dir + 'current_array.npy') 
 fill_array = np.load(data_dir + 'fill_array.npy') * 100.
-leg_height_array = np.load(data_dir + 'leg_height_array.npy') * 1.e3
-power_I_fill = np.load(data_dir + 'power_I_fill')
-power_fill_height = np.load(data_dir + 'power_fill_height')
-power_height_I = np.load(data_dir + 'power_height_I')
+length_array = np.load(data_dir + 'length_array.npy') * 1.e3
+power_I_fill = np.load(data_dir + 'power_I_fill.npy')
+power_fill_height = np.load(data_dir + 'power_fill_height.npy')
+power_height_I = np.load(data_dir + 'power_height_I.npy')
 
 # Plot configuration
-FONTSIZE = 20
+FONTSIZE = 10
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
@@ -32,20 +32,38 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close()
 
+length_array *= 1e3
+
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-X, Y, Z = current_array, fill_array, leg_height_array * 1e3
 
-cset = ax.contourf(X, Y, Z, zdir='z', offset=-100)
-cset = ax.contourf(X, Y, Z, zdir='x', offset=-40)
-cset = ax.contourf(X, Y, Z, zdir='y', offset=40)
+X1, Y1 = np.meshgrid(current_array, fill_array)
+Z1 = power_I_fill.T
+cset = ax.contourf(X1, Y1, Z1, zdir='z', offset=length_array[0])
+
+X2, Y2 = np.meshgrid(fill_array, length_array)
+Z2 = power_fill_height.T
+cset = ax.contourf(X2, Y2, Z2, zdir='x', offset=current_array[0])
+
+X3, Y3 = np.meshgrid(length_array, current_array)
+Z3 = power_height_I.T
+cset = ax.contourf(X3, Y3, Z3, zdir='x', offset=fill_array[-1])
 
 ax.set_xlabel('Current (A)')
-# ax.set_xlim(-40, 40)
+ax.set_xlim(current_array[0], current_array[-1])
 ax.set_ylabel('Fill Fraction')
-# ax.set_ylim(-40, 40)
+ax.set_ylim(fill_array[0], fill_array[-1])
 ax.set_zlabel('Leg Height (mm)')
-# ax.set_zlim(-100, 100)
+ax.set_zlim(length_array[0], length_array[-1])
+
+fig1 = plt.figure('Z1')
+cset = plt.contourf(X1, Y1, Z1)
+
+fig2 = plt.figure('Z2')
+cset = plt.contourf(X2, Y2, Z2)
+
+fig3 = plt.figure('Z3')
+cset = plt.contourf(X3, Y3, Z3)
 
 plt.show()
 

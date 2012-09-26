@@ -41,9 +41,13 @@ te_design.U_cold = 2.
 te_design.U_hot = 1.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
-current_array = np.linspace(10., 14., 15)
-fill_array = np.linspace(1.5, 3.5, 16) * 1.e-2
-length_array = np.linspace(0.1, 0.6, 17) * 1.e-3
+current_array = np.linspace(10., 14., 10)
+fill_array = (
+    np.linspace(1.5, 3.5, current_array.size + 1) * 1.e-2
+    )
+length_array = (
+    np.linspace(0.1, 0.6, fill_array.size + 1) * 1.e-3
+    )
 
 power_I_fill = np.zeros(
     [current_array.size, fill_array.size]
@@ -52,14 +56,14 @@ power_fill_height = np.zeros(
     [fill_array.size, length_array.size]
     )
 power_height_I = np.zeros(
-    [length_array.size, fill_array.size]
+    [length_array.size, current_array.size]
     )
 
 for i in range(current_array.size):
     te_design.I = current_array[i]
     print "i =", i
     for j in range(fill_array.size):
-        te_pair.fill_fraction = fill_array[j]
+        te_design.fill_fraction = fill_array[j]
         te_design.set_leg_areas()
         te_design.solve_te_pair()
         power_I_fill[i, j] = te_design.P
@@ -68,7 +72,7 @@ te_design.I = current
 te_design.fill_fraction = fill_fraction
 
 for j in range(fill_array.size):
-    te_pair.fill_fraction = fill_array[j]
+    te_design.fill_fraction = fill_array[j]
     te_design.set_leg_areas()
     print "j =", j
     for k in range(length_array.size):
@@ -103,4 +107,4 @@ np.save(data_dir + 'length_array', length_array)
 print "\nProgram finished."
 print "\nPlotting..."
 
-execfile('plot_TE_sensitivity')
+execfile('plot_TE_sensitivity.py')
