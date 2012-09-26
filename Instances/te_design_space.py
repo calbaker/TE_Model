@@ -69,7 +69,7 @@ for i in range(current_array.size):
 
             power_net_array[i, j, k] = te_design.power_net
 
-data_dir = '../data/TE_sensitivity/'
+data_dir = '../output/TE_sensitivity/'
 np.save(data_dir + 'power_net_array', power_net_array)
 np.save(data_dir + 'current_array', current_array)
 np.save(data_dir + 'fill_array', fill_array)
