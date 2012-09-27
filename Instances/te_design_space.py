@@ -16,17 +16,9 @@ import te_pair
 reload(te_pair)
 
 area = (0.002) ** 2.
-leg_area_ratio = 0.823
-fill_fraction = 2.63e-2
-length = 3.55e-4
-current = 12.5
 
 te_design = te_pair.TE_Pair()
 te_design.Ptype.area = area
-te_design.leg_area_ratio = leg_area_ratio
-te_design.fill_fraction = fill_fraction
-te_design.length = length
-te_design.I = current
 
 te_design.Ntype.material = 'MgSi'
 te_design.Ptype.material = 'HMS'
@@ -42,6 +34,10 @@ te_design.U_hot = 1.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
 te_design.optimize()
+leg_area_ratio = te_design.leg_area_ratio
+fill_fraction = te_design.fill_fraction
+length = te_design.length
+current = te_design.I
 
 current_array = np.linspace(0.5, 1.5, 10) * te_design.I
 fill_array = (
