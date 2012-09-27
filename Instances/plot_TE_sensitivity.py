@@ -39,15 +39,15 @@ length_array *= 1e3
 # ax = fig.gca(projection='3d')
 
 X1, Y1 = np.meshgrid(current_array, fill_array)
-Z1 = power_I_fill.T * 1e3
+Z1 = power_I_fill.T
 # cset = ax.contourf(X1, Y1, Z1, zdir='z', offset=length_array[0])
 
 X2, Y2 = np.meshgrid(fill_array, length_array)
-Z2 = power_fill_height.T * 1e3
+Z2 = power_fill_height.T
 # cset = ax.contourf(X2, Y2, Z2, zdir='x', offset=current_array[0])
 
 X3, Y3 = np.meshgrid(length_array, current_array)
-Z3 = power_height_I.T * 1e3
+Z3 = power_height_I.T
 # cset = ax.contourf(X3, Y3, Z3, zdir='x', offset=fill_array[-1])
 
 # ax.set_xlabel('Current (A)')
@@ -60,13 +60,21 @@ Z3 = power_height_I.T * 1e3
 RIGHT = 0.75
 BOTTOM = 0.17
 FRACTION = 0.15
+MAX_ARRAY = np.array([Z1.max(), Z2.max(), Z3.max()])
+MAX = MAX_ARRAY.max()
+LEVELS = (
+    (MAX + 0.1 - np.logspace(np.log10(0.1), np.log10(MAX), 12))[::-1]
+    )
+TICKS = LEVELS
+FORMAT = '%0.1f'
 
 fig1 = plt.figure('Z1')
-cset1 = plt.contourf(X1, Y1, Z1)
+cset1 = plt.contourf(X1, Y1, Z1, levels=LEVELS)
 CB1 = plt.colorbar(
-    cset1, orientation='vertical', format='%0.0f', fraction=FRACTION
+    cset1, orientation='vertical', format=FORMAT, fraction=FRACTION,
+    ticks=TICKS
     )
-CB1.set_label(r'Power Flux (W/m$^2$)')
+CB1.set_label(r'Power Flux (kW/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Current (A)')
 plt.ylabel('Fill Fraction')
@@ -75,11 +83,12 @@ plt.grid()
 fig1.savefig(save_dir + "power_I_fill.pdf")
 
 fig2 = plt.figure('Z2')
-cset2 = plt.contourf(X2, Y2, Z2)
+cset2 = plt.contourf(X2, Y2, Z2, levels=LEVELS)
 CB2 = plt.colorbar(
-    cset2, orientation='vertical', format='%0.0f', fraction=FRACTION
+    cset2, orientation='vertical', format=FORMAT, fraction=FRACTION,
+    ticks=TICKS
     )
-CB2.set_label(r'Power Flux (W/m$^2$)')
+CB2.set_label(r'Power Flux (kW/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Fill Fraction')
 plt.ylabel('Length (mm)')
@@ -88,11 +97,12 @@ plt.grid()
 fig2.savefig(save_dir + "power_fill_length.pdf")
 
 fig3 = plt.figure('Z3')
-cset3 = plt.contourf(X3, Y3, Z3)
+cset3 = plt.contourf(X3, Y3, Z3, levels=LEVELS)
 CB3 = plt.colorbar(
-    cset3, orientation='vertical', format='%0.0f', fraction=FRACTION
+    cset3, orientation='vertical', format=FORMAT, fraction=FRACTION,
+    ticks=TICKS 
     )
-CB3.set_label(r'Power Flux (W/m$^2$)')
+CB3.set_label(r'Power Flux (kW/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Length (mm)')
 plt.ylabel('Current (A)')
