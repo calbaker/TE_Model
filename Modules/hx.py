@@ -503,6 +503,7 @@ class HX(object):
         if (apar <= 0.).any():
             minpar = np.abs(self.power_net) ** 3 + 100.
             # penalizes negative parameters
+            print "Encountered impossible value."
 
         else:
             minpar = - self.power_net
