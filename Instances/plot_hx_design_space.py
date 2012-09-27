@@ -13,7 +13,7 @@ cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
     
-data_dir = '../output/te_design_space/'
+data_dir = '../output/hx_design_space/'
 current_array = np.load(data_dir + 'current_array.npy') 
 fill_array = np.load(data_dir + 'fill_array.npy')
 length_array = np.load(data_dir + 'length_array.npy')
