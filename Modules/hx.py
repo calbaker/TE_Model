@@ -183,6 +183,7 @@ class HX(object):
         self.te_pair.T_h_nodes = np.zeros(self.nodes)
         self.te_pair.h_nodes = np.zeros(self.nodes)
         self.te_pair.power_nodes = np.zeros(self.nodes)
+        self.te_pair.power_nodes_check = np.zeros(self.nodes)
         self.te_pair.eta_nodes = np.zeros(self.nodes)
 
     def setup(self):
@@ -432,7 +433,6 @@ class HX(object):
 
         This should eventually also store the node valuves for T, q,
         and material properties in the te legs.
-
         """
 
         self.Qdot_nodes[i] = self.Qdot_node
@@ -446,6 +446,9 @@ class HX(object):
         self.te_pair.T_h_nodes[i] = self.te_pair.T_h
         self.te_pair.T_c_nodes[i] = self.te_pair.T_c
         self.te_pair.power_nodes[i] = self.te_pair.P * self.leg_pairs
+        self.te_pair.power_nodes_check[i] = (
+            self.te_pair.P_flux * self.area 
+            )
         self.te_pair.eta_nodes[i] = self.te_pair.eta
         self.te_pair.h_nodes[i] = self.te_pair.h_eff
 
@@ -486,8 +489,13 @@ class HX(object):
         # unpack guess vector
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
-            print "optimizaton iteration", self.opt_iter
+            print "\noptimizaton iteration", self.opt_iter
             print "net power", self.power_net
+            print "leg length =", self.te_pair.length * 1e3, "mm"
+            print "fill fraction =", self.te_pair.fill_fraction * 100., "%"
+            print "current =", self.te_pair.I, "A"
+            print "area ratio =", self.te_pair.leg_area_ratio
+            
         apar = np.array(apar)
 
         for i in range(apar.size):
