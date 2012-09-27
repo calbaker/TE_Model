@@ -57,42 +57,46 @@ Z3 = power_height_I.T * 1e3
 # ax.set_zlabel('Leg Height (mm)')
 # ax.set_zlim(length_array[0], length_array[-1])
 
+RIGHT = 0.75
+BOTTOM = 0.17
+FRACTION = 0.15
+
 fig1 = plt.figure('Z1')
 cset1 = plt.contourf(X1, Y1, Z1)
 CB1 = plt.colorbar(
-    cset1, orientation='vertical', format='%0.1f', fraction=0.1
+    cset1, orientation='vertical', format='%0.0f', fraction=FRACTION
     )
 CB1.set_label(r'Power Flux (W/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Current (A)')
 plt.ylabel('Fill Fraction')
-plt.subplots_adjust(bottom=0.15, right=0.80)
+plt.subplots_adjust(bottom=BOTTOM, right=RIGHT)
 plt.grid()
 fig1.savefig(save_dir + "power_I_fill.pdf")
 
 fig2 = plt.figure('Z2')
 cset2 = plt.contourf(X2, Y2, Z2)
 CB2 = plt.colorbar(
-    cset2, orientation='vertical', format='%0.1f', fraction=0.1
+    cset2, orientation='vertical', format='%0.0f', fraction=FRACTION
     )
 CB2.set_label(r'Power Flux (W/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Fill Fraction')
 plt.ylabel('Length (mm)')
-plt.subplots_adjust(bottom=0.15, right=0.80)
+plt.subplots_adjust(bottom=BOTTOM, right=RIGHT)
 plt.grid()
 fig2.savefig(save_dir + "power_fill_length.pdf")
 
 fig3 = plt.figure('Z3')
 cset3 = plt.contourf(X3, Y3, Z3)
 CB3 = plt.colorbar(
-    cset3, orientation='vertical', format='%0.1f', fraction=0.1
+    cset3, orientation='vertical', format='%0.0f', fraction=FRACTION
     )
 CB3.set_label(r'Power Flux (W/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Length (mm)')
 plt.ylabel('Current (A)')
-plt.subplots_adjust(bottom=0.15, right=0.80)
+plt.subplots_adjust(bottom=BOTTOM, right=RIGHT)
 plt.grid()
 fig3.savefig(save_dir + "power_length_I.pdf")
 
