@@ -42,11 +42,10 @@ current = te_design.I
 current_array = np.linspace(0.5, 1.5, 10) * te_design.I
 fill_array = (
     np.linspace(0.5, 1.5, current_array.size + 1) *
-    te_design.fill_fraction * 1.e-2
+    te_design.fill_fraction
     )
 length_array = (
-    np.linspace(0.5, 1.5, fill_array.size + 1) * te_design.length *
-    1.e-3
+    np.linspace(0.5, 1.5, fill_array.size + 1) * te_design.length
     )
 
 power_I_fill = np.zeros(
