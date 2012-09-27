@@ -41,6 +41,8 @@ te_design.U_cold = 2.
 te_design.U_hot = 1.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
+te_design.optimize()
+
 current_array = np.linspace(10., 14., 10)
 fill_array = (
     np.linspace(1.5, 3.5, current_array.size + 1) * 1.e-2

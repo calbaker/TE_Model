@@ -22,7 +22,7 @@ power_fill_height = np.load(data_dir + 'power_fill_height.npy')
 power_height_I = np.load(data_dir + 'power_height_I.npy')
 
 # Plot configuration
-FONTSIZE = 10
+FONTSIZE = 18
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
@@ -31,39 +31,70 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close()
+save_dir = "../Plots/plot_TE_sensitivity/"
 
 length_array *= 1e3
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+# fig = plt.figure()
+# ax = fig.gca(projection='3d')
 
 X1, Y1 = np.meshgrid(current_array, fill_array)
-Z1 = power_I_fill.T
-cset = ax.contourf(X1, Y1, Z1, zdir='z', offset=length_array[0])
+Z1 = power_I_fill.T * 1e3
+# cset = ax.contourf(X1, Y1, Z1, zdir='z', offset=length_array[0])
 
 X2, Y2 = np.meshgrid(fill_array, length_array)
-Z2 = power_fill_height.T
-cset = ax.contourf(X2, Y2, Z2, zdir='x', offset=current_array[0])
+Z2 = power_fill_height.T * 1e3
+# cset = ax.contourf(X2, Y2, Z2, zdir='x', offset=current_array[0])
 
 X3, Y3 = np.meshgrid(length_array, current_array)
-Z3 = power_height_I.T
-cset = ax.contourf(X3, Y3, Z3, zdir='x', offset=fill_array[-1])
+Z3 = power_height_I.T * 1e3
+# cset = ax.contourf(X3, Y3, Z3, zdir='x', offset=fill_array[-1])
 
-ax.set_xlabel('Current (A)')
-ax.set_xlim(current_array[0], current_array[-1])
-ax.set_ylabel('Fill Fraction')
-ax.set_ylim(fill_array[0], fill_array[-1])
-ax.set_zlabel('Leg Height (mm)')
-ax.set_zlim(length_array[0], length_array[-1])
+# ax.set_xlabel('Current (A)')
+# ax.set_xlim(current_array[0], current_array[-1])
+# ax.set_ylabel('Fill Fraction')
+# ax.set_ylim(fill_array[0], fill_array[-1])
+# ax.set_zlabel('Leg Height (mm)')
+# ax.set_zlim(length_array[0], length_array[-1])
 
 fig1 = plt.figure('Z1')
-cset = plt.contourf(X1, Y1, Z1)
+cset1 = plt.contourf(X1, Y1, Z1)
+CB1 = plt.colorbar(
+    cset1, orientation='vertical', format='%0.1f', fraction=0.05
+    )
+CB1.set_label('Power (W)')
+plt.xticks(rotation=40)
+plt.xlabel('Current (A)')
+plt.ylabel('Fill Fraction')
+plt.subplots_adjust(bottom=0.15, right=0.80)
+plt.grid()
+fig1.savefig(save_dir + "power_I_fill.pdf")
 
 fig2 = plt.figure('Z2')
-cset = plt.contourf(X2, Y2, Z2)
+cset2 = plt.contourf(X2, Y2, Z2)
+CB2 = plt.colorbar(
+    cset2, orientation='vertical', format='%0.1f', fraction=0.05
+    )
+CB2.set_label('Power (W)')
+plt.xticks(rotation=40)
+plt.xlabel('Fill Fraction')
+plt.ylabel('Length (mm)')
+plt.subplots_adjust(bottom=0.15, right=0.80)
+plt.grid()
+fig2.savefig(save_dir + "power_fill_length.pdf")
 
 fig3 = plt.figure('Z3')
-cset = plt.contourf(X3, Y3, Z3)
+cset3 = plt.contourf(X3, Y3, Z3)
+CB3 = plt.colorbar(
+    cset3, orientation='vertical', format='%0.1f', fraction=0.05
+    )
+CB3.set_label('Power (W)')
+plt.xticks(rotation=40)
+plt.xlabel('Length (mm)')
+plt.ylabel('Current (A)')
+plt.subplots_adjust(bottom=0.15, right=0.80)
+plt.grid()
+fig3.savefig(save_dir + "power_length_I.pdf")
 
 plt.show()
 
