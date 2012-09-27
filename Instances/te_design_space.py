@@ -69,6 +69,7 @@ for i in range(current_array.size):
 
 te_design.I = current
 te_design.fill_fraction = fill_fraction
+te_design.length = length
 
 for j in range(fill_array.size):
     te_design.fill_fraction = fill_array[j]
@@ -79,6 +80,7 @@ for j in range(fill_array.size):
         te_design.solve_te_pair()
         power_fill_height[j, k] = te_design.P_flux
 
+te_design.I = current
 te_design.fill_fraction = fill_fraction
 te_design.length = length
 
