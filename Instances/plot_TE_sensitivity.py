@@ -16,7 +16,7 @@ if cmd_folder not in sys.path:
 data_dir = '../output/te_design_space/'
 current_array = np.load(data_dir + 'current_array.npy') 
 fill_array = np.load(data_dir + 'fill_array.npy') * 100.
-length_array = np.load(data_dir + 'length_array.npy') * 1.e3
+length_array = np.load(data_dir + 'length_array.npy')
 power_I_fill = np.load(data_dir + 'power_I_fill.npy')
 power_fill_height = np.load(data_dir + 'power_fill_height.npy')
 power_height_I = np.load(data_dir + 'power_height_I.npy')
