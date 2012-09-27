@@ -180,7 +180,8 @@ class Leg(object):
 
         self.T_c = self.T_x[-1]
         self.q_c = self.q_x[-1]
-
+        
+        self.Vs = self.Vs_x[0] - self.Vs_x[-1]
         self.V = self.V_x[0] - self.V_x[-1]
         self.R_internal = self.R_int_x[-1]
 
