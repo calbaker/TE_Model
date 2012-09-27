@@ -40,7 +40,7 @@ hx11.te_pair.set_leg_areas()
 hx11.te_pair.method = 'analytical'
 hx11.type = 'counter'
 
-hx11.exh.enh = hx11.exh.enh_lib.OffsetStripFin()
+hx11.exh.set_enhancement('OffsetStripFin')
 hx11.exh.enh.k = 0.02 # approx. thermal conductivity for Ti  
 hx11.exh.enh.thickness = 2.e-3
 hx11.exh.enh.spacing = 3.19e-3
