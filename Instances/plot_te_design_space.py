@@ -64,7 +64,7 @@ LEVELS = (
     (MAX + 0.1 - np.logspace(np.log10(0.1), np.log10(MAX), 12))[::-1]
     )
 TICKS = LEVELS
-FORMAT = '%0.1f'
+FORMAT = '%0.2f'
 
 fig1 = plt.figure('Z1')
 cset1 = plt.contourf(X1, Y1, Z1, levels=LEVELS)
