@@ -13,9 +13,7 @@ if cmd_folder not in sys.path:
 import te_pair
 reload(te_pair)
 
-area = (0.002) ** 2.
 te_design = te_pair.TE_Pair()
-te_design.Ptype.area = area
 te_design.leg_area_ratio = 0.693
 te_design.fill_fraction = 0.796
 te_design.length = 1.45e-3
