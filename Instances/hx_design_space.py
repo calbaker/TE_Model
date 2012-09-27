@@ -17,9 +17,9 @@ area = (0.002) ** 2.
 hx_design = hx.HX()
 hx_design.te_pair.Ptype.area = area
 hx_design.te_pair.leg_area_ratio = 0.693
-hx_design.te_pair.fill_fraction = 0.796
-hx_design.te_pair.length = 1.45e-3
-hx_design.te_pair.I = 1.87
+hx_design.te_pair.fill_fraction = 0.05
+hx_design.te_pair.length = 0.3e-3
+hx_design.te_pair.I = 15.
 hx_design.te_pair.Ntype.material = 'MgSi'
 hx_design.te_pair.Ptype.material = 'HMS'
 
