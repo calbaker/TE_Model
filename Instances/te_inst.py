@@ -12,11 +12,10 @@ reload(te_pair)
 
 t0 = time.clock()
 
-leg_area = (0.002) ** 2
-area_ratio = 0.849
-fill_fraction = 3.85e-2
+area_ratio = 0.7
+fill_fraction = 22e-2
 length = 4.00e-4
-current = 13.2
+current = 24.
 
 te_inst = te_pair.TE_Pair()
 # instantiate a te_inst object

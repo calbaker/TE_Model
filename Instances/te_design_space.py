@@ -14,17 +14,26 @@ import te_pair
 reload(te_pair)
 
 te_design = te_pair.TE_Pair()
-te_design.leg_area_ratio = 0.693
-te_design.fill_fraction = 0.796
-te_design.length = 1.45e-3
-te_design.I = 1.87
+# instantiate a te_design object
+
 te_design.Ntype.material = 'MgSi'
 te_design.Ptype.material = 'HMS'
+# declare materials to be used for property calculations
+
+fill_fraction = 22e-2
+current = 24.
+length = 4.00e-4
+area_ratio = 0.7
+
+te_design.fill_fraction = fill_fraction
+te_design.I = current
+te_design.length = length
+te_design.leg_area_ratio = area_ratio
 
 te_design.set_leg_areas()
 
 te_design.T_c_conv = 300.  # cold side convection temperature (K)
-te_design.T_h_conv = 600.  # hot side convection temperature (K)
+te_design.T_h_conv = 800.  # hot side convection temperature (K)
 
 te_design.U_cold = 8.
 # cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
@@ -32,12 +41,13 @@ te_design.U_hot = 2.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
 te_design.optimize()
+
 leg_area_ratio = te_design.leg_area_ratio
 fill_fraction = te_design.fill_fraction
 length = te_design.length
 current = te_design.I
 
-SIZE = 50
+SIZE = 10
 current_array = np.linspace(0.5, 2, SIZE) * te_design.I
 fill_array = (
     np.linspace(0.5, 2, current_array.size + 1) *
