@@ -339,7 +339,11 @@ class TE_Pair(object):
 
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
-            print "optimizaton iteration", self.opt_iter
+            print "\noptimizaton iteration", self.opt_iter
+            print "leg length =", self.length, "m"
+            print "fill fraction =", self.fill_fraction * 100., "%"
+            print "current =", self.I, "A"
+            print "area ratio =", self.leg_area_ratio
             print "power flux (kW/m^2)", self.P_flux
         apar = np.array(apar)
 
@@ -398,5 +402,6 @@ class TE_Pair(object):
         print "area ratio =", self.leg_area_ratio
 
         print "\npower:", self.P * 1000., 'W'
+        print "power flux:", self.P_flux, "kW/m^2"
 
         print """Elapsed time solving xmin1 =""", t1
