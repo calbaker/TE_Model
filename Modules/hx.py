@@ -221,7 +221,7 @@ class HX(object):
         self.area = self.node_length * self.width * self.cool.ducts
         # area (m^2) through which heat flux occurs in each node
         self.te_pair.set_constants()
-        self.leg_pairs = int(self.area / self.te_pair.area)
+        self.leg_pairs = self.area / self.te_pair.area
         # Number of TEM leg pairs per node
         self.x_dim = np.arange(self.node_length / 2, self.length +
         self.node_length / 2, self.node_length)
