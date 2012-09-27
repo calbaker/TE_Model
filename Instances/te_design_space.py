@@ -26,7 +26,7 @@ te_design.Ptype.material = 'HMS'
 te_design.set_leg_areas()
 
 te_design.T_c_conv = 300.  # cold side convection temperature (K)
-te_design.T_h_conv = 800.  # hot side convection temperature (K)
+te_design.T_h_conv = 600.  # hot side convection temperature (K)
 
 te_design.U_cold = 2.
 # cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
