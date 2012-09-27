@@ -16,10 +16,10 @@ reload(te_pair)
 area = (0.002) ** 2.
 te_design = te_pair.TE_Pair()
 te_design.Ptype.area = area
-te_design.leg_area_ratio = 0.710
-te_design.fill_fraction = 0.604
-te_design.length = 2.60e-3
-te_design.I = 1.67
+te_design.leg_area_ratio = 0.693
+te_design.fill_fraction = 0.796
+te_design.length = 1.45e-3
+te_design.I = 1.87
 te_design.Ntype.material = 'MgSi'
 te_design.Ptype.material = 'HMS'
 
