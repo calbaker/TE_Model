@@ -43,12 +43,14 @@ te_design.U_hot = 1.
 
 te_design.optimize()
 
-current_array = np.linspace(10., 14., 10)
+current_array = np.linspace(0.5, 1.5, 10) * te_design.I
 fill_array = (
-    np.linspace(1.5, 3.5, current_array.size + 1) * 1.e-2
+    np.linspace(0.5, 1.5, current_array.size + 1) *
+    te_design.fill_fraction * 1.e-2
     )
 length_array = (
-    np.linspace(0.1, 0.6, fill_array.size + 1) * 1.e-3
+    np.linspace(0.5, 1.5, fill_array.size + 1) * te_design.length *
+    1.e-3
     )
 
 power_I_fill = np.zeros(
@@ -68,7 +70,7 @@ for i in range(current_array.size):
         te_design.fill_fraction = fill_array[j]
         te_design.set_leg_areas()
         te_design.solve_te_pair()
-        power_I_fill[i, j] = te_design.P
+        power_I_fill[i, j] = te_design.P_flux
 
 te_design.I = current
 te_design.fill_fraction = fill_fraction
@@ -80,7 +82,7 @@ for j in range(fill_array.size):
     for k in range(length_array.size):
         te_design.length = length_array[k]
         te_design.solve_te_pair()
-        power_fill_height[j, k] = te_design.P
+        power_fill_height[j, k] = te_design.P_flux
 
 te_design.fill_fraction = fill_fraction
 te_design.length = length
@@ -92,7 +94,7 @@ for k in range(length_array.size):
     for i in range(current_array.size):
         te_design.I = current_array[i]
         te_design.solve_te_pair()
-        power_height_I[k, i] = te_design.P
+        power_height_I[k, i] = te_design.P_flux
 
 te_design.I = current
 te_design.fill_fraction = fill_fraction

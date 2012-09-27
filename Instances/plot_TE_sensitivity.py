@@ -62,7 +62,7 @@ cset1 = plt.contourf(X1, Y1, Z1)
 CB1 = plt.colorbar(
     cset1, orientation='vertical', format='%0.1f', fraction=0.05
     )
-CB1.set_label('Power (W)')
+CB1.set_label(r'Power Flux (W/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Current (A)')
 plt.ylabel('Fill Fraction')
@@ -75,7 +75,7 @@ cset2 = plt.contourf(X2, Y2, Z2)
 CB2 = plt.colorbar(
     cset2, orientation='vertical', format='%0.1f', fraction=0.05
     )
-CB2.set_label('Power (W)')
+CB2.set_label(r'Power Flux (W/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Fill Fraction')
 plt.ylabel('Length (mm)')
@@ -88,7 +88,7 @@ cset3 = plt.contourf(X3, Y3, Z3)
 CB3 = plt.colorbar(
     cset3, orientation='vertical', format='%0.1f', fraction=0.05
     )
-CB3.set_label('Power (W)')
+CB3.set_label(r'Power Flux (W/m$^2$)')
 plt.xticks(rotation=40)
 plt.xlabel('Length (mm)')
 plt.ylabel('Current (A)')

@@ -339,7 +339,7 @@ class TE_Pair(object):
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
             print "optimizaton iteration", self.opt_iter
-            print "power", self.P
+            print "power", self.P_flux
         apar = np.array(apar)
 
         self.length = apar[0]
@@ -354,6 +354,7 @@ class TE_Pair(object):
 
         if (apar <= 0.).any():
             minpar = np.abs(self.P_flux) ** 3. + 100
+            print "Encountered impossible value."
 
         else:
             minpar = - self.P_flux
