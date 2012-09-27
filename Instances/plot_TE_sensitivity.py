@@ -15,7 +15,7 @@ if cmd_folder not in sys.path:
     
 data_dir = '../output/te_design_space/'
 current_array = np.load(data_dir + 'current_array.npy') 
-fill_array = np.load(data_dir + 'fill_array.npy') * 100.
+fill_array = np.load(data_dir + 'fill_array.npy')
 length_array = np.load(data_dir + 'length_array.npy')
 power_I_fill = np.load(data_dir + 'power_I_fill.npy')
 power_fill_height = np.load(data_dir + 'power_fill_height.npy')
@@ -33,20 +33,18 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.close()
 save_dir = "../Plots/plot_TE_sensitivity/"
 
-length_array *= 1e3
-
 # fig = plt.figure()
 # ax = fig.gca(projection='3d')
 
-X1, Y1 = np.meshgrid(current_array, fill_array)
+X1, Y1 = np.meshgrid(current_array, fill_array * 1e2)
 Z1 = power_I_fill.T
 # cset = ax.contourf(X1, Y1, Z1, zdir='z', offset=length_array[0])
 
-X2, Y2 = np.meshgrid(fill_array, length_array)
+X2, Y2 = np.meshgrid(fill_array * 1e2, length_array * 1e3)
 Z2 = power_fill_height.T
 # cset = ax.contourf(X2, Y2, Z2, zdir='x', offset=current_array[0])
 
-X3, Y3 = np.meshgrid(length_array, current_array)
+X3, Y3 = np.meshgrid(length_array * 1e3, current_array)
 Z3 = power_height_I.T
 # cset = ax.contourf(X3, Y3, Z3, zdir='x', offset=fill_array[-1])
 
