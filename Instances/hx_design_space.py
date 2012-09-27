@@ -13,17 +13,27 @@ if cmd_folder not in sys.path:
 import hx
 reload(hx)
 
-area = (0.002) ** 2.
+leg_area = (0.002)**2
+
+area_ratio = 0.745
+fill_fraction = 3.10e-2
+leg_length = 3.56e-4
+current = 13.0
+
 hx_design = hx.HX()
-hx_design.te_pair.Ptype.area = area
-hx_design.te_pair.leg_area_ratio = 0.693
-hx_design.te_pair.fill_fraction = 0.05
-hx_design.te_pair.length = 0.3e-3
-hx_design.te_pair.I = 15.
-hx_design.te_pair.Ntype.material = 'MgSi'
-hx_design.te_pair.Ptype.material = 'HMS'
+
+hx_design.width = 0.55
+hx_design.exh.height = 3.5e-2
+hx_design.length = 0.55
+hx_design.te_pair.I = current
+hx_design.te_pair.length = leg_length
+hx_design.te_pair.leg_area_ratio = area_ratio
+hx_design.te_pair.fill_fraction = fill_fraction
 
 hx_design.te_pair.set_leg_areas()
+
+hx_design.te_pair.Ntype.material = 'MgSi'
+hx_design.te_pair.Ptype.material = 'HMS'
 
 hx_design.type = 'counter'
 
@@ -40,9 +50,7 @@ hx_design.cool.T_inlet_set = 300.
 hx_design.cool.T_outlet = 310.
 
 hx_design.set_mdot_charge()
-
 hx_design.solve_hx()
-hx_design.optimize()
 
 leg_area_ratio = hx_design.te_pair.leg_area_ratio
 fill_fraction = hx_design.te_pair.fill_fraction
