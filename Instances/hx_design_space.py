@@ -41,7 +41,7 @@ hx_design.cool.T_outlet = 310.
 
 hx_design.set_mdot_charge()
 
-hx_design.solve_HX()
+hx_design.solve_hx()
 hx_design.optimize()
 
 leg_area_ratio = hx_design.te_pair.leg_area_ratio
