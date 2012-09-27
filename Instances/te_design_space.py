@@ -110,4 +110,4 @@ np.save(data_dir + 'length_array', length_array)
 print "\nProgram finished."
 print "\nPlotting..."
 
-execfile('plot_TE_sensitivity.py')
+execfile('plot_te_design_space.py')

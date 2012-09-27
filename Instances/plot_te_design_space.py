@@ -31,7 +31,7 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close()
-save_dir = "../Plots/plot_TE_sensitivity/"
+save_dir = "../Plots/plot_te_design_space/"
 
 # fig = plt.figure()
 # ax = fig.gca(projection='3d')
