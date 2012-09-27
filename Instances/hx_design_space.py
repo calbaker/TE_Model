@@ -15,10 +15,10 @@ reload(hx)
 
 leg_area = (0.002)**2
 
-area_ratio = 0.745
-fill_fraction = 3.10e-2
-leg_length = 3.56e-4
-current = 13.0
+area_ratio = 0.697
+fill_fraction = 6.80e-2
+leg_length = 0.503e-3
+current = 20.5
 
 hx_design = hx.HX()
 
