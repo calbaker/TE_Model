@@ -31,7 +31,7 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close()
-save_dir = "../Plots/plot_TE_sensitivity/"
+save_dir = "../Plots/plot_hx_design_space/"
 
 # fig = plt.figure()
 # ax = fig.gca(projection='3d')
@@ -72,7 +72,7 @@ CB1 = plt.colorbar(
     cset1, orientation='vertical', format=FORMAT, fraction=FRACTION,
     ticks=TICKS
     )
-CB1.set_label(r'Power Flux (kW/m$^2$)')
+CB1.set_label('Power (kW)')
 plt.xticks(rotation=40)
 plt.xlabel('Current (A)')
 plt.ylabel('Fill Fraction (%)')
@@ -86,7 +86,7 @@ CB2 = plt.colorbar(
     cset2, orientation='vertical', format=FORMAT, fraction=FRACTION,
     ticks=TICKS
     )
-CB2.set_label(r'Power Flux (kW/m$^2$)')
+CB2.set_label('Power (kW)')
 plt.xticks(rotation=40)
 plt.xlabel('Fill Fraction (%)')
 plt.ylabel('Length (mm)')
@@ -100,7 +100,7 @@ CB3 = plt.colorbar(
     cset3, orientation='vertical', format=FORMAT, fraction=FRACTION,
     ticks=TICKS 
     )
-CB3.set_label(r'Power Flux (kW/m$^2$)')
+CB3.set_label('Power (kW)')
 plt.xticks(rotation=40)
 plt.xlabel('Length (mm)')
 plt.ylabel('Current (A)')

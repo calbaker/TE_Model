@@ -10,43 +10,53 @@ import sys
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
-import te_pair
-reload(te_pair)
+import hx
+reload(hx)
 
 area = (0.002) ** 2.
-te_design = te_pair.TE_Pair()
-te_design.Ptype.area = area
-te_design.leg_area_ratio = 0.693
-te_design.fill_fraction = 0.796
-te_design.length = 1.45e-3
-te_design.I = 1.87
-te_design.Ntype.material = 'MgSi'
-te_design.Ptype.material = 'HMS'
+hx_design = hx.HX()
+hx_design.te_pair.Ptype.area = area
+hx_design.te_pair.leg_area_ratio = 0.693
+hx_design.te_pair.fill_fraction = 0.796
+hx_design.te_pair.length = 1.45e-3
+hx_design.te_pair.I = 1.87
+hx_design.te_pair.Ntype.material = 'MgSi'
+hx_design.te_pair.Ptype.material = 'HMS'
 
-te_design.set_leg_areas()
+hx_design.te_pair.set_leg_areas()
 
-te_design.T_c_conv = 300.  # cold side convection temperature (K)
-te_design.T_h_conv = 600.  # hot side convection temperature (K)
+hx_design.type = 'counter'
 
-te_design.U_cold = 8.
-# cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
-te_design.U_hot = 2.
-# hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
+hx_design.exh.enh = hx_design.exh.set_enhancement('IdealFin')
+hx_design.exh.enh.thickness = 1.e-3
+hx_design.exh.enh.spacing = 1.26e-3
 
-te_design.optimize()
-leg_area_ratio = te_design.leg_area_ratio
-fill_fraction = te_design.fill_fraction
-length = te_design.length
-current = te_design.I
+hx_design.cool.enh = hx_design.cool.set_enhancement('IdealFin')
+hx_design.cool.enh.thickness = 1.e-3
+hx_design.cool.enh.spacing = 1.e-3
+
+hx_design.exh.T_inlet = 800.
+hx_design.cool.T_inlet_set = 300.
+hx_design.cool.T_outlet = 310.
+
+hx_design.set_mdot_charge()
+
+hx_design.solve_HX()
+hx_design.optimize()
+
+leg_area_ratio = hx_design.te_pair.leg_area_ratio
+fill_fraction = hx_design.te_pair.fill_fraction
+length = hx_design.te_pair.length
+current = hx_design.te_pair.I
 
 SIZE = 50
-current_array = np.linspace(0.5, 2, SIZE) * te_design.I
+current_array = np.linspace(0.5, 2, SIZE) * hx_design.te_pair.I
 fill_array = (
     np.linspace(0.5, 2, current_array.size + 1) *
-    te_design.fill_fraction
+    hx_design.te_pair.fill_fraction
     )
 length_array = (
-    np.linspace(0.5, 2, fill_array.size + 1) * te_design.length
+    np.linspace(0.5, 2, fill_array.size + 1) * hx_design.te_pair.length
     )
 
 power_I_fill = np.zeros(
@@ -60,46 +70,46 @@ power_height_I = np.zeros(
     )
 
 for i in range(current_array.size):
-    te_design.I = current_array[i]
+    hx_design.te_pair.I = current_array[i]
     print "i =", i
     for j in range(fill_array.size):
-        te_design.fill_fraction = fill_array[j]
-        te_design.set_leg_areas()
-        te_design.solve_te_pair()
-        power_I_fill[i, j] = te_design.P_flux
+        hx_design.te_pair.fill_fraction = fill_array[j]
+        hx_design.te_pair.set_leg_areas()
+        hx_design.solve_hx()
+        power_I_fill[i, j] = hx_design.power_net
 
-te_design.I = current
-te_design.fill_fraction = fill_fraction
-te_design.length = length
+hx_design.te_pair.I = current
+hx_design.te_pair.fill_fraction = fill_fraction
+hx_design.te_pair.length = length
 
 for j in range(fill_array.size):
-    te_design.fill_fraction = fill_array[j]
-    te_design.set_leg_areas()
+    hx_design.te_pair.fill_fraction = fill_array[j]
+    hx_design.te_pair.set_leg_areas()
     print "j =", j
     for k in range(length_array.size):
-        te_design.length = length_array[k]
-        te_design.solve_te_pair()
-        power_fill_height[j, k] = te_design.P_flux
+        hx_design.te_pair.length = length_array[k]
+        hx_design.solve_hx()
+        power_fill_height[j, k] = hx_design.power_net
 
-te_design.I = current
-te_design.fill_fraction = fill_fraction
-te_design.length = length
-te_design.set_leg_areas()
+hx_design.te_pair.I = current
+hx_design.te_pair.fill_fraction = fill_fraction
+hx_design.te_pair.length = length
+hx_design.te_pair.set_leg_areas()
 
 for k in range(length_array.size):
-    te_design.length = length_array[k]
-    te_design.solve_te_pair()
+    hx_design.te_pair.length = length_array[k]
+    hx_design.solve_hx()
     print "k =", k
     for i in range(current_array.size):
-        te_design.I = current_array[i]
-        te_design.solve_te_pair()
-        power_height_I[k, i] = te_design.P_flux
+        hx_design.te_pair.I = current_array[i]
+        hx_design.solve_hx()
+        power_height_I[k, i] = hx_design.power_net
 
-te_design.I = current
-te_design.fill_fraction = fill_fraction
-te_design.length = length
+hx_design.te_pair.I = current
+hx_design.te_pair.fill_fraction = fill_fraction
+hx_design.te_pair.length = length
 
-data_dir = '../output/te_design_space/'
+data_dir = '../output/hx_design_space/'
 np.save(data_dir + 'power_I_fill', power_I_fill)
 np.save(data_dir + 'power_fill_height', power_fill_height)
 np.save(data_dir + 'power_height_I', power_height_I)
@@ -110,4 +120,4 @@ np.save(data_dir + 'length_array', length_array)
 print "\nProgram finished."
 print "\nPlotting..."
 
-execfile('plot_TE_sensitivity.py')
+execfile('plot_hx_design_space.py')
