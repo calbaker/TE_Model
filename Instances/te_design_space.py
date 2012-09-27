@@ -39,7 +39,7 @@ fill_fraction = te_design.fill_fraction
 length = te_design.length
 current = te_design.I
 
-current_array = np.linspace(0.5, 1.5, 10) * te_design.I
+current_array = np.linspace(0.5, 1.5, 25) * te_design.I
 fill_array = (
     np.linspace(0.5, 1.5, current_array.size + 1) *
     te_design.fill_fraction
