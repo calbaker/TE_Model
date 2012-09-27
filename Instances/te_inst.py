@@ -37,9 +37,9 @@ te_inst.set_leg_areas()
 te_inst.T_c_conv = 300.  # cold side convection temperature (K)
 te_inst.T_h_conv = 800.  # hot side convection temperature (K)
 
-te_inst.U_cold = 2.
+te_inst.U_cold = 8.
 # cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
-te_inst.U_hot = 0.5
+te_inst.U_hot = 2.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
 te_inst.solve_te_pair()
