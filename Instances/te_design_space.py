@@ -28,9 +28,9 @@ te_design.set_leg_areas()
 te_design.T_c_conv = 300.  # cold side convection temperature (K)
 te_design.T_h_conv = 600.  # hot side convection temperature (K)
 
-te_design.U_cold = 2.
+te_design.U_cold = 8.
 # cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
-te_design.U_hot = 1.
+te_design.U_hot = 2.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
 te_design.optimize()
