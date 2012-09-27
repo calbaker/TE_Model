@@ -494,6 +494,7 @@ class HX(object):
             print "fill fraction =", self.te_pair.fill_fraction * 100., "%"
             print "current =", self.te_pair.I, "A"
             print "area ratio =", self.te_pair.leg_area_ratio
+            print "leg pairs =", self.leg_pairs
             
         apar = np.array(apar)
 
