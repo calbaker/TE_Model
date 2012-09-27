@@ -340,7 +340,7 @@ class TE_Pair(object):
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
             print "optimizaton iteration", self.opt_iter
-            print "power", self.P_flux
+            print "power flux (kW/m^2)", self.P_flux
         apar = np.array(apar)
 
         self.length = apar[0]
