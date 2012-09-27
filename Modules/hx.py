@@ -486,7 +486,6 @@ class HX(object):
         varied in optimization.  Use with scipy.optimize.fmin to find
         optimal set of input parameters."""
 
-        # unpack guess vector
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
             print "\noptimizaton iteration", self.opt_iter
@@ -498,6 +497,7 @@ class HX(object):
             
         apar = np.array(apar)
 
+        # unpack guess vector
         for i in range(apar.size):
             setattr(operator.attrgetter(
                     '.'.join(self.apar_list[i][1:-1]))(self),
