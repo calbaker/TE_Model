@@ -40,8 +40,6 @@ te_minpar.U_cold = 8.
 te_minpar.U_hot = 2.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
-te_minpar.optimize()
-
 SIZE = 10
 current = np.zeros(SIZE)
 fill_fraction = np.zeros(SIZE)
@@ -58,7 +56,7 @@ for i in range(SIZE):
     te_minpar.optimize()
 
     current[i] = te_minpar.I
-    fill[i] = te_minpar.fill_fraction
+    fill_fraction[i] = te_minpar.fill_fraction
     length[i] = te_minpar.length
     area_ratio[i] = te_minpar.leg_area_ratio
     power[i] = te_minpar.P
