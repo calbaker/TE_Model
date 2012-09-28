@@ -53,6 +53,7 @@ T_h_conv = np.linspace(350, 800., SIZE)
 
 for i in range(SIZE):
     te_minpar.T_h_conv = T_h_conv[i]
+    print "\nT_h_conv =", T_h_conv[i]
 
     te_minpar.optimize()
 

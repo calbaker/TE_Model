@@ -63,7 +63,6 @@ plt.xlabel(r'T$_{h,conv}$')
 plt.ylabel(r'Area Ratio ($A_n/A_p$)')
 plt.savefig(save_dir + 'area_ratio.pdf')
 
-
 plt.show()
 
 
