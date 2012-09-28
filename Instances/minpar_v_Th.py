@@ -13,11 +13,11 @@ if cmd_folder not in sys.path:
 import te_pair
 reload(te_pair)
 
-te_design = te_pair.TE_Pair()
-# instantiate a te_design object
+te_minpar = te_pair.TE_Pair()
+# instantiate a te_minpar object
 
-te_design.Ntype.material = 'MgSi'
-te_design.Ptype.material = 'HMS'
+te_minpar.Ntype.material = 'MgSi'
+te_minpar.Ptype.material = 'HMS'
 # declare materials to be used for property calculations
 
 fill_fraction = 4e-2
@@ -25,51 +25,53 @@ current = 24.
 length = 4.00e-4
 area_ratio = 0.7
 
-te_design.fill_fraction = fill_fraction
-te_design.I = current
-te_design.length = length
-te_design.leg_area_ratio = area_ratio
+te_minpar.fill_fraction = fill_fraction
+te_minpar.I = current
+te_minpar.length = length
+te_minpar.leg_area_ratio = area_ratio
 
-te_design.set_leg_areas()
+te_minpar.set_leg_areas()
 
-te_design.T_c_conv = 300.  # cold side convection temperature (K)
-te_design.T_h_conv = 680.  # hot side convection temperature (K)
+te_minpar.T_c_conv = 300.  # cold side convection temperature (K)
+te_minpar.T_h_conv = 680.  # hot side convection temperature (K)
 
-te_design.U_cold = 8.
+te_minpar.U_cold = 8.
 # cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
-te_design.U_hot = 2.
+te_minpar.U_hot = 2.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
 
-te_design.optimize()
-
-leg_area_ratio = te_design.leg_area_ratio
-fill_fraction = te_design.fill_fraction
-length = te_design.length
-current = te_design.I
+te_minpar.optimize()
 
 SIZE = 10
-current_array = np.linspace(0.5, 2, SIZE) * te_design.I
-fill_array = (
-    np.linspace(0.5, 2, current_array.size + 1) *
-    te_design.fill_fraction
-    )
-length_array = (
-    np.linspace(0.5, 2, fill_array.size + 1) * te_design.length
-    )
+current = np.zeros(SIZE)
+fill_fraction = np.zeros(SIZE)
+length = np.zeros(SIZE)
+area_ratio = np.zeros(SIZE)
+power = np.zeros(SIZE)
 
-power_I_fill = np.zeros(
-    [current_array.size, fill_array.size]
-    )
-power_fill_height = np.zeros(
-    [fill_array.size, length_array.size]
-    )
-power_height_I = np.zeros(
-    [length_array.size, current_array.size]
-    )
+T_h_conv = np.linspace(350, 800., SIZE)
 
+for i in range(SIZE):
+    te_minpar.T_h_conv = T_h_conv[i]
 
-data_dir = '../output/te_design_space/'
-np.save(data_dir + 'power_I_fill', power_I_fill)
+    te_minpar.optimize()
+
+    current[i] = te_minpar.I
+    fill[i] = te_minpar.fill_fraction
+    length[i] = te_minpar.length
+    area_ratio[i] = te_minpar.leg_area_ratio
+    power[i] = te_minpar.P
+
+data_dir = '../output/minpar_v_Th./'
+
+np.save(data_dir + 'T_h_conv', T_h_conv)
+
+np.save(data_dir + 'current', current)
+np.save(data_dir + 'fill_fraction', fill_fraction)
+np.save(data_dir + 'length', length)
+np.save(data_dir + 'area_ratio', area_ratio)
+
+np.save(data_dir + 'power', power)
 
 print "\nProgram finished."
 print "\nPlotting..."
