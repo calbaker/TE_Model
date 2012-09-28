@@ -5,6 +5,7 @@
 import numpy as np
 import os
 import sys
+import time
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -67,41 +68,53 @@ power_height_I = np.zeros(
     [length_array.size, current_array.size]
     )
 
-for i in range(current_array.size):
+t0 = time.clock()
+for index in np.ndindex(current_array.size, fill_array.size):
+    i = index[0]
+    j = index[1]
+    if j == 0:
+        print "i =", i
     te_design.I = current_array[i]
-    print "i =", i
-    for j in range(fill_array.size):
-        te_design.fill_fraction = fill_array[j]
-        te_design.set_leg_areas()
-        te_design.solve_te_pair()
-        power_I_fill[i, j] = te_design.P_flux
+    te_design.fill_fraction = fill_array[j]
+    te_design.set_leg_areas()
+    te_design.solve_te_pair()
+    power_I_fill[i, j] = te_design.P_flux
 
 te_design.I = current
 te_design.fill_fraction = fill_fraction
 te_design.length = length
 
-for j in range(fill_array.size):
+t1 = time.clock() - t0
+print "t1 =", t1
+t0 = time.clock()
+for index in np.ndindex(fill_array.size, length_array.size):
+    j = index[0]
+    k = index[1]
     te_design.fill_fraction = fill_array[j]
     te_design.set_leg_areas()
-    print "j =", j
-    for k in range(length_array.size):
-        te_design.length = length_array[k]
-        te_design.solve_te_pair()
-        power_fill_height[j, k] = te_design.P_flux
+    if k == 0:
+        print "j =", j
+    te_design.length = length_array[k]
+    te_design.solve_te_pair()
+    power_fill_height[j, k] = te_design.P_flux
 
 te_design.I = current
 te_design.fill_fraction = fill_fraction
 te_design.length = length
 te_design.set_leg_areas()
 
-for k in range(length_array.size):
+t2 = time.clock() - t0
+print "t2 =", t2
+for index in np.ndindex(length_array.size, current_array.size):
+    k = index[0]
+    i = index[1]
     te_design.length = length_array[k]
     te_design.solve_te_pair()
-    print "k =", k
-    for i in range(current_array.size):
-        te_design.I = current_array[i]
-        te_design.solve_te_pair()
-        power_height_I[k, i] = te_design.P_flux
+    if i == 0:
+        print "k =", k
+    te_design.I = current_array[i]
+    te_design.solve_te_pair()
+    power_height_I[k, i] = te_design.P_flux
 
 te_design.I = current
 te_design.fill_fraction = fill_fraction
