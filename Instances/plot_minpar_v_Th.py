@@ -4,7 +4,6 @@
 # Distribution Modules
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d
 import os
 import sys
 
@@ -18,7 +17,7 @@ data_dir = '../output/te_design_space/'
 T_h_conv = np.load(data_dir + 'T_h_conv.npy') 
 
 current = np.load(data_dir + 'current.npy') 
-fill_fraction = np.load(data_dir + 'fill.npy')
+fill_fraction = np.load(data_dir + 'fill_fraction.npy')
 length = np.load(data_dir + 'length.npy')
 area_ratio = np.load(data_dir + 'area_ratio.npy')
 power = np.load(data_dir + 'power.npy')
