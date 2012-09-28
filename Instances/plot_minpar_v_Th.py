@@ -12,7 +12,7 @@ cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
     
-data_dir = '../output/te_design_space/'
+data_dir = '../output/minpar_v_Th/'
 
 T_h_conv = np.load(data_dir + 'T_h_conv.npy') 
 
