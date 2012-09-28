@@ -34,11 +34,16 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.close()
 save_dir = "../Plots/plot_minpar_v_Th/"
 
+LEFT = 0.17
+BOTTOM = 0.15
+
 plt.figure('current')
 plt.plot(T_h_conv, current)
 plt.grid()
 plt.xlabel(r'T$_{h,conv}$')
 plt.ylabel('Current (A)')
+plt.xticks(rotation=40)
+plt.subplots_adjust(bottom=BOTTOM, left=LEFT)
 plt.savefig(save_dir + 'current.pdf')
 
 plt.figure('fill fraction')
@@ -46,6 +51,8 @@ plt.plot(T_h_conv, fill_fraction * 1e2)
 plt.grid()
 plt.xlabel(r'T$_{h,conv}$')
 plt.ylabel('Fill Fraction (%)')
+plt.xticks(rotation=40)
+plt.subplots_adjust(bottom=BOTTOM, left=LEFT)
 plt.savefig(save_dir + 'fill_fraction.pdf')
 
 plt.figure('length')
@@ -53,6 +60,8 @@ plt.plot(T_h_conv, length * 1e3)
 plt.grid()
 plt.xlabel(r'T$_{h,conv}$')
 plt.ylabel('Length (mm)')
+plt.xticks(rotation=40)
+plt.subplots_adjust(bottom=BOTTOM, left=LEFT)
 plt.savefig(save_dir + 'length.pdf')
 
 plt.figure('area ratio')
@@ -60,6 +69,8 @@ plt.plot(T_h_conv, area_ratio)
 plt.grid()
 plt.xlabel(r'T$_{h,conv}$')
 plt.ylabel(r'Area Ratio ($A_n/A_p$)')
+plt.xticks(rotation=40)
+plt.subplots_adjust(bottom=BOTTOM, left=LEFT)
 plt.savefig(save_dir + 'area_ratio.pdf')
 
 plt.show()

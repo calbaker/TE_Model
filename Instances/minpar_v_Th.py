@@ -20,7 +20,7 @@ te_minpar.Ntype.material = 'MgSi'
 te_minpar.Ptype.material = 'HMS'
 # declare materials to be used for property calculations
 
-fill_fraction = 4e-2
+fill_fraction = 4.e-2
 current = 24.
 length = 4.00e-4
 area_ratio = 0.7
@@ -33,11 +33,14 @@ te_minpar.leg_area_ratio = area_ratio
 te_minpar.set_leg_areas()
 
 te_minpar.T_c_conv = 300.  # cold side convection temperature (K)
+te_minpar.T_h_conv = 800.
 
 te_minpar.U_cold = 8.
 # cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
 te_minpar.U_hot = 2.
 # hot side overall heat transfer coeffcient (kW / (m ** 2 * K))
+
+te_minpar.optimize()
 
 SIZE = 10
 current = np.zeros(SIZE)
