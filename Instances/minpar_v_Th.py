@@ -61,7 +61,7 @@ for i in range(SIZE):
     area_ratio[i] = te_minpar.leg_area_ratio
     power[i] = te_minpar.P
 
-data_dir = '../output/minpar_v_Th./'
+data_dir = '../output/minpar_v_Th/'
 
 np.save(data_dir + 'T_h_conv', T_h_conv)
 
