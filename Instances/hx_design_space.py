@@ -58,7 +58,7 @@ fill_fraction = hx_design.te_pair.fill_fraction
 length = hx_design.te_pair.length
 current = hx_design.te_pair.I
 
-SIZE = 10
+SIZE = 50
 current_array = np.linspace(0.5, 2, SIZE) * hx_design.te_pair.I
 fill_array = (
     np.linspace(0.5, 2, current_array.size + 1) *

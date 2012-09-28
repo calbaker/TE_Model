@@ -67,55 +67,11 @@ power_height_I = np.zeros(
     [length_array.size, current_array.size]
     )
 
-for i in range(current_array.size):
-    te_design.I = current_array[i]
-    print "i =", i
-    for j in range(fill_array.size):
-        te_design.fill_fraction = fill_array[j]
-        te_design.set_leg_areas()
-        te_design.solve_te_pair()
-        power_I_fill[i, j] = te_design.P_flux
-
-te_design.I = current
-te_design.fill_fraction = fill_fraction
-te_design.length = length
-
-for j in range(fill_array.size):
-    te_design.fill_fraction = fill_array[j]
-    te_design.set_leg_areas()
-    print "j =", j
-    for k in range(length_array.size):
-        te_design.length = length_array[k]
-        te_design.solve_te_pair()
-        power_fill_height[j, k] = te_design.P_flux
-
-te_design.I = current
-te_design.fill_fraction = fill_fraction
-te_design.length = length
-te_design.set_leg_areas()
-
-for k in range(length_array.size):
-    te_design.length = length_array[k]
-    te_design.solve_te_pair()
-    print "k =", k
-    for i in range(current_array.size):
-        te_design.I = current_array[i]
-        te_design.solve_te_pair()
-        power_height_I[k, i] = te_design.P_flux
-
-te_design.I = current
-te_design.fill_fraction = fill_fraction
-te_design.length = length
 
 data_dir = '../output/te_design_space/'
 np.save(data_dir + 'power_I_fill', power_I_fill)
-np.save(data_dir + 'power_fill_height', power_fill_height)
-np.save(data_dir + 'power_height_I', power_height_I)
-np.save(data_dir + 'current_array', current_array)
-np.save(data_dir + 'fill_array', fill_array)
-np.save(data_dir + 'length_array', length_array)
 
 print "\nProgram finished."
 print "\nPlotting..."
 
-execfile('plot_te_design_space.py')
+execfile('plot_minpar_v_Th.py')
