@@ -29,7 +29,7 @@ class ExpData(object):
         self.exh.T_in = self.data['hx_exh_in_t'] + 273.15  # K
         self.exh.T_out = self.data['hx_exh_out_t'] + 273.15  # K
         self.exh.mdot = self.data['exh_mdot_kgmin'] / 60.  # kg/s
-        self.exh.delta_P = (
+        self.exh.deltaP = (
             self.data['hx_exh_delta_p_2_in_wc'] * 0.249 * 2. # kPa
             )
 
@@ -56,3 +56,19 @@ class ExpData(object):
 
         self.exh.Qdot = self.exh.mdot * self.exh.c_p * self.exh.delta_T
 
+    def fit_Qdot_data(self):
+        """Uses scipy.optimize leastsq to minimize the error of a 2nd
+        order polynomial in fitting the experimental Qdot data.  
+        """
+        
+    def rep_Qdot_data(self, fit_params):
+        """Represents experimental Qdot data using 2-dim 2nd order
+        polynomial fit."""
+        
+    def get_Qdot_error(self, fit_params):
+        """Returns error between statistical fit and experimental Qdot
+        data."""
+
+        self.Qdot_fit = 
+        
+        

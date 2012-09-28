@@ -57,8 +57,8 @@ hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
 np.savez(
     '../output/plot_exp/' + hx_exp.file, 
-    hx_exp.exh.mdot, hx_exp.exh.T_in, hx_exp.exh.delta_P,
-    hx_mod.exh.delta_P_arr, hx_exp.exh.Qdot, hx_mod.Qdot_arr
+    hx_exp.exh.mdot, hx_exp.exh.T_in, hx_exp.exh.deltaP,
+    hx_mod.exh.deltaP_arr, hx_exp.exh.Qdot, hx_mod.Qdot_arr
     )
 
 # Plot configuration
@@ -93,10 +93,10 @@ plt.savefig('../Plots/plot_exp/' + hx_exp.file + '/Qdot.pdf')
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.scatter(
-    hx_exp.exh.mdot, hx_exp.exh.T_in, hx_exp.exh.delta_P
+    hx_exp.exh.mdot, hx_exp.exh.T_in, hx_exp.exh.deltaP
     )
 ax.scatter(
-    hx_exp.exh.mdot, hx_exp.exh.T_in, hx_mod.exh.delta_P_arr,
+    hx_exp.exh.mdot, hx_exp.exh.T_in, hx_mod.exh.deltaP_arr,
     color='r'
     )
 

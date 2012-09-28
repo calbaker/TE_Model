@@ -66,7 +66,7 @@ def solve_hx(hx_exp, hx_mod):
     experimental data set."""
     
     hx_mod.Qdot_arr = np.zeros(hx_exp.exh.T_in.size)
-    hx_mod.exh.delta_P_arr = np.zeros(hx_exp.exh.T_in.size)
+    hx_mod.exh.deltaP_arr = np.zeros(hx_exp.exh.T_in.size)
 
     for i in range(hx_exp.exh.T_in.size):
         hx_mod.exh.T_inlet = hx_exp.exh.T_in[i]
@@ -79,6 +79,6 @@ def solve_hx(hx_exp, hx_mod):
         hx_mod.solve_hx()
 
         hx_mod.Qdot_arr[i] = hx_mod.Qdot_total
-        hx_mod.exh.delta_P_arr[i] = hx_mod.exh.deltaP_total
+        hx_mod.exh.deltaP_arr[i] = hx_mod.exh.deltaP_total
 
     return hx_mod
