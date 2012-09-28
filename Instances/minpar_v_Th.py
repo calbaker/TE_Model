@@ -33,7 +33,6 @@ te_minpar.leg_area_ratio = area_ratio
 te_minpar.set_leg_areas()
 
 te_minpar.T_c_conv = 300.  # cold side convection temperature (K)
-te_minpar.T_h_conv = 680.  # hot side convection temperature (K)
 
 te_minpar.U_cold = 8.
 # cold side overall heat transfer coeffcient (kW / (m ** 2 * K))
@@ -47,7 +46,7 @@ length = np.zeros(SIZE)
 area_ratio = np.zeros(SIZE)
 power = np.zeros(SIZE)
 
-T_h_conv = np.linspace(350, 800., SIZE)
+T_h_conv = np.linspace(550, 800., SIZE)
 
 for i in range(SIZE):
     te_minpar.T_h_conv = T_h_conv[i]
