@@ -22,7 +22,9 @@ class ExpData(object):
         self.exh = prop.ideal_gas()
         self.exh.P = 101.325
         self.cool = DataPoint()
-        self.fit_params = np.ones(6)
+        self.fit_params = np.array(
+            [0., 1., 1., 0, 1., 1.]
+            )
 
     def import_data(self):
         """Imports data from csv file as a numpy record array (aka
@@ -68,9 +70,8 @@ class ExpData(object):
             self.get_Qdot_error, x0=self.fit_params
             )
         self.fit_params = self.leastsq_out[0]
-        self.rep_Qdot_data(self.fit_params)
 
-    def rep_Qdot_data(self, fit_params):
+    def rep_Qdot_data(self, fit_params, mdot, T_in):
         """Represents experimental Qdot data using 2-dim 2nd order
         polynomial fit."""
 
@@ -78,15 +79,32 @@ class ExpData(object):
         B = fit_params[3:]
 
         self.exh.Qdot_fit = (
-            A[0] + A[1] * self.exh.mdot + A[2] * self.exh.mdot ** 2. +
-            B[0] + B[1] * self.exh.T_in + B[2] * self.exh.T_in ** 2.
+            A[0] + A[1] * mdot + A[2] * mdot ** 2. +
+            B[0] + B[1] * T_in + B[2] * T_in ** 2.
             )
+
+    def rep_Qdot_surf(self, mdot, T_in):
+        """Creates 2d surface of Qdot as function of mdot and T_in."""
+
+        A = self.fit_params[0:3]
+        B = self.fit_params[3:]
+
+        self.exh.Qdot_surf = np.zeros([mdot.size, T_in.size])
+
+        for index in np.ndindex(mdot.size, T_in.size):
+            i = index[0]
+            j = index[1]
+            print i, j
+            self.exh.Qdot_surf[i, j] = (
+                A[0] + A[1] * mdot[i] + A[2] * mdot[i] ** 2. +
+                B[0] + B[1] * T_in[j] + B[2] * T_in[j] ** 2.
+                )
 
     def get_Qdot_error(self, fit_params):
         """Returns error between statistical fit and experimental Qdot
         data."""
 
-        self.rep_Qdot_data(fit_params)
+        self.rep_Qdot_data(fit_params, self.exh.mdot, self.exh.T_in)
         self.exh.Qdot_fit_err = self.exh.Qdot - self.exh.Qdot_fit
 
         return self.exh.Qdot_fit_err

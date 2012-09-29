@@ -1,5 +1,7 @@
 """Plots results from heat exchanger experiments."""
 
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 # pychecker will flag this statement, but it is necessary
 import numpy as np
@@ -20,6 +22,16 @@ hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
 hx_exp.file = '2012-09-18 copper'
 hx_exp.import_data()
+hx_exp.fit_Qdot_data()
+
+SIZE = 10
+mdot = np.linspace(hx_exp.exh.mdot.min(), hx_exp.exh.mdot.max(), SIZE)
+T_in = np.linspace(
+    hx_exp.exh.T_in.min(), hx_exp.exh.T_in.max(), SIZE
+    )
+mdot2d, T_in2d = np.meshgrid(mdot, T_in)
+
+hx_exp.rep_Qdot_surf(mdot, T_in)
 
 hx_mod = real_hx.get_hx()
 # k_gypsum = 0.17e-3
@@ -84,7 +96,6 @@ ax.scatter(
 ax.scatter(
     hx_exp.exh.mdot, hx_exp.exh.T_in, hx_mod.Qdot_arr, color='r',
     )
-
 ax.set_xlabel(r'$\dot{m}$ (kg/s)')
 ax.set_ylabel(r'$T_{exh,in}$ (K)')
 ax.set_zlabel(r'$\dot{Q}$')
@@ -104,5 +115,20 @@ ax.set_xlabel(r'$\dot{m}$ (kg/s)')
 ax.set_ylabel(r'$T_{exh,in}$ (K)')
 ax.set_zlabel(r'$\Delta P$')
 plt.savefig('../Plots/plot_exp/' + hx_exp.file + '/deltaP.pdf')
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+ax.scatter(
+    hx_exp.exh.mdot, hx_exp.exh.T_in, hx_exp.exh.Qdot
+    )
+surf = ax.plot_surface(
+    mdot2d, T_in2d, hx_exp.exh.Qdot_surf, alpha=0.4, rstride=1,
+    cstride=1, cmap=cm.jet, linewidth=0, antialiased=False
+    )
+fig.colorbar(surf, shrink=0.5, aspect=5)
+ax.set_xlabel(r'$\dot{m}$ (kg/s)')
+ax.set_ylabel(r'$T_{exh,in}$ (K)')
+ax.set_zlabel(r'$\dot{Q}$')
+plt.savefig('../Plots/plot_exp/' + hx_exp.file + '/Qdot.pdf')
 
 plt.show()
