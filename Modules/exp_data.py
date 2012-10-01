@@ -22,7 +22,8 @@ class ExpData(object):
         self.exh = prop.ideal_gas()
         self.exh.P = 101.325
         self.cool = DataPoint()
-        self.fit_params = np.ones(4)
+        self.fit_order = 1
+        self.fit_params = np.ones(3. * self.fit_order + 1)
 
     def import_data(self):
         """Imports data from csv file as a numpy record array (aka
@@ -72,10 +73,26 @@ class ExpData(object):
     def eval_Qdot_fit(self, fit_params, mdot, T_in):
         """Evaluates qdot at specific mdot and T_in."""
 
-        A = fit_params[0]
-        B = fit_params[1:]
+        ORDER = self.fit_order
 
-        self.exh.Qdot_fit = A * mdot + np.polyval(B, T_in)
+        A = fit_params[0:ORDER]
+        A = np.append(A, 0)
+        self.A_coeff = A
+
+        B = fit_params[ORDER:ORDER * 2]
+        B = np.append(B, 0)
+        self.B_coeff = B
+
+        C = fit_params[ORDER * 2:ORDER * 3]
+        C = np.append(C, 0)
+        self.C_coeff = C
+
+        self.offset = fit_params[-1]
+
+        self.exh.Qdot_fit = (
+            np.polyval(A, mdot) + np.polyval(B, T_in) + 
+            np.polyval(C, mdot * T_in) + self.offset
+            )
 
         return self.exh.Qdot_fit
         
