@@ -89,13 +89,14 @@ def fit_hx(hx_exp, hx_mod):
 
     from scipy.optimize import leastsq
 
-    def get_fit_error(fit_params):
+    def get_fit_error(fit_params, *args):
+        hx_mod = args[0]
         hx_mod.R_extra = fit_params
         hx_mod = solve_hx(hx_exp, hx_mod)
         Qdot_err = hx_mod.Qdot_arr - hx_exp.exh.Qdot
         return Qdot_err
 
-    hx_mod.leastsq_out = leastsq(get_fit_error, x0=0)
+    hx_mod.leastsq_out = leastsq(get_fit_error, x0=0, args=hx_mod)
     hx_mod.R_extra = hx_mod.leastsq_out[0]
     
     return hx_mod
