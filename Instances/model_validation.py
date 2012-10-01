@@ -47,7 +47,6 @@ k_air = 3.24e-5
 k_alexander = (
     k_air / (k_copper / k_air) ** ((1. - phi_copper) ** 0.59)
     )
-
 k_koh = (
     (1. - phi_copper) / (1. + 11. * phi_copper) * k_copper
     )
@@ -60,6 +59,7 @@ hx_mod.R_extra = thickness_copper / k_effective
 
 hx_mod.R_interconnect = 0.
 hx_mod.R_substrate = 0.
+hx_mod.R_contact = 0.
 
 hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
