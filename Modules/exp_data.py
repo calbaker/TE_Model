@@ -22,7 +22,6 @@ class ExpData(object):
         self.exh = prop.ideal_gas()
         self.exh.P = 101.325
         self.cool = DataPoint()
-        self.fit_order = 1
         self.set_fit_params()
 
     def import_data(self):
@@ -72,12 +71,16 @@ class ExpData(object):
 
     def set_fit_params(self):
         """Initializes fit parameters."""
+        self.fit_params = np.ones(3)
 
     def eval_Qdot_fit(self, fit_params, mdot, T_in):
         """Evaluates qdot at specific mdot and T_in."""
 
+
         self.exh.Qdot_fit = (
-            fit_params[-1] + 
+            fit_params[0] + 
+            fit_params[1] * mdot * T_in + fit_params[2] * (mdot *
+            T_in) ** 2.
             )
 
         return self.exh.Qdot_fit
