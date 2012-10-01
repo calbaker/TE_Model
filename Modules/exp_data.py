@@ -23,7 +23,7 @@ class ExpData(object):
         self.exh.P = 101.325
         self.cool = DataPoint()
         self.fit_params = np.array(
-            [0., 1., 1., 0, 1., 1.]
+            [1., 0, 1., 1.]
             )
 
     def import_data(self):
@@ -75,19 +75,19 @@ class ExpData(object):
         """Represents experimental Qdot data using 2-dim 2nd order
         polynomial fit."""
 
-        A = fit_params[0:3]
-        B = fit_params[3:]
+        A = fit_params[0]
+        B = fit_params[1:]
 
         self.exh.Qdot_fit = (
-            A[0] + A[1] * mdot + A[2] * mdot ** 2. +
+            A * mdot +
             B[0] + B[1] * T_in + B[2] * T_in ** 2.
             )
 
     def rep_Qdot_surf(self, mdot, T_in):
         """Creates 2d surface of Qdot as function of mdot and T_in."""
 
-        A = self.fit_params[0:3]
-        B = self.fit_params[3:]
+        A = self.fit_params[0]
+        B = self.fit_params[1:]
 
         self.exh.Qdot_surf = np.zeros([mdot.size, T_in.size])
 
@@ -96,7 +96,7 @@ class ExpData(object):
             j = index[1]
             print i, j
             self.exh.Qdot_surf[i, j] = (
-                A[0] + A[1] * mdot[i] + A[2] * mdot[i] ** 2. +
+                A * mdot[i] +
                 B[0] + B[1] * T_in[j] + B[2] * T_in[j] ** 2.
                 )
 
