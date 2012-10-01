@@ -61,13 +61,13 @@ hx_mod.R_interconnect = 0.
 hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
 
-hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
+hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
 
 np.savez(
     '../output/model_validation/' + hx_exp.file, 
     mdot=hx_exp.exh.mdot, T_in=hx_exp.exh.T_in, deltaP=hx_exp.exh.deltaP,
     deltaP_arr=hx_mod.exh.deltaP_arr, Qdot=hx_exp.exh.Qdot,
-    Qdot_arr=hx_mod.Qdot_arr, Qdot_surf=hx_exp.exh.Qdot_surf,
+    Qdot_arr=hx_mod.exh.Qdot_arr, Qdot_surf=hx_exp.exh.Qdot_surf,
     mdot2d=mdot2d, T_in2d=T_in2d
     )
 

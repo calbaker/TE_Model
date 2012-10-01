@@ -76,7 +76,6 @@ class ExpData(object):
     def eval_Qdot_fit(self, fit_params, mdot, T_in):
         """Evaluates qdot at specific mdot and T_in."""
 
-
         self.exh.Qdot_fit = (
             fit_params[0] + 
             fit_params[1] * mdot * T_in + fit_params[2] * (mdot *

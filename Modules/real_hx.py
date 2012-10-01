@@ -82,3 +82,19 @@ def solve_hx(hx_exp, hx_mod):
         hx_mod.exh.deltaP_arr[i] = hx_mod.exh.deltaP_total
 
     return hx_mod
+
+def fit_hx(hx_exp, hx_mod):
+    """Changes parameters in model to make model data fit experimental
+    data."""
+
+    from scipy.optimize import leastsq
+
+    def get_fit_error(fit_params):
+        hx_mod.R_extra = fit_params
+        solve_hx(hx_exp, hx_mod)
+        Qdot_err = hx_mod.Qdot_arr - hx_exp.exh.Qdot
+        return Qdot_err
+
+    hx_mod.leastsq_out = leastsq(get_fit_error, x0=0)
+    hx_mod.R_extra = hx_mod.leastsq_out[0]
+        
