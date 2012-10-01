@@ -73,6 +73,6 @@ fig.colorbar(surf, shrink=0.5, aspect=5)
 ax.set_xlabel(r'$\dot{m}$ (kg/s)')
 ax.set_ylabel(r'$T_{exh,in}$ (K)')
 ax.set_zlabel(r'$\dot{Q}$')
-plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot.pdf')
+plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_fit.pdf')
 
 plt.show()

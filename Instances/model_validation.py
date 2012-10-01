@@ -17,7 +17,7 @@ hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
 hx_exp.file = 'combined copper'
 hx_exp.import_data()
-hx_exp.fit_Qdot_data()
+hx_exp.get_Qdot_fit()
 
 SIZE = 10
 mdot_surf = np.linspace(

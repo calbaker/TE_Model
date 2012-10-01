@@ -22,9 +22,7 @@ class ExpData(object):
         self.exh = prop.ideal_gas()
         self.exh.P = 101.325
         self.cool = DataPoint()
-        self.fit_params = np.array(
-            [1., 0, 1., 1.]
-            )
+        self.fit_params = np.ones(4)
 
     def import_data(self):
         """Imports data from csv file as a numpy record array (aka
@@ -50,8 +48,8 @@ class ExpData(object):
         self.cool.Vdot = self.data['cool_vdot_gpm']
 
         self.exh.T_mean = 0.5 * (self.exh.T_in + self.exh.T_out)
-        self.exh.delta_T = self.exh.T_in - self.exh.T_out
-        self.exh.eta = self.exh.delta_T / (self.exh.T_in - self.cool.T_in)
+        self.exh.deltaT = self.exh.T_in - self.exh.T_out
+        self.exh.eta = self.exh.deltaT / (self.exh.T_in - self.cool.T_in)
 
         self.exh.c_p = np.zeros(self.exh.T_in.size)
 
@@ -60,51 +58,44 @@ class ExpData(object):
             self.exh.set_TempPres_dependents()
             self.exh.c_p[i] = self.exh.c_p_air
 
-        self.exh.Qdot = self.exh.mdot * self.exh.c_p * self.exh.delta_T
+        self.exh.Qdot = self.exh.mdot * self.exh.c_p * self.exh.deltaT
 
-    def fit_Qdot_data(self):
-        """Uses scipy.optimize leastsq to minimize the error of a 2nd
-        order polynomial in fitting the experimental Qdot data.
+    def get_Qdot_fit(self):
+        """Uses scipy.optimize leastsq to minimize the error of a
+        polynomial in fitting the experimental Qdot data.
         """
         self.leastsq_out = leastsq(
-            self.get_Qdot_error, x0=self.fit_params
+            self.get_Qdot_fit_error, x0=self.fit_params
             )
         self.fit_params = self.leastsq_out[0]
 
-    def rep_Qdot_data(self, fit_params, mdot, T_in):
-        """Represents experimental Qdot data using 2-dim 2nd order
-        polynomial fit."""
+    def eval_Qdot_fit(self, fit_params, mdot, T_in):
+        """Evaluates qdot at specific mdot and T_in."""
 
         A = fit_params[0]
         B = fit_params[1:]
 
-        self.exh.Qdot_fit = (
-            A * mdot +
-            B[0] + B[1] * T_in + B[2] * T_in ** 2.
-            )
+        self.exh.Qdot_fit = A * mdot + np.polyval(B, T_in)
 
+        return self.exh.Qdot_fit
+        
     def rep_Qdot_surf(self, mdot, T_in):
         """Creates 2d surface of Qdot as function of mdot and T_in."""
-
-        A = self.fit_params[0]
-        B = self.fit_params[1:]
-
+ 
         self.exh.Qdot_surf = np.zeros([mdot.size, T_in.size])
 
         for index in np.ndindex(mdot.size, T_in.size):
             i = index[0]
             j = index[1]
-            print i, j
             self.exh.Qdot_surf[i, j] = (
-                A * mdot[i] +
-                B[0] + B[1] * T_in[j] + B[2] * T_in[j] ** 2.
+                self.eval_Qdot_fit(self.fit_params, mdot[i], T_in[j])
                 )
 
-    def get_Qdot_error(self, fit_params):
+    def get_Qdot_fit_error(self, fit_params):
         """Returns error between statistical fit and experimental Qdot
         data."""
 
-        self.rep_Qdot_data(fit_params, self.exh.mdot, self.exh.T_in)
+        self.eval_Qdot_fit(fit_params, self.exh.mdot, self.exh.T_in)
         self.exh.Qdot_fit_err = self.exh.Qdot - self.exh.Qdot_fit
 
         return self.exh.Qdot_fit_err
