@@ -79,11 +79,20 @@ ax.set_zlabel(r'$\dot{Q}$')
 plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_fit.pdf')
 
 fig = plt.figure()
-dimless_P = deltaP_arr / (0.5 * rho * velocity ** 2.)
-plt.plot(Re_D, dimless_P, linestyle='', marker='s', color='k')
+dimless_P_mod = deltaP_arr / (0.5 * rho * velocity ** 2.)
+dimless_P_exp = deltaP / (0.5 * rho * velocity ** 2.)
+plt.plot(
+    Re_D, dimless_P_mod * 1e3, linestyle='', marker='s', color='b',
+    label='model'
+    )
+plt.plot(
+    Re_D, dimless_P_exp * 1e3, linestyle='', marker='s', color='r',
+    label='experiment'
+    )
 plt.xlabel(r'Re$_D$')
-plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$')
+plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$ x 1x10$^3$')
 plt.grid()
+plt.legend()
 plt.savefig('../Plots/plot_exp/' + FILE + '/dimless_P.pdf')
 
 plt.show()
