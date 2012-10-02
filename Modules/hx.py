@@ -164,6 +164,8 @@ class HX(object):
         self.exh.entropy_nodes = np.zeros(self.nodes)
         self.exh.enthalpy_nodes = np.zeros(self.nodes)
         self.exh.velocity_nodes = np.zeros(self.nodes)
+        self.exh.rho_nodes = np.zeros(self.nodes)
+        self.exh.Re_nodes = np.zeros(self.nodes)
 
         self.cool.T_nodes = np.zeros(self.nodes)
         self.cool.entropy_nodes = np.zeros(self.nodes)
@@ -463,6 +465,8 @@ class HX(object):
         self.exh.velocity_nodes[i] = self.exh.velocity
         self.exh.entropy_nodes[i] = self.exh.entropy
         self.exh.enthalpy_nodes[i] = self.exh.enthalpy
+        self.exh.rho_nodes[i] = self.exh.rho
+        self.exh.Re_nodes[i] = self.exh.Re_D
 
         self.cool.T_nodes[i] = self.cool.T
         self.cool.deltaP_nodes[i] = self.cool.deltaP
