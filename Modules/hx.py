@@ -24,6 +24,11 @@ reload(coolant)
 import platewall
 reload(platewall)
 
+class Dimension(object):
+    """Class for hx attribute containing physical dimensions.  This is
+    used on an ad hoc basis."""
+    pass
+
 
 class HX(object):
 
@@ -111,10 +116,11 @@ class HX(object):
         # Temperature.” Heat and Mass Transfer 48, no. 6 (2012):
         # 999–1004.
 
-        self.width = 0.55
+        self.dimension = Dimension()
+        self.dimension.width = 0.55
         # width (cm*10**-2) of HX duct. This model treats duct as
         # parallel plates for simpler modeling.
-        self.length = 0.55
+        self.dimension.length = 0.55
         # length (m) of HX duct
         self.nodes = 25
         # number of nodes for numerical heat transfer model
@@ -218,15 +224,15 @@ class HX(object):
 
         """
 
-        self.x = np.linspace(0, self.length, self.nodes)
-        self.node_length = self.length / self.nodes
+        self.x = np.linspace(0, self.dimension.length, self.nodes)
+        self.node_length = self.dimension.length / self.nodes
         # length (m) of each node
-        self.area = self.node_length * self.width * self.cool.ducts
+        self.area = self.node_length * self.dimension.width * self.cool.ducts
         # area (m^2) through which heat flux occurs in each node
         self.te_pair.set_constants()
         self.leg_pairs = self.area / self.te_pair.area
         # Number of TEM leg pairs per node
-        self.x_dim = np.arange(self.node_length / 2, self.length +
+        self.x_dim = np.arange(self.node_length / 2, self.dimension.length +
         self.node_length / 2, self.node_length)
         # x coordinate (m)
         self.fix_geometry()
@@ -241,12 +247,12 @@ class HX(object):
         same between exh, cool, and the overal heat exchanger.
 
         """
-
+        
         if self.equal_width == True:
-            self.exh.width = self.width
-            self.cool.width = self.width
-        self.cool.length = self.length
-        self.exh.length = self.length
+            self.exh.width = self.dimension.width
+            self.cool.width = self.dimension.width
+        self.cool.length = self.dimension.length
+        self.exh.length = self.dimension.length
 
     def set_mdot_charge(self):
 
@@ -563,7 +569,9 @@ class HX(object):
         print "\npower net:", self.power_net * 1000., 'W'
         print "power raw:", self.te_pair.power_total * 1000., 'W'
         print "pumping power:", self.Wdot_pumping * 1000., 'W'
-        self.exh.volume = self.exh.height * self.exh.width * self.length
+        self.exh.volume = (
+            self.exh.height * self.exh.width * self.dimension.length
+            )
         print "exhaust volume:", self.exh.volume * 1000., 'L'
         VAR = self.power_net / self.exh.volume
         print "exhaust power density:", VAR, 'kW/m^3'
