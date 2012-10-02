@@ -498,12 +498,15 @@ class HX(object):
 
         self.opt_iter = self.opt_iter + 1
         if self.opt_iter % 15 == 0:
-            print "\noptimizaton iteration", self.opt_iter
+            print "\n\noptimizaton iteration", self.opt_iter
             print "net power", self.power_net
-            print "leg length =", self.te_pair.length * 1e3, "mm"
-            print "fill fraction =", self.te_pair.fill_fraction * 100., "%"
-            print "current =", self.te_pair.I, "A"
-            print "area ratio =", self.te_pair.leg_area_ratio
+            for i in range(self.x0.size):
+                varname = '.'.join(self.apar_list[i][1:])
+                varval = (
+                    operator.attrgetter(varname)(self)
+                    )
+                print varname + ":", varval
+
             print "leg pairs =", self.leg_pairs
             
         apar = np.array(apar)
