@@ -61,6 +61,8 @@ hx_osf0.cool.T_outlet = 310.
 
 hx_osf0.set_mdot_charge()
 
+hx_osf0.optimize()
+
 hx_osf0.apar_list.append(['hx_osf0', 'exh', 'enh', 'spacing'])
 hx_osf0.apar_list.append(['hx_osf0', 'exh', 'enh', 'l'])
 
