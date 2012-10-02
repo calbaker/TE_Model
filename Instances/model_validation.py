@@ -69,6 +69,7 @@ hx_mod.R_contact = 0.
 hx_mod.R_extra = 6.54
 
 hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
+k_effective = thickness_copper / hx_mod.R_extra
 
 np.savez(
     '../output/model_validation/' + hx_exp.file, 
