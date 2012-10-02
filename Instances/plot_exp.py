@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
 
-FILE = 'combined copper'
+FILE = '2012-09-18 copper'
 
 npzfile = np.load('../output/model_validation/' + FILE + '.npz') 
 deltaP = npzfile['deltaP']

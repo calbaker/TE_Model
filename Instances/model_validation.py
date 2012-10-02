@@ -15,7 +15,7 @@ reload(real_hx)
 
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
-hx_exp.file = 'combined copper'
+hx_exp.file = '2012-09-18 copper'
 hx_exp.import_data()
 hx_exp.get_Qdot_fit()
 
@@ -60,6 +60,7 @@ hx_mod.R_extra = thickness_copper / k_effective
 hx_mod.R_interconnect = 0.
 hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
+hx_mod.R_extra = 6.
 
 hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
 
