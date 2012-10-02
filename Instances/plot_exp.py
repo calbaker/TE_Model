@@ -19,6 +19,9 @@ Qdot_surf = npzfile['Qdot_surf']
 deltaP_arr = npzfile['deltaP_arr']
 mdot2d = npzfile['mdot2d']
 T_in2d = npzfile['T_in2d']
+velocity = npzfile['velocity']
+rho = npzfile['rho']
+Re_D = npzfile['Re_D']
 
 # Plot configuration
 FONTSIZE = 12
@@ -74,5 +77,13 @@ ax.set_xlabel(r'$\dot{m}$ (kg/s)')
 ax.set_ylabel(r'$T_{exh,in}$ (K)')
 ax.set_zlabel(r'$\dot{Q}$')
 plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_fit.pdf')
+
+fig = plt.figure()
+dimless_P = deltaP_arr / (0.5 * rho * velocity ** 2.)
+plt.plot(Re_D, dimless_P, linestyle='', marker='s', color='k')
+plt.xlabel(r'Re$_D$')
+plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$')
+plt.grid()
+plt.savefig('../Plots/plot_exp/' + FILE + '/dimless_P.pdf')
 
 plt.show()

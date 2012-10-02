@@ -69,7 +69,8 @@ np.savez(
     mdot=hx_exp.exh.mdot, T_in=hx_exp.exh.T_in, deltaP=hx_exp.exh.deltaP,
     deltaP_arr=hx_mod.exh.deltaP_arr, Qdot=hx_exp.exh.Qdot,
     Qdot_arr=hx_mod.Qdot_arr, Qdot_surf=hx_exp.exh.Qdot_surf,
-    mdot2d=mdot2d, T_in2d=T_in2d
+    mdot2d=mdot2d, T_in2d=T_in2d, velocity=hx_mod.exh.velocity_arr,
+    rho=hx_mod.exh.rho_arr, Re_D=hx_mod.exh.Re_arr
     )
 
 execfile('plot_exp.py')
