@@ -60,50 +60,7 @@ hx_osf0.cool.T_inlet_set = 300.
 hx_osf0.cool.T_outlet = 310.
 
 hx_osf0.set_mdot_charge()
-# hx_osf0.cool.T_outlet = fsolve(hx_osf0.get_T_inlet_error,
-#                                x0=hx_osf0.cool.T_outlet)
 
-# def get_minpar(apar):
-
-#         """Returns inverse of net power.
-
-#         Methods:
-
-#         hx_osf0.solve_hx
-#         hx_osf0.set_leg_areas
-
-#         Used by method optimize
-
-#         Use with scipy.optimize.fmin to find optimal set of input
-#         parameters."""
-
-#         # unpack guess vector
-#         opt_iter = opt_iter + 1
-#         if opt_iter % 15 == 0:
-#             print "optimizaton iteration", opt_iter
-#             print "net power", hx_osf0.power_net
-#         apar = np.array(apar)
-
-#         hx_osf0.exh.enh.spacing = apar[0]
-#         hx_osf0.exh.enh.l = apar[1]
-
-#         # reset surrogate variables
-#         hx_osf0.te_pair.set_leg_areas()
-
-#         hx_osf0.solve_hx()
-
-#         if (apar <= 0.).any():
-#             minpar = np.abs(hx_osf0.power_net) ** 3 + 100.
-#             # penalizes negative parameters
-
-#         else:
-#             minpar = - hx_osf0.power_net
-
-#         return minpar
-
-hx_osf0.apar_list.append(['hx_osf0', 'exh', 'width'])
-hx_osf0.apar_list.append(['hx_osf0', 'width'])
-hx_osf0.apar_list.append(['hx_osf0', 'exh', 'height'])
 hx_osf0.apar_list.append(['hx_osf0', 'exh', 'enh', 'spacing'])
 hx_osf0.apar_list.append(['hx_osf0', 'exh', 'enh', 'l'])
 
