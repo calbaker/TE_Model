@@ -37,10 +37,14 @@ hx_mod = real_hx.get_hx()
 # # thickness (m) of gypsum board
 # hx_mod.R_extra = thickness_gypsum / k_gypsum
 
+# the following expressions for k come from Li and Peterson, 2006. The
+# effective thermal conductivity of wire screen
 k_copper = 400.e-3  # thermal conductivity of copper (kW / (m * K))
 # from Wolfram Alpha
 thickness_copper = 508.e-6  # effective thickness (m) of copper mesh 
-phi_copper = 0.95  # effective porosity of copper 
+phi_copper = 0.95  # effective porosity of copper based on density
+# calculated by weiging a sample and estimating its volume then
+# comparing this result to the solid material density.  
 k_air = 3.24e-5  
 # thermal conductivity (kW / (m * K)) of air at 405 K, which is mean
 # temperature between coolant and exhaust over all nodes.
@@ -50,6 +54,8 @@ k_alexander = (
 k_koh = (
     (1. - phi_copper) / (1. + 11. * phi_copper) * k_copper
     )
+k_upper = phi_copper * k_air + (1. - phi_copper) * k_copper
+k_lower = (phi_copper / k_air + (1. - phi_copper) / k_copper) ** -1.
 
 k_effective = 0.5 * (k_alexander + k_koh)
 # thermal conductivity of mesh screen according to average of
