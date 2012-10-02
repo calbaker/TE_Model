@@ -24,7 +24,7 @@ rho = npzfile['rho']
 Re_D = npzfile['Re_D']
 
 # Plot configuration
-FONTSIZE = 12
+FONTSIZE = 18
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
@@ -91,6 +91,8 @@ plt.plot(
     )
 plt.xlabel(r'Re$_D$')
 plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$ x 1x10$^3$')
+plt.xticks(rotation=45)
+plt.subplots_adjust(bottom=0.17)
 plt.grid()
 plt.legend()
 plt.savefig('../Plots/plot_exp/' + FILE + '/dimless_P.pdf')
