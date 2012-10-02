@@ -90,7 +90,7 @@ plt.plot(
     label='experiment'
     )
 plt.xlabel(r'Re$_D$')
-plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$ x 1x10$^3$')
+plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$x10$^3$')
 plt.xticks(rotation=45)
 plt.subplots_adjust(bottom=0.17)
 plt.grid()
