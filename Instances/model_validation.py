@@ -60,7 +60,7 @@ hx_mod.R_extra = thickness_copper / k_effective
 hx_mod.R_interconnect = 0.
 hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
-hx_mod.R_extra = 6.
+hx_mod.R_extra = 6.54
 
 hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
