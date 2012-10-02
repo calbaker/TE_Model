@@ -563,7 +563,7 @@ class HX(object):
             varname = '.'.join(self.apar_list[i][1:])
             varval = (
                 operator.attrgetter(varname)(self)
-       )
+                )
             print varname + ":", varval
 
         print "\npower net:", self.power_net * 1000., 'W'

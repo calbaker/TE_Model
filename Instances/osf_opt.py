@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
 import time
-from scipy.optimize import fmin
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -45,7 +44,7 @@ hx_osf0.te_pair.set_leg_areas()
 hx_osf0.te_pair.method = 'numerical'
 hx_osf0.type = 'counter'
 
-hx_osf0.exh.enh = hx_osf0.exh.enh_lib.OffsetStripFin()
+hx_osf0.exh.set_enhancement('OffsetStripFin')
 # hx_osf0.exh.enh.thickness = 0.25 * 2.54e-2
 # 0.25 inches is too thick to manufacture
 hx_osf0.exh.enh.thickness = 0.01 * 2.54e-2 
@@ -64,87 +63,49 @@ hx_osf0.set_mdot_charge()
 # hx_osf0.cool.T_outlet = fsolve(hx_osf0.get_T_inlet_error,
 #                                x0=hx_osf0.cool.T_outlet)
 
-def get_minpar(apar):
+# def get_minpar(apar):
 
-        """Returns inverse of net power.
+#         """Returns inverse of net power.
 
-        Methods:
+#         Methods:
 
-        hx_osf0.solve_hx
-        hx_osf0.set_leg_areas
+#         hx_osf0.solve_hx
+#         hx_osf0.set_leg_areas
 
-        Used by method optimize
+#         Used by method optimize
 
-        Use with scipy.optimize.fmin to find optimal set of input
-        parameters."""
+#         Use with scipy.optimize.fmin to find optimal set of input
+#         parameters."""
 
-        # unpack guess vector
-        opt_iter = opt_iter + 1
-        if opt_iter % 15 == 0:
-            print "optimizaton iteration", opt_iter
-            print "net power", hx_osf0.power_net
-        apar = np.array(apar)
+#         # unpack guess vector
+#         opt_iter = opt_iter + 1
+#         if opt_iter % 15 == 0:
+#             print "optimizaton iteration", opt_iter
+#             print "net power", hx_osf0.power_net
+#         apar = np.array(apar)
 
-        hx_osf0.exh.enh.spacing = apar[0]
-        hx_osf0.exh.enh.l = apar[1]
+#         hx_osf0.exh.enh.spacing = apar[0]
+#         hx_osf0.exh.enh.l = apar[1]
 
-        # reset surrogate variables
-        hx_osf0.te_pair.set_leg_areas()
+#         # reset surrogate variables
+#         hx_osf0.te_pair.set_leg_areas()
 
-        hx_osf0.solve_hx()
+#         hx_osf0.solve_hx()
 
-        if (apar <= 0.).any():
-            minpar = np.abs(hx_osf0.power_net) ** 3 + 100.
-            # penalizes negative parameters
+#         if (apar <= 0.).any():
+#             minpar = np.abs(hx_osf0.power_net) ** 3 + 100.
+#             # penalizes negative parameters
 
-        else:
-            minpar = - hx_osf0.power_net
+#         else:
+#             minpar = - hx_osf0.power_net
 
-        return minpar
+#         return minpar
 
-def optimize():
-
-        """Finds optimal set of paramters
-
-        Methods:
-
-        get_minpar
-
-        x0 and xb must be defined elsewhere."""
-
-        time.clock()
-
-        # dummy function that might be used with minimization
-        def fprime():
-            return 1
-
-        opt_iter = 0
-
-        x0 = np.zeros(2)
-
-        x0[0] = hx_osf0.exh.enh.spacing
-        x0[1] = hx_osf0.exh.enh.l
-
-        xmin = fmin(get_minpar, x0)
-
-        t1 = time.clock()
-
-        print '\n'
-
-        #print "length of osf", hx_osf0.exh.enh.l
-        #print "spacing", hx_osf0.exh.enh.spacing
-        #print "\npower net:", hx_osf0.power_net * 1000., 'W'
-        #print "power raw:", hx_osf0.te_pair.power_total * 1000., 'W'
-        #print "pumping power:", hx_osf0.Wdot_pumping * 1000., 'W'
-        #self.exh.volume = (hx_osf0.exh.height * hx_osf0.exh.width *
-        #hx_osf0.length)
-        #print "exhaust volume:", hx_osf0.exh.volume * 1000., 'L'
-        #VAR = hx_osf0.power_net / hx_osf0.exh.volume
-        #print "exhaust power density:", VAR, 'kW/m^3'
-
-        #print """Elapsed time solving xmin1 =""", t1
-
-# hx_osf0.solve_hx()
+hx_osf0.apar_list.append(['hx_osf0', 'exh', 'width'])
+hx_osf0.apar_list.append(['hx_osf0', 'width'])
+hx_osf0.apar_list.append(['hx_osf0', 'exh', 'height'])
+hx_osf0.apar_list.append(['hx_osf0', 'exh', 'enh', 'spacing'])
+hx_osf0.apar_list.append(['hx_osf0', 'exh', 'enh', 'l'])
 
 hx_osf0.optimize()
 
