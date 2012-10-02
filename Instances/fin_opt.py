@@ -63,7 +63,6 @@ hx_osf0.set_mdot_charge()
 hx_osf0.optimize()
 
 hx_osf0.apar_list.append(['hx_osf0', 'exh', 'enh', 'spacing'])
-hx_osf0.apar_list.append(['hx_osf0', 'exh', 'enh', 'l'])
 
 hx_osf0.optimize()
 
