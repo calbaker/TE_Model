@@ -44,7 +44,7 @@ X2, Y2 = np.meshgrid(fill_array * 1e2, length_array * 1e3)
 Z2 = power_fill_height.T
 # cset = ax.contourf(X2, Y2, Z2, zdir='x', offset=current_array[0])
 
-X3, Y3 = np.meshgrid(length_array * 1e3, current_array)
+X3, Y3 = np.meshgrid(current_array, length_array * 1e3)
 Z3 = power_height_I.T
 # cset = ax.contourf(X3, Y3, Z3, zdir='x', offset=fill_array[-1])
 
@@ -66,7 +66,7 @@ LEVELS = (
 TICKS = LEVELS
 FORMAT = '%0.2f'
 
-fig1 = plt.figure('Z1')
+fig1 = plt.figure('current and fill')
 cset1 = plt.contourf(X1, Y1, Z1, levels=LEVELS)
 CB1 = plt.colorbar(
     cset1, orientation='vertical', format=FORMAT, fraction=FRACTION,
@@ -80,7 +80,7 @@ plt.subplots_adjust(bottom=BOTTOM, right=RIGHT)
 plt.grid()
 fig1.savefig(save_dir + "power_I_fill.pdf")
 
-fig2 = plt.figure('Z2')
+fig2 = plt.figure('fill and length')
 cset2 = plt.contourf(X2, Y2, Z2, levels=LEVELS)
 CB2 = plt.colorbar(
     cset2, orientation='vertical', format=FORMAT, fraction=FRACTION,
@@ -94,16 +94,16 @@ plt.subplots_adjust(bottom=BOTTOM, right=RIGHT)
 plt.grid()
 fig2.savefig(save_dir + "power_fill_length.pdf")
 
-fig3 = plt.figure('Z3')
-cset3 = plt.contourf(X3, Y3, Z3, levels=LEVELS)
+fig3 = plt.figure('length and current')
+cset3 = plt.contourf(X3, Y3, Z3.T, levels=LEVELS)
 CB3 = plt.colorbar(
     cset3, orientation='vertical', format=FORMAT, fraction=FRACTION,
     ticks=TICKS 
     )
 CB3.set_label(r'Power Flux (kW/m$^2$)')
 plt.xticks(rotation=40)
-plt.xlabel('Length (mm)')
-plt.ylabel('Current (A)')
+plt.xlabel('Current (A)')
+plt.ylabel('Length (mm)')
 plt.subplots_adjust(bottom=BOTTOM, right=RIGHT)
 plt.grid()
 fig3.savefig(save_dir + "power_length_I.pdf")
