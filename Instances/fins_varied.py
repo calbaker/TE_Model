@@ -61,18 +61,19 @@ hx_fins.cool.T_outlet = 310.
 hx_fins.set_mdot_charge()
 
 array_size = 50
+
+hx_fins.exh.enh.spacings = (
+    np.linspace(0.2, 5, 25) * hx_fins.exh.enh.spacing
+    )
+
 hx_fins.power_net_array = np.zeros(array_size)
 hx_fins.Wdot_pumping_array = np.zeros(array_size)
 hx_fins.Qdot_array = np.zeros(array_size)
 hx_fins.te_pair.power_array = np.zeros(array_size)
-hx_fins.exh.enh.spacings = np.zeros(np.size(hx_fins.exh.fin_array)) 
 
 for i in np.arange(np.size(hx_fins.exh.fin_array)):
-    hx_fins.exh.enh.N = hx_fins.exh.fin_array[i]
+    hx_fins.exh.enh.spacing = hx_fins.exh.enh.spacings[i]
 
-    print "Solving for", hx_fins.exh.enh.N, "fins\n"
-    # hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error,
-    # x0=hx_fins.cool.T_outlet)
     hx_fins.solve_hx()
 
     hx_fins.power_net_array[i] = hx_fins.power_net
@@ -94,7 +95,7 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close('all')
 
-PLOT_DIR = "../Plots/varied_fins/"
+PLOT_DIR = "../Plots/fins_varied/"
 
 plt.figure()
 plt.plot(hx_fins.exh.enh.spacings * 100., hx_fins.Qdot_array / 10., 'db', 
@@ -115,22 +116,5 @@ plt.subplots_adjust(bottom=0.15)
 plt.title('Power v. Fin Spacing')
 plt.legend(loc='best')
 plt.savefig(PLOT_DIR + 'p_v_spacing.pdf')
-
-plt.figure()
-plt.plot(hx_fins.exh.fin_array, hx_fins.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
-plt.plot(hx_fins.exh.fin_array, hx_fins.te_pair.power_array, 'og', label='TE_PAIR')
-plt.plot(hx_fins.exh.fin_array, hx_fins.power_net_array, 'sr', 
-         label='$P_{net}$')  
-plt.plot(hx_fins.exh.fin_array, hx_fins.Wdot_pumping_array, '*k', 
-         label='Pumping')
-plt.grid()
-plt.xlabel('Fins')
-plt.ylabel('Power (kW)')
-plt.ylim(0,3)
-plt.ylim(ymin=0)
-plt.subplots_adjust(bottom=0.15)
-#plt.title('Power v. Fin Spacing')
-plt.legend(loc='best')
-plt.savefig(PLOT_DIR + 'p_v_number_fins.pdf')
 
 # plt.show()

@@ -65,21 +65,20 @@ hx_osf.cool.T_outlet = 310.
 
 hx_osf.set_mdot_charge()
 
-hx_osf.exh.fin_array = np.arange(30, 102, 4)
-# array for varied exhaust duct height (m)
-array_size = np.size(hx_osf.exh.fin_array)
+array_size = 50
+
+hx_osf.exh.enh.spacings = (
+    np.linspace(0.2, 5, 25) * hx_osf.exh.enh.spacing
+    )
+
 hx_osf.power_net_array = np.zeros(array_size)
 hx_osf.Wdot_pumping_array = np.zeros(array_size)
 hx_osf.Qdot_array = np.zeros(array_size)
 hx_osf.te_pair.power_array = np.zeros(array_size)
-hx_osf.exh.enh.spacings = np.zeros(np.size(hx_osf.exh.fin_array)) 
 
 for i in np.arange(np.size(hx_osf.exh.fin_array)):
-    hx_osf.exh.enh.N = hx_osf.exh.fin_array[i]
+    hx_osf.exh.enh.spacing = hx_osf.exh.enh.spacings[i]
 
-    print "Solving for", hx_osf.exh.enh.N, "osf\n"
-    # hx_osf.cool.T_outlet = fsolve(hx_osf.get_T_inlet_error,
-    # x0=hx_osf.cool.T_outlet)
     hx_osf.solve_hx()
 
     hx_osf.power_net_array[i] = hx_osf.power_net
@@ -102,27 +101,6 @@ plt.rcParams['lines.linewidth'] = 1.5
 plt.close('all')
 
 plt.figure()
-plt.plot(hx_osf.exh.enh.spacings * 100., hx_osf.Qdot_array / 10., 'db', 
-         label=r'$\dot{Q}_{h}$ / 10') 
-plt.plot(hx_osf.exh.enh.spacings * 100., hx_osf.te_pair.power_array, 'og',
-         label=r'$P_{raw}$')
-plt.plot(hx_osf.exh.enh.spacings * 100., hx_osf.power_net_array, 'sr', 
-         label='$P_{net}$')  
-plt.plot(hx_osf.exh.enh.spacings * 100., hx_osf.Wdot_pumping_array, '*k',
-         label='Pumping')
-plt.grid()
-plt.xticks(rotation=40)
-plt.xlabel('Fin Spacing (cm)')
-plt.ylabel('Power (kW)')
-# plt.ylim(0,3)
-plt.ylim(ymin=0)
-plt.subplots_adjust(bottom=0.15)
-plt.title('Power v. Fin Spacing')
-plt.legend(loc='best')
-plt.savefig('../Plots/power v fin spacing.pdf')
-plt.savefig('../Plots/power v fin spacing.png')
-
-plt.figure()
 plt.plot(hx_osf.exh.fin_array, hx_osf.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
 plt.plot(hx_osf.exh.fin_array, hx_osf.te_pair.power_array, 'og', label='TE_PAIR')
 plt.plot(hx_osf.exh.fin_array, hx_osf.power_net_array, 'sr', 
@@ -137,7 +115,6 @@ plt.ylim(ymin=0)
 plt.subplots_adjust(bottom=0.15)
 #plt.title('Power v. Fin Spacing')
 plt.legend(loc='best')
-plt.savefig('../Plots/power v osf.pdf')
-plt.savefig('../Plots/power v osf.png')
+plt.savefig('../Plots/osf_varied/power_v_spacing.pdf')
 
 # plt.show()
