@@ -51,7 +51,6 @@ hx_osf_opt.set_mdot_charge()
 hx_osf_opt.optimize()
 
 hx_osf_opt.apar_list.append(['hx_osf_opt', 'exh', 'enh', 'spacing'])
-hx_osf_opt.apar_list.append(['hx_osf_opt', 'exh', 'enh', 'l'])
 
 hx_osf_opt.optimize()
 OPT_PAR_DIR = "../output/osf_opt/"

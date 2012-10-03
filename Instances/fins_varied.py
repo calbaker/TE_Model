@@ -83,6 +83,8 @@ plt.rcParams['lines.linewidth'] = 1.5
 
 plt.close('all')
 
+PLOT_DIR = "../Plots/varied_fins/"
+
 plt.figure()
 plt.plot(hx_fins.exh.enh.spacings * 100., hx_fins.Qdot_array / 10., 'db', 
          label=r'$\dot{Q}_{h}$ / 10') 
@@ -101,8 +103,7 @@ plt.ylim(ymin=0)
 plt.subplots_adjust(bottom=0.15)
 plt.title('Power v. Fin Spacing')
 plt.legend(loc='best')
-plt.savefig('../Plots/power v fin spacing.pdf')
-plt.savefig('../Plots/power v fin spacing.png')
+plt.savefig(PLOT_DIR + 'p_v_spacing.pdf')
 
 plt.figure()
 plt.plot(hx_fins.exh.fin_array, hx_fins.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
@@ -119,7 +120,6 @@ plt.ylim(ymin=0)
 plt.subplots_adjust(bottom=0.15)
 #plt.title('Power v. Fin Spacing')
 plt.legend(loc='best')
-plt.savefig('../Plots/power v fins.pdf')
-plt.savefig('../Plots/power v fins.png')
+plt.savefig(PLOT_DIR + 'p_v_number_fins.pdf')
 
 # plt.show()
