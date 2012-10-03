@@ -18,6 +18,23 @@ time0 = time.clock()
 
 hx_fins_opt = hx.HX()
 
+OPT_PAR_DIR = "../output/fin_opt/"
+hx_fins_opt.te_pair.fill_fraction = (
+    np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
+    )
+hx_fins_opt.te_pair.I.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.I.npy')
+    )
+hx_fins_opt.te_pair.leg_area_ratio = (
+    np.load(OPT_PAR_DIR + 'te_pair.leg_area_ratio.npy')
+    )
+hx_fins_opt.te_pair.length = (
+    np.load(OPT_PAR_DIR + 'te_pair.length.npy')
+    )
+hx_fins_opt.exh.enh.spacing = (
+    np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')
+    )
+
 hx_fins_opt.width = 0.6
 hx_fins_opt.length = 0.6 
 hx_fins_opt.exh.height = 1.5e-2
@@ -52,7 +69,6 @@ hx_fins_opt.optimize()
 hx_fins_opt.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'spacing'])
 
 hx_fins_opt.optimize()
-OPT_PAR_DIR = "../output/fin_opt/"
 hx_fins_opt.save_opt_par(OPT_PAR_DIR)
 
 print "\nProgram finished."

@@ -18,6 +18,33 @@ time0 = time.clock()
 
 hx_osf = hx.HX()
 
+OPT_PAR_DIR = "../output/osf_opt/"
+hx_osf.exh.enh.l.npy = (
+    np.load(OPT_PAR_DIR + 'exh.enh.l.npy')          
+    )
+hx_osf.exh.enh.spacing.npy = (
+    np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')     
+    )
+hx_osf.te_pair.fill_fraction.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
+    )
+hx_osf.te_pair.I.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.I.npy')            
+    )
+hx_osf.te_pair.leg_area_ratio.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.leg_area_ratio.npy')
+    )
+hx_osf.te_pair.length.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.length.npy')       
+    )
+
+hx_osf.exh.enh.l.npy = np.load('exh.enh.l.npy')             
+hx_osf.exh.enh.spacing.npy = np.load('exh.enh.spacing.npy')       
+hx_osf.te_pair.fill_fraction.npy = np.load('te_pair.fill_fraction.npy') 
+hx_osf.te_pair.I.npy = np.load('te_pair.I.npy')             
+hx_osf.te_pair.leg_area_ratio.npy = np.load('te_pair.leg_area_ratio.npy')
+hx_osf.te_pair.length.npy = np.load('te_pair.length.npy')        
+
 hx_osf.width = 0.6
 hx_osf.length = 0.6 
 hx_osf.exh.height = 1.5e-2

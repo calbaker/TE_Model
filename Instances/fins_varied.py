@@ -18,6 +18,23 @@ time0 = time.clock()
 
 hx_fins = hx.HX()
 
+OPT_PAR_DIR = "../output/fin_opt/"
+hx_fins.te_pair.fill_fraction = (
+    np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
+    )
+hx_fins.te_pair.I.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.I.npy')
+    )
+hx_fins.te_pair.leg_area_ratio = (
+    np.load(OPT_PAR_DIR + 'te_pair.leg_area_ratio.npy')
+    )
+hx_fins.te_pair.length = (
+    np.load(OPT_PAR_DIR + 'te_pair.length.npy')
+    )
+hx_fins.exh.enh.spacing = (
+    np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')
+    )
+
 hx_fins.width = 0.6
 hx_fins.length = 0.6 
 hx_fins.exh.height = 1.5e-2

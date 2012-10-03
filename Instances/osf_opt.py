@@ -17,6 +17,25 @@ reload(hx)
 time0 = time.clock()
 
 hx_osf_opt = hx.HX()
+OPT_PAR_DIR = "../output/osf_opt/"
+hx_osf_opt.exh.enh.l.npy = (
+    np.load(OPT_PAR_DIR + 'exh.enh.l.npy')          
+    )
+hx_osf_opt.exh.enh.spacing.npy = (
+    np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')     
+    )
+hx_osf_opt.te_pair.fill_fraction.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
+    )
+hx_osf_opt.te_pair.I.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.I.npy')            
+    )
+hx_osf_opt.te_pair.leg_area_ratio.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.leg_area_ratio.npy')
+    )
+hx_osf_opt.te_pair.length.npy = (
+    np.load(OPT_PAR_DIR + 'te_pair.length.npy')       
+    )
 
 hx_osf_opt.width = 0.6
 hx_osf_opt.length = 0.6 
@@ -53,7 +72,6 @@ hx_osf_opt.optimize()
 hx_osf_opt.apar_list.append(['hx_osf_opt', 'exh', 'enh', 'spacing'])
 
 hx_osf_opt.optimize()
-OPT_PAR_DIR = "../output/osf_opt/"
 hx_osf_opt.save_opt_par(OPT_PAR_DIR)
 
 print "\nProgram finished."
