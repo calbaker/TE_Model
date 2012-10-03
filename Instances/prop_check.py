@@ -69,5 +69,11 @@ plt.xlabel('Temperature (K)')
 plt.ylabel(r'$\sigma$')
 plt.grid()
 
+# plt.plot(prop_check.T_array, prop_check.sigma_T * 1.e-4)
+# plt.plot(1/prop_check.sigma_raw[:, 0], 1/prop_check.sigma_raw[:, 1],
+#          marker='x')
+# plt.xlabel('Temperature (K)')
+# plt.ylabel(r'$\sigma$')
+# plt.grid()
 
 plt.show()
