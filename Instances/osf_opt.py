@@ -39,6 +39,7 @@ hx_osf_opt.exh.enh.l = 10.e-3
 hx_osf_opt.cool.enh = hx_osf_opt.cool.set_enhancement('IdealFin')
 
 OPT_PAR_DIR = "../output/osf_opt/"
+
 hx_osf_opt.exh.enh.spacing = (
     np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')     
     )

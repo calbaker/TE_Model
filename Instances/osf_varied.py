@@ -42,6 +42,7 @@ hx_osf.cool.enh.thickness = 2.5e-3
 hx_osf.cool.enh.spacing = 10.e-3
 
 OPT_PAR_DIR = "../output/osf_opt/"
+
 hx_osf.exh.enh.spacing = (
     np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')     
     )
