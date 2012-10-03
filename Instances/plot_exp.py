@@ -86,7 +86,7 @@ plt.plot(
     label='model'
     )
 plt.plot(
-    Re_D, dimless_P_exp * 1e3, linestyle='', marker='s', color='r',
+    Re_D, dimless_P_exp * 1e3, linestyle='', marker='o', color='r',
     label='experiment'
     )
 plt.xlabel(r'Re$_D$')
@@ -96,5 +96,31 @@ plt.subplots_adjust(bottom=0.17)
 plt.grid()
 plt.legend()
 plt.savefig('../Plots/plot_exp/' + FILE + '/dimless_P.pdf')
+
+fig = plt.figure()
+plt.plot(
+    mdot, Qdot_arr, linestyle='', marker='s', color='b', label='model'
+    )
+plt.plot(
+    mdot, Qdot, linestyle='', marker='o', color='r', label='experiment'
+    )
+plt.xlabel("Exhaust Mass Flow Rate (kg/s)")
+plt.ylabel("Heat Transfer Rate (kW)")
+plt.grid()
+plt.legend(loc='lower right')
+plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_v_mdot.pdf')
+
+fig = plt.figure()
+plt.plot(
+    T_in, Qdot_arr, linestyle='', marker='s', color='b', label='model'
+    )
+plt.plot(
+    T_in, Qdot, linestyle='', marker='o', color='r', label='experiment'
+    )
+plt.xlabel("HX Inlet Temperature (K)")
+plt.ylabel("Heat Transfer Rate (kW)")
+plt.grid()
+plt.legend(loc='lower right')
+plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_v_T_in.pdf')
 
 plt.show()
