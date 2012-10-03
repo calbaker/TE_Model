@@ -14,27 +14,14 @@ if cmd_folder not in sys.path:
 import hx
 reload(hx)
 
-leg_area = (0.002)**2
-
-area_ratio = 0.740
-fill_fraction = 3.01e-2
-leg_length = 3.18e-4
-current = 22.58
-
 time0 = time.clock()
 
 hx_fins_opt = hx.HX()
-hx_fins_opt.x0 = np.array([area_ratio, fill_fraction, leg_length,
-                        current]) 
 
 hx_fins_opt.width = 0.6
 hx_fins_opt.length = 0.6 
-
 hx_fins_opt.exh.height = 1.5e-2
 hx_fins_opt.cool.height = 1.2e-2
-
-hx_fins_opt.te_pair.I = current
-hx_fins_opt.te_pair.length = leg_length
 
 hx_fins_opt.te_pair.Ntype.material = 'MgSi'
 hx_fins_opt.te_pair.Ptype.material = 'HMS'
