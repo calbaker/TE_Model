@@ -17,25 +17,6 @@ reload(hx)
 time0 = time.clock()
 
 hx_osf_opt = hx.HX()
-OPT_PAR_DIR = "../output/osf_opt/"
-hx_osf_opt.exh.enh.l.npy = (
-    np.load(OPT_PAR_DIR + 'exh.enh.l.npy')          
-    )
-hx_osf_opt.exh.enh.spacing.npy = (
-    np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')     
-    )
-hx_osf_opt.te_pair.fill_fraction.npy = (
-    np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
-    )
-hx_osf_opt.te_pair.I.npy = (
-    np.load(OPT_PAR_DIR + 'te_pair.I.npy')            
-    )
-hx_osf_opt.te_pair.leg_area_ratio.npy = (
-    np.load(OPT_PAR_DIR + 'te_pair.leg_area_ratio.npy')
-    )
-hx_osf_opt.te_pair.length.npy = (
-    np.load(OPT_PAR_DIR + 'te_pair.length.npy')       
-    )
 
 hx_osf_opt.width = 0.6
 hx_osf_opt.length = 0.6 
@@ -53,13 +34,26 @@ hx_osf_opt.type = 'counter'
 hx_osf_opt.exh.set_enhancement('OffsetStripFin')
 # hx_osf_opt.exh.enh.thickness = 0.25 * 2.54e-2
 # 0.25 inches is too thick to manufacture
-hx_osf_opt.exh.enh.thickness = 2.5e-3
-hx_osf_opt.exh.enh.spacing = 10.e-3
 hx_osf_opt.exh.enh.l = 10.e-3
 
 hx_osf_opt.cool.enh = hx_osf_opt.cool.set_enhancement('IdealFin')
-hx_osf_opt.cool.enh.thickness = 2.5e-3
-hx_osf_opt.cool.enh.spacing = 10.e-3
+
+OPT_PAR_DIR = "../output/osf_opt/"
+hx_osf_opt.exh.enh.spacing = (
+    np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')     
+    )
+hx_osf_opt.te_pair.fill_fraction = (
+    np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
+    )
+hx_osf_opt.te_pair.I = (
+    np.load(OPT_PAR_DIR + 'te_pair.I.npy')            
+    )
+hx_osf_opt.te_pair.leg_area_ratio = (
+    np.load(OPT_PAR_DIR + 'te_pair.leg_area_ratio.npy')
+    )
+hx_osf_opt.te_pair.length = (
+    np.load(OPT_PAR_DIR + 'te_pair.length.npy')       
+    )
 
 hx_osf_opt.exh.T_inlet = 800.
 hx_osf_opt.cool.T_inlet_set = 300.
