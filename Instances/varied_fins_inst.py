@@ -16,12 +16,6 @@ reload(hx)
 import enhancement
 reload(enhancement)
 
-# Output from xmin2
-# 6.834534389943245358e-01
-# 2.384892371916906562e-02
-# 3.267547630355634538e-04
-# 1.390419916569227965e+01
-
 # parameters for TE legs
 leg_area = (0.002)**2
 

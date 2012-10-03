@@ -581,6 +581,20 @@ class HX(object):
 
         print """Elapsed time solving xmin1 =""", t1
 
+    def save_opt_par(self, opt_par_dir):
+        """Saves parameters found by optimize."""
+
+        if self.opt_iter == 0:
+            print """\nError. Script must run the function optimize
+            before running save_opt_par."""
+
+        for i in range(self.x0.size):
+            varname = '.'.join(self.apar_list[i][1:])
+            varval = (
+                operator.attrgetter(varname)(self)
+                )
+            np.save(opt_par_dir + varname, varval)
+
     def get_T_inlet_error(self, T_outlet):
 
         """Returns error for coolant inlet temperature.
