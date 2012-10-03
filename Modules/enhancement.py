@@ -194,7 +194,9 @@ class IdealFin(object):
 
         self.flow.h_unfinned = self.flow.h_conv
 
-        self.effectiveness = self.eta * 2. * self.height / self.thickness
+        self.effectiveness = (
+            self.eta * 2. * self.height / self.thickness 
+            )
         self.h_base = self.effectiveness * self.flow.h_conv
 
         self.flow.h_conv = (
