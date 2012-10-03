@@ -5,7 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os,sys
-from scipy.optimize import fsolve
+import time
 
 # User Defined Modules
 cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
@@ -13,43 +13,39 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
 reload(hx)
-import enhancement
-reload(enhancement)
 
-# parameters for TE legs
-leg_area = (0.002)**2
-
-area_ratio = 0.721
-fill_fraction = 2.98e-2
-leg_length = 3.45e-4
-current = 13.5
+time0 = time.clock()
 
 hx_fins = hx.HX()
-hx_fins.width = 30.e-2
-hx_fins.exh.bypass = 0.
-hx_fins.exh.height = 3.5e-2
-hx_fins.length = 1.
-hx_fins.te_pair.I = current
-hx_fins.te_pair.length = leg_length
+
+hx_fins.width = 0.6
+hx_fins.length = 0.6 
+hx_fins.exh.height = 1.5e-2
+hx_fins.cool.height = 1.2e-2
 
 hx_fins.te_pair.Ntype.material = 'MgSi'
 hx_fins.te_pair.Ptype.material = 'HMS'
 
-hx_fins.te_pair.set_all_areas(leg_area, area_ratio, fill_fraction)
+hx_fins.te_pair.set_leg_areas()
 
-hx_fins.te_pair.method = 'analytical'
+hx_fins.te_pair.method = 'numerical'
 hx_fins.type = 'counter'
-hx_fins.exh.enh = hx_fins.exh.set_enhancement('IdealFin')
-hx_fins.exh.enh.thickness = 1.e-3
-hx_fins.exh.enh.N = 80
+
+hx_fins.exh.set_enhancement('IdealFin')
+# hx_fins.exh.enh.thickness = 0.25 * 2.54e-2
+# 0.25 inches is too thick to manufacture
+hx_fins.exh.enh.thickness = 2.5e-3
+hx_fins.exh.enh.spacing = 10.e-3
+
+hx_fins.cool.enh = hx_fins.cool.set_enhancement('IdealFin')
+hx_fins.cool.enh.thickness = 2.5e-3
+hx_fins.cool.enh.spacing = 10.e-3
 
 hx_fins.exh.T_inlet = 800.
-hx_fins.exh.P = 100.
 hx_fins.cool.T_inlet_set = 300.
 hx_fins.cool.T_outlet = 310.
 
 hx_fins.set_mdot_charge()
-hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error, x0=hx_fins.cool.T_outlet)
 
 hx_fins.exh.fin_array = np.arange(30, 102, 4)
 # array for varied exhaust duct height (m)
