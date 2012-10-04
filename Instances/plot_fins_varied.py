@@ -20,7 +20,7 @@ plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
 plt.rcParams['xtick.labelsize'] = FONTSIZE
 plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 1.5
+plt.rcParams['lines.linewidth'] = 3.
 
 plt.close('all')
 
@@ -28,19 +28,19 @@ PLOT_DIR = "../Plots/fins_varied/"
 
 plt.figure()
 plt.plot(
-    spacing * 100., Qdot / 10., '-db',
+    spacing * 100., Qdot / 10., '-.b',
     label=r'$\dot{Q}_{h}$ / 10'
     ) 
 plt.plot(
-    spacing * 100., power_total,'-og',
+    spacing * 100., power_total,':g',
     label=r'$P_{raw}$'
     )
 plt.plot(
-    spacing * 100., power_net, '-sr',
+    spacing * 100., power_net, '-r',
     label='$P_{net}$'
     )  
 plt.plot(
-    spacing * 100., Wdot_pumping, '-*k',
+    spacing * 100., Wdot_pumping, '--k',
     label='Pumping'
     )
 

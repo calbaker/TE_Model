@@ -60,7 +60,7 @@ hx_fins.cool.T_outlet = 310.
 
 hx_fins.set_mdot_charge()
 
-array_size = 20
+array_size = 50
 
 hx_fins.exh.enh.spacings = (
     np.linspace(0.2, 5, array_size) * hx_fins.exh.enh.spacing
@@ -79,11 +79,6 @@ for i in np.arange(array_size):
     if i % 2 == 0:
         print '\n'
         print i
-        print "U_hot", hx_fins.U_hot
-        print "te_pair U_hot", hx_fins.te_pair.U_hot
-        print "te_pair q_h", hx_fins.te_pair.q_h
-        print "te_pair q_h_conv", hx_fins.te_pair.q_h_conv
-        print "q_h", hx_fins.q_h        
 
     hx_fins.power_net_array[i] = hx_fins.power_net
     hx_fins.Wdot_pumping_array[i] = hx_fins.Wdot_pumping

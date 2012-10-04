@@ -65,7 +65,7 @@ hx_osf.cool.T_outlet = 310.
 
 hx_osf.set_mdot_charge()
 
-array_size = 20
+array_size = 50
 
 hx_osf.exh.enh.spacings = (
     np.linspace(0.2, 5, array_size) * hx_osf.exh.enh.spacing
