@@ -78,6 +78,7 @@ class TE_Pair(object):
 
         self.Ntype.set_constants
         self.Ptype.set_constants
+        self.set_leg_areas
 
         """
 
@@ -91,6 +92,8 @@ class TE_Pair(object):
         # material. Heat flux is negative because temperature gradient
         # is positive.
         self.Ntype.I = - self.I
+
+        self.set_leg_areas()
         self.Ntype.set_constants()
         self.Ptype.set_constants()
 
@@ -182,12 +185,10 @@ class TE_Pair(object):
 
         Methods:
 
-        self.set_constants
         self.set_q_guess
 
         """
 
-        self.set_constants()
         self.Ptype.T_h = self.T_h_conv 
         self.Ntype.T_h = self.T_h_conv
         self.Ptype.T_c = self.T_c_conv
@@ -295,10 +296,6 @@ class TE_Pair(object):
 
         Based on leg area ratio and fill fraction.
 
-        Methods:
-
-        self.set_constants
-        
         self.Ptype.area must be held constant.  self.Ntype.area and
         self.area_void are varied here.
 
@@ -313,8 +310,6 @@ class TE_Pair(object):
         self.Ntype.area)
             )
         
-        self.set_constants()
-
     def get_minpar(self, apar):
 
         """Returns inverse of power flux.
@@ -353,7 +348,7 @@ class TE_Pair(object):
         self.leg_area_ratio = apar[3]
 
         # reset surrogate variables
-        self.set_leg_areas()
+        self.set_constants()
 
         self.solve_te_pair()
 
