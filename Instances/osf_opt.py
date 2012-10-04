@@ -62,9 +62,9 @@ hx_osf_opt.cool.T_outlet = 310.
 
 hx_osf_opt.set_mdot_charge()
 
-hx_osf_opt.optimize()
-
 hx_osf_opt.apar_list.append(['hx_osf_opt', 'exh', 'enh', 'spacing'])
+# hx_osf_opt.apar_list.append(['hx_osf_opt', 'exh', 'enh', 'l'])
+# l cannot be allowed to vary or it will get really large.  
 
 hx_osf_opt.optimize()
 hx_osf_opt.save_opt_par(OPT_PAR_DIR)

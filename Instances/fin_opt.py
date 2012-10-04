@@ -61,8 +61,6 @@ hx_fins_opt.cool.T_outlet = 310.
 
 hx_fins_opt.set_mdot_charge()
 
-hx_fins_opt.optimize()
-
 hx_fins_opt.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'spacing'])
 
 hx_fins_opt.optimize()
