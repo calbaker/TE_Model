@@ -76,8 +76,7 @@ for i in np.arange(array_size):
 
     hx_fins.solve_hx()
 
-    if i % 2 == 0:
-        print '\n'
+    if i % 5 == 0:
         print i
 
     hx_fins.power_net_array[i] = hx_fins.power_net
