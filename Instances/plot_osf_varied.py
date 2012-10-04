@@ -5,7 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-output_dir = "../output/fins_varied/"
+output_dir = "../output/osf_varied/"
 
 power_net = np.load(output_dir + "power_net.npy")
 Wdot_pumping = np.load(output_dir + "Wdot_pumping.npy")
