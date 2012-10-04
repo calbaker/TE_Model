@@ -24,7 +24,7 @@ plt.rcParams['lines.linewidth'] = 3.
 
 plt.close('all')
 
-PLOT_DIR = "../Plots/fins_varied/"
+PLOT_DIR = "../Plots/osf_varied/"
 
 plt.figure()
 plt.plot(
