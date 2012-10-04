@@ -22,7 +22,7 @@ power_fill_height = np.load(data_dir + 'power_fill_height.npy')
 power_height_I = np.load(data_dir + 'power_height_I.npy')
 
 # Plot configuration
-FONTSIZE = 18
+FONTSIZE = 24
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
