@@ -52,6 +52,6 @@ plt.ylabel('Power (kW)')
 plt.ylim(ymin=0)
 plt.subplots_adjust(bottom=0.15)
 plt.legend(loc='best')
-plt.savefig(PLOT_DIR + 'p_v_spacing.pdf')
+plt.savefig(PLOT_DIR + 'p_v_osf_spacing.pdf')
 
 plt.show()
