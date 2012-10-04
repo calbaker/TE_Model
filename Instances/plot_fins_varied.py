@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 
 output_dir = "../output/fins_varied/"
 
-power_net = np.load(output_dir + "power_net.npy")
-Wdot_pumping = np.load(output_dir + "Wdot_pumping.npy")
-Qdot = np.load(output_dir + "Qdot.npy")
-power_total = np.load(output_dir + "power_total.npy")
-spacing = np.load(output_dir + "spacing.npy")
+power_net = np.load(output_dir + "power_net.npy")[1:]
+Wdot_pumping = np.load(output_dir + "Wdot_pumping.npy")[1:]
+Qdot = np.load(output_dir + "Qdot.npy")[1:]
+power_total = np.load(output_dir + "power_total.npy")[1:]
+spacing = np.load(output_dir + "spacing.npy")[1:]
 
 # Plot configuration
 FONTSIZE = 20
