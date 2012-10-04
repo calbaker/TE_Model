@@ -82,7 +82,6 @@ class TE_Pair(object):
 
         """
 
-        self.area = self.Ntype.area + self.Ptype.area + self.area_void
         self.Ntype.length = self.length
         self.Ptype.length = self.length
         self.Ptype.nodes = self.nodes
@@ -96,6 +95,8 @@ class TE_Pair(object):
         self.set_leg_areas()
         self.Ntype.set_constants()
         self.Ptype.set_constants()
+
+        print 'running set_constants'
 
     def solve_te_pair_once(self):
 
@@ -309,6 +310,7 @@ class TE_Pair(object):
             (1. - fill_fraction) / fill_fraction * (self.Ptype.area +
         self.Ntype.area)
             )
+        self.area = self.Ntype.area + self.Ptype.area + self.area_void
         
     def get_minpar(self, apar):
 
