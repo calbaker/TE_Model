@@ -31,7 +31,7 @@ te_design.I = current
 te_design.length = length
 te_design.leg_area_ratio = area_ratio
 
-te_design.set_leg_areas()
+te_design.set_constants()
 
 te_design.T_c_conv = 300.  # cold side convection temperature (K)
 te_design.T_h_conv = 680.  # hot side convection temperature (K)
@@ -76,7 +76,7 @@ for index in np.ndindex(current_array.size, fill_array.size):
         print "i =", i
     te_design.I = current_array[i]
     te_design.fill_fraction = fill_array[j]
-    te_design.set_leg_areas()
+    te_design.set_constants()
     te_design.solve_te_pair()
     power_I_fill[i, j] = te_design.P_flux
 
@@ -91,7 +91,7 @@ for index in np.ndindex(fill_array.size, length_array.size):
     j = index[0]
     k = index[1]
     te_design.fill_fraction = fill_array[j]
-    te_design.set_leg_areas()
+    te_design.set_constants()
     if k == 0:
         print "j =", j
     te_design.length = length_array[k]
@@ -101,7 +101,7 @@ for index in np.ndindex(fill_array.size, length_array.size):
 te_design.I = current
 te_design.fill_fraction = fill_fraction
 te_design.length = length
-te_design.set_leg_areas()
+te_design.set_constants()
 
 t2 = time.clock() - t0
 print "t2 =", t2
