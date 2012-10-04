@@ -64,7 +64,7 @@ array_size = 20
 
 spacing_opt = hx_fins.exh.enh.spacing
 hx_fins.exh.enh.spacings = (
-    np.linspace(0.2, 2, array_size) * hx_fins.exh.enh.spacing
+    np.linspace(0.2, 5, array_size) * hx_fins.exh.enh.spacing
     )
 
 hx_fins.power_net_array = np.zeros(array_size)
@@ -76,8 +76,6 @@ for i in np.arange(array_size):
     if i % 5 == 0:
         print i
     hx_fins.exh.enh.spacing = hx_fins.exh.enh.spacings[i]
-    if hx_fins.exh.enh.spacing == spacing_opt:
-        print "optimal spacing"
 
     hx_fins.solve_hx()
 

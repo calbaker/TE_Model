@@ -41,7 +41,6 @@ OPT_PAR_DIR = "../output/fin_opt/"
 hx_fins_opt.te_pair.fill_fraction = (
     np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
     )
-
 hx_fins_opt.te_pair.I = (
     np.load(OPT_PAR_DIR + 'te_pair.I.npy')
     )
