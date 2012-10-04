@@ -35,7 +35,7 @@ hx_fins.exh.set_enhancement('IdealFin')
 # hx_fins.exh.enh.thickness = 0.25 * 2.54e-2
 # 0.25 inches is too thick to manufacture
 
-hx_fins.cool.enh = hx_fins.cool.set_enhancement('IdealFin')
+hx_fins.cool.enh = hx_fins.cool.set_enhancement('IdealFin2')
 
 OPT_PAR_DIR = "../output/fin_opt/"
 hx_fins.te_pair.fill_fraction = (

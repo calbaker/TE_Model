@@ -36,7 +36,7 @@ hx_osf_opt.exh.set_enhancement('OffsetStripFin')
 # 0.25 inches is too thick to manufacture
 hx_osf_opt.exh.enh.l = 10.e-3
 
-hx_osf_opt.cool.enh = hx_osf_opt.cool.set_enhancement('IdealFin')
+hx_osf_opt.cool.enh = hx_osf_opt.cool.set_enhancement('IdealFin2')
 
 OPT_PAR_DIR = "../output/osf_opt/"
 
