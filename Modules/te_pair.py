@@ -96,8 +96,6 @@ class TE_Pair(object):
         self.Ntype.set_constants()
         self.Ptype.set_constants()
 
-        print 'running set_constants'
-
     def solve_te_pair_once(self):
 
         """Solves legs and combines results of leg pair.
