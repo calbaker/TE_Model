@@ -65,10 +65,10 @@ hx_osf.cool.T_outlet = 310.
 
 hx_osf.set_mdot_charge()
 
-array_size = 50
+array_size = 20
 
 hx_osf.exh.enh.spacings = (
-    np.linspace(0.2, 5, 25) * hx_osf.exh.enh.spacing
+    np.linspace(0.2, 5, array_size) * hx_osf.exh.enh.spacing
     )
 
 hx_osf.power_net_array = np.zeros(array_size)
@@ -76,7 +76,9 @@ hx_osf.Wdot_pumping_array = np.zeros(array_size)
 hx_osf.Qdot_array = np.zeros(array_size)
 hx_osf.te_pair.power_array = np.zeros(array_size)
 
-for i in np.arange(np.size(hx_osf.exh.fin_array)):
+for i in np.arange(array_size):
+    if i % 5 == 0:
+        print i
     hx_osf.exh.enh.spacing = hx_osf.exh.enh.spacings[i]
 
     hx_osf.solve_hx()
@@ -87,34 +89,13 @@ for i in np.arange(np.size(hx_osf.exh.fin_array)):
     hx_osf.te_pair.power_array[i] = hx_osf.te_pair.power_total
     hx_osf.exh.enh.spacings[i] = hx_osf.exh.enh.spacing
 
+output_dir = "../output/osf_varied/"
+np.save(output_dir + "power_net", hx_osf.power_net_array)
+np.save(output_dir + "Wdot_pumping", hx_osf.Wdot_pumping_array)
+np.save(output_dir + "Qdot", hx_osf.Qdot_array)
+np.save(output_dir + "power_total", hx_osf.te_pair.power_array)
+np.save(output_dir + "spacing", hx_osf.exh.enh.spacings)
+
 print "\nPlotting..."
 
-# Plot configuration
-FONTSIZE = 20
-plt.rcParams['axes.labelsize'] = FONTSIZE
-plt.rcParams['axes.titlesize'] = FONTSIZE
-plt.rcParams['legend.fontsize'] = FONTSIZE
-plt.rcParams['xtick.labelsize'] = FONTSIZE
-plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 1.5
-
-plt.close('all')
-
-plt.figure()
-plt.plot(hx_osf.exh.fin_array, hx_osf.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
-plt.plot(hx_osf.exh.fin_array, hx_osf.te_pair.power_array, 'og', label='TE_PAIR')
-plt.plot(hx_osf.exh.fin_array, hx_osf.power_net_array, 'sr', 
-         label='$P_{net}$')  
-plt.plot(hx_osf.exh.fin_array, hx_osf.Wdot_pumping_array, '*k', 
-         label='Pumping')
-plt.grid()
-plt.xlabel('Osf')
-plt.ylabel('Power (kW)')
-plt.ylim(0,3)
-plt.ylim(ymin=0)
-plt.subplots_adjust(bottom=0.15)
-#plt.title('Power v. Fin Spacing')
-plt.legend(loc='best')
-plt.savefig('../Plots/osf_varied/power_v_spacing.pdf')
-
-# plt.show()
+execfile('plot_osf_varied.py')
