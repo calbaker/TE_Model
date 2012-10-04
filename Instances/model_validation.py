@@ -15,7 +15,8 @@ reload(real_hx)
 
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
-hx_exp.file = '2012-09-18 copper'
+hx_exp.file = 'combined gypsum newP'
+# hx_exp.file = '2012-09-18 copper'
 hx_exp.import_data()
 hx_exp.get_Qdot_fit()
 
@@ -30,12 +31,12 @@ mdot2d, T_in2d = np.meshgrid(mdot_surf, T_in_surf)
 hx_exp.rep_Qdot_surf(mdot_surf, T_in_surf)
 
 hx_mod = real_hx.get_hx()
-# k_gypsum = 0.17e-3
+k_gypsum = 0.17e-3
 # # thermal conductivity (kW / (m * K)) of gypsum board from Incropera
 # # and DeWitt Intro. to Heat Transfer 5th ed., Table A.3
-# thickness_gypsum = 0.25 * 2.54e-2
+thickness_gypsum = 0.25 * 2.54e-2
 # # thickness (m) of gypsum board
-# hx_mod.R_extra = thickness_gypsum / k_gypsum
+hx_mod.R_extra = thickness_gypsum / k_gypsum
 
 # the following expressions for k come from Li and Peterson, 2006. The
 # effective thermal conductivity of wire screen
@@ -61,7 +62,7 @@ k_effective = 0.5 * (k_alexander + k_koh)
 # thermal conductivity of mesh screen according to average of
 # Alexander's and Koh and Fortini's model taken from Li and Peterson
 # 2006 - The effective thermal conductivity of wire screen.
-hx_mod.R_extra = thickness_copper / k_effective
+# hx_mod.R_extra = thickness_copper / k_effective
 
 hx_mod.R_interconnect = 0.
 hx_mod.R_substrate = 0.
