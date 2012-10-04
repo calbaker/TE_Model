@@ -64,7 +64,7 @@ array_size = 20
 
 spacing_opt = hx_fins.exh.enh.spacing
 hx_fins.exh.enh.spacings = (
-    np.linspace(0.2, 100, array_size) * hx_fins.exh.enh.spacing
+    np.linspace(0.2, 2, array_size) * hx_fins.exh.enh.spacing
     )
 
 hx_fins.power_net_array = np.zeros(array_size)
@@ -80,12 +80,6 @@ for i in np.arange(array_size):
         print "optimal spacing"
 
     hx_fins.solve_hx()
-    print '\n'
-    print "h_conv:", hx_fins.exh.h_conv
-    print "h_base:", hx_fins.exh.enh.h_base
-    print "h_unfinned:", hx_fins.exh.enh.flow.h_unfinned
-    print "finned area:", hx_fins.exh.area_finned
-    print "unfinned area:", hx_fins.exh.area_unfinned
 
     hx_fins.power_net_array[i] = hx_fins.power_net
     hx_fins.Wdot_pumping_array[i] = hx_fins.Wdot_pumping

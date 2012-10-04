@@ -28,19 +28,19 @@ PLOT_DIR = "../Plots/fins_varied/"
 
 plt.figure()
 plt.plot(
-    spacing * 100., Qdot / 10., 'db',
+    spacing * 100., Qdot / 10., '-db',
     label=r'$\dot{Q}_{h}$ / 10'
     ) 
 plt.plot(
-    spacing * 100., power_total,'og',
+    spacing * 100., power_total,'-og',
     label=r'$P_{raw}$'
     )
 plt.plot(
-    spacing * 100., power_net, 'sr',
+    spacing * 100., power_net, '-sr',
     label='$P_{net}$'
     )  
 plt.plot(
-    spacing * 100., Wdot_pumping, '*k',
+    spacing * 100., Wdot_pumping, '-*k',
     label='Pumping'
     )
 

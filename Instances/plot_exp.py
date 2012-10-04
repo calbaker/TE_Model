@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # FILE = '2012-09-18 copper'
-FILE = 'combined gypsum newP'
+FILE = 'gypsum'
 
 npzfile = np.load('../output/model_validation/' + FILE + '.npz') 
 deltaP = npzfile['deltaP']

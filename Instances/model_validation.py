@@ -15,8 +15,7 @@ reload(real_hx)
 
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
-hx_exp.file = 'combined gypsum newP'
-# hx_exp.file = '2012-09-18 copper'
+hx_exp.file = 'gypsum'
 hx_exp.import_data()
 hx_exp.get_Qdot_fit()
 
@@ -31,46 +30,52 @@ mdot2d, T_in2d = np.meshgrid(mdot_surf, T_in_surf)
 hx_exp.rep_Qdot_surf(mdot_surf, T_in_surf)
 
 hx_mod = real_hx.get_hx()
-k_gypsum = 0.17e-3
-# # thermal conductivity (kW / (m * K)) of gypsum board from Incropera
-# # and DeWitt Intro. to Heat Transfer 5th ed., Table A.3
-thickness_gypsum = 0.25 * 2.54e-2
-# # thickness (m) of gypsum board
-hx_mod.R_extra = thickness_gypsum / k_gypsum
 
-# the following expressions for k come from Li and Peterson, 2006. The
-# effective thermal conductivity of wire screen
-k_copper = 400.e-3  # thermal conductivity of copper (kW / (m * K))
-# from Wolfram Alpha
-thickness_copper = 508.e-6  # effective thickness (m) of copper mesh 
-phi_copper = 0.95  # effective porosity of copper based on density
-# calculated by weiging a sample and estimating its volume then
-# comparing this result to the solid material density.  
-k_air = 3.24e-5  
-# thermal conductivity (kW / (m * K)) of air at 405 K, which is mean
-# temperature between coolant and exhaust over all nodes.
-k_alexander = (
-    k_air / (k_copper / k_air) ** ((1. - phi_copper) ** 0.59)
-    )
-k_koh = (
-    (1. - phi_copper) / (1. + 11. * phi_copper) * k_copper
-    )
-k_upper = phi_copper * k_air + (1. - phi_copper) * k_copper
-k_lower = (phi_copper / k_air + (1. - phi_copper) / k_copper) ** -1.
+if hx_exp.file == 'gypsum':
+    k_gypsum = 0.17e-3
+    # # thermal conductivity (kW / (m * K)) of gypsum board from Incropera
+    # # and DeWitt Intro. to Heat Transfer 5th ed., Table A.3
+    thickness_gypsum = 0.25 * 2.54e-2
+    # thickness (m) of gypsum board
+    hx_mod.R_extra = thickness_gypsum / k_gypsum
 
-k_effective = 0.5 * (k_alexander + k_koh)
-# thermal conductivity of mesh screen according to average of
-# Alexander's and Koh and Fortini's model taken from Li and Peterson
-# 2006 - The effective thermal conductivity of wire screen.
-# hx_mod.R_extra = thickness_copper / k_effective
+
+elif hx_exp.file == 'copper':
+    # the following expressions for k come from Li and Peterson, 2006. The
+    # effective thermal conductivity of wire screen
+    k_copper = 400.e-3  # thermal conductivity of copper (kW / (m * K))
+    # from Wolfram Alpha
+    thickness_copper = 508.e-6  # effective thickness (m) of copper mesh 
+    phi_copper = 0.95  # effective porosity of copper based on density
+    # calculated by weiging a sample and estimating its volume then
+    # comparing this result to the solid material density.  
+    k_air = 3.24e-5  
+    # thermal conductivity (kW / (m * K)) of air at 405 K, which is mean
+    # temperature between coolant and exhaust over all nodes.
+    k_alexander = (
+        k_air / (k_copper / k_air) ** ((1. - phi_copper) ** 0.59)
+        )
+    k_koh = (
+        (1. - phi_copper) / (1. + 11. * phi_copper) * k_copper
+        )
+    k_upper = phi_copper * k_air + (1. - phi_copper) * k_copper
+    k_lower = (
+        (phi_copper / k_air + (1. - phi_copper) / k_copper) ** -1.
+        )
+
+    k_effective = 0.5 * (k_alexander + k_koh)
+    # thermal conductivity of mesh screen according to average of
+    # Alexander's and Koh and Fortini's model taken from Li and Peterson
+    # 2006 - The effective thermal conductivity of wire screen.
+    # hx_mod.R_extra = thickness_copper / k_effective
+    hx_mod.R_extra = 6.54
+    k_effective = thickness_copper / hx_mod.R_extra
 
 hx_mod.R_interconnect = 0.
 hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
-hx_mod.R_extra = 6.54
 
 hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
-k_effective = thickness_copper / hx_mod.R_extra
 
 np.savez(
     '../output/model_validation/' + hx_exp.file, 
