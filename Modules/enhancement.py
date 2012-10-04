@@ -391,7 +391,7 @@ class OffsetStripFin(object):
         self.h_base = self.h_conv * self.effectiveness
         self.flow.h_conv = (
             (self.h_base * self.thickness + self.h_conv *
-        self.spacing) / (self.spacing + self.thickness)
+             self.spacing) / (self.spacing + self.thickness)
             )
 
         self.flow.Nu_D = self.flow.h_conv * self.flow.D / self.flow.k
