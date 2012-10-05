@@ -48,14 +48,14 @@ fill_fraction = te_design.fill_fraction
 length = te_design.length
 current = te_design.I
 
-SIZE = 10
+SIZE = 50
 current_array = np.linspace(0.5, 2, SIZE) * te_design.I
 fill_array = (
-    np.linspace(0.5, 2, current_array.size + 1) *
+    np.linspace(0.5, 2, current_array.size) *
     te_design.fill_fraction
     )
 length_array = (
-    np.linspace(0.5, 2, fill_array.size + 1) * te_design.length
+    np.linspace(0.5, 2, fill_array.size) * te_design.length
     )
 
 power_I_fill = np.zeros(
