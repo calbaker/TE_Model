@@ -34,12 +34,25 @@ hx_fins.type = 'counter'
 hx_fins.exh.set_enhancement('IdealFin')
 # hx_fins.exh.enh.thickness = 0.25 * 2.54e-2
 # 0.25 inches is too thick to manufacture
-hx_fins.exh.enh.thickness = 2.5e-3
-hx_fins.exh.enh.spacing = 10.e-3
 
-hx_fins.cool.enh = hx_fins.cool.set_enhancement('IdealFin')
-hx_fins.cool.enh.thickness = 2.5e-3
-hx_fins.cool.enh.spacing = 10.e-3
+hx_fins.cool.enh = hx_fins.cool.set_enhancement('IdealFin2')
+
+OPT_PAR_DIR = "../output/fin_opt/"
+hx_fins.te_pair.fill_fraction = (
+    np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
+    )
+hx_fins.te_pair.I = (
+    np.load(OPT_PAR_DIR + 'te_pair.I.npy')
+    )
+hx_fins.te_pair.leg_area_ratio = (
+    np.load(OPT_PAR_DIR + 'te_pair.leg_area_ratio.npy')
+    )
+hx_fins.te_pair.length = (
+    np.load(OPT_PAR_DIR + 'te_pair.length.npy')
+    )
+hx_fins.exh.enh.spacing = (
+    np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')
+    )
 
 hx_fins.exh.T_inlet = 800.
 hx_fins.cool.T_inlet_set = 300.
@@ -47,22 +60,24 @@ hx_fins.cool.T_outlet = 310.
 
 hx_fins.set_mdot_charge()
 
-hx_fins.exh.fin_array = np.arange(30, 102, 4)
-# array for varied exhaust duct height (m)
-array_size = np.size(hx_fins.exh.fin_array)
+array_size = 50
+
+hx_fins.exh.enh.spacings = (
+    np.linspace(0.2, 5, array_size) * hx_fins.exh.enh.spacing
+    )
+
 hx_fins.power_net_array = np.zeros(array_size)
 hx_fins.Wdot_pumping_array = np.zeros(array_size)
 hx_fins.Qdot_array = np.zeros(array_size)
 hx_fins.te_pair.power_array = np.zeros(array_size)
-hx_fins.exh.enh.spacings = np.zeros(np.size(hx_fins.exh.fin_array)) 
 
-for i in np.arange(np.size(hx_fins.exh.fin_array)):
-    hx_fins.exh.enh.N = hx_fins.exh.fin_array[i]
+for i in np.arange(array_size):
+    hx_fins.exh.enh.spacing = hx_fins.exh.enh.spacings[i]
 
-    print "Solving for", hx_fins.exh.enh.N, "fins\n"
-    # hx_fins.cool.T_outlet = fsolve(hx_fins.get_T_inlet_error,
-    # x0=hx_fins.cool.T_outlet)
     hx_fins.solve_hx()
+
+    if i % 5 == 0:
+        print i
 
     hx_fins.power_net_array[i] = hx_fins.power_net
     hx_fins.Wdot_pumping_array[i] = hx_fins.Wdot_pumping
@@ -70,56 +85,13 @@ for i in np.arange(np.size(hx_fins.exh.fin_array)):
     hx_fins.te_pair.power_array[i] = hx_fins.te_pair.power_total
     hx_fins.exh.enh.spacings[i] = hx_fins.exh.enh.spacing
 
+output_dir = "../output/fins_varied/"
+np.save(output_dir + "power_net", hx_fins.power_net_array)
+np.save(output_dir + "Wdot_pumping", hx_fins.Wdot_pumping_array)
+np.save(output_dir + "Qdot", hx_fins.Qdot_array)
+np.save(output_dir + "power_total", hx_fins.te_pair.power_array)
+np.save(output_dir + "spacing", hx_fins.exh.enh.spacings)
+
 print "\nPlotting..."
 
-# Plot configuration
-FONTSIZE = 20
-plt.rcParams['axes.labelsize'] = FONTSIZE
-plt.rcParams['axes.titlesize'] = FONTSIZE
-plt.rcParams['legend.fontsize'] = FONTSIZE
-plt.rcParams['xtick.labelsize'] = FONTSIZE
-plt.rcParams['ytick.labelsize'] = FONTSIZE
-plt.rcParams['lines.linewidth'] = 1.5
-
-plt.close('all')
-
-PLOT_DIR = "../Plots/varied_fins/"
-
-plt.figure()
-plt.plot(hx_fins.exh.enh.spacings * 100., hx_fins.Qdot_array / 10., 'db', 
-         label=r'$\dot{Q}_{h}$ / 10') 
-plt.plot(hx_fins.exh.enh.spacings * 100., hx_fins.te_pair.power_array, 'og',
-         label=r'$P_{raw}$')
-plt.plot(hx_fins.exh.enh.spacings * 100., hx_fins.power_net_array, 'sr', 
-         label='$P_{net}$')  
-plt.plot(hx_fins.exh.enh.spacings * 100., hx_fins.Wdot_pumping_array, '*k',
-         label='Pumping')
-plt.grid()
-plt.xticks(rotation=40)
-plt.xlabel('Fin Spacing (cm)')
-plt.ylabel('Power (kW)')
-# plt.ylim(0,3)
-plt.ylim(ymin=0)
-plt.subplots_adjust(bottom=0.15)
-plt.title('Power v. Fin Spacing')
-plt.legend(loc='best')
-plt.savefig(PLOT_DIR + 'p_v_spacing.pdf')
-
-plt.figure()
-plt.plot(hx_fins.exh.fin_array, hx_fins.Qdot_array / 10., 'db', label=r'$\dot{Q}/10$') 
-plt.plot(hx_fins.exh.fin_array, hx_fins.te_pair.power_array, 'og', label='TE_PAIR')
-plt.plot(hx_fins.exh.fin_array, hx_fins.power_net_array, 'sr', 
-         label='$P_{net}$')  
-plt.plot(hx_fins.exh.fin_array, hx_fins.Wdot_pumping_array, '*k', 
-         label='Pumping')
-plt.grid()
-plt.xlabel('Fins')
-plt.ylabel('Power (kW)')
-plt.ylim(0,3)
-plt.ylim(ymin=0)
-plt.subplots_adjust(bottom=0.15)
-#plt.title('Power v. Fin Spacing')
-plt.legend(loc='best')
-plt.savefig(PLOT_DIR + 'p_v_number_fins.pdf')
-
-# plt.show()
+execfile('plot_fins_varied.py')

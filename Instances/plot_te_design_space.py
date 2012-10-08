@@ -22,7 +22,7 @@ power_fill_height = np.load(data_dir + 'power_fill_height.npy')
 power_height_I = np.load(data_dir + 'power_height_I.npy')
 
 # Plot configuration
-FONTSIZE = 18
+FONTSIZE = 24
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
@@ -107,6 +107,20 @@ plt.ylabel('Length (mm)')
 plt.subplots_adjust(bottom=BOTTOM, right=RIGHT)
 plt.grid()
 fig3.savefig(save_dir + "power_length_I.pdf")
+
+fig4 = plt.figure('wackiness')
+cset4 = plt.contourf(X2 / Y2, Y3, Z3.T, levels=LEVELS)
+CB4 = plt.colorbar(
+    cset4, orientation='vertical', format=FORMAT, fraction=FRACTION,
+    ticks=TICKS 
+    )
+CB3.set_label(r'Power Flux (kW/m$^2$)')
+plt.xticks(rotation=40)
+plt.xlabel('Length / Fill Fraction (mm)')
+plt.ylabel('Current (A)')
+plt.subplots_adjust(bottom=BOTTOM, right=RIGHT)
+plt.grid()
+fig3.savefig(save_dir + "power_wacky_I.pdf")
 
 plt.show()
 

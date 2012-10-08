@@ -31,7 +31,7 @@ te_design.I = current
 te_design.length = length
 te_design.leg_area_ratio = area_ratio
 
-te_design.set_leg_areas()
+te_design.set_constants()
 
 te_design.T_c_conv = 300.  # cold side convection temperature (K)
 te_design.T_h_conv = 680.  # hot side convection temperature (K)
@@ -51,11 +51,11 @@ current = te_design.I
 SIZE = 50
 current_array = np.linspace(0.5, 2, SIZE) * te_design.I
 fill_array = (
-    np.linspace(0.5, 2, current_array.size + 1) *
+    np.linspace(0.5, 2, current_array.size) *
     te_design.fill_fraction
     )
 length_array = (
-    np.linspace(0.5, 2, fill_array.size + 1) * te_design.length
+    np.linspace(0.5, 2, fill_array.size) * te_design.length
     )
 
 power_I_fill = np.zeros(
@@ -74,10 +74,13 @@ for index in np.ndindex(current_array.size, fill_array.size):
     j = index[1]
     if j == 0:
         print "i =", i
+
     te_design.I = current_array[i]
     te_design.fill_fraction = fill_array[j]
-    te_design.set_leg_areas()
+    te_design.set_constants()
+
     te_design.solve_te_pair()
+
     power_I_fill[i, j] = te_design.P_flux
 
 te_design.I = current
@@ -90,30 +93,35 @@ t0 = time.clock()
 for index in np.ndindex(fill_array.size, length_array.size):
     j = index[0]
     k = index[1]
-    te_design.fill_fraction = fill_array[j]
-    te_design.set_leg_areas()
     if k == 0:
         print "j =", j
+
+    te_design.fill_fraction = fill_array[j]
     te_design.length = length_array[k]
+    te_design.set_constants()
+
     te_design.solve_te_pair()
+
     power_fill_height[j, k] = te_design.P_flux
 
 te_design.I = current
 te_design.fill_fraction = fill_fraction
 te_design.length = length
-te_design.set_leg_areas()
 
 t2 = time.clock() - t0
 print "t2 =", t2
 for index in np.ndindex(length_array.size, current_array.size):
     k = index[0]
     i = index[1]
-    te_design.length = length_array[k]
-    te_design.solve_te_pair()
     if i == 0:
         print "k =", k
+
+    te_design.length = length_array[k]
     te_design.I = current_array[i]
+    te_design.set_constants()
+
     te_design.solve_te_pair()
+
     power_height_I[k, i] = te_design.P_flux
 
 te_design.I = current

@@ -144,9 +144,11 @@ class IdealFin(object):
     def set_area_convection(self):
 
         """Sets finned and unfinned area for convection."""
-
-        self.flow.area_unfinned = (self.flow.width - self.N * self.thickness)
-        self.flow.area_finned = self.N * self.thickness
+        
+        self.flow.area_unfinned = (
+            self.flow.width - self.N * self.thickness 
+            )
+        self.flow.area_finned = self.N * self.height * 4.            
 
     def set_enh_geometry(self):
 
@@ -194,7 +196,9 @@ class IdealFin(object):
 
         self.flow.h_unfinned = self.flow.h_conv
 
-        self.effectiveness = self.eta * 2. * self.height / self.thickness
+        self.effectiveness = (
+            self.eta * 2. * self.height / self.thickness 
+            )
         self.h_base = self.effectiveness * self.flow.h_conv
 
         self.flow.h_conv = (
@@ -253,7 +257,7 @@ class IdealFin2(IdealFin):
         self.flow.area_unfinned = (
             self.flow.width - self.N / 2. * self.thickness
             )
-        self.flow.area_finned = self.N / 2. * self.thickness
+        self.flow.area_finned = self.N * 2. * self.height
 
 
 class OffsetStripFin(object):
@@ -387,7 +391,7 @@ class OffsetStripFin(object):
         self.h_base = self.h_conv * self.effectiveness
         self.flow.h_conv = (
             (self.h_base * self.thickness + self.h_conv *
-        self.spacing) / (self.spacing + self.thickness)
+             self.spacing) / (self.spacing + self.thickness)
             )
 
         self.flow.Nu_D = self.flow.h_conv * self.flow.D / self.flow.k

@@ -34,12 +34,25 @@ hx_fins_opt.type = 'counter'
 hx_fins_opt.exh.set_enhancement('IdealFin')
 # hx_fins_opt.exh.enh.thickness = 0.25 * 2.54e-2
 # 0.25 inches is too thick to manufacture
-hx_fins_opt.exh.enh.thickness = 2.5e-3
-hx_fins_opt.exh.enh.spacing = 10.e-3
 
-hx_fins_opt.cool.enh = hx_fins_opt.cool.set_enhancement('IdealFin')
-hx_fins_opt.cool.enh.thickness = 2.5e-3
-hx_fins_opt.cool.enh.spacing = 10.e-3
+hx_fins_opt.cool.enh = hx_fins_opt.cool.set_enhancement('IdealFin2')
+
+OPT_PAR_DIR = "../output/fin_opt/"
+hx_fins_opt.te_pair.fill_fraction = (
+    np.load(OPT_PAR_DIR + 'te_pair.fill_fraction.npy')
+    )
+hx_fins_opt.te_pair.I = (
+    np.load(OPT_PAR_DIR + 'te_pair.I.npy')
+    )
+hx_fins_opt.te_pair.leg_area_ratio = (
+    np.load(OPT_PAR_DIR + 'te_pair.leg_area_ratio.npy')
+    )
+hx_fins_opt.te_pair.length = (
+    np.load(OPT_PAR_DIR + 'te_pair.length.npy')
+    )
+hx_fins_opt.exh.enh.spacing = (
+    np.load(OPT_PAR_DIR + 'exh.enh.spacing.npy')
+    )
 
 hx_fins_opt.exh.T_inlet = 800.
 hx_fins_opt.cool.T_inlet_set = 300.
@@ -47,12 +60,9 @@ hx_fins_opt.cool.T_outlet = 310.
 
 hx_fins_opt.set_mdot_charge()
 
-hx_fins_opt.optimize()
-
 hx_fins_opt.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'spacing'])
 
 hx_fins_opt.optimize()
-OPT_PAR_DIR = "../output/fin_opt/"
 hx_fins_opt.save_opt_par(OPT_PAR_DIR)
 
 print "\nProgram finished."
