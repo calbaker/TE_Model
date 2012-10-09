@@ -63,12 +63,16 @@ def set_Re_dependents(self):
     #         self.flow = 'laminar'
     # else:
     if (self.Re_D > 2300.): # Do these correlations hold for any tube geometry?
-        self.f = 0.078 * self.Re_D**(-1. / 4.) # friction factor for turbulent
+        self.f = 0.078 * self.Re_D ** (-1. / 4.) # friction factor for turbulent
         # flow from Bejan
         self.f = self.f * 1.5  # scaled for parallel plates according
         # to Bejan Convection Heat Transfer, 3rd ed. Table 3.2
-        self.Nu_D = self.Nu_coeff * self.Re_D**(4. / 5.)*self.Pr**(1. / 3.) # Adrian
-        # Bejan, Convection Heat Transfer, 3rd ed., Equation 8.30
+        self.Nu_D = ( 
+            self.Nu_coeff * self.Re_D ** (4. / 5.) *
+            self.Pr ** (1. / 3.)
+            )
+        # Adrian Bejan, Convection Heat Transfer, 3rd ed., Equation
+        # 8.30
         self.flow = 'turbulent'
     else:
         self.Nu_D = 7.54 # Bejan, Convection Heat Transfer, Table 3.2
