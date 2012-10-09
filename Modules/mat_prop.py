@@ -18,6 +18,7 @@ def import_raw_property_data(self):
         # added on 10/03/2012
         # we measured Seebeck coefficient for n and p-type
         # sigma and k are from literature right now
+        # sigma and k are better performance than actual Marlow
         poly_deg = 3
         
         self.alpha_raw = np.array([[305.88834, 184.4201],
@@ -48,14 +49,48 @@ def import_raw_property_data(self):
                                    [555.855, 104.7148],
                                    [565.9833, 101.7378],
                                    [575.9683, 95.72422]])
+        self.alpha_params = np.polyfit(
+            self.alpha_raw[:, 0], self.alpha_raw[:, 1], poly_deg
+            )
+
+        self.k_raw = np.array([[299.5228426396, 1.3873417722],
+                          [321.8578680203, 1.3265822785],
+                          [345.5888324873, 1.3164556962],
+                          [369.3197969543, 1.3569620253],
+                          [391.654822335, 1.3873417722],
+                          [416.781725888, 1.4683544304],
+                          [440.512690355, 1.6],
+                          [462.847715736, 1.7620253165],
+                          [474.015228426, 1.8329113924],
+                          [497.746192893, 2.035443038],
+                          [522.873096447, 2.2075949367]])
+        self.k_params = np.polyfit(
+            self.k_raw[:, 0], self.k_raw[:, 1], poly_deg
+            )
+
+        self.sigma_raw = np.array([[299.4305754926, 9.746835443],
+                              [323.4029100874, 8.6835443038],
+                              [344.5312214537, 7.5443037975],
+                              [369.9479968681, 6.7088607595],
+                              [392.5476641, 6.0253164557],
+                              [416.58280047, 5.4936708861],
+                              [440.626908521, 5.0379746835],
+                              [463.271434164, 4.7341772152],
+                              [473.158227848, 4.4303797468],
+                              [497.229250946, 4.2025316456],
+                              [522.744714864, 4.2025316456]])
+        self.sigma_params = np.polyfit(
+            self.sigma_raw[:, 0], self.sigma_raw[:, 1], poly_deg
+            )
 
     if self.material == "marlow n-type":
         # added on 10/03/2012
         # we measured Seebeck coefficient for n and p-type
         # sigma and k are from literature right now
+        # sigma and k are better performance than actual Marlow
         poly_deg = 3
-        
-        self.alpha_raw = np.array([[305.93833	-172.1724],
+
+        self.alpha_raw = np.array([[305.88834, 184.4201],
                                    [316.02167, -174.2899],
                                    [325.995, -169.4341],
                                    [335.97834, -168.759],
@@ -84,7 +119,39 @@ def import_raw_property_data(self):
                                    [565.905, -100.953],
                                    [575.9317, -96.50673],
                                    [575.9384, -97.34524]])
+        self.alpha_params = np.polyfit(
+            self.alpha_raw[:, 0], self.alpha_raw[:, 1], poly_deg
+            )
 
+        self.k_raw = np.array([[299.5228426396, 1.3873417722],
+                               [321.8578680203, 1.3265822785],
+                               [345.5888324873, 1.3164556962],
+                               [369.3197969543, 1.3569620253],
+                               [391.654822335, 1.3873417722],
+                               [416.781725888, 1.4683544304],
+                               [440.512690355, 1.6],
+                               [462.847715736, 1.7620253165],
+                               [474.015228426, 1.8329113924],
+                               [497.746192893, 2.035443038],
+                               [522.873096447, 2.2075949367]])
+        self.k_params = np.polyfit(
+            self.k_raw[:, 0], self.k_raw[:, 1], poly_deg
+            )
+
+        self.sigma_raw = np.array([[299.4305754926, 9.746835443],
+                                   [323.4029100874, 8.6835443038],
+                                   [344.5312214537, 7.5443037975],
+                                   [369.9479968681, 6.7088607595],
+                                   [392.5476641, 6.0253164557],
+                                   [416.58280047, 5.4936708861],
+                                   [440.626908521, 5.0379746835],
+                                   [463.271434164, 4.7341772152],
+                                   [473.158227848, 4.4303797468],
+                                   [497.229250946, 4.2025316456],
+                                   [522.744714864, 4.2025316456]])
+        self.sigma_params = np.polyfit(
+            self.sigma_raw[:, 0], self.sigma_raw[:, 1], poly_deg
+            )
 
     if self.material == "BiTe variable n-type":
         poly_deg = 3
@@ -408,6 +475,12 @@ def set_TEproperties(self, T_props):
         self.set_properties_v_temp(T_props)
 
     elif self.material == 'typical BiTe p-type':
+        self.set_properties_v_temp(T_props)
+
+    elif self.material == 'marlow p-type':
+        self.set_properties_v_temp(T_props)
+
+    elif self.material == 'marlow n-type':
         self.set_properties_v_temp(T_props)
 
     # Material properties for validation trial. These properties are
