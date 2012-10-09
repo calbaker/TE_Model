@@ -172,8 +172,10 @@ class IdealFin(object):
 
         self.set_fin_height()
 
-        self.N = ((self.flow.width / self.spacing - 1.) / (1. +
-        self.thickness / self.spacing))
+        self.N = (
+            (self.flow.width / self.spacing - 1.) / (1. +
+            self.thickness / self.spacing)
+            )
 
         self.flow.perimeter = (
             2. * (self.spacing + self.flow.height) * (self.N + 1.)
