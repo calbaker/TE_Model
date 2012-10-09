@@ -137,18 +137,32 @@ class IdealFin(object):
 
         """Sets fin height based on half of duct height."""
 
-        self.height = self.flow.height / 2
-        # height of fin pair such that their tips meet in the
-        # middle and are adiabatic.
+        if self.flow.sides == 2:
+            self.height = self.flow.height / 2
+            # height of fin pair such that their tips meet in the
+            # middle and are adiabatic.
+        else:
+            self.height = self.flow.height
+            # height of fin that crosses the channel
 
     def set_area_convection(self):
 
         """Sets finned and unfinned area for convection."""
         
-        self.flow.area_unfinned = (
-            self.flow.width - self.N * self.thickness 
-            )
-        self.flow.area_finned = self.N * self.height * 4.            
+        if self.flow.sides == 2:
+            self.flow.area_unfinned = (
+                2. * (self.flow.width - self.N * self.thickness)
+                )
+            # unfinned base area on both sides of duct
+            self.flow.area_finned = 2. * self.N * self.thickness
+            # finned base area on both sides of duct
+        else:
+            self.flow.area_unfinned = (
+                self.flow.width - self.N * self.thickness
+                )
+            # unfinned base area on both sides of duct
+            self.flow.area_finned = self.N * self.thickness
+            # finned base area on both sides of duct
 
     def set_enh_geometry(self):
 
@@ -231,33 +245,6 @@ class IdealFin(object):
 
         self.set_eta()
         self.set_h_and_P()
-
-
-class IdealFin2(IdealFin):
-
-    """Class for modeling fin that crosses duct with adiabatic tip.
-
-    Inherits traits of IdealFin."""
-
-    def __init__(self, flow):
-        super(IdealFin2, self).__init__(flow)
-
-    def set_fin_height(self):
-
-        """Sets fin height based on half of duct height."""
-
-        self.height = self.flow.height
-        # height of fin pair such that their tips meet in the
-        # middle and are adiabatic.
-
-    def set_area_convection(self):
-
-        """Sets finned and unfinned area for convection."""
-
-        self.flow.area_unfinned = (
-            self.flow.width - self.N / 2. * self.thickness
-            )
-        self.flow.area_finned = self.N * 2. * self.height
 
 
 class OffsetStripFin(object):

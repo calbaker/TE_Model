@@ -51,6 +51,7 @@ class Coolant(object):
         # enthalpy (kJ/kg) of coolant at restricted dead state
         self.entropy0 = 0.437
         # entropy (kJ/kg*K) of coolant at restricted dead state
+        self.sides = 1
             
         functions.bind_functions(self)
 

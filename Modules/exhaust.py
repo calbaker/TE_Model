@@ -43,6 +43,7 @@ class Exhaust(prop.ideal_gas):
         self.P = 101.
         self.height = 1.5e-2
         self.ducts = 1
+        self.sides = 2
 
         self.Nu_coeff = 0.023
 
