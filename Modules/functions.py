@@ -67,16 +67,32 @@ def set_Re_dependents(self):
         # flow from Bejan
         self.f = self.f * 1.5  # scaled for parallel plates according
         # to Bejan Convection Heat Transfer, 3rd ed. Table 3.2
-        self.Nu_D = ( 
-            self.Nu_coeff * self.Re_D ** (4. / 5.) *
-            self.Pr ** (1. / 3.)
-            )
-        # Adrian Bejan, Convection Heat Transfer, 3rd ed., Equation
-        # 8.30
+        if self.sides == 2:
+            self.Nu_D = ( 
+                8.235 / 4.364 * self.Nu_coeff * self.Re_D ** (4. / 5.) *
+                self.Pr ** (1. / 3.)
+                )
+            # Adrian Bejan, Convection Heat Transfer, 3rd ed., Equation
+            # 8.30, scaled for parallel plates based on Table 3.2
+        else:
+            self.Nu_D = ( 
+                5.385 / 4.364 * self.Nu_coeff * self.Re_D ** (4. / 5.) *
+                self.Pr ** (1. / 3.)
+                )
+            # Adrian Bejan, Convection Heat Transfer, 3rd ed.,
+            # Equation 8.30, scaled for parallel plates with one side
+            # adiabatic based on Table 3.2
         self.flow = 'turbulent'
     else:
-        self.Nu_D = 7.54 # Bejan, Convection Heat Transfer, Table 3.2
-        # parallel plates with constant T
+        if self.sides == 2:
+            self.Nu_D = 7.54 
+            # Bejan, Convection Heat Transfer, Table 3.2, parallel
+            # plates with constant T
+        else:
+            self.Nu_D = 5.385
+            # Bejan, Convection Heat Transfer, Table 3.2, parallel
+            # plates with constant T, one side adiabatic
+
         self.f = 24. / self.Re_D
         self.flow = 'laminar'
 
