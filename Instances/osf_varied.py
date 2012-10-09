@@ -37,7 +37,7 @@ hx_osf.exh.set_enhancement('OffsetStripFin')
 hx_osf.exh.enh.thickness = 2.5e-3
 hx_osf.exh.enh.spacing = 10.e-3
 
-hx_osf.cool.enh = hx_osf.cool.set_enhancement('IdealFin2')
+hx_osf.cool.enh = hx_osf.cool.set_enhancement('IdealFin')
 hx_osf.cool.enh.thickness = 2.5e-3
 hx_osf.cool.enh.spacing = 10.e-3
 

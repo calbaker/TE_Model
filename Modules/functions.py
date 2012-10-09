@@ -169,8 +169,8 @@ def set_enhancement(self, enh_type):
     if enh_type == 'IdealFin':
         self.enh = self.enh_lib.IdealFin(self)
 
-    elif enh_type == 'IdealFin2':
-        self.enh = self.enh_lib.IdealFin2(self)
+    elif enh_type == 'IdealFin':
+        self.enh = self.enh_lib.IdealFin(self)
 
     elif enh_type == 'OffsetStripFin':
         self.enh = self.enh_lib.OffsetStripFin(self)
@@ -179,7 +179,7 @@ def set_enhancement(self, enh_type):
         print "Error in enh_type specification."
         print "Possible options are:"
         print "IdealFin"
-        print "IdealFin2"
+        print "IdealFin"
         print "OffsetStripFin"
 
     return self.enh

@@ -35,7 +35,7 @@ hx_fins.exh.set_enhancement('IdealFin')
 # hx_fins.exh.enh.thickness = 0.25 * 2.54e-2
 # 0.25 inches is too thick to manufacture
 
-hx_fins.cool.enh = hx_fins.cool.set_enhancement('IdealFin2')
+hx_fins.cool.enh = hx_fins.cool.set_enhancement('IdealFin')
 
 OPT_PAR_DIR = "../output/fin_opt/"
 hx_fins.te_pair.fill_fraction = (
@@ -78,6 +78,7 @@ for i in np.arange(array_size):
 
     if i % 5 == 0:
         print i
+        print hx_fins.exh.enh.N
 
     hx_fins.power_net_array[i] = hx_fins.power_net
     hx_fins.Wdot_pumping_array[i] = hx_fins.Wdot_pumping
