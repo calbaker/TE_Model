@@ -75,7 +75,7 @@ hx_mod.R_interconnect = 0.
 hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
 
-hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
+hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
 
 np.savez(
     '../output/model_validation/' + hx_exp.file, 
