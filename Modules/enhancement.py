@@ -334,17 +334,21 @@ class OffsetStripFin(object):
 
         """Sets friction factor, f."""
 
-        self.f = (9.6243 * self.Re_D ** -0.7422 * self.alpha ** -0.1856 *
-                   self.delta ** 0.3053 * self.gamma ** -0.2659)
+        self.f = (
+            9.6243 * self.Re_D ** -0.7422 * self.alpha ** -0.1856 *
+            self.delta ** 0.3053 * self.gamma ** -0.2659
+            )
 
     def set_j(self):
 
         """Sets Colburn factor, j."""
 
-        self.j = (0.6522 * self.Re_D ** -0.5403 * self.alpha ** -0.1541 *
-        self.delta ** 0.1499 * self.gamma ** -0.0678 * (1. + 5.269e-5 *
-        self.Re_D ** 1.340 * self.alpha ** 0.504 * self.delta ** 0.456 *
-        self.gamma ** -1.055) ** 0.1)
+        self.j = (
+            0.6522 * self.Re_D ** -0.5403 * self.alpha ** -0.1541 *
+            self.delta ** 0.1499 * self.gamma ** -0.0678 * (1. +
+            5.269e-5 * self.Re_D ** 1.340 * self.alpha ** 0.504 *
+            self.delta ** 0.456 * self.gamma ** -1.055) ** 0.1
+            )
 
     def solve_enh(self):
         """Runs all the methods for this class.
