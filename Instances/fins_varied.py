@@ -63,7 +63,7 @@ hx_fins.set_mdot_charge()
 array_size = 50
 
 hx_fins.exh.enh.spacings = (
-    np.linspace(0.2, 5, array_size) * hx_fins.exh.enh.spacing
+    np.linspace(0.5, 8, array_size) * 1e-3
     )
 
 hx_fins.power_net_array = np.zeros(array_size)
