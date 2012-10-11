@@ -27,11 +27,10 @@ hx_osf0 = hx.HX()
 hx_osf0.x0 = np.array([area_ratio, fill_fraction, leg_length,
                         current]) 
 
-hx_osf0.width = 22. * 2.54e-2
-hx_osf0.length = 22. * 2.54e-2
-
-hx_osf0.exh.height = 1.25 * 2.54e-2
+hx_osf0.width = 20. * 2.54e-2
+hx_osf0.exh.height = 2.5 * 2.54e-2
 hx_osf0.cool.height = 1. * 2.54e-2
+hx_osf0.length = 20. * 2.54e-2
 
 hx_osf0.te_pair.I = current
 hx_osf0.te_pair.length = leg_length

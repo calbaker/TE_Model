@@ -18,10 +18,10 @@ time0 = time.clock()
 
 hx_osf_opt = hx.HX()
 
-hx_osf_opt.width = 0.6
-hx_osf_opt.length = 0.6 
-hx_osf_opt.exh.height = 1.5e-2
-hx_osf_opt.cool.height = 1.2e-2
+hx_osf_opt.width = 20. * 2.54e-2
+hx_osf_opt.exh.height = 2.5 * 2.54e-2
+hx_osf_opt.cool.height = 1. * 2.54e-2
+hx_osf_opt.length = 20. * 2.54e-2
 
 hx_osf_opt.te_pair.Ntype.material = 'MgSi'
 hx_osf_opt.te_pair.Ptype.material = 'HMS'

@@ -26,7 +26,6 @@ def get_hx():
         )  # total thickness (m)
     hx_mod.plate.set_h()
 
-    # These values must be checked
     hx_mod.width = 20. * 2.54e-2
     hx_mod.exh.height = 2.5 * 2.54e-2
     hx_mod.cool.height = 1. * 2.54e-2

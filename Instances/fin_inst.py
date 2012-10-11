@@ -22,9 +22,11 @@ current = 13.0
 
 hx_fins0 = hx.HX()
 
-hx_fins0.width = 0.55
-hx_fins0.exh.height = 3.5e-2
-hx_fins0.length = 0.55
+hx_fins0.width = 20. * 2.54e-2
+hx_fins0.exh.height = 2.5 * 2.54e-2
+hx_fins0.cool.height = 1. * 2.54e-2
+hx_fins0.length = 20. * 2.54e-2
+
 hx_fins0.te_pair.I = current
 hx_fins0.te_pair.length = leg_length
 hx_fins0.te_pair.leg_area_ratio = area_ratio

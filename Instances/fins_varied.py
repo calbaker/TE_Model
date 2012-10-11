@@ -18,10 +18,10 @@ time0 = time.clock()
 
 hx_fins = hx.HX()
 
-hx_fins.width = 0.6
-hx_fins.length = 0.6 
-hx_fins.exh.height = 1.5e-2
-hx_fins.cool.height = 1.2e-2
+hx_fins.width = 20. * 2.54e-2
+hx_fins.exh.height = 2.5 * 2.54e-2
+hx_fins.cool.height = 1. * 2.54e-2
+hx_fins.length = 20. * 2.54e-2
 
 hx_fins.te_pair.Ntype.material = 'MgSi'
 hx_fins.te_pair.Ptype.material = 'HMS'
