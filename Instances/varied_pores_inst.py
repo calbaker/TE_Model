@@ -52,7 +52,7 @@ for i in sp.arange(array_size):
     hx.solve_hx()
     hx.power_net_array[i] = hx.power_net
     hx.Wdot_pumping_array[i] = hx.Wdot_pumping
-    hx.Qdot_array[i] = hx.Qdot
+    hx.Qdot_array[i] = hx.Qdot_total
     hx.te_pair.power_array[i] = hx.te_pair.P
     
 print "\nProgram finished."
