@@ -66,10 +66,11 @@ class MancinPorous(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, flow):
 
         """Sets constants."""
 
+        self.flow = flow
         self.porosity = 0.92
         self.k_matrix = 5.8e-3
         self.PPI = 10.
@@ -83,22 +84,30 @@ class MancinPorous(object):
 
         """Solves for convection parameters with enhancement."""
 
-        self.G = self.rho * self.velocity
+        self.G = self.flow.rho * self.flow.velocity
         # Mass velocity from Mancin et al.
         self.D_pore = 0.0122 * self.PPI ** (-0.849)
         # hydraulic diameter (m?) of porous media based on Mancin
         # et al.
-        self.Re_K = (self.D_pore * self.G / (self.mu * self.porosity))
+        self.Re_K = (
+            self.D_pore * self.G / (self.flow.mu * self.porosity)
+            )
         # Re of porous media from Mancin et al.
-        self.F = ((1.765 * self.Re_K ** (-0.1014) * self.porosity ** 2
-        / self.PPI ** (0.6)))
+        self.F = (
+            (1.765 * self.Re_K ** (-0.1014) * self.porosity ** 2. /
+        self.PPI ** (0.6))
+            )
         # friction factor from Mancin et al.
-        self.f = self.F
+        self.flow.f = self.F
         # possibly wrong assignment but gets code to shut up and run
-        self.deltaP = (self.length * 2. * self.F * self.G ** 2 /
-        (self.D_pore * self.rho) * 0.001)
+        self.flow.deltaP = (
+            self.flow.length * 2. * self.F * self.G ** 2. / (self.D_pore *
+        self.flow.rho) * 0.001
+            )
         # pressure drop from Mancin et al.
-        self.h_conv = self.Nu_D * self.k_matrix / self.D
+        self.flow.h_conv = (
+            self.flow.Nu_D * self.k_matrix / self.flow.D
+            )
         # coefficient of convection (kW/m^2-K)
 
 

@@ -11,7 +11,7 @@ cmd_folder = os.path.dirname(os.path.abspath('../Modules/hx.py'))
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 import hx
-import te_pair
+reload(hx)
 
 area = (0.002)**2
 length = 5.e-3
@@ -30,7 +30,7 @@ hx_pores.te_pair.Ptype.area = area * 2.
 hx_pores.te_pair.area_void = 25. * area
 hx_pores.te_pair.method = 'analytical'
 hx_pores.type = 'parallel'
-hx_pores.exh.enhancement = "Mancin porous"
+hx_pores.exh.set_enhancement('MancinPorous')
 
 hx_pores.exh.T_inlet = 800.
 hx_pores.exh.P = 100.

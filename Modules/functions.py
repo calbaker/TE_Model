@@ -175,6 +175,9 @@ def set_enhancement(self, enh_type):
     elif enh_type == 'OffsetStripFin':
         self.enh = self.enh_lib.OffsetStripFin(self)
 
+    elif enh_type == 'MancinPorous':
+        self.enh = self.enh_lib.MancinPorous(self)
+
     else:
         print "Error in enh_type specification."
         print "Possible options are:"
