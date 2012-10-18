@@ -74,7 +74,6 @@ class MancinPorous(object):
         self.porosity = 0.92
         self.k_matrix = 5.8e-3
         self.PPI = 10.
-        self.K = 2.e-7
         self.k = self.k_matrix
         self.Nu_D = 4.93
         # Nu for porous media parallel plates with T_w = const.  Bejan
@@ -89,12 +88,12 @@ class MancinPorous(object):
         self.D_pore = 0.0122 * self.PPI ** (-0.849)
         # hydraulic diameter (m?) of porous media based on Mancin
         # et al.
-        self.Re_K = (
+        self.Re_D = (
             self.D_pore * self.G / (self.flow.mu * self.porosity)
             )
         # Re of porous media from Mancin et al.
         self.F = (
-            (1.765 * self.Re_K ** (-0.1014) * self.porosity ** 2. /
+            (1.765 * self.Re_D ** (-0.1014) * self.porosity ** 2. /
         self.PPI ** (0.6))
             )
         # friction factor from Mancin et al.
