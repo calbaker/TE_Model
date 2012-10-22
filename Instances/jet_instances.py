@@ -33,9 +33,9 @@ hx_jets.cool.T_outlet = 310.
 
 hx_jets.set_mdot_charge()
 
-spacing = np.load("../output/jet_opt/spacing")
-D = np.load("../output/jet_opt/D")
-H = np.load("../output/jet_opt/H") 
+spacing = np.load("../output/jet_opt/spacing.npy")
+D = np.load("../output/jet_opt/D.npy")
+H = np.load("../output/jet_opt/H.npy") 
 
 def set_values():
     hx_jets.exh.enh.spacing = spacing 

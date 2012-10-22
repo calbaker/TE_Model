@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-power_net_H = np.load("../output/jet_instances/power_net_H")
-power_net_D = np.load("../output/jet_instances/power_net_D")
-power_net_X = np.load("../output/jet_instances/power_net_X")
+power_net_H = np.load("../output/jet_instances/power_net_H.npy")
+power_net_D = np.load("../output/jet_instances/power_net_D.npy")
+power_net_X = np.load("../output/jet_instances/power_net_X.npy")
 
-H_array = np.load("../output/jet_instances/H_array")
-D_array = np.load("../output/jet_instances/D_array")
-X_array = np.load("../output/jet_instances/X_array")
+H_array = np.load("../output/jet_instances/H_array.npy")
+D_array = np.load("../output/jet_instances/D_array.npy")
+X_array = np.load("../output/jet_instances/X_array.npy")
 
 
 # Plot configuration
