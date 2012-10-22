@@ -95,3 +95,4 @@ np.save("../output/jet_instances/H_array", H_array)
 np.save("../output/jet_instances/D_array", D_array)
 np.save("../output/jet_instances/X_array", X_array)
 
+execfile('plot_jet_instances.py')

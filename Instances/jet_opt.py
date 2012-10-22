@@ -50,3 +50,4 @@ np.save('../output/jet_opt/spacing', spacing)
 np.save('../output/jet_opt/D', D)
 np.save('../output/jet_opt/H', H)
 
+execfile('jet_instances.py')
