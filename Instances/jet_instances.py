@@ -69,7 +69,7 @@ for i in range(H_array.size):
     hx_jets.solve_hx()
     power_net_H[i] = hx_jets.power_net
     if i%5 == 0:
-        print "loop 1 of 3, iteration", i, "of", H.size
+        print "loop 1 of 3, iteration", i, "of", H_array.size
 
 set_values()
     
@@ -79,7 +79,7 @@ for i in range(D_array.size):
     hx_jets.solve_hx()
     power_net_D[i] = hx_jets.power_net
     if i%5 == 0:
-        print "loop 2 of 3, iteration", i, "of", D.size
+        print "loop 2 of 3, iteration", i, "of", D_array.size
 
 set_values()
     
