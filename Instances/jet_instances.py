@@ -116,18 +116,21 @@ plt.plot(H_array * 100., power_net_H)
 plt.xlabel('Annular Duct Height (cm)')
 plt.ylabel('Net Power')
 plt.grid()
+plt.savefig("../Plots/jet_instances/power_net_H.pdf")
 
 plt.figure()
 plt.plot(D_array * 1000., power_net_D)
 plt.xlabel('Jet Orifice Diameter (mm)')
 plt.ylabel('Net Power')
 plt.grid()
+plt.savefig("../Plots/jet_instances/power_net_D.pdf")
 
 plt.figure()
 plt.plot(X_array * 100., power_net_X)
 plt.xlabel('Jet Spacing (cm)')
 plt.ylabel('Net Power')
 plt.grid()
+plt.savefig("../Plots/jet_instances/power_net_X.pdf")
 
 # plt.show()
 
