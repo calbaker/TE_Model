@@ -80,7 +80,7 @@ for i in range(H.size):
     hx_jets.exh.enhancement.H = H[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
-    power_net_H[i] = hx_jets.power_net
+    power_net_HD[i] = hx_jets.power_net
     if i%5 == 0:
         print "loop 1 of 3, iteration", i, "of", H.size
 
@@ -90,7 +90,7 @@ for i in range(D.size):
     hx_jets.exh.enhancement.D = D[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
-    power_net_D[i] = hx_jets.power_net
+    power_net_DX[i] = hx_jets.power_net
     if i%5 == 0:
         print "loop 2 of 3, iteration", i, "of", D.size
 
@@ -100,7 +100,7 @@ for i in range(X.size):
     hx_jets.exh.enhancement.spacing = X[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
-    power_net_X[i] = hx_jets.power_net
+    power_net_XH[i] = hx_jets.power_net
     if i%5 == 0:
         print "loop 3 of 3, iteration", i, "of", X.size
 
@@ -123,19 +123,19 @@ plt.rcParams['figure.subplot.top'] = 0.9
 plt.close('all')
 
 plt.figure()
-plt.plot(H * 100., power_net_H)
+plt.plot(H * 100., power_net_HD)
 plt.xlabel('Annular Duct Height (cm)')
 plt.ylabel('Net Power')
 plt.grid()
 
 plt.figure()
-plt.plot(D * 1000., power_net_D)
+plt.plot(D * 1000., power_net_DX)
 plt.xlabel('Jet Orifice Diameter (mm)')
 plt.ylabel('Net Power')
 plt.grid()
 
 plt.figure()
-plt.plot(X * 100., power_net_X)
+plt.plot(X * 100., power_net_XH)
 plt.xlabel('Jet Spacing (cm)')
 plt.ylabel('Net Power')
 plt.grid()
