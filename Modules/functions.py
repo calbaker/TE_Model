@@ -164,12 +164,20 @@ def set_enhancement(self, enh_type):
     
     """For some enhancement strategies, this is useful for
     instantiating the instance because it can pass the exhaust or flow
-    instance to the enhancment instance."""
+    instance to the enhancment instance.
+
+    Inputs:
+
+    enh_type - a string describing the enhancemnt type
+
+    Possible options for enh_type are:
+    "IdealFin"
+    "OffsetStripFin"
+    "MancinPorous"
+    "JetArray"
+    """
 
     if enh_type == 'IdealFin':
-        self.enh = self.enh_lib.IdealFin(self)
-
-    elif enh_type == 'IdealFin':
         self.enh = self.enh_lib.IdealFin(self)
 
     elif enh_type == 'OffsetStripFin':
@@ -178,12 +186,16 @@ def set_enhancement(self, enh_type):
     elif enh_type == 'MancinPorous':
         self.enh = self.enh_lib.MancinPorous(self)
 
+    elif enh_type == 'JetArray':
+        self.enh = self.enh_lib.JetArray(self)
+
     else:
         print "Error in enh_type specification."
         print "Possible options are:"
         print "IdealFin"
-        print "IdealFin"
         print "OffsetStripFin"
+        print "MancinPorous"
+        print "JetArray"
 
     return self.enh
 
