@@ -16,91 +16,80 @@ if cmd_folder not in sys.path:
 import hx
 reload(hx)
     
-# parameters from xmin2
-# 7.049488398024472691e-01
-# 2.074354421989454272e-02
-# 1.033370547666811676e-03
-# 4.634972529966798760e+00
-
-leg_area = (0.002)**2
-leg_length = 1.03e-3
-current = 4.63
-area_ratio = 0.705
-fill_fraction = 2.07e-2
-
 hx_jets = hx.HX()
-hx_jets.exh.set_enhancement('JetArray')
+hx_jets.exh.enh = hx_jets.exh.set_enhancement('JetArray')
 
-hx_jets.te_pair.method = 'analytical'
 hx_jets.width = 30.e-2
 hx_jets.exh.height = 3.5e-2
 hx_jets.cool.mdot = 1.
 hx_jets.length = 1.
-hx_jets.te_pair.I = current
-hx_jets.te_pair.length = leg_length
 
 hx_jets.te_pair.Ptype.material = 'HMS'
 hx_jets.te_pair.Ntype.material = 'MgSi'
 
-hx_jets.te_pair.Ptype.area = leg_area                           
-hx_jets.te_pair.Ntype.area = hx_jets.te_pair.Ptype.area * area_ratio
-hx_jets.te_pair.area_void = ( (1. - fill_fraction) / fill_fraction *
-                           (hx_jets.te_pair.Ptype.area +
-                            hx_jets.te_pair.Ntype.area) )  
-
-hx_jets.type = 'counter'
+# hx_jets.type = 'counter'
 
 hx_jets.exh.T_inlet = 800.
 hx_jets.cool.T_inlet_set = 300.
 hx_jets.cool.T_outlet = 310.
 
-H = np.linspace(0.5, 4., 25) * 1e-2
-# range of annular height to be used for getting results
-D = np.linspace(1, 4., 26) * 0.001
-# range of jet diameter
-X = np.linspace(5., 20., 26) * 0.001
-# range of jet spacing
-
-power_net_HD = np.zeros([H.size,D.size])
-power_net_DX = np.zeros(D.size)
-power_net_XH = np.zeros(X.size)
+power_net_H = np.zeros(H.size)
+power_net_D = np.zeros(D.size)
+power_net_X = np.zeros(X.size)
 
 hx_jets.set_mdot_charge()
 
+hx_jets.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'spacing'])
+hx_jets.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'D'])
+hx_jets.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'H'])
+
+spacing = hx_jets.exh.enh.spacing
+D = hx_jets.exh.enh.D
+H = hx_jets.exh.enh.H
+
 def set_values():
-    hx_jets.exh.enhancement.spacing = 0.5e-2
-    hx_jets.exh.enhancement.D = 1.0e-3
-    hx_jets.exh.enhancement.H = 1.0e-2
+    hx_jets.exh.enh.spacing = spacing 
+    hx_jets.exh.enh.D = D 
+    hx_jets.exh.enh.H = H
 
 set_values()
 
-for i in range(H.size):
-    hx_jets.exh.enhancement.H = H[i]
+SIZE = 10
+
+H_array = np.linspace(0.5, 2., SIZE) * H
+# range of annular height to be used for getting results
+D_array = np.linspace(0.5, 2., SIZE + 1) * D
+# range of jet diameter
+X_array = np.linspace(5., 20., SIZE + 1) * 0.001
+# range of jet spacing
+
+for i in range(H_array.size):
+    hx_jets.exh.enh.H = H_array[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
-    power_net_HD[i] = hx_jets.power_net
+    power_net_H[i] = hx_jets.power_net
     if i%5 == 0:
         print "loop 1 of 3, iteration", i, "of", H.size
 
 set_values()
     
-for i in range(D.size):
-    hx_jets.exh.enhancement.D = D[i]
+for i in range(D_array.size):
+    hx_jets.exh.enh.D = D_array[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
-    power_net_DX[i] = hx_jets.power_net
+    power_net_D[i] = hx_jets.power_net
     if i%5 == 0:
         print "loop 2 of 3, iteration", i, "of", D.size
 
 set_values()
     
-for i in range(X.size):
-    hx_jets.exh.enhancement.spacing = X[i]
+for i in range(X_array.size):
+    hx_jets.exh.enh.spacing = X_array[i]
     # hx_jets.cool.T_outlet = fsolve(hx_jets.get_T_inlet_error, x0=hx_jets.cool.T_outlet)
     hx_jets.solve_hx()
-    power_net_XH[i] = hx_jets.power_net
+    power_net_X[i] = hx_jets.power_net
     if i%5 == 0:
-        print "loop 3 of 3, iteration", i, "of", X.size
+        print "loop 3 of 3, iteration", i, "of", X_array.size
 
 print "\nProgram finished."
 print "\nPlotting..."
@@ -121,19 +110,19 @@ plt.rcParams['figure.subplot.top'] = 0.9
 plt.close('all')
 
 plt.figure()
-plt.plot(H * 100., power_net_HD)
+plt.plot(H_array * 100., power_net_H)
 plt.xlabel('Annular Duct Height (cm)')
 plt.ylabel('Net Power')
 plt.grid()
 
 plt.figure()
-plt.plot(D * 1000., power_net_DX)
+plt.plot(D_array * 1000., power_net_D)
 plt.xlabel('Jet Orifice Diameter (mm)')
 plt.ylabel('Net Power')
 plt.grid()
 
 plt.figure()
-plt.plot(X * 100., power_net_XH)
+plt.plot(X_array * 100., power_net_X)
 plt.xlabel('Jet Spacing (cm)')
 plt.ylabel('Net Power')
 plt.grid()

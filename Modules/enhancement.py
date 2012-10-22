@@ -407,7 +407,7 @@ class JetArray(object):
     Transfer 37, no. 18 (December 1994): 2859–2869.
     """
 
-    def __init__(self):
+    def __init__(self, flow):
         """Initializes variables that do not require calculation.
 
         Variables that are set
@@ -422,6 +422,7 @@ class JetArray(object):
         self.H = 1.0e-2
         self.K = 0.5
         self.spacing = 0.5e-2
+        self.flow = flow
 
     def set_number(self, flow):
         """Sets number of jets based on jet spacing and overall size
@@ -502,10 +503,11 @@ class JetArray(object):
         self.D) ** -0.123 * (self.spacing / self.D) ** -0.725
             )
 
-    def solve_enh(self, flow):
+    def solve_enh(self):
         """This method is probably not useful so this doc string is
         not good."""
 
+        flow = self.flow
         self.set_number(flow)
         self.set_annulus(flow)
         self.set_enh_flow(flow)
