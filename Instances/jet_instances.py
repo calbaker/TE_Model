@@ -39,6 +39,8 @@ hx_jets.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'spacing'])
 hx_jets.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'D'])
 hx_jets.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'H'])
 
+hx_jets.optimize()
+
 spacing = hx_jets.exh.enh.spacing
 D = hx_jets.exh.enh.D
 H = hx_jets.exh.enh.H
