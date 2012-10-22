@@ -27,7 +27,7 @@ hx_jets.length = 1.
 hx_jets.te_pair.Ptype.material = 'HMS'
 hx_jets.te_pair.Ntype.material = 'MgSi'
 
-# hx_jets.type = 'counter'
+hx_jets.type = 'counter'
 
 hx_jets.exh.T_inlet = 800.
 hx_jets.cool.T_inlet_set = 300.
