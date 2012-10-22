@@ -33,10 +33,6 @@ hx_jets.exh.T_inlet = 800.
 hx_jets.cool.T_inlet_set = 300.
 hx_jets.cool.T_outlet = 310.
 
-power_net_H = np.zeros(H.size)
-power_net_D = np.zeros(D.size)
-power_net_X = np.zeros(X.size)
-
 hx_jets.set_mdot_charge()
 
 hx_jets.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'spacing'])
@@ -62,6 +58,10 @@ D_array = np.linspace(0.5, 2., SIZE + 1) * D
 # range of jet diameter
 X_array = np.linspace(5., 20., SIZE + 1) * 0.001
 # range of jet spacing
+
+power_net_H = np.zeros(H_array.size)
+power_net_D = np.zeros(D_array.size)
+power_net_X = np.zeros(X_array.size)
 
 for i in range(H_array.size):
     hx_jets.exh.enh.H = H_array[i]
