@@ -11,7 +11,9 @@ f = open('../output/model_validation/file',"r")
 FILE = f.read()
 f.close()
 
-npzfile = np.load('../output/model_validation/' + FILE + '.npz') 
+npzfile = np.load(
+    '../output/model_validation/' + FILE + '/' + FILE + '.npz'
+    ) 
 deltaP = npzfile['deltaP']
 mdot = npzfile['mdot']
 Qdot_arr = npzfile['Qdot_arr']

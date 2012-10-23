@@ -17,6 +17,7 @@ hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
 # hx_exp.file = 'gypsum'
 hx_exp.file = 'copper'
+fit_data_true = 'true'
 hx_exp.import_data()
 hx_exp.get_Qdot_fit()
 
@@ -76,14 +77,17 @@ hx_mod.R_interconnect = 0.
 hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
 
-hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
-f2 = open("../output/model_validation/fit", "w")
-fit_status = f2.write('_fit')
-f2.close()
-# hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
+if fit_data_true == 'true':
+    hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
+    f2 = open("../output/model_validation/fit", "w")
+    fit_status = f2.write('_fit')
+    f2.close()
+else:
+    hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
 np.savez(
-    '../output/model_validation/' + hx_exp.file, 
+    '../output/model_validation/' + hx_exp.file + '/' + hx_exp.file +
+    fit_status,  #
     mdot=hx_exp.exh.mdot, T_in=hx_exp.exh.T_in, deltaP=hx_exp.exh.deltaP,
     deltaP_arr=hx_mod.exh.deltaP_arr, Qdot=hx_exp.exh.Qdot,
     Qdot_arr=hx_mod.Qdot_arr, Qdot_surf=hx_exp.exh.Qdot_surf,
@@ -92,7 +96,7 @@ np.savez(
     )
 
 f = open('../output/model_validation/file',"w")
-f.write(hx_exp.file)
+f.write(hx_exp.file + fit_status)
 f.close()
 
 execfile('plot_exp.py')
