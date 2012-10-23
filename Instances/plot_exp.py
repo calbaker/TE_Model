@@ -8,7 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # FILE = '2012-09-18 copper'
-FILE = 'gypsum'
+# FILE = 'gypsum'
+FILE = 'copper'
 
 npzfile = np.load('../output/model_validation/' + FILE + '.npz') 
 deltaP = npzfile['deltaP']
@@ -96,7 +97,7 @@ plt.xticks(rotation=45)
 plt.subplots_adjust(bottom=0.17)
 plt.grid()
 plt.legend()
-plt.savefig('../Plots/plot_exp/' + FILE + '/dimless_P.pdf')
+plt.savefig('../Plots/plot_exp/' + FILE + '/dimless_P_fit.pdf')
 
 fig = plt.figure()
 plt.plot(
@@ -109,7 +110,7 @@ plt.xlabel("Exhaust Mass Flow Rate (kg/s)")
 plt.ylabel("Heat Transfer Rate (kW)")
 plt.grid()
 plt.legend(loc='lower right')
-plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_v_mdot.pdf')
+plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_v_mdot_fit.pdf')
 
 fig = plt.figure()
 plt.plot(
@@ -122,6 +123,6 @@ plt.xlabel("HX Inlet Temperature (K)")
 plt.ylabel("Heat Transfer Rate (kW)")
 plt.grid()
 plt.legend(loc='lower right')
-plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_v_T_in.pdf')
+plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_v_T_in_fit.pdf')
 
 plt.show()
