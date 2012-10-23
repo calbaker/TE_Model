@@ -77,6 +77,9 @@ hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
 
 hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
+f2 = open("../output/model_validation/fit", "w")
+fit_status = f2.write('_fit')
+f2.close()
 # hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
 np.savez(
@@ -88,5 +91,8 @@ np.savez(
     rho=hx_mod.exh.rho_arr, Re_D=hx_mod.exh.Re_arr
     )
 
-execfile('plot_exp.py')
+f = open('../output/model_validation/file',"w")
+f.write(hx_exp.file)
+f.close()
 
+execfile('plot_exp.py')

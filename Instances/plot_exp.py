@@ -7,9 +7,9 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
 
-# FILE = '2012-09-18 copper'
-# FILE = 'gypsum'
-FILE = 'copper'
+f = open('../output/model_validation/file',"r")
+FILE = f.read()
+f.close()
 
 npzfile = np.load('../output/model_validation/' + FILE + '.npz') 
 deltaP = npzfile['deltaP']
@@ -80,6 +80,10 @@ plt.close()
 # ax.set_zlabel(r'$\dot{Q}$')
 # plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_fit.pdf')
 
+f2 = open("../output/model_validation/fit", "r")
+fit_status = f2.read()
+f2.close()
+
 fig = plt.figure()
 dimless_P_mod = deltaP_arr / (0.5 * rho * velocity ** 2.)
 dimless_P_exp = deltaP / (0.5 * rho * velocity ** 2.)
@@ -97,7 +101,9 @@ plt.xticks(rotation=45)
 plt.subplots_adjust(bottom=0.17)
 plt.grid()
 plt.legend()
-plt.savefig('../Plots/plot_exp/' + FILE + '/dimless_P_fit.pdf')
+plt.savefig(
+    '../Plots/plot_exp/' + FILE + '_dimless_P' + fit_status + '.pdf'
+    )
 
 fig = plt.figure()
 plt.plot(
@@ -110,7 +116,9 @@ plt.xlabel("Exhaust Mass Flow Rate (kg/s)")
 plt.ylabel("Heat Transfer Rate (kW)")
 plt.grid()
 plt.legend(loc='lower right')
-plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_v_mdot_fit.pdf')
+plt.savefig(
+    '../Plots/plot_exp/' + FILE + '_Qdot_v_mdot' + fit_status + '.pdf'
+    )
 
 fig = plt.figure()
 plt.plot(
@@ -123,6 +131,8 @@ plt.xlabel("HX Inlet Temperature (K)")
 plt.ylabel("Heat Transfer Rate (kW)")
 plt.grid()
 plt.legend(loc='lower right')
-plt.savefig('../Plots/plot_exp/' + FILE + '/Qdot_v_T_in_fit.pdf')
+plt.savefig(
+'../Plots/plot_exp/' + FILE + '_Qdot_v_T_in' + fit_status + '.pdf'
+)
 
 plt.show()
