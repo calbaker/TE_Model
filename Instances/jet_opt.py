@@ -2,9 +2,7 @@
 # Created on 2011 Feb 10
 
 # Distribution Modules
-import matplotlib.pyplot as plt
 import os, sys
-from scipy.optimize import fsolve
 import numpy as np
 
 # User Defined Modules
@@ -35,10 +33,12 @@ hx_jet_opt.cool.T_outlet = 310.
 
 hx_jet_opt.set_mdot_charge()
 
-hx_jet_opt.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'spacing'])
-hx_jet_opt.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'D'])
+# hx_jet_opt.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'spacing'])
+# hx_jet_opt.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'D'])
 # hx_jet_opt.apar_list.append(['hx_fins_opt', 'exh', 'enh', 'H'])
 hx_jet_opt.exh.enh.H = 0.01
+hx_jet_opt.exh.enh.D = 0.005
+hx_jet_opt.exh.enh.spacing = 0.01
 
 hx_jet_opt.optimize()
 
