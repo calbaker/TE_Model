@@ -12,7 +12,7 @@ FILE = f.read()
 f.close()
 
 npzfile = np.load(
-    '../output/model_validation/' + FILE + '/' + FILE + '.npz'
+    '../output/model_validation/' + FILE + '.npz'
     ) 
 deltaP = npzfile['deltaP']
 mdot = npzfile['mdot']
@@ -104,7 +104,7 @@ plt.subplots_adjust(bottom=0.17)
 plt.grid()
 plt.legend()
 plt.savefig(
-    '../Plots/plot_exp/' + FILE + '_dimless_P' + fit_status + '.pdf'
+    '../Plots/plot_exp/' + FILE + '_dimless_P.pdf'
     )
 
 fig = plt.figure()
@@ -119,7 +119,7 @@ plt.ylabel("Heat Transfer Rate (kW)")
 plt.grid()
 plt.legend(loc='lower right')
 plt.savefig(
-    '../Plots/plot_exp/' + FILE + '_Qdot_v_mdot' + fit_status + '.pdf'
+    '../Plots/plot_exp/' + FILE + '_Qdot_v_mdot.pdf'
     )
 
 fig = plt.figure()
@@ -134,7 +134,7 @@ plt.ylabel("Heat Transfer Rate (kW)")
 plt.grid()
 plt.legend(loc='lower right')
 plt.savefig(
-'../Plots/plot_exp/' + FILE + '_Qdot_v_T_in' + fit_status + '.pdf'
+'../Plots/plot_exp/' + FILE + '_Qdot_v_T_in.pdf'
 )
 
 plt.show()
