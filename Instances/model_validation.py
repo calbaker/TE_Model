@@ -15,7 +15,7 @@ reload(real_hx)
 
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
-hx_exp.file = 'copper'
+hx_exp.file = 'gypsum'
 hx_exp.import_data()
 hx_exp.get_Qdot_fit()
 
@@ -76,6 +76,7 @@ hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
 
 hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
+# hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
 np.savez(
     '../output/model_validation/' + hx_exp.file, 
