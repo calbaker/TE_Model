@@ -28,7 +28,7 @@ rho = npzfile['rho']
 Re_D = npzfile['Re_D']
 
 # Plot configuration
-FONTSIZE = 18
+FONTSIZE = 24
 plt.rcParams['axes.labelsize'] = FONTSIZE
 plt.rcParams['axes.titlesize'] = FONTSIZE
 plt.rcParams['legend.fontsize'] = FONTSIZE
