@@ -137,4 +137,4 @@ plt.savefig(
 '../Plots/plot_exp/' + FILE + '_Qdot_v_T_in.pdf'
 )
 
-plt.show()
+# plt.show()

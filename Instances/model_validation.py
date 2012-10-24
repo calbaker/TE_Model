@@ -16,11 +16,12 @@ reload(real_hx)
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
 
-# hx_exp.file = 'gypsum'
-hx_exp.file = 'copper'
+hx_exp.file = 'gypsum'
+# hx_exp.file = 'copper'
 
 # fit_status = '_fit'
 fit_status = ''
+# fit_status = '_exp'
 
 hx_exp.import_data()
 hx_exp.get_Qdot_fit()
@@ -87,6 +88,12 @@ if fit_status == '_fit':
     f2.write(fit_status)
     f2.close()
     print "running fit_hx"
+if fit_status == '_exp':
+    hx_mod.R_extra = 4.2
+    hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
+    f2 = open("../output/model_validation/fit", "w")
+    f2.write(fit_status)
+    f2.close()
 else:
     hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
