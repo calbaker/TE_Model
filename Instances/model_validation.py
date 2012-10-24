@@ -16,8 +16,8 @@ reload(real_hx)
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
 
-# hx_exp.file = 'gypsum'
-hx_exp.file = 'copper'
+hx_exp.file = 'gypsum'
+# hx_exp.file = 'copper'
 
 fit_status = '_fit'
 # fit_status = ''
@@ -86,6 +86,7 @@ if fit_status == '_fit':
     f2 = open("../output/model_validation/fit", "w")
     f2.write(fit_status)
     f2.close()
+    print "running fit_hx"
 else:
     hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
@@ -105,7 +106,7 @@ f.close()
 f_R_extra = open(
     "../output/model_validation/" + hx_exp.file + "_R_extra","w"
     )
-f_R_extra.write(hx_mod.R_extra)
+f_R_extra.write(str(hx_mod.R_extra))
 f_R_extra.close()
 
 execfile('plot_exp.py')
