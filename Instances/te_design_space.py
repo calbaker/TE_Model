@@ -135,6 +135,10 @@ np.save(data_dir + 'power_height_I', power_height_I)
 np.save(data_dir + 'current_array', current_array)
 np.save(data_dir + 'fill_array', fill_array)
 np.save(data_dir + 'length_array', length_array)
+np.save(data_dir + 'length', length)
+np.save(data_dir + 'fill_fraction', fill_fraction)
+np.save(data_dir + 'current', current)
+np.save(data_dir + 'leg_area_ratio', leg_area_ratio)
 
 print "\nProgram finished."
 print "\nPlotting..."
