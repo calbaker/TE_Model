@@ -11,6 +11,8 @@ f = open('../output/model_validation/file',"r")
 FILE = f.read()
 f.close()
 
+# FILE = 'copper'
+
 npzfile = np.load(
     '../output/model_validation/' + FILE + '.npz'
     ) 
@@ -100,9 +102,9 @@ plt.plot(
 plt.xlabel(r'Re$_D$')
 plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$x10$^3$')
 plt.xticks(rotation=45)
-plt.subplots_adjust(bottom=0.17)
+plt.subplots_adjust(left=0.15, bottom=0.21)
 plt.grid()
-plt.legend()
+plt.legend(loc='best')
 plt.savefig(
     '../Plots/plot_exp/' + FILE + '_dimless_P.pdf'
     )
@@ -117,7 +119,9 @@ plt.plot(
 plt.xlabel("Exhaust Mass Flow Rate (kg/s)")
 plt.ylabel("Heat Transfer Rate (kW)")
 plt.grid()
-plt.legend(loc='lower right')
+plt.legend(loc='best')
+plt.xticks(rotation=45)
+plt.subplots_adjust(bottom=0.21)
 plt.savefig(
     '../Plots/plot_exp/' + FILE + '_Qdot_v_mdot.pdf'
     )
@@ -132,7 +136,9 @@ plt.plot(
 plt.xlabel("HX Inlet Temperature (K)")
 plt.ylabel("Heat Transfer Rate (kW)")
 plt.grid()
-plt.legend(loc='lower right')
+plt.legend(loc='best')
+plt.xticks(rotation=45)
+plt.subplots_adjust(bottom=0.21)
 plt.savefig(
 '../Plots/plot_exp/' + FILE + '_Qdot_v_T_in.pdf'
 )
