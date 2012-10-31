@@ -394,12 +394,6 @@ class HX(object):
         self.te_pair.power_total = self.te_pair.power_nodes.sum()
         # total TE power output (kW)
 
-        self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
-        self.cool.Wdot_total = self.cool.Wdot_nodes.sum()
-        self.Wdot_pumping = (self.exh.Wdot_total +
-                              self.cool.Wdot_total)
-        # total pumping power requirement (kW)
-
         self.exh.deltaP_total = self.exh.deltaP_nodes.sum()
         self.cool.deltaP_total = self.cool.deltaP_nodes.sum()
 
@@ -414,14 +408,34 @@ class HX(object):
                     )
                 self.exh.K_c = 0.4
                 self.exh.K_e = 0.2
+                self.exh.deltaP_minor_in = (
+                    (self.exh.G_minor ** 2. *
+            self.exh.velocity_nodes[0] / 2. * (self.exh.K_c + 1. -
+            self.exh.sigma ** 2.) * 1.e-3)
+                    )
+                self.exh.deltaP_minor_out = (
+                    (self.exh.G_minor ** 2. *
+            self.exh.velocity_nodes[0] / 2. * (1. - self.exh.sigma **
+            2. - self.K_e) * self.velocity_nodes[-1] /
+            self.velocity_nodes[0]) * 1.e-3
+                    )
+                    
                 self.exh.deltaP_minor = (
-                    self.exh.G_minor ** 2. *
-            self.exh.velocity_nodes[0] / 2. * ((self.exh.K_c + 1. -
-            self.exh.sigma ** 2.) - (1. - self.exh.sigma ** 2. -
-            self.exh.K_e) * self.exh.velocity_nodes[-1] /
-            self.exh.velocity_nodes[0])
+                    self.exh.deltaP_minor_in +
+                    self.exh.deltaP_minor_out
                     )
                 self.exh.deltaP_total += self.exh.deltaP_minor
+                self.exh.Wdot_total += (
+                    self.exh.Vdot_nodes[0] * self.exh.deltaP_minor_in
+                    + self.exh.Vdot_nodes[-1] *
+                    self.exh.deltaP_minor_out
+                    )
+                
+        self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
+        self.cool.Wdot_total = self.cool.Wdot_nodes.sum()
+        self.Wdot_pumping = (self.exh.Wdot_total +
+                              self.cool.Wdot_total)
+        # total pumping power requirement (kW)
 
         self.power_net = (
             self.te_pair.power_total - self.Wdot_pumping
