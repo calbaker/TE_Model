@@ -24,6 +24,7 @@ reload(coolant)
 import platewall
 reload(platewall)
 
+
 class Dimension(object):
     """Class for hx attribute containing physical dimensions.  This is
     used on an ad hoc basis."""
@@ -82,7 +83,7 @@ class HX(object):
         # any other appropriate purpose to add thermal resistance to
         # the model
 
-        self.R_interconnect = 0.00075 # (m^2*K/kW)
+        self.R_interconnect = 0.00075  # (m^2*K/kW)
         # Resistance of copper interconnect assuming a thickness of
         # 0.3 mm (Ref: Hori, Y., D. Kusano, T. Ito, and
         # K. Izumi. “Analysis on Thermo-mechanical Stress of
@@ -90,7 +91,7 @@ class HX(object):
         # International Conference On, 328 –331, 1999), where
         # k_interconnect = 400 W/(m-K)
 
-        self.R_substrate = 0.005 # (m^2*K/kW)
+        self.R_substrate = 0.005  # (m^2*K/kW)
         # resistance of ceramic substrate(AlN) 1 mmm thick (Hori, Y.,
         # D. Kusano, T. Ito, and K. Izumi. “Analysis on
         # Thermo-mechanical Stress of Thermoelectric Module.” In
@@ -98,14 +99,14 @@ class HX(object):
         # On, 328 –331, 1999.), based on k_ceramic = 200 W/(m-K)
         # obtained from Thermoelectrics Handbook.
 
-        self.R_contact = 0.00003 # (m^2*K/kW)
+        self.R_contact = 0.00003  # (m^2*K/kW)
         # Thermal contact resistance for all three contacts estimated
         # using alumina/copper contact resistance extracted from
         # Gundrum, Bryan C., David G. Cahill, and Robert
         # S. Averback. “Thermal Conductance of Metal-metal
         # Interfaces.” Physical Review B 72, no. 24 (December 30,
-        # 2005): 245426. 
-        
+        # 2005): 245426.
+
         # self.R_contact = 0.8322 # (m^2*K/kW)
         # thermal contact resistance (m^2*K/kW) for plate/substrate,
         # substrate/interconnect, and interconnect/TE leg interfaces
@@ -247,7 +248,7 @@ class HX(object):
         same between exh, cool, and the overal heat exchanger.
 
         """
-        
+
         if self.equal_width == True:
             self.exh.width = self.dimension.width
             self.cool.width = self.dimension.width
@@ -402,8 +403,29 @@ class HX(object):
         self.exh.deltaP_total = self.exh.deltaP_nodes.sum()
         self.cool.deltaP_total = self.cool.deltaP_nodes.sum()
 
-        self.power_net = (self.te_pair.power_total -
-        self.Wdot_pumping)
+        try:
+            self.exh.enh.type
+        except AttributeError:
+            pass
+        else:
+            if self.exh.enh.type == 'IdealFin':
+                self.exh.G_minor = (
+                    self.exh.rho_nodes[0] * self.exh.velocity_nodes[0]
+                    )
+                self.exh.K_c = 0.4
+                self.exh.K_e = 0.2
+                self.exh.deltaP_minor = (
+                    self.exh.G_minor ** 2. *
+            self.exh.velocity_nodes[0] / 2. * ((self.exh.K_c + 1. -
+            self.exh.sigma ** 2.) - (1. - self.exh.sigma ** 2. -
+            self.exh.K_e) * self.exh.velocity_nodes[-1] /
+            self.exh.velocity_nodes[0])
+                    )
+                self.exh.deltaP_total += self.exh.deltaP_minor
+
+        self.power_net = (
+            self.te_pair.power_total - self.Wdot_pumping
+            ) 
 
         self.set_availability()
 
@@ -455,7 +477,7 @@ class HX(object):
         self.te_pair.T_c_nodes[i] = self.te_pair.T_c
         self.te_pair.power_nodes[i] = self.te_pair.P * self.leg_pairs
         self.te_pair.power_nodes_check[i] = (
-            self.te_pair.P_flux * self.area 
+            self.te_pair.P_flux * self.area
             )
         self.te_pair.eta_nodes[i] = self.te_pair.eta
         self.te_pair.h_nodes[i] = self.te_pair.h_eff
@@ -508,7 +530,7 @@ class HX(object):
                 print varname + ":", varval
 
             print "leg pairs =", self.leg_pairs
-            
+
         apar = np.array(apar)
 
         # unpack guess vector

@@ -131,6 +131,7 @@ class IdealFin(object):
         """Sets constants and things are needed at runtime.  Runs
         set_fin_height and set_area_convection."""
 
+        self.type = 'IdealFin'
         self.thickness = 1.e-3
         # fin thickness (m)
         self.k = 0.2
@@ -188,9 +189,20 @@ class IdealFin(object):
         self.flow.perimeter = (
             2. * (self.spacing + self.flow.height) * (self.N + 1.)
             )
-        # perimeter of new duct formed by fins with constant overall duct width
-        self.flow.flow_area = self.spacing * self.flow.height * (self.N + 1.)
+        # perimeter of new duct formed by fins with constant overall
+        # duct width 
+        self.flow.flow_area = (
+            self.spacing * self.flow.height * (self.N + 1.)
+            )
         # flow area (m^2) of new duct formed by fin
+
+        self.flow.flow_area_nominal = (
+            self.flow.height * self.flow.width
+            )
+
+        self.flow.sigma = (
+            self.flow.flow_area / self.flow.flow_area_nominal
+            )
 
         self.flow.D = 4. * self.flow.flow_area / self.flow.perimeter
         # hydraulic diameter (m)
