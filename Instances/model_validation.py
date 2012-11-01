@@ -17,7 +17,7 @@ hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
 
 # hx_exp.file = 'gypsum'
-# hx_exp.file = 'copper'
+hx_exp.file = 'copper'
 
 # fit_status = '_fit'
 # fit_status = ''
