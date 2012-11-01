@@ -416,8 +416,8 @@ class HX(object):
                 self.exh.deltaP_minor_out = (
                     (self.exh.G_minor ** 2. *
             self.exh.velocity_nodes[0] / 2. * (1. - self.exh.sigma **
-            2. - self.exh.K_e) * self.velocity_nodes[-1] /
-            self.velocity_nodes[0]) * 1.e-3
+            2. - self.exh.K_e) * self.exh.velocity_nodes[-1] /
+            self.exh.velocity_nodes[0]) * 1.e-3
                     )
                     
                 self.exh.deltaP_minor = (
