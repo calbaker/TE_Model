@@ -408,21 +408,20 @@ class HX(object):
             pass
         else:
             if self.exh.enh.type == 'IdealFin':
-                self.exh.G_minor = (
-                    self.exh.rho_nodes[0] * self.exh.velocity_nodes[0]
-                    )
                 self.exh.K_c = 0.4
                 self.exh.K_e = 0.2
+
                 self.exh.deltaP_minor_in = (
-                    (self.exh.G_minor ** 2. *
-            self.exh.velocity_nodes[0] / 2. * (self.exh.K_c + 1. -
-            self.exh.sigma ** 2.) * 1.e-3)
+                    (0.5 * self.exh.rho_nodes[0] *
+                    self.exh.velocity_nodes[0] ** 2. * (self.exh.K_c
+                    + 1. - self.exh.sigma ** 2.) * 1.e-3) 
                     )
                 self.exh.deltaP_minor_out = (
-                    -(self.exh.G_minor ** 2. *
-            self.exh.velocity_nodes[0] / 2. * (1. - self.exh.sigma **
-            2. - self.exh.K_e) * self.exh.velocity_nodes[-1] /
-            self.exh.velocity_nodes[0]) * 1.e-3
+                    -(0.5 *  self.exh.rho_nodes[-1] *
+                    self.exh.velocity_nodes[-1] ** 2. * (1. - self.exh.sigma
+                    ** 2. - self.exh.K_e) *
+                    self.exh.velocity_nodes[-1] /
+                    self.exh.velocity_nodes[0]) * 1.e-3 
                     )
                     
                 self.exh.deltaP_minor = (
