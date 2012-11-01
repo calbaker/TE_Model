@@ -39,6 +39,7 @@ plt.rcParams['ytick.labelsize'] = FONTSIZE
 plt.rcParams['lines.linewidth'] = 1.5
 plt.rcParams['lines.markersize'] = 10
 
+plt.show()
 plt.close()
     
 # fig = plt.figure()

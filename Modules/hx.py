@@ -399,9 +399,6 @@ class HX(object):
 
         self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
         self.cool.Wdot_total = self.cool.Wdot_nodes.sum()
-        self.Wdot_pumping = (self.exh.Wdot_total +
-                              self.cool.Wdot_total)
-        # total pumping power requirement (kW)
 
         # patch to handle the minor losses for the IdealFin
         # enhancement
@@ -422,7 +419,7 @@ class HX(object):
             self.exh.sigma ** 2.) * 1.e-3)
                     )
                 self.exh.deltaP_minor_out = (
-                    (self.exh.G_minor ** 2. *
+                    -(self.exh.G_minor ** 2. *
             self.exh.velocity_nodes[0] / 2. * (1. - self.exh.sigma **
             2. - self.exh.K_e) * self.exh.velocity_nodes[-1] /
             self.exh.velocity_nodes[0]) * 1.e-3
@@ -433,11 +430,16 @@ class HX(object):
                     self.exh.deltaP_minor_out
                     )
                 self.exh.deltaP_total += self.exh.deltaP_minor
-                self.exh.Wdot_total += (
+                self.exh.Wdot_minor = (
                     self.exh.Vdot_nodes[0] * self.exh.deltaP_minor_in
                     + self.exh.Vdot_nodes[-1] *
                     self.exh.deltaP_minor_out
                     )
+                self.exh.Wdot_total += self.exh.Wdot_minor
+
+        self.Wdot_pumping = (self.exh.Wdot_total +
+                              self.cool.Wdot_total)
+        # total pumping power requirement (kW)
 
         self.power_net = (
             self.te_pair.power_total - self.Wdot_pumping
