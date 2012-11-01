@@ -16,12 +16,12 @@ reload(real_hx)
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
 
-hx_exp.file = 'gypsum'
+# hx_exp.file = 'gypsum'
 # hx_exp.file = 'copper'
 
 # fit_status = '_fit'
-fit_status = ''
-# fit_status = '_exp'
+# fit_status = ''
+fit_status = '_exp'
 
 hx_exp.import_data()
 hx_exp.get_Qdot_fit()
