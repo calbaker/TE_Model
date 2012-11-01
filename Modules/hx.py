@@ -397,6 +397,14 @@ class HX(object):
         self.exh.deltaP_total = self.exh.deltaP_nodes.sum()
         self.cool.deltaP_total = self.cool.deltaP_nodes.sum()
 
+        self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
+        self.cool.Wdot_total = self.cool.Wdot_nodes.sum()
+        self.Wdot_pumping = (self.exh.Wdot_total +
+                              self.cool.Wdot_total)
+        # total pumping power requirement (kW)
+
+        # patch to handle the minor losses for the IdealFin
+        # enhancement
         try:
             self.exh.enh.type
         except AttributeError:
@@ -430,12 +438,6 @@ class HX(object):
                     + self.exh.Vdot_nodes[-1] *
                     self.exh.deltaP_minor_out
                     )
-                
-        self.exh.Wdot_total = self.exh.Wdot_nodes.sum()
-        self.cool.Wdot_total = self.cool.Wdot_nodes.sum()
-        self.Wdot_pumping = (self.exh.Wdot_total +
-                              self.cool.Wdot_total)
-        # total pumping power requirement (kW)
 
         self.power_net = (
             self.te_pair.power_total - self.Wdot_pumping
