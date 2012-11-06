@@ -11,8 +11,8 @@ f = open('../output/model_validation/file',"r")
 FILE = f.read()
 f.close()
 
-FILE = 'copper_fit'
-# FILE = 'gypsum'
+# FILE = 'copper_fit'
+FILE = 'gypsum_fit'
 
 npzfile = np.load(
     '../output/model_validation/' + FILE + '.npz'
@@ -103,6 +103,7 @@ plt.plot(
 plt.plot(
     Re_D, dimless_P_exp * 1e3, 'or', label='experiment'
     )
+plt.ylim(ymin=0)
 plt.xlabel(r'Re$_D$')
 plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$x10$^3$')
 plt.xticks(rotation=45)
@@ -157,7 +158,7 @@ plt.plot(
 plt.xlabel("HX Inlet Net Enthalpy Flow (kW)")
 plt.ylabel('Heat Transfer Rate (kW)')
 plt.grid()
-plt.legend(loc='best')
+plt.legend(loc='upper left')
 plt.xticks(rotation=45)
 plt.subplots_adjust(bottom=0.21)
 plt.savefig(

@@ -86,8 +86,8 @@ class MancinPorous(object):
         self.G = self.flow.rho * self.flow.velocity
         # Mass velocity from Mancin et al.
         self.D_pore = 0.0122 * self.PPI ** (-0.849)
-        # hydraulic diameter (m?) of porous media based on Mancin
-        # et al.
+        # hydraulic diameter (m) of porous media based on Mancin et
+        # al.
         self.Re_D = (
             self.D_pore * self.G / (self.flow.mu * self.porosity)
             )

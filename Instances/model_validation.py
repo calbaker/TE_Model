@@ -16,12 +16,13 @@ reload(real_hx)
 hx_exp = exp_data.ExpData()
 hx_exp.folder = '../ExpData/'
 
-# hx_exp.file = 'gypsum'
+hx_exp.file = 'gypsum'
 # fit_status = ''
 
-hx_exp.file = 'copper'
-# fit_status = '_fit'
-fit_status = '_exp'
+# hx_exp.file = 'copper'
+
+fit_status = '_fit'
+# fit_status = '_exp'
 
 hx_exp.import_data()
 hx_exp.get_Qdot_fit()
@@ -83,10 +84,16 @@ hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
 
 if fit_status == '_fit':
-    # hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
-    # print "running fit_hx"
-    hx_mod.R_extra = 8.21
-    hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
+    # npzfile = np.load(
+    #     '../output/model_validation/' + hx_exp.file + fit_status + '.npz'
+    #     )
+    # hx_mod.R_extra = npzfile['R_extra']
+    
+    # hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
+    print "running fit_hx"
+    print hx_mod.R_extra
+    hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
+    print hx_mod.R_extra
     f2 = open("../output/model_validation/fit", "w")
     f2.write(fit_status)
     f2.close()
@@ -115,7 +122,8 @@ np.savez(
     mdot2d=mdot2d, T_in2d=T_in2d, velocity=hx_mod.exh.velocity_arr,
     rho=hx_mod.exh.rho_arr, Re_D=hx_mod.exh.Re_arr,
     epsilon_exp=hx_exp.effectiveness,
-    epsilon_mod=hx_mod.effectiveness_arr, capacity=hx_exp.capacity
+    epsilon_mod=hx_mod.effectiveness_arr, capacity=hx_exp.capacity,
+    R_extra=hx_exp.R_extra
     )
 
 f = open('../output/model_validation/file',"w")
