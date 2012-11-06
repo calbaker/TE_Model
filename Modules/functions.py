@@ -47,7 +47,6 @@ def set_Re_dependents(self):
     self.set_Re()
     # if np.size(self.Re_D) > 1:
     #     if (self.Re_D > 2300.).any(): 
-    #         # Do these correlations hold for any tube geometry?
     #         self.f = 0.078 * self.Re_D**(-1. / 4.) 
     #         # friction factor for turbulent flow from Bejan Convection
     #         # Heat Transfer
@@ -62,7 +61,7 @@ def set_Re_dependents(self):
     #         self.f = 24. / self.Re_D
     #         self.flow = 'laminar'
     # else:
-    if (self.Re_D > 2300.): # Do these correlations hold for any tube geometry?
+    if (self.Re_D > 2300.): 
         self.f = 0.078 * self.Re_D ** (-1. / 4.) # friction factor for turbulent
         # flow from Bejan
         self.f = self.f * 1.5  # scaled for parallel plates according
