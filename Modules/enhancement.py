@@ -345,7 +345,6 @@ class OffsetStripFin(object):
         self.flow_area = self.flow.flow_area * self.area_frac
         # actual flow area (m^2)
         self.perimeter = 4. * self.flow_area / self.D
-        # check this calculation at some point ???
         self.velocity = self.flow.velocity / self.area_frac
         # actual velocity (m/s) based on flow area
         self.Re_D = self.velocity * self.D / self.flow.nu
