@@ -69,6 +69,8 @@ def solve_hx(hx_exp, hx_mod):
     hx_mod.exh.velocity_arr = np.zeros(hx_exp.exh.T_in.size)
     hx_mod.exh.rho_arr = np.zeros(hx_exp.exh.T_in.size)
     hx_mod.exh.Re_arr = np.zeros(hx_exp.exh.T_in.size)
+    hx_mod.exh.c_p_bar_arr = np.zeros(hx_exp.exh.T_in.size)
+    hx_mod.effectiveness_arr = np.zeros(hx_exp.exh.T_in.size)
 
     for i in range(hx_exp.exh.T_in.size):
         hx_mod.exh.T_inlet = hx_exp.exh.T_in[i]
@@ -85,6 +87,8 @@ def solve_hx(hx_exp, hx_mod):
         hx_mod.exh.velocity_arr[i] = hx_mod.exh.velocity_nodes.mean()
         hx_mod.exh.rho_arr[i] = hx_mod.exh.rho_nodes.mean()
         hx_mod.exh.Re_arr[i] = hx_mod.exh.Re_nodes.mean()
+        hx_mod.exh.c_p_bar_arr[i] = hx_mod.exh.c_p_nodes.mean()
+        hx_mod.effectiveness_arr[i] = hx_mod.effectiveness
 
     return hx_mod
 

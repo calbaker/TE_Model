@@ -11,7 +11,7 @@ f = open('../output/model_validation/file',"r")
 FILE = f.read()
 f.close()
 
-FILE = 'copper'
+FILE = 'copper_fit'
 
 npzfile = np.load(
     '../output/model_validation/' + FILE + '.npz'
@@ -21,6 +21,8 @@ Cu_mdot = npzfile['mdot']
 Cu_T_in = npzfile['T_in']
 Cu_Qdot = npzfile['Qdot']
 Cu_Re_D = npzfile['Re_D']
+Cu_cap_dot = npzfile['capacity']
+Cu_epsilon = npzfile['epsilon_exp']
 
 FILE = 'gypsum'
 
@@ -32,6 +34,8 @@ gyp_mdot = npzfile['mdot']
 gyp_T_in = npzfile['T_in']
 gyp_Qdot = npzfile['Qdot']
 gyp_Re_D = npzfile['Re_D']
+gyp_cap_dot = npzfile['capacity']
+gyp_epsilon = npzfile['epsilon_exp']
 
 # Plot configuration
 FONTSIZE = 24
@@ -67,5 +71,27 @@ plt.grid()
 plt.legend(loc="upper left")
 plt.subplots_adjust(bottom=0.21)
 plt.savefig('../Plots/plot_exp/exp_Qdot_v_T_in.pdf')
+
+plt.figure('Qdot v capacity')
+plt.plot(gyp_cap_dot, gyp_Qdot, 'md', label='gypsum')
+plt.plot(Cu_cap_dot, Cu_Qdot, 'c>', label='Cu mesh')
+plt.xticks(rotation=45)
+plt.xlabel("HX Inlet Net Enthalpy Flow (kW)")
+plt.ylabel('Heat Transfer Rate (kW)')
+plt.grid()
+plt.legend(loc="lower right")
+plt.subplots_adjust(bottom=0.21)
+plt.savefig('../Plots/plot_exp/exp_Qdot_v_cap.pdf')
+
+plt.figure('epsilon v capacity')
+plt.plot(gyp_cap_dot, gyp_epsilon, 'md', label='gypsum')
+plt.plot(Cu_cap_dot, Cu_epsilon, 'c>', label='Cu mesh')
+plt.xticks(rotation=45)
+plt.xlabel("HX Inlet Net Enthalpy Flow (kW)")
+plt.ylabel('HX Effectiveness')
+plt.grid()
+plt.legend(loc="center right")
+plt.subplots_adjust(bottom=0.21, left=0.15)
+plt.savefig('../Plots/plot_exp/exp_eff_v_cap.pdf')
 
 plt.show()

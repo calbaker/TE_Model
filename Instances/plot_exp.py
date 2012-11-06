@@ -11,7 +11,8 @@ f = open('../output/model_validation/file',"r")
 FILE = f.read()
 f.close()
 
-# FILE = 'copper'
+FILE = 'copper_fit'
+# FILE = 'gypsum'
 
 npzfile = np.load(
     '../output/model_validation/' + FILE + '.npz'
@@ -28,6 +29,10 @@ T_in2d = npzfile['T_in2d']
 velocity = npzfile['velocity']
 rho = npzfile['rho']
 Re_D = npzfile['Re_D']
+cap_dot = npzfile['capacity']
+epsilon_exp = npzfile['epsilon_exp']
+epsilon_mod = npzfile['epsilon_mod']
+
 
 # Plot configuration
 FONTSIZE = 24
@@ -93,12 +98,10 @@ fig = plt.figure()
 dimless_P_mod = deltaP_arr / (0.5 * rho * velocity ** 2.)
 dimless_P_exp = deltaP / (0.5 * rho * velocity ** 2.)
 plt.plot(
-    Re_D, dimless_P_mod * 1e3, linestyle='', marker='s', color='b',
-    label='model'
+    Re_D, dimless_P_mod * 1e3, 'sb', label='model'
     )
 plt.plot(
-    Re_D, dimless_P_exp * 1e3, linestyle='', marker='o', color='r',
-    label='experiment'
+    Re_D, dimless_P_exp * 1e3, 'or', label='experiment'
     )
 plt.xlabel(r'Re$_D$')
 plt.ylabel(r'$\frac{\Delta P}{1/2 \rho U^2}$x10$^3$')
@@ -112,10 +115,10 @@ plt.savefig(
 
 fig = plt.figure()
 plt.plot(
-    mdot, Qdot_arr, linestyle='', marker='s', color='b', label='model'
+    mdot, Qdot_arr, 'sb', label='model'
     )
 plt.plot(
-    mdot, Qdot, linestyle='', marker='o', color='r', label='experiment'
+    mdot, Qdot, 'or', label='experiment'
     )
 plt.xlabel("Exhaust Mass Flow Rate (kg/s)")
 plt.ylabel("Heat Transfer Rate (kW)")
@@ -129,10 +132,10 @@ plt.savefig(
 
 fig = plt.figure()
 plt.plot(
-    T_in, Qdot_arr, linestyle='', marker='s', color='b', label='model'
+    T_in, Qdot_arr, 'sb', label='model' 
     )
 plt.plot(
-    T_in, Qdot, linestyle='', marker='o', color='r', label='experiment'
+    T_in, Qdot, 'or', label='experiment' 
     )
 plt.xlabel("HX Inlet Temperature (K)")
 plt.ylabel("Heat Transfer Rate (kW)")
@@ -142,6 +145,40 @@ plt.xticks(rotation=45)
 plt.subplots_adjust(bottom=0.21)
 plt.savefig(
 '../Plots/plot_exp/' + FILE + '_Qdot_v_T_in.pdf'
+)
+
+fig = plt.figure()
+plt.plot(
+    cap_dot, Qdot_arr, 'sb', label='model'
+    )
+plt.plot(
+    cap_dot, Qdot, 'or', label='experiment'
+    )
+plt.xlabel("HX Inlet Net Enthalpy Flow (kW)")
+plt.ylabel('Heat Transfer Rate (kW)')
+plt.grid()
+plt.legend(loc='best')
+plt.xticks(rotation=45)
+plt.subplots_adjust(bottom=0.21)
+plt.savefig(
+'../Plots/plot_exp/' + FILE + '_Qdot_v_cap.pdf'
+)
+
+fig = plt.figure()
+plt.plot(
+    cap_dot, epsilon_mod, 'sb', label='model'
+    )
+plt.plot(
+    cap_dot, epsilon_exp, 'or', label='experiment'
+    )
+plt.xlabel("HX Inlet Net Enthalpy Flow (kW)")
+plt.ylabel('HX Effectiveness')
+plt.grid()
+plt.legend(loc='best')
+plt.xticks(rotation=45)
+plt.subplots_adjust(bottom=0.21)
+plt.savefig(
+'../Plots/plot_exp/' + FILE + '_epsilon_v_cap.pdf'
 )
 
 # plt.show()
