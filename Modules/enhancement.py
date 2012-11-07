@@ -245,7 +245,7 @@ class IdealFin(object):
         self.flow.deltaP = (
             self.flow.f * self.flow.perimeter * self.flow.node_length
             / self.flow.flow_area * (0.5 * self.flow.rho *
-            self.flow.velocity ** 2) * 0.001
+            self.flow.velocity ** 2.) * 0.001
             )
         # pressure drop (kPa)
 
