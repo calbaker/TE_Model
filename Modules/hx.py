@@ -167,7 +167,9 @@ class HX(object):
         self.exh.deltaP_nodes = np.zeros(self.nodes)
         self.exh.Wdot_nodes = np.zeros(self.nodes)
         self.exh.Nu_nodes = np.zeros(self.nodes)
+        self.exh.C_nodes = np.zeros(self.nodes)
         self.exh.c_p_nodes = np.zeros(self.nodes)
+        self.exh.mu_nodes = np.zeros(self.nodes)
         self.exh.entropy_nodes = np.zeros(self.nodes)
         self.exh.enthalpy_nodes = np.zeros(self.nodes)
         self.exh.velocity_nodes = np.zeros(self.nodes)
@@ -387,8 +389,17 @@ class HX(object):
             self.cool.T_inlet = self.cool.T
 
         self.Qdot_total = self.Qdot_nodes.sum()
-        self.effectiveness = (self.Qdot_total / (self.exh.C *
-        (self.exh.T_inlet - self.cool.T_inlet)))
+        self.Qdot_max = (
+            self.exh.C_nodes.mean() * (self.exh.T_inlet -
+        self.cool.T_inlet)
+            )
+        self.exh.Re_omega = (
+            self.exh.D / (self.exh.flow_area *
+        self.exh.mu_nodes.mean()) * self.exh.mdot_omega
+            )
+        self.effectiveness = (
+            self.Qdot_total / self.Qdot_max
+            )
         # heat exchanger effectiveness
 
         self.te_pair.power_total = self.te_pair.power_nodes.sum()
@@ -505,7 +516,9 @@ class HX(object):
         self.exh.deltaP_nodes[i] = self.exh.deltaP
         self.exh.Wdot_nodes[i] = self.exh.Wdot_pumping
         self.exh.Nu_nodes[i] = self.exh.Nu_D
+        self.exh.C_nodes[i] = self.exh.C
         self.exh.c_p_nodes[i] = self.exh.c_p
+        self.exh.mu_nodes[i] = self.exh.mu
         self.exh.h_nodes[i] = self.exh.h_conv
         self.exh.velocity_nodes[i] = self.exh.velocity
         self.exh.entropy_nodes[i] = self.exh.entropy

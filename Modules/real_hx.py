@@ -69,9 +69,18 @@ def solve_hx(hx_exp, hx_mod):
     hx_mod.exh.velocity_arr = np.zeros(hx_exp.exh.T_in.size)
     hx_mod.exh.rho_arr = np.zeros(hx_exp.exh.T_in.size)
     hx_mod.exh.Re_arr = np.zeros(hx_exp.exh.T_in.size)
+    hx_exp.exh.Re_omega_arr = np.zeros(hx_exp.exh.T_in.size)
     hx_mod.exh.c_p_bar_arr = np.zeros(hx_exp.exh.T_in.size)
     hx_mod.effectiveness_arr = np.zeros(hx_exp.exh.T_in.size)
+    hx_exp.Qdot_omega = np.zeros(hx_exp.exh.T_in.size)
+    hx_exp.Qdot_max_omega = np.zeros(hx_exp.exh.T_in.size)
+    hx_exp.Qdot_max = np.zeros(hx_exp.exh.T_in.size)
+    hx_exp.exh.deltaT_max = hx_exp.exh.T_in - hx_exp.cool.T_out
 
+    hx_exp.exh.T_omega = (
+        (0.5 * (hx_exp.exh.T_in + hx_exp.exh.T_out) - 273.15) * 75.e-4
+        )
+    
     for i in range(hx_exp.exh.T_in.size):
         hx_mod.exh.T_inlet = hx_exp.exh.T_in[i]
         hx_mod.exh.mdot = hx_exp.exh.mdot[i]
@@ -82,11 +91,31 @@ def solve_hx(hx_exp, hx_mod):
 
         hx_mod.solve_hx()
 
+        if hx_exp.exh.T_omega[i] < 2.2:
+            hx_exp.exh.T_omega[i] = 2.2
+        
+        hx_exp.Qdot_omega[i] = (
+            ((hx_mod.exh.c_p_nodes.mean() * hx_exp.exh.deltaT *
+        hx_mod.exh.mdot_omega) ** 2. + 2. * (hx_exp.exh.mdot[i] *
+        hx_mod.exh.c_p_nodes.mean() * hx_exp.exh.T_omega) ** 2.) **
+        0.5
+            )
+        hx_exp.Qdot_max_omega[i] = (
+            ((hx_mod.c_p_nodes.mean() * hx_exp.exh.deltaT[i] *
+        hx_mod.exh.mdot_omega) ** 2. + 2. * (hx_exp.exh.mdot[i] *
+        hx_mod.exh.c_p_nodes.mean() * hx_exp.exh.T_omega[i]) ** 2.) **
+        0.5
+            )
+        hx_exp.Qdot_max[i] = (
+            hx_exp.exh.mdot[i] * hx_mod.exh.c_p_nodes.mean() *
+            (hx_exp.exh.T_in - hx_exp.cool.T_in)[i] 
+            )
         hx_mod.Qdot_arr[i] = hx_mod.Qdot_total
         hx_mod.exh.deltaP_arr[i] = hx_mod.exh.deltaP_total
         hx_mod.exh.velocity_arr[i] = hx_mod.exh.velocity_nodes.mean()
         hx_mod.exh.rho_arr[i] = hx_mod.exh.rho_nodes.mean()
         hx_mod.exh.Re_arr[i] = hx_mod.exh.Re_nodes.mean()
+        hx_exp.exh.Re_omega_arr[i] = hx_mod.exh.Re_omega
         hx_mod.exh.c_p_bar_arr[i] = hx_mod.exh.c_p_nodes.mean()
         hx_mod.effectiveness_arr[i] = hx_mod.effectiveness
 
