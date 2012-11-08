@@ -7,14 +7,14 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
 
-FILE = 'copper_fit'
-FILE = 'copper_exp'
-FILE = 'gypsum_fit'
+# FILE = 'copper_fit'
+# FILE = 'copper_exp'
+# FILE = 'gypsum_fit'
 FILE = 'gypsum'
 
-f = open('../output/model_validation/file',"r")
-FILE = f.read()
-f.close()
+# f = open('../output/model_validation/file',"r")
+# FILE = f.read()
+# f.close()
 
 npzfile = np.load(
     '../output/model_validation/' + FILE + '.npz'
@@ -32,8 +32,8 @@ velocity = npzfile['velocity']
 rho = npzfile['rho']
 Re_D = npzfile['Re_D']
 cap_dot = npzfile['capacity']
-epsilon_exp = npzfile['epsilon_exp']
-epsilon_mod = npzfile['epsilon_mod']
+effectiveness_exp = npzfile['effectiveness_exp']
+effectiveness_mod = npzfile['effectiveness_mod']
 Qdot_omega = npzfile['Qdot_omega']
 Qdot_max_omega = npzfile['Qdot_max_omega']
 Re_omega = npzfile['Re_omega']
@@ -44,6 +44,9 @@ deltaP_uncertainty = 49.8
 dimless_P_err = (
     deltaP_uncertainty / (0.5 * rho * velocity ** 2.)
     )  # uncertainty in dimensionless pressure drop
+
+P_corr_coeff = np.corrcoef(dimless_P_mod, dimless_P_exp)
+Qdot_corr_coeff = np.corrcoef(Qdot_arr, Qdot)
 
 
 # Plot configuration
@@ -178,19 +181,19 @@ plt.savefig(
 
 # fig = plt.figure()
 # plt.plot(
-#     cap_dot, epsilon_mod, 'sb', label='model'
+#     cap_dot, effectiveness_mod, 'sb', label='model'
 #     )
 # plt.plot(
-#     cap_dot, epsilon_exp, 'or', label='experiment'
+#     cap_dot, effectiveness_exp, 'or', label='experiment'
 #     )
 # plt.xlabel("HX Inlet Net Enthalpy Flow (kW)")
-# plt.ylabel('HX Epsilon')
+# plt.ylabel('HX Effectiveness')
 # plt.grid()
 # plt.legend(loc='best')
 # plt.xticks(rotation=45)
 # plt.subplots_adjust(bottom=0.21)
 # plt.savefig(
-# '../Plots/plot_exp/' + FILE + '_epsilon_v_cap.pdf'
+# '../Plots/plot_exp/' + FILE + '_effectiveness_v_cap.pdf'
 # )
 
 plt.show()

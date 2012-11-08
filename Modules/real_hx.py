@@ -95,13 +95,13 @@ def solve_hx(hx_exp, hx_mod):
             hx_exp.exh.T_omega[i] = 2.2
         
         hx_exp.Qdot_omega[i] = (
-            ((hx_mod.exh.c_p_nodes.mean() * hx_exp.exh.deltaT *
+            ((hx_mod.exh.c_p_nodes.mean() * hx_exp.exh.deltaT[i] *
         hx_mod.exh.mdot_omega) ** 2. + 2. * (hx_exp.exh.mdot[i] *
         hx_mod.exh.c_p_nodes.mean() * hx_exp.exh.T_omega[i]) ** 2.) **
         0.5
             )
         hx_exp.Qdot_max_omega[i] = (
-            ((hx_mod.c_p_nodes.mean() * hx_exp.exh.deltaT[i] *
+            ((hx_mod.exh.c_p_nodes.mean() * hx_exp.exh.deltaT[i] *
         hx_mod.exh.mdot_omega) ** 2. + 2. * (hx_exp.exh.mdot[i] *
         hx_mod.exh.c_p_nodes.mean() * hx_exp.exh.T_omega[i]) ** 2.) **
         0.5

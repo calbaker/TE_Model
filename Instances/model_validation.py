@@ -84,15 +84,10 @@ hx_mod.R_substrate = 0.
 hx_mod.R_contact = 0.
 
 if fit_status == '_fit':
-    if hx_exp.file == "gypsum":
-        hx_exp.R_extra = 17.1
-    elif hx_exp.file == "copper":
-        hx_exp.R_extra = 8.21
-    hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
-    # print "running fit_hx"
-    # print hx_mod.R_extra
-    # hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
-    # print hx_mod.R_extra
+    print "running fit_hx"
+    print hx_mod.R_extra
+    hx_mod = real_hx.fit_hx(hx_exp, hx_mod)
+    print hx_mod.R_extra
     f2 = open("../output/model_validation/fit", "w")
     f2.write(fit_status)
     f2.close()
@@ -105,7 +100,7 @@ if fit_status == '_exp':
 else:
     hx_mod = real_hx.solve_hx(hx_exp, hx_mod)
 
-hx_exp.epsilon = (
+hx_exp.effectiveness = (
     hx_exp.exh.deltaT / (hx_exp.exh.T_in - hx_exp.cool.T_in)
     )
 hx_exp.capacity = hx_exp.Qdot_max
@@ -117,9 +112,9 @@ np.savez(
     Qdot_arr=hx_mod.Qdot_arr, Qdot_surf=hx_exp.exh.Qdot_surf,
     mdot2d=mdot2d, T_in2d=T_in2d, velocity=hx_mod.exh.velocity_arr,
     rho=hx_mod.exh.rho_arr, Re_D=hx_mod.exh.Re_arr,
-    Re_omega=hx_mod.exh.Re_omega_arr,
-    epsilon_exp=hx_exp.epsilon,
-    epsilon_mod=hx_mod.epsilon_arr, capacity=hx_exp.capacity,
+    Re_omega=hx_exp.exh.Re_omega_arr,
+    effectiveness_exp=hx_exp.effectiveness,
+    effectiveness_mod=hx_mod.effectiveness_arr, capacity=hx_exp.capacity,
     R_extra=hx_mod.R_extra, 
     Qdot_omega=hx_exp.Qdot_omega,
     Qdot_max_omega=hx_exp.Qdot_max_omega
